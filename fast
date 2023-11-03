@@ -38,7 +38,9 @@ def exec_system_command(command):
     return (return_code, output)
 
 def deep_clean_impl(args):
+    cd_gitroot()
     clean_commands = [
+        "cd build && make clean",
         "find . -name \"*.o*\" -type f -delete",
         "find . -name \"*.so*\" -type f -delete",
         "find . -name \"*.a*\" -type f -delete",
@@ -57,7 +59,7 @@ def deep_clean_impl(args):
 
 def build_root(args):
     cd_gitroot()
-    os.system("mkdir -p build && cd build && cmake -DCMAKE_BUILD_TYPE=SHARED .. && make")
+    os.system("mkdir -p build && cd build && cmake -DCMAKE_BUILD_TYPE=SHARED -DWITH_PIC=on .. && make")
 
 def run_tests(args):
     cd_gitroot()
