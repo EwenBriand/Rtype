@@ -3,6 +3,7 @@
 import sys
 import os
 import subprocess
+import datetime
 
 def print_color(color, text, end = "\n"):
     colors = {
@@ -15,6 +16,14 @@ def print_color(color, text, end = "\n"):
         "white" : "\033[97m",
     }
     print(colors[color] + text + "\033[0m", end = end)
+
+def chain_commands(cmds):
+    cmd = ""
+    for c in cmds:
+        cmd += c
+        if c != cmds[-1]:
+            cmd += " && "
+    return cmd
 
 def prompt(message, closed_question = True):
     print_color("blue", message, end = "")
@@ -91,11 +100,135 @@ def push(args):
     prompt("Push to remote?")
     os.system("git push")
 
+vanilla_cpp_template = """
+/*
+** @file {}.cpp
+** @brief Implementation of the {} class.
+** @date {}.
+**
+*/
+
+#include "{}.hpp"
+
+void {}::Update(int entityID)
+{{
+
+}}
+
+"""
+
+vanilla_hpp_template = """
+/*
+** @file {}.hpp
+** @brief Definition of the {} class.
+** @date {}.
+**
+*/
+
+#pragma once
+
+#include \"../Component.hpp\"
+#include \"metadata.hpp\"
+
+needs(-lconfig++)
+serialize class {} : public ecs::Component<{}> {{
+    public:
+        GENERATE_METADATA({})
+        {}() = default;
+        ~{}() = default;
+
+        void Update(int entityID);
+    private:
+}};
+
+"""
+
+def fast_vanilla(args):
+    name = args[0]
+    cd_gitroot()
+    steps = [
+        "touch ecs/include/Components.Vanilla/" + name + ".hpp",
+        "touch ecs/include/Components.Vanilla/" + name + ".cpp",
+    ]
+    for step in steps:
+        os.system(step)
+    cpp_file = open("ecs/include/Components.Vanilla/" + name + ".cpp", "w")
+    cpp_file.write(vanilla_cpp_template.format(name, name, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), name, name))
+    cpp_file.close()
+    hpp_file = open("ecs/include/Components.Vanilla/" + name + ".hpp", "w")
+    hpp_file.write(vanilla_hpp_template.format(name, name, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), name, name, name, name, name, name, name, name, name, name, name, name, name))
+    hpp_file.close()
+    print("Don't forget to add the new component to the CMakeLists.txt file") # todo make it automatic
+
+ucpt_cpp_template = """
+/*
+** @file {}.cpp
+** @brief Implementation of the {} class.
+** @date {}.
+**
+*/
+
+#include "{}.hpp"
+
+MANAGED_RESOURCE({})
+
+void {}::Update(int entityID)
+{{
+
+}}
+
+"""
+
+ucpt_hpp_template = """
+/*
+** @file {}.hpp
+** @brief Definition of the {} class.
+** @date {}.
+**
+*/
+
+#pragma once
+
+#include \"Component.Vanilla/UserComponentWrapper.hpp\"
+#include \"metadata.hpp\"
+
+serialize class {} : public AUserComponent {{
+    public:
+        GENERATE_METADATA({})
+        {}() = default;
+        ~{}() = default;
+
+        void Update(int entityID) override;
+
+    private:
+}};
+
+"""
+
+def fast_ucpt(args):
+    name = args[0]
+    cd_gitroot()
+    steps = [
+        "touch ecs/include/Components.User/" + name + ".hpp",
+        "touch ecs/include/Components.User/" + name + ".cpp",
+    ]
+    for step in steps:
+        os.system(step)
+    cpp_file = open("ecs/include/Components.User/" + name + ".cpp", "w")
+    cpp_file.write(ucpt_cpp_template.format(name, name, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), name, name, name))
+    cpp_file.close()
+    hpp_file = open("ecs/include/Components.User/" + name + ".hpp", "w")
+    hpp_file.write(ucpt_hpp_template.format(name, name, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), name, name, name, name, name, name, name, name, name, name, name, name, name, name))
+    hpp_file.close()
+    print("Don't forget to add the new component to the CMakeLists.txt file") # todo make it automatic
+
 commands = {
     "clean" : ("performs a deep clean of the repository", lambda args: deep_clean_impl(args)),
     "build" : ("builds the project", lambda args: build_root(args)),
     "test" : ("runs all tests", lambda args: run_tests(args)),
     "push" : ("pushes the current branch", lambda args: push(args)),
+    "vanilla" : ("creates a vanilla component class with the given name", lambda args: fast_vanilla(args)),
+    "ucpt" : ("creates a user component class with the given name", lambda args: fast_ucpt(args)),
 }
 
 if __name__ == "__main__":
