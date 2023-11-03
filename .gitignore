@@ -1,8 +1,23 @@
 build/
 **/build/
 
+**/doc/
+
 **/*.so*
 **/*.dylib*
 **/*.a*
 **/*.dll*
+
+**/CMakeFiles/
+**/CMakeCache.txt
+**/cmake_install.cmake
+**/*.cmake
+**/*.cmake.in
+**/Makefile
+!Makefile
+**/CTestTestfile.cmake
+**/Testing/
+**/test/
+**/tests/
+**/Testing/
 
