@@ -60,7 +60,6 @@ def deep_clean_impl(args):
         "find . -name \"CMakeCache.txt\" -type f -delete",
         "find . -name \"cmake_install.cmake\" -type f -delete",
         "find . -name \"Makefile\" -type f -delete",
-        "find . -name \"*.cmake\" -type f -delete",
     ]
     for command in clean_commands:
         print("Executing: " + command)
@@ -222,6 +221,18 @@ def fast_ucpt(args):
     hpp_file.close()
     print("Don't forget to add the new component to the CMakeLists.txt file") # todo make it automatic
 
+def setup_cmake(args):
+    cd_gitroot()
+    os.system("mkdir -p build && cd build && cmake -DCMAKE_BUILD_TYPE=SHARED -DWITH_PIC=on ..")
+
+def fast_doc(args):
+    cd_gitroot()
+    setup_cmake(args)
+    if len(args) == 0:
+        os.system("cd build && make doc && firefox documentation/html/index.html")
+    else:
+        os.system("cd build && make doc && " + args[0] + " documentation/html/index.html")
+
 commands = {
     "clean" : ("performs a deep clean of the repository", lambda args: deep_clean_impl(args)),
     "build" : ("builds the project", lambda args: build_root(args)),
@@ -229,6 +240,8 @@ commands = {
     "push" : ("pushes the current branch", lambda args: push(args)),
     "vanilla" : ("creates a vanilla component class with the given name", lambda args: fast_vanilla(args)),
     "ucpt" : ("creates a user component class with the given name", lambda args: fast_ucpt(args)),
+    "cmake" : ("runs cmake", lambda args: setup_cmake(args)),
+    "doc" : ("generates the documentation and opens it using the browser given in argument, or firefox.", lambda args: fast_doc(args)),
 }
 
 if __name__ == "__main__":

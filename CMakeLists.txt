@@ -33,3 +33,11 @@ add_custom_target(call_metagen ALL
 add_custom_command(OUTPUT always_rebuild
 COMMAND echo ""
 )
+
+add_custom_target(install_fast
+    COMMAND sudo cp ${CMAKE_SOURCE_DIR}/fast /usr/local/bin/fast
+)
+
+add_custom_target(doc
+    COMMAND doxygen ../Doxyfile
+)
