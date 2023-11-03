@@ -141,6 +141,8 @@ void CLI::save(std::vector<std::string> args)
             args.push_back(Sys.GetSavePath());
         else
             args[0] = Sys.GetSavePath();
+    } else {
+        args[0] = Sys.GetSavePath() + "/" + args[0];
     }
 
     try {
@@ -218,7 +220,6 @@ void CLI::reloadEntities(std::vector<std::string> args)
 
 void CLI::listEntities(__attribute__((unused)) std::vector<std::string> args)
 {
-    std::cout << "list entities" << std::endl;
     Console::info << "Entities (" << Sys.GetEntities().size() << " in total)" << std::endl;
     for (auto &entity : Sys.GetEntities()) {
         Console::info << "\t" << entity << " :\n";
@@ -228,7 +229,6 @@ void CLI::listEntities(__attribute__((unused)) std::vector<std::string> args)
             }, cpt);
         });
     }
-    std::cout << "end list entities" << std::endl;
 }
 
 std::string CLI::GetClassName() const

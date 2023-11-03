@@ -15,6 +15,7 @@
 #include "Engine.hpp"
 #include "ECSImpl.hpp"
 #include "GraphicalRayLib/GraphicalRayLib.hpp"
+#include "SceneManager.hpp"
 
 namespace eng
 {
@@ -123,6 +124,7 @@ namespace eng
             Sys.AddComponent<CLI>(Sys.GetSystemHolder());
             Sys.AddComponent<EditorMouseManager>(Sys.GetSystemHolder());
             Sys.AddComponent<EntityExplorer>(Sys.GetSystemHolder());
+            ecs::SceneManager::Get().InitEditorMode();
         }
 
         Sys.LoadVanilla();

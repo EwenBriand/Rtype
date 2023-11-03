@@ -607,6 +607,48 @@ namespace ecs {
             }
 
             /**
+             * @brief Performs the same as LoadEntity, but instead of registering
+             * it to the ecs, it dumps it into the given storage.
+             *
+             * @param path
+             * @param storage
+             */
+            void DumpEntity(const std::string &path, AllCpt &storage) {
+                if (path.substr(path.find_last_of("/"), path.size()) == std::to_string(_systemHolder))
+                    return;
+                std::ifstream cptTypes(path + "/cptTypes");
+                std::string type = "";
+
+                std::vector<std::string> filesAlphabetical;
+                for (auto &p : std::filesystem::directory_iterator(path)) {
+                    filesAlphabetical.push_back(p.path().string());
+                }
+                std::sort(filesAlphabetical.begin(), filesAlphabetical.end());
+                for (auto &cptCol : storage) {
+                    cptCol.emplace_back();
+                }
+
+                for (auto &p : filesAlphabetical) {
+                    if (p.substr(p.find_last_of("/"), p.size()) == "/cptTypes")
+                        continue;
+                    if (p.substr(p.find_last_of("_"), p.size()) == "_internal")
+                        continue;
+                    std::getline(cptTypes, type);
+                    for (size_t i = 0; i < sizeof...(VanillaComponents); ++i) {
+                        std::visit([&](auto &&arg) {
+                            if (arg.GetClassName() == type) {
+                                storage[i][storage[i].size() - 1].emplace_back(arg);
+                                std::visit([&](auto &&tmp) {
+                                    tmp.Load(p);
+                                    tmp.OnAddComponent(storage[i].size() - 1);
+                                }, storage[i][storage[i].size() - 1].back());
+                            }
+                        }, cloneBase[i]);
+                    }
+                }
+            }
+
+            /**
              * @brief Clears all entities and reloads them from the
              * save directory.
              *
@@ -643,6 +685,100 @@ namespace ecs {
                 _editorEntityContext = _systemHolder;
                 NotifyEnginePipelineErased();
                 std::cout << green << "OK" << white << std::endl;
+            }
+
+            /**
+             * @brief Replace Scene does the same as reloadEntities but it does not
+             * load the entities, rather it takes them in argument.
+             *
+            */
+           void ReplaceScene(AllCpt &storage)
+           {
+                std::vector<Entity> entities = GetEntities();
+
+                RequestEngineClearPipeline();
+                // clearing current scene
+                for (auto &e : entities) {
+                    if (e == _systemHolder)
+                        continue;
+                    std::cout << "clearing entity " << e << std::endl;
+                    for (size_t i = 0; i < sizeof...(VanillaComponents); ++i) {
+                        _components[i][e].clear();
+                    }
+                    _usedIds.erase(std::remove(_usedIds.begin(), _usedIds.end(), e), _usedIds.end());
+                    _freeIds.push(e);
+                }
+                _skipFrame = true;
+                _deletedThisFrame = std::queue<int>();
+                std::cout << green << "Loading entities" << std::endl;
+
+                // backup of the system holder, beware of dark magic.
+                // if crashes, maybe moved data gets deleted in SceneManager.cpp
+                // when the SceneBuffer get cleared.
+                for (size_t i = 0; i < sizeof...(VanillaComponents); ++i) {
+                    storage[i].emplace_back();
+                    storage[i][storage[i].size() - 1] = std::move(_components[i][_systemHolder]);
+                }
+                _systemHolder = std::move(storage[0].size() - 1);
+
+                std::cout << "there are " << storage[0].size() << " entities" << std::endl;
+
+                // loading new scene
+                _components = decltype(_components)();
+                for (size_t i = 0; i < sizeof...(VanillaComponents); ++i) {
+                    _components[i] = std::move(storage[i]);
+                }
+                _usedIds = decltype(_usedIds)();
+                _freeIds = decltype(_freeIds)();
+
+                // synchronizing the ids queue
+                for (size_t i = 0; i < _components[0].size(); ++i) {
+                    _usedIds.push_back(i);
+                }
+                _editorEntityContext = _systemHolder;
+                NotifyEnginePipelineErased();
+                std::cout << green << "OK" << white << std::endl;
+           }
+
+            // /**
+            //  * @brief Saves all entities to the save directory.
+            //  *
+            //  */
+            // void SaveAllEntities() {
+            //     for (auto &e : _usedIds) {
+            //         if (e == _systemHolder)
+            //             continue;
+            //         SaveEntity(e);
+            //     }
+            // }
+
+            // /**
+            //  * @brief Saves all entities to the save directory.
+            //  *
+            //  */
+            // void SaveAllEntities(const std::string &path) {
+            //     _savepath = path;
+            //     for (auto &e : _usedIds) {
+            //         if (e == _systemHolder)
+            //             continue;
+            //         SaveEntity(e);
+            //     }
+            // }
+
+            /**
+             * @brief Does the same as ReloadEntities, but does not delete the current
+             * entities and return the result instead. Does not reload the .so files.
+             *
+             * @return AllCpt
+             */
+            AllCpt PrepareScene(const std::string &scenePath) {
+                AllCpt result;
+                for (auto &p : std::filesystem::directory_iterator(scenePath)) {
+                    if (p.path().filename() == std::to_string(_systemHolder))
+                        continue;
+                    DumpEntity(p.path().string(), result);
+                }
+                return result;
             }
 
             void NotifyEnginePipelineErased();

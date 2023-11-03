@@ -233,6 +233,23 @@ def fast_doc(args):
     else:
         os.system("cd build && make doc && " + args[0] + " documentation/html/index.html")
 
+def is_path_absolute(path):
+    return path[0] == "/"
+
+base_cfg_template = """
+scenesSavePath="{}/.engine/scenes"
+userScriptsPath="{}/ecs/include/Components.User/"
+assetRoot="{}/assets/"
+"""
+
+def create_cfg(args):
+    cd_gitroot()
+    arg = args[0] if len(args) > 0 else ".engine/config/"
+    path = arg if is_path_absolute(arg) else os.getcwd() + "/" + arg
+    path += "base.cfg"
+    with open(path, "w") as f:
+        f.write(base_cfg_template.format(os.getcwd(), os.getcwd(), os.getcwd()))
+
 commands = {
     "clean" : ("performs a deep clean of the repository", lambda args: deep_clean_impl(args)),
     "build" : ("builds the project", lambda args: build_root(args)),
@@ -242,6 +259,7 @@ commands = {
     "ucpt" : ("creates a user component class with the given name", lambda args: fast_ucpt(args)),
     "cmake" : ("runs cmake", lambda args: setup_cmake(args)),
     "doc" : ("generates the documentation and opens it using the browser given in argument, or firefox.", lambda args: fast_doc(args)),
+    "setcfg" : ("creates and sets up the default configuration directory for a project", lambda args: create_cfg(args)),
 }
 
 if __name__ == "__main__":

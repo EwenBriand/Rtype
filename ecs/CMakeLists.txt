@@ -31,11 +31,12 @@ link_directories(
 )
 
 set(SRC
-src/ECS.cpp
-src/ResourceManager.cpp
-src/InputManager.cpp
-src/Hoverable.cpp
-./include/Components.Vanilla/INode.cpp
+    src/ECS.cpp
+    src/ResourceManager.cpp
+    src/InputManager.cpp
+    src/Hoverable.cpp
+    src/SceneManager.cpp
+    ./include/Components.Vanilla/INode.cpp
 )
 
 set(
