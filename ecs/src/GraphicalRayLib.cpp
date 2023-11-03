@@ -28,7 +28,7 @@ namespace raylib {
         }, -999);
         engine->pushPipeline([&]() {
             BeginDrawing();
-            ClearBackground(RAYWHITE);
+            ClearBackground(DARKGRAY);
         }, -500);
 
         engine->pushPipeline([&]() {

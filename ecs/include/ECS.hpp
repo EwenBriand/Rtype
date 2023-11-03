@@ -710,7 +710,6 @@ namespace ecs {
                 }
                 _skipFrame = true;
                 _deletedThisFrame = std::queue<int>();
-                std::cout << green << "Loading entities" << std::endl;
 
                 // backup of the system holder, beware of dark magic.
                 // if crashes, maybe moved data gets deleted in SceneManager.cpp
@@ -721,17 +720,15 @@ namespace ecs {
                 }
                 _systemHolder = std::move(storage[0].size() - 1);
 
-                std::cout << "there are " << storage[0].size() << " entities" << std::endl;
-
                 // loading new scene
                 _components = decltype(_components)();
                 for (size_t i = 0; i < sizeof...(VanillaComponents); ++i) {
                     _components[i] = std::move(storage[i]);
                 }
-                _usedIds = decltype(_usedIds)();
-                _freeIds = decltype(_freeIds)();
 
                 // synchronizing the ids queue
+                _usedIds = decltype(_usedIds)();
+                _freeIds = decltype(_freeIds)();
                 for (size_t i = 0; i < _components[0].size(); ++i) {
                     _usedIds.push_back(i);
                 }

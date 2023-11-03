@@ -12,6 +12,7 @@
 #include "ECSImpl.hpp"
 #include "CLI.hpp"
 #include "UIButton.hpp"
+#include "Engine.hpp"
 
 CLI::CLI()
 {
@@ -210,6 +211,8 @@ void CLI::reloadEntities(std::vector<std::string> args)
         else
             args[0] = Sys.GetSavePath();
     }
+    args[0] = eng::Engine::GetEngine()->GetConfigValue("scenesSavePath") + "/" + args[0];
+    std::cout << "Reloading entities from " << args[0] << std::endl;
     try {
         Sys.SetSavePath(std::string(args[0]));
         Sys.ReloadEntities();
