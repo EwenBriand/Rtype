@@ -18,7 +18,7 @@ add_compile_options(-O3)
 add_subdirectory(metadata)
 add_subdirectory(ecs)
 add_subdirectory(ecs/raylib/)
-add_subdirectory(graph)
+# add_subdirectory(graph)
 
 add_custom_target(call_metagen ALL
     DEPENDS MetaData generate_metadata

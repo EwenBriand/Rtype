@@ -5,7 +5,7 @@
 ** Engine.cpp
 */
 
-#include "Components.Vanilla/WowGraphics.hpp"
+// #include "Components.Vanilla/WowGraphics.hpp"
 #include <libconfig.h++>
 #include <filesystem>
 #include <variant>
@@ -141,9 +141,9 @@ namespace eng
         setupPipeline();
         sortPipeline();
 
-        if (IsOptionSet("--wow-graphics")) {
-            wow::WowGraphicsEngine::Enable();
-        }
+        // if (IsOptionSet("--wow-graphics")) {
+        //     wow::WowGraphicsEngine::Enable();
+        // }
         Sys.CallStart();
         Sys.Run(
             [&]() {

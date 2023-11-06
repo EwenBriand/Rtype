@@ -62,14 +62,14 @@ add_library(
     engine SHARED
     src/Engine.cpp
     src/ScopeLocation.cpp
-    ./include/Components.Vanilla/WowGraphics.cpp
+    # ./include/Components.Vanilla/WowGraphics.cpp
 )
 
 target_link_libraries(engine
     ecs
     config++
     metadatagen
-    lightgraph
+    # lightgraph
 )
 
 add_executable(testtarget
