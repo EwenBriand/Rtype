@@ -94,7 +94,7 @@ def push(args):
     issue_id = prompt("Issue id (e.g. \"123\", Enter for none)", False)
     message = prompt("Commit message", False)
     issue_id = "" if issue_id == "" else "#" + issue_id
-    message = "(" + scope + ")" + " " + type + " " + issue_id + " " + message
+    message = "(" + scope + ")" + " " + type + ": " + issue_id + " " + message
     os.system("git commit -m \"" + message + "\"")
     prompt("Push to remote?")
     os.system("git push")
