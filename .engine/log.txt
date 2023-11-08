@@ -1,0 +1,2 @@
+[Engine Exception] (/workdir/Epitech/3Tek/RType/RtypeV0/ecs/src/Engine.cpp:189 in discoverConfig) Config directory not found
+[Engine Exception] (/workdir/Epitech/3Tek/RType/RtypeV0/ecs/src/Engine.cpp:254 in GetConfigValue) Config not found : userScriptsPath

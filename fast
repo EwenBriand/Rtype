@@ -247,7 +247,10 @@ def create_cfg(args):
     arg = args[0] if len(args) > 0 else ".engine/config/"
     path = arg if is_path_absolute(arg) else os.getcwd() + "/" + arg
     path += "base.cfg"
-    with open(path, "w") as f:
+    path_without_filename = os.path.dirname(path)
+    if not os.path.exists(path_without_filename):
+        os.makedirs(os.path.dirname(path))
+    with open(path, "w+") as f:
         f.write(base_cfg_template.format(os.getcwd(), os.getcwd(), os.getcwd()))
 
 commands = {
