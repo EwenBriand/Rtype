@@ -206,12 +206,14 @@ void CLI::addVanillaCptFromName(std::vector<std::string> args)
 void CLI::reloadEntities(std::vector<std::string> args)
 {
     if (args.size() - 1 != 1) {
+        Console::info << "Defaulting reload path to " << Sys.GetSavePath() << std::endl;
         if (args.size() == 0)
             args.push_back(Sys.GetSavePath());
         else
             args[0] = Sys.GetSavePath();
+    } else {
+        args[0] = eng::Engine::GetEngine()->GetConfigValue("scenesSavePath") + "/" + args[0];
     }
-    args[0] = eng::Engine::GetEngine()->GetConfigValue("scenesSavePath") + "/" + args[0];
     std::cout << "Reloading entities from " << args[0] << std::endl;
     try {
         Sys.SetSavePath(std::string(args[0]));

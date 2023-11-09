@@ -125,8 +125,26 @@ namespace serv {
                     Message(const std::string &data, int code = 200);
                     ~Message() = default;
 
+                    /**
+                     * @brief Returns the string of the message.
+                     *
+                     * @return std::string
+                     */
                     std::string GetData() const;
+
+                    /**
+                     * @brief Returns the time at which the message was created.
+                     *
+                     * @return std::time_t
+                     */
                     std::time_t GetTime() const;
+
+                    /**
+                     * @brief Get the status of the message. (for exemple if a request is ok,
+                     * the status will be 200)
+                     *
+                     * @return int
+                     */
                     int GetCode() const;
 
                 private:
@@ -146,6 +164,11 @@ namespace serv {
                     virtual Message HandleRequest(const std::string &data) = 0;
             };
 
+            /**
+             * @brief Signals that an error occured during the handling of
+             * a request.
+             *
+             */
             class HandleRequestException : public std::exception {
                 public:
                     HandleRequestException(const std::string &message, int code);
@@ -159,6 +182,13 @@ namespace serv {
                     std::string _message;
             };
 
+            /**
+             * @brief Encapsulates a client and its associated data.
+             * It provides handles to send and receive data from the client,
+             * as well as an instance of an IClient which will handle the
+             * reveived requests.
+             *
+             */
             class ClientBucket {
                 public:
                     ClientBucket(int port);

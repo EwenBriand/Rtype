@@ -81,6 +81,10 @@ namespace graph
     using vec4d = vec4<double>;
     using vec4uc = vec4<unsigned char>;
 
+    /**
+     * @brief Describes a rectangle to be drawn on the window.
+     *
+     */
     typedef struct graphRect_t {
         vec2f pos = {0, 0};
         vec2f dimensions = {0, 0};
@@ -89,6 +93,10 @@ namespace graph
         int borderSize = 0;
     } graphRect_t;
 
+    /**
+     * @brief Describes a circle to be drawn on the window.
+     *
+     */
     typedef struct graphCircle_t {
         vec2f pos = {0, 0};
         float radius = 0;
@@ -97,6 +105,10 @@ namespace graph
         float borderSize = 0;
     } graphCircle_t;
 
+    /**
+     * @brief Describes a text to be drawn on the window.
+     *
+     */
     typedef struct graphText_t {
         vec2f pos = {0, 0};
         std::string text = "";
@@ -104,6 +116,10 @@ namespace graph
         float fontSize = 0;
     } graphText_t;
 
+    /**
+     * @brief This class is the base class for all graphical modules.
+     *
+     */
     class IGraphicalModule {
         public:
             /**
@@ -136,18 +152,94 @@ namespace graph
              * @param callback
              */
             virtual void RegisterEvent(const std::string &eventKey, std::function<void()> &&callback) = 0;
+
+            /**
+             * @brief This function buffers a rectangle to be drawn in the window.
+             *
+             * @param rectInfo
+             */
             virtual void WindowDrawRectangle(graphRect_t rectInfo) = 0;
+
+            /**
+             * @brief This function buffers a circle to be drawn in the window.
+             *
+             * @param circleInfo
+             */
             virtual void WindowDrawCircle(graphCircle_t circleInfo) = 0;
+
+            /**
+             * @brief This function buffers a text to be drawn in the window.
+             *
+             * @param textInfo
+             */
             virtual void WindowDrawText(graphText_t textInfo) = 0;
 
+            /**
+             * @brief This function returns a vector2f containing the mouse position on the screen
+             *
+             * @return vec2f
+             */
             virtual vec2f WindowGetMousePos() const = 0;
+
+            /**
+             * @brief This function returns true if the mouse right button  has been pressed
+             * during the current frame.
+             *
+             * @return true
+             * @return false
+             */
             virtual bool WindowIsMouseRightPressed() const = 0;
+
+            /**
+             * @brief This function returns true if the mouse left button has
+             * been pressed during the current frame.
+             *
+             * @return true
+             * @return false
+             */
             virtual bool WindowIsMouseLeftPressed() const = 0;
+
+            /**
+             * @brief This function returns true if the mouse right button is
+             * actively being pressed down.
+             *
+             * @return true
+             * @return false
+             */
             virtual bool WindowIsMouseRightDown() const = 0;
+
+            /**
+             * @brief This function returns true if the mouse left button is
+             * actively being pressed down.
+             *
+             * @return true
+             * @return false
+             */
             virtual bool WindowIsMouseLeftDown() const = 0;
+
+            /**
+             * @brief Returns an integer representing the mouse wheel delta, that is
+             * by how much the mouse wheel has been scrolled.
+             *
+             * @return int
+             */
             virtual int WindowGetMouseWheelDelta() const = 0;
 
+            /**
+             * @brief Generator that returns the next char in the list of the
+             * characters that have been pressed during the current frame.
+             *
+             * @return int
+             */
             virtual int GetNextCharPressed() = 0;
+
+            /**
+             * @brief Returns true if the specified key is actively being pressed down.
+             *
+             * @param key
+             * @return true
+             * @return false
+             */
             virtual bool isKeyPressed(int key) = 0;
 
     };

@@ -677,6 +677,7 @@ namespace ecs {
                 _resourceManager.CheckHotReload();
                 std::cout << green << "OK" << white << std::endl;
                 std::cout << green << "Loading entities" << std::endl;
+                std::cout << "Parsing directory: " << m_savePath << std::endl;
                 for (auto &p : std::filesystem::directory_iterator(m_savePath)) {
                     if (p.path().filename() == std::to_string(_systemHolder))
                         continue;

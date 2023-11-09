@@ -24,6 +24,11 @@
 #include "Components.Vanilla/Animator.hpp"
 
 namespace ecs {
+    /**
+     * @brief This defines an instantiation of the ECS class for a specific
+     * application.
+     *
+     */
     using ECSImpl = ECS<
         CoreTransform,
         CLI,

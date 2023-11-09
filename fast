@@ -57,6 +57,7 @@ def deep_clean_impl(args):
         "find . -name \"*.log*\" -type f -delete",
         "find . -type d -name \"CmakeFiles\" -exec rm -rf {} +",
         "find . -type d -name \"build\" -exec rm -rf {} +",
+        "find . -type d -name \"build.tmpCompileSrc\" -exec rm -rf {} +",
         "find . -name \"CMakeCache.txt\" -type f -delete",
         "find . -name \"cmake_install.cmake\" -type f -delete",
         "find . -name \"Makefile\" -type f -delete",
@@ -67,7 +68,8 @@ def deep_clean_impl(args):
 
 def build_root(args):
     cd_gitroot()
-    os.system("mkdir -p build && cd build && cmake -DCMAKE_BUILD_TYPE=SHARED -DWITH_PIC=on .. && make")
+
+    os.system("mkdir -p build && cd build && cmake -DWITH_PIC=on -DBUILD_SHARED_LIBS=on -DCMAKE_BUILD_TYPE=Release .. && make")
 
 def run_tests(args):
     cd_gitroot()

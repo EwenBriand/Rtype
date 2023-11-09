@@ -11,6 +11,22 @@
 #include "metadata.hpp"
 
 namespace ecs {
+
+    /**
+     * @brief The base class for all vanilal components. It serves to implement
+     * the CRTP design pattern, which is faster than classical inheritance in our case (see benchmarks).
+     *
+     * To use it, simply inherit from it and pass the derived class as a template parameter.
+     * @example
+     * @code C
+     *
+     * class MyComponent : public ecs::Component<MyComponent> {
+     *     // ...
+     * };
+     * @endcode
+     *
+     * @tparam T
+     */
     template <typename T>
     class Component {
         public:

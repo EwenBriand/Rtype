@@ -149,6 +149,16 @@ namespace eng {
 
     class EngineException : public std::exception {
         public:
+
+            /**
+             * @brief Construct a new Engine Exception object while keeping track
+             * of the line at which the exception was thrown.
+             *
+             * @param msg
+             * @param file
+             * @param function
+             * @param line
+             */
             EngineException(const std::string &msg, const std::string &file, const std::string &function, int line) :
                 m_msg(msg), m_file(file), m_function(function), m_line(line) {
                     m_what = std::string("[Engine Exception] ") + "(" + m_file + ":" + std::to_string(m_line) + " in " + m_function + ") " + m_msg;
@@ -170,6 +180,13 @@ namespace eng {
 
     class CompatibilityException : public std::exception {
         public:
+
+            /**
+             * @brief Signals the fact that the current plugin is not compatible
+             * with one of the settings of the engine.
+             *
+             * @param msg
+             */
             CompatibilityException(const std::string &msg) :
                 m_msg(msg) {
                     m_what = "[Compatibility exception] " + m_msg;
