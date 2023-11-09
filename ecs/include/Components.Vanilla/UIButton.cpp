@@ -14,6 +14,7 @@ decltype(UIButton::AvailableActionsClick) UIButton::AvailableActionsClick;
 void UIButton::Update(int entityID)
 {
     if (m_clickCallback == nullptr || (m_clickCallbackName != m_prevClickCallbackName)) {
+        m_clickCallbackName.erase(m_clickCallbackName.find_last_not_of(" \n\r\t") + 1);
         if (AvailableActionsClick.find(m_clickCallbackName) != AvailableActionsClick.end()) {
             m_clickCallback = AvailableActionsClick[m_clickCallbackName];
         }
@@ -42,6 +43,7 @@ void UIButton::OnAddComponent(int entityID)
     }
     m_uiDiv = uiDiv;
     m_hoverDiv = uiDiv;
+    m_clickable = true;
     SetHoverCallback([&]{
         graph::vec2f mousePos = Sys.GetGraphicalModule()->WindowGetMousePos();
         Sys.GetGraphicalModule()->WindowDrawText({

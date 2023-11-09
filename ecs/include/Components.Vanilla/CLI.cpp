@@ -283,6 +283,9 @@ void CLI::setMember(std::vector<std::string> args)
 
     int cptIdx = std::stoi(args[0]);
     std::string memberName = args[1];
+    while (memberName[memberName.size() - 1] <= 32) {
+        memberName[memberName.size() - 1] = '\0';
+    }
     std::string value = "";
     for (int i = 2; i < args.size(); i++)
         value += args[i] + " ";
