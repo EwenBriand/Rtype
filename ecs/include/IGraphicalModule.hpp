@@ -10,25 +10,7 @@
 #include <functional>
 #include <string>
 #include <cmath>
-
-#define KEY_ENTER 257
-#define KEY_BACKSPACE 259
-#define KEY_DELETE 261
-#define KEY_RIGHT 262
-#define KEY_LEFT 263
-#define KEY_DOWN 264
-#define KEY_UP 265
-#define KEY_ESCAPE 256
-#define KEY_SPACE 32
-#define KEY_TAB 258
-#define KEY_LEFT_SHIFT 340
-#define KEY_RIGHT_SHIFT 344
-#define KEY_LEFT_CONTROL 341
-#define KEY_RIGHT_CONTROL 345
-#define KEY_LEFT_ALT 342
-#define KEY_RIGHT_ALT 346
-#define KEY_LEFT_SUPER 343
-#define KEY_RIGHT_SUPER 347
+#include "raylib.h"
 
 namespace graph
 {

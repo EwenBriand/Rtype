@@ -1,8 +1,7 @@
-# cmake_minimum_required(VERSION 3.15)
-# project(test_raytracing)
-
 cmake_minimum_required(VERSION 3.15)
 project(ECS)
+
+include(CTest)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -15,9 +14,15 @@ set(BUILD_SHARED_LIBS ON)
 endif()
 add_compile_options(-O3)
 
+include_directories(ecs/include)
+include_directories(ecs/include/Components.Vanilla)
+include_directories(ecs/raylib/include)
+include_directories(metadata/include)
+
 add_subdirectory(metadata)
 add_subdirectory(ecs)
 add_subdirectory(ecs/raylib/)
+add_subdirectory(tests)
 # add_subdirectory(graph)
 
 add_custom_target(call_metagen ALL

@@ -130,9 +130,9 @@ namespace meta {
         getMetadataFunction += "\treturn metadata;\n";
         getMetadataFunction += "}\n";
         writeDisclaimer(metadataFile);
-        metadataFile << "#include \"" + _filename + "\"\n";
         metadataFile << "#include <iostream>\n";
         metadataFile << "#include \"metadata.hpp\"\n";
+        metadataFile << "#include \"" + _filename + "\"\n";
         metadataFile << "\n";
         metadataFile << loadFunction;
         metadataFile << "\n";

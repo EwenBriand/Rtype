@@ -13,6 +13,9 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <cstring>
+#include <type_traits>
+#include <iterator>
 #include <unordered_map>
 #include "Components.Vanilla/UserComponentWrapper.hpp"
 #include "Types.hpp"
@@ -114,6 +117,51 @@ namespace ecs {
              */
             std::string LoadFileText(const std::string &path);
 
+            template<typename T, typename = void>
+            struct is_iterable : std::false_type {};
+
+            template<typename T>
+            struct is_iterable<T, std::void_t<decltype(std::begin(std::declval<T>())), decltype(std::end(std::declval<T>()))>> : std::true_type {};
+
+            template <typename T>
+            static std::enable_if_t<!is_iterable<T>::value> Serialize(const T &object, std::vector<unsigned char> &data)
+            {
+                std::vector<unsigned char> tmp;
+                tmp.resize(sizeof(T));
+                memcpy(tmp.data(), &object, sizeof(T));
+                data.insert(data.end(), tmp.begin(), tmp.end());
+            }
+
+            template <typename T>
+            static std::enable_if_t<is_iterable<T>::value> Serialize(const T &object, std::vector<unsigned char> &data)
+            {
+                Serialize(object.size(), data);
+                for (const auto &item : object)
+                {
+                    Serialize(item, data);
+                }
+            }
+
+            template <typename T>
+            static std::enable_if_t<!is_iterable<T>::value> Deserialize(const std::vector<unsigned char> &data, std::vector<unsigned char>::iterator &it, T &object)
+            {
+                memcpy(&object, &(*it), sizeof(T));
+                it += sizeof(T);
+            }
+
+            template <typename T>
+            static std::enable_if_t<is_iterable<T>::value> Deserialize(const std::vector<unsigned char> &data, std::vector<unsigned char>::iterator &it, T &object)
+            {
+                size_t size;
+                Deserialize(data, it, size);
+                object.resize(size);
+                for (size_t i = 0; i < size; ++i)
+                {
+                    typename T::value_type item;
+                    Deserialize(data, it, item);
+                    object[i] = item;
+                }
+            }
 
         private:
             unsigned int m_changesNbr = 0;

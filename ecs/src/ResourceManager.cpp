@@ -9,6 +9,9 @@
 #include <filesystem>
 #include <cstdio>
 #include <unistd.h>
+#include <cstring>
+#include <type_traits>
+#include <iterator>
 #include "Engine.hpp"
 #include "ECSImpl.hpp"
 #include "ResourceManager.hpp"
