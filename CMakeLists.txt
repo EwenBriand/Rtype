@@ -16,8 +16,9 @@ add_compile_options(-O3)
 
 include_directories(ecs/include)
 include_directories(ecs/include/Components.Vanilla)
-include_directories(ecs/raylib/include)
+include_directories(ecs/raylib/src)
 include_directories(metadata/include)
+
 
 add_subdirectory(metadata)
 add_subdirectory(ecs)
