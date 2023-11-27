@@ -173,6 +173,8 @@ ucpt_cpp_template = """
 
 MANAGED_RESOURCE({})
 
+void {}::Start() {{}}
+
 void {}::Update(int entityID)
 {{
 
@@ -190,7 +192,7 @@ ucpt_hpp_template = """
 
 #pragma once
 
-#include \"Component.Vanilla/UserComponentWrapper.hpp\"
+#include \"Components.Vanilla/UserComponentWrapper.hpp\"
 #include \"metadata.hpp\"
 
 serialize class {} : public AUserComponent {{
@@ -199,6 +201,7 @@ serialize class {} : public AUserComponent {{
         {}() = default;
         ~{}() = default;
 
+        void Start() override;
         void Update(int entityID) override;
 
     private:
@@ -212,11 +215,12 @@ def fast_ucpt(args):
     steps = [
         "touch ecs/include/Components.User/" + name + ".hpp",
         "touch ecs/include/Components.User/" + name + ".cpp",
+
     ]
     for step in steps:
         os.system(step)
     cpp_file = open("ecs/include/Components.User/" + name + ".cpp", "w")
-    cpp_file.write(ucpt_cpp_template.format(name, name, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), name, name, name))
+    cpp_file.write(ucpt_cpp_template.format(name, name, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), name, name, name, name))
     cpp_file.close()
     hpp_file = open("ecs/include/Components.User/" + name + ".hpp", "w")
     hpp_file.write(ucpt_hpp_template.format(name, name, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), name, name, name, name, name, name, name, name, name, name, name, name, name, name))

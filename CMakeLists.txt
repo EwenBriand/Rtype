@@ -9,6 +9,21 @@ if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
 message(FATAL_ERROR "In-source builds are not allowed. Please run cmake from the 'build' directory.")
 endif()
 
+find_program(CCACHE_PROGRAM ccache)
+if(CCACHE_PROGRAM)
+    message(STATUS "Using ccache")
+    set(CMAKE_CXX_COMPILER_LAUNCHER ccache)
+    set(CMAKE_C_COMPILER_LAUNCHER ccache)
+else()
+    message(WARNING "ccache not found; build may be slower. Install ccache for faster builds.")
+endif()
+
+
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(BUILD_SHARED_LIBS ON)
+set(CMAKE_BUILD_TYPE Release)
+
+
 if(NOT DEFINED BUILD_SHARED_LIBS)
 set(BUILD_SHARED_LIBS ON)
 endif()
@@ -21,6 +36,7 @@ include_directories(metadata/include)
 
 
 add_subdirectory(metadata)
+
 add_subdirectory(ecs)
 add_subdirectory(ecs/raylib/)
 add_subdirectory(tests)
