@@ -87,16 +87,21 @@ void CLI::parseCommand(const std::string &command)
     }
 }
 
-void CLI::RegisterCustomCommand(const std::string &command, std::function<void(CLI &, std::vector<std::string>)> func)
+void CLI::RegisterCustomCommand(const std::string &command, std::function<void(CLI &, std::vector<std::string>)> func, const std::string &help)
 {
     m_commands[command] = func;
+    if (help != "")
+        m_commandsHelp[command] = help;
 }
 
 void CLI::showHelp(__attribute__((unused)) std::vector<std::string> args)
 {
     Console::info << "Available commands (" << m_commands.size() << " in total):" << std::endl;
-    for (auto &command : m_commands)
-        Console::info << "\t" << command.first << std::endl;
+    for (auto &command : m_commands) {
+        Console::info << "\t" << command.first;
+        if (m_commandsHelp.find(command.first) != m_commandsHelp.end())
+            Console::info << " : " << m_commandsHelp[command.first];
+    }
 }
 
 void CLI::createEntity(__attribute__((unused)) std::vector<std::string> args)

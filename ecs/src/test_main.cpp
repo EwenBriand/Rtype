@@ -13,16 +13,6 @@
 
 int main(int argc, char **argv)
 {
-    // std::shared_ptr<graph::IGraphicalModule> graph = std::make_shared<raylib::GraphicalRayLib>();
-
-    // Sys.SetGraphicalModule(graph);
-
-    // Sys.AddComponent<CLI>(Sys.GetSystemHolder());
-    // Sys.LoadVanilla();
-
-    // Sys.GetGraphicalModule()->Run([&](float deltaT) {
-    //     Sys.Update();
-    // });
     eng::Engine *engine = eng::Engine::GetEngine();
     engine->ParseOptions(argc, argv);
     engine->Run();

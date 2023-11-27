@@ -133,7 +133,7 @@ class CLI : public ecs::Component<CLI> {
          */
         void showContext(std::vector<std::string> args = std::vector<std::string>());
 
-        void RegisterCustomCommand(const std::string &command, std::function<void(CLI &, std::vector<std::string>)> func);
+        void RegisterCustomCommand(const std::string &command, std::function<void(CLI &, std::vector<std::string>)> func, const std::string &help = "");
         std::string GetClassName() const;
         Entity GetContext() const;
 
@@ -165,5 +165,25 @@ class CLI : public ecs::Component<CLI> {
             {"setmbr", [](CLI &cli, std::vector<std::string> args) {cli.setMember(args);}},
             {"listmbr", [](CLI &cli, std::vector<std::string> args) {cli.listExposedMembers(args);}},
             {"lsctxt", [](CLI &cli, std::vector<std::string> args) {cli.showContext();}},
+        };
+
+        std::map<std::string, std::string> m_commandsHelp = {
+            {"help", "Shows this help message."},
+            {"ne", "Creates a new entity."},
+            {"ctxt", "Sets the context to the given entity id."},
+            {"mv", "Moves the entity to the given position."},
+            {"save", "Saves the current state of the ECS."},
+            {"exit", "Exits the program."},
+            {"skip", "Skips n frames without prompting the user."},
+            {"addcpt", "Adds a vanilla component to the entity."},
+            {"add", "Adds a vanilla component to the entity from its name."},
+            {"clear", "Clears the console."},
+            {"reload", "Reloads the entities from the save file."},
+            {"le", "Lists all the entities and their components."},
+            {"hotreload", "Reloads the user scripts and compiles them if needed."},
+            {"rme", "Removes the entity from the ECS."},
+            {"setmbr", "Sets the member of the component to the given value."},
+            {"listmbr", "Lists the exposed members of the component at the given index in the entitiy's components."},
+            {"lsctxt", "Show information on the entity set as the context."},
         };
 };

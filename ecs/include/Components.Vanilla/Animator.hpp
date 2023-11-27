@@ -15,6 +15,7 @@
 #include "../Component.hpp"
 #include "metadata.hpp"
 #include "raylib.h"
+#include "UIManager.hpp"
 
 class Sprite {
     public:
@@ -85,7 +86,6 @@ class Animation {
         std::size_t _currentFrame = 0;
         std::vector<Frame> _frames;
         Sprite _sprite;
-
 };
 
 needs(-lconfig++)
@@ -94,7 +94,16 @@ serialize class Animator : public ecs::Component<Animator> {
         GENERATE_METADATA(Animator);
 
         void OnLoad();
+
+
     private:
+        /**
+         * @brief Register ui elements to the ui manager to display the animation
+         * editor.
+         *
+         */
+        void registerUIElements();
+
         /**
          * @brief Exposes a few callbacks to be callables from buttons
          *
@@ -115,6 +124,8 @@ serialize class Animator : public ecs::Component<Animator> {
         // std::map<std::string, Animation> _animations;
 
         std::string _animEditorAnimationName = "";
+
+        std::size_t _animationEditorUIGroupHandle = -1;
 };
 
 #endif //ANIMATOR_HPP

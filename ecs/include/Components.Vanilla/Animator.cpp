@@ -11,6 +11,8 @@
 #include "Engine.hpp"
 #include "UIButton.hpp"
 #include "ResourceManager.hpp"
+#include "UIManager.hpp"
+#include "raygui.h"
 
 //-----------------------------------------------------------------------------
 // SPRITE
@@ -184,18 +186,50 @@ void Animator::OnLoad() {
     Entity e = Sys.GetSystemHolder();
     CLI &cli = Sys.GetComponent<CLI>(e);
 
+    registerUIElements();
+
     editorRegisterUIButtonExposed();
 
-    cli.RegisterCustomCommand("addanim", [&](__attribute__((unused)) CLI& cli, std::vector<std::string> args) {
-        if (args.size() < 2)
-            return;
-        _registeredAnimations.push_back(args[1]);
-        // TODO LOAD THE ANIMATION FROM BINARY
-    });
+    cli.RegisterCustomCommand("animedit", [&](__attribute__((unused)) CLI& cli, __attribute__((unused)) std::vector<std::string> args) {
+        registerUIElements();
+    }, "Open the animation editor");
 
-    cli.RegisterCustomCommand("newanim", [&](__attribute__((unused)) CLI& cli, std::vector<std::string> args) {
-        if (args.size() < 2)
-            return;
-        // todo show animation editor
-    });
+    cli.RegisterCustomCommand("animedit-quit", [&](__attribute__((unused)) CLI& cli, __attribute__((unused)) std::vector<std::string> args) {
+        try {
+            ui::UIManager::Get().RemoveGroup(_animationEditorUIGroupHandle);
+        } catch (std::exception &e) {
+            Console::err << "Failed to remove ui group: " << e.what() << std::endl;
+            Console::err << "This is probably because the group doesn't exist." << std::endl;
+        }
+    }, "Close the animation editor");
+}
+
+void Animator::registerUIElements() {
+    auto &uiManager = ui::UIManager::Get();
+    try {
+        uiManager.AddGroup(
+            ui::UIManager::TextField {
+                .text = "New animation",
+                .placeholder = "Animation name",
+                .position = Vector2{10, 100},
+                .fontSize = 20,
+                .color = BLACK,
+                .length = 20,
+                .callback = [&](std::string text) {
+                    _animEditorAnimationName = text;
+                },
+                .layer = 10
+            },
+            ui::UIManager::Text {
+                .text = "Animation Editor",
+                .position = Vector2{10, 10},
+                .fontSize = 20,
+                .color = WHITE,
+                .layer = 10
+            }
+        );
+    } catch (std::exception &e) {
+        Console::err << "Failed to register ui elements: " << e.what() << std::endl;
+    }
+
 }

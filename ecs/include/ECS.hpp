@@ -409,7 +409,7 @@ namespace ecs {
                         metadata_t metadata = arg.GetMetadata().at(memberName);
                         metadata.set(value);
                     } catch (std::exception &e) {
-                        throw std::runtime_error("Invalid member name");
+                        throw std::runtime_error("SetMember: Invalid member name");
                     }
 
                 }, _components[i][e][idx]);

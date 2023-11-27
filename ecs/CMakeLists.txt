@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 project(ecs)
+include(CTest)
 
 set(CMAKE_CXX_STANDARD 20)
 
@@ -30,14 +31,18 @@ link_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/ecs/raylib/raylib/
 )
 
+set(CMAKE_CXX_STANDARD 20)
 set(SRC
     src/ECS.cpp
     src/ResourceManager.cpp
     src/InputManager.cpp
     src/Hoverable.cpp
     src/SceneManager.cpp
+    src/GenericStorageSystem.cpp
+    src/UIManager.cpp
     ./include/Components.Vanilla/INode.cpp
 )
+set(CMAKE_CXX_STANDARD 17)
 
 set(
     METADATA_SRC
@@ -148,4 +153,18 @@ target_link_libraries(ecs
 
 target_link_libraries(testtarget engine)
 
-add_compile_options(g3)
+
+# tests
+add_executable(
+    test_generic_storage_system
+    ./src/test_generic_storage_system.cpp
+)
+target_link_libraries(
+    test_generic_storage_system
+    engine
+    ecs
+)
+add_test(
+    NAME test_generic_storage_system
+    COMMAND test_generic_storage_system
+)
