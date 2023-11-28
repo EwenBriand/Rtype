@@ -37,10 +37,6 @@ jobs:
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: ctest -C ${{env.BUILD_TYPE}}
       
-    - name: Mirror a repository using SSH
-      # You may pin to the exact commit or the version.
-      # uses: wearerequired/git-mirror-action@c44c68aebe42de49a80a8dfd557416b6a0cafdad
-      
     - uses: actions/checkout@v3
       with:
         fetch-depth: 0
