@@ -5,33 +5,33 @@
 ** CLI.cpp
 */
 
+#include "CLI.hpp"
+#include "ECSImpl.hpp"
+#include "Engine.hpp"
+#include "UIButton.hpp"
+#include <filesystem>
 #include <sstream>
 #include <thread>
 #include <variant>
-#include <filesystem>
-#include "ECSImpl.hpp"
-#include "CLI.hpp"
-#include "UIButton.hpp"
-#include "Engine.hpp"
 
 CLI::CLI()
 {
 }
 
-CLI::CLI(const CLI &cpy)
+CLI::CLI(const CLI& cpy)
 {
     m_commands = cpy.m_commands;
 }
 
 void CLI::OnLoad()
 {
-    UIButton::RegisterCallback("cli::save", [&]{
+    UIButton::RegisterCallback("cli::save", [&] {
         save({});
     });
-    UIButton::RegisterCallback("cli::reload", [&]{
+    UIButton::RegisterCallback("cli::reload", [&] {
         reloadEntities({});
     });
-    UIButton::RegisterCallback("cli::hotreload", [&]{
+    UIButton::RegisterCallback("cli::hotreload", [&] {
         hotReload({});
     });
 }
@@ -64,7 +64,7 @@ void CLI::Update(int entityID)
     }
 }
 
-void CLI::parseCommand(const std::string &command)
+void CLI::parseCommand(const std::string& command)
 {
     std::vector<std::string> args;
     std::string keyword;
@@ -82,12 +82,12 @@ void CLI::parseCommand(const std::string &command)
     }
     try {
         m_commands[keyword](*this, args);
-    } catch (std::exception &e) {
+    } catch (std::exception& e) {
         Console::err << "Error: " << e.what() << std::endl;
     }
 }
 
-void CLI::RegisterCustomCommand(const std::string &command, std::function<void(CLI &, std::vector<std::string>)> func, const std::string &help)
+void CLI::RegisterCustomCommand(const std::string& command, std::function<void(CLI&, std::vector<std::string>)> func, const std::string& help)
 {
     m_commands[command] = func;
     if (help != "")
@@ -97,10 +97,11 @@ void CLI::RegisterCustomCommand(const std::string &command, std::function<void(C
 void CLI::showHelp(__attribute__((unused)) std::vector<std::string> args)
 {
     Console::info << "Available commands (" << m_commands.size() << " in total):" << std::endl;
-    for (auto &command : m_commands) {
-        Console::info << "\t" << command.first;
+    for (auto& command : m_commands) {
+        std::cout << "\t" << ecs::cyan << command.first << ecs::reset;
         if (m_commandsHelp.find(command.first) != m_commandsHelp.end())
-            Console::info << " : " << m_commandsHelp[command.first];
+            std::cout << " : " << m_commandsHelp[command.first];
+        std::cout << std::endl;
     }
 }
 
@@ -133,7 +134,7 @@ void CLI::moveEntity(std::vector<std::string> args)
         Console::err << "Invalid number of arguments" << std::endl;
         return;
     }
-    auto &transform = Sys.GetComponent<CoreTransform>(Sys.GetEditorEntityContext());
+    auto& transform = Sys.GetComponent<CoreTransform>(Sys.GetEditorEntityContext());
     transform.x += std::stof(args[0]);
     transform.y += std::stof(args[1]);
     transform.z += std::stof(args[2]);
@@ -152,13 +153,14 @@ void CLI::save(std::vector<std::string> args)
     }
 
     try {
-        for (const auto &entry : std::filesystem::directory_iterator(args[0])) {
+        for (const auto& entry : std::filesystem::directory_iterator(args[0])) {
             std::filesystem::remove_all(entry.path());
         }
-    } catch (std::exception &e) {}
+    } catch (std::exception& e) {
+    }
     std::filesystem::create_directory(args[0]);
     Sys.SetSavePath(std::string(args[0]));
-    for (auto &entity : Sys.GetEntities()) {
+    for (auto& entity : Sys.GetEntities()) {
         Sys.SaveEntity(entity);
     }
     Console::info << "Saved entities to " << args[0] << std::endl;
@@ -186,7 +188,7 @@ void CLI::addVanillaCptFromIndex(std::vector<std::string> args)
     }
     try {
         Sys.AddVanillaComponentFromIndex(Sys.GetEditorEntityContext(), std::stoi(args[0]));
-    } catch (std::exception &e) {
+    } catch (std::exception& e) {
         Console::err << "Invalid Index" << std::endl;
     }
 }
@@ -203,7 +205,7 @@ void CLI::addVanillaCptFromName(std::vector<std::string> args)
     }
     try {
         Sys.AddVanillaComponentFromName(Sys.GetEditorEntityContext(), args[0]);
-    } catch (std::exception &e) {
+    } catch (std::exception& e) {
         Console::err << "Invalid Name" << std::endl;
     }
 }
@@ -223,7 +225,7 @@ void CLI::reloadEntities(std::vector<std::string> args)
     try {
         Sys.SetSavePath(std::string(args[0]));
         Sys.ReloadEntities();
-    } catch (std::exception &e) {
+    } catch (std::exception& e) {
         Console::err << "Error while reloading entities: " << e.what() << std::endl;
     }
 }
@@ -231,12 +233,13 @@ void CLI::reloadEntities(std::vector<std::string> args)
 void CLI::listEntities(__attribute__((unused)) std::vector<std::string> args)
 {
     Console::info << "Entities (" << Sys.GetEntities().size() << " in total)" << std::endl;
-    for (auto &entity : Sys.GetEntities()) {
+    for (auto& entity : Sys.GetEntities()) {
         Console::info << "\t" << entity << " :\n";
-        Sys.ForEachComponent(entity, [&](ecs::ECSImpl::AnyCpt &cpt) {
-            std::visit([&](auto &&arg) {
+        Sys.ForEachComponent(entity, [&](ecs::ECSImpl::AnyCpt& cpt) {
+            std::visit([&](auto&& arg) {
                 Console::info << "\t\t" << arg.GetClassName() << std::endl;
-            }, cpt);
+            },
+                cpt);
         });
     }
 }
@@ -263,7 +266,7 @@ void CLI::removeEntity(std::vector<std::string> args)
     }
     try {
         Sys.UnregisterEntity(std::stoi(args[0]));
-    } catch (std::exception &e) {
+    } catch (std::exception& e) {
         Console::err << "Invalid Index" << std::endl;
     }
 }
@@ -275,7 +278,7 @@ Entity CLI::GetContext() const
 
 void CLI::setMember(std::vector<std::string> args)
 {
-    for (auto &arg : args)
+    for (auto& arg : args)
         std::cout << arg << std::endl;
     if (args.size() - 1 < 2) {
         Console::err << "Invalid number of arguments" << std::endl;
@@ -296,7 +299,7 @@ void CLI::setMember(std::vector<std::string> args)
         value += args[i] + " ";
     try {
         Sys.SetMember(Sys.GetEditorEntityContext(), cptIdx, memberName, value);
-    } catch (std::exception &e) {
+    } catch (std::exception& e) {
         Console::err << "Error: " << e.what() << std::endl;
     }
 }
@@ -316,10 +319,10 @@ void CLI::listExposedMembers(std::vector<std::string> args)
 
     try {
         std::map<std::string, metadata_t> meta = Sys.GetMetadataFromIndex(Sys.GetEditorEntityContext(), cptIdx);
-        for (auto &m : meta) {
+        for (auto& m : meta) {
             Console::info << "\t" << m.first << " : " << m.second.type << " = " << m.second.tostring() << std::endl;
         }
-    } catch (std::exception &e) {
+    } catch (std::exception& e) {
         Console::err << "Error: " << e.what() << std::endl;
     }
 }
@@ -332,9 +335,10 @@ void CLI::showContext(__attribute__((unused)) std::vector<std::string> args)
         return;
     }
     Console::info << "Focused entity: " << context << std::endl;
-    Sys.ForEachComponent(context, [&](ecs::ECSImpl::AnyCpt &cpt) {
-        std::visit([&](auto &&arg) {
+    Sys.ForEachComponent(context, [&](ecs::ECSImpl::AnyCpt& cpt) {
+        std::visit([&](auto&& arg) {
             Console::info << "\t\t" << arg.GetClassName() << std::endl;
-        }, cpt);
+        },
+            cpt);
     });
 }
