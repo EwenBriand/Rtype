@@ -89,12 +89,13 @@ private:
     Sprite _sprite;
 };
 
-needs(-lconfig++)
-    serialize class Animator : public ecs::Component<Animator> {
+serialize class Animator : public ecs::Component<Animator> {
 public:
     GENERATE_METADATA(Animator);
 
     void OnLoad();
+
+    void Play(const std::string& name);
 
 private:
     /**
@@ -117,8 +118,16 @@ private:
      */
     void saveCurrAnim();
 
+    /**
+     * @brief Creates a new animation and sets it as the current animation.
+     *
+     */
+    void createNewAnim(const std::string& name);
+
     serialize std::string _currentAnimation = "";
     serialize std::vector<std::string> _registeredAnimations;
+
+    std::map<std::string, Animation> _animations;
 
     // std::map<std::string, Animation> _animations;
 

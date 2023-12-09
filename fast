@@ -131,7 +131,6 @@ vanilla_hpp_template = """
 #include \"../Component.hpp\"
 #include \"metadata.hpp\"
 
-needs(-lconfig++)
 serialize class {} : public ecs::Component<{}> {{
     public:
         GENERATE_METADATA({})

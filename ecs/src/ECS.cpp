@@ -5,7 +5,6 @@
 ** ECS.cpp
 */
 
-#include <libconfig.h++>
 #include "ECSImpl.hpp"
 #include "Engine.hpp"
 
@@ -16,13 +15,13 @@ namespace ecs {
         eng::Engine::GetEngine()->NotifyPipelineChange();
     }
 
-    template<>
+    template <>
     void ECSImpl::RequestEngineClearPipeline()
     {
         eng::Engine::GetEngine()->ClearPipeline();
     }
 
-    template<>
+    template <>
     void ECSImpl::Run(Action preUpdate, Action postUpdate)
     {
         while (_running) {

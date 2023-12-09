@@ -5,16 +5,15 @@
 ** metadataGenerator.cpp
 */
 
-#include <iostream>
-#include <filesystem>
-#include <fstream>
-#include <vector>
-#include <unistd.h>
 #include "metadataGenerator.hpp"
 #include "metadata.hpp"
+#include <filesystem>
+#include <fstream>
+#include <iostream>
+#include <unistd.h>
+#include <vector>
 
 namespace meta {
-
 
     MetadataGenerator::MetadataGenerator()
     {
@@ -24,19 +23,19 @@ namespace meta {
     {
     }
 
-    void MetadataGenerator::generateMetadata(const std::string &path, const std::string &outputDirectory)
+    void MetadataGenerator::generateMetadata(const std::string& path, const std::string& outputDirectory)
     {
         _outputDirectory = outputDirectory;
         if (!std::filesystem::exists("./.metadata"))
             std::filesystem::create_directory("./.metadata");
-        char buff[1024] = {0};
+        char buff[1024] = { 0 };
         getcwd(buff, 1024);
         std::cout << "-- Working from directory " << buff << std::endl;
 
         if (folder == "")
             folder = path;
         initCMake();
-        for (const auto &entry : std::filesystem::directory_iterator(path)) {
+        for (const auto& entry : std::filesystem::directory_iterator(path)) {
             if (entry.is_directory() && entry.path().filename() != ".metadata")
                 generateMetadata(entry.path());
             else {
@@ -49,7 +48,7 @@ namespace meta {
         buildCMake();
     }
 
-    std::vector<std::string> MetadataGenerator::tokenize(std::ifstream &file)
+    std::vector<std::string> MetadataGenerator::tokenize(std::ifstream& file)
     {
         std::vector<std::string> words;
         std::string line;
@@ -74,8 +73,8 @@ namespace meta {
         return words;
     }
 
-    void MetadataGenerator::generateMetadataForFile(const std::string &filepath,
-        const std::string &filename)
+    void MetadataGenerator::generateMetadataForFile(const std::string& filepath,
+        const std::string& filename)
     {
         std::ifstream file(filepath);
         std::vector<std::string> words = tokenize(file);
@@ -95,9 +94,9 @@ namespace meta {
     }
 
     void MetadataGenerator::generateMetadataForClass(
-        const std::vector<std::string> &words,
-        size_t &i,
-        const std::string &filename)
+        const std::vector<std::string>& words,
+        size_t& i,
+        const std::string& filename)
     {
         std::ofstream metadataFile(filename, std::ios::out);
         if (!metadataFile.is_open()) {
@@ -124,9 +123,11 @@ namespace meta {
                 updateMetadataFunctions(words, i, loadFunction, saveFunction, getMetadataFunction);
             }
         }
-        loadFunction += "}\n";
-        saveFunction += "\tconfig.writeFile(filepath.c_str());\n";
-        saveFunction += "}\n";
+        // loadFunction += "}\n";
+        // saveFunction += "\tconfig.writeFile(filepath.c_str());\n";
+        // saveFunction += "}\n";
+        loadFunction += ");\n}\n";
+        saveFunction += ");\n}\n";
         getMetadataFunction += "\treturn metadata;\n";
         getMetadataFunction += "}\n";
         writeDisclaimer(metadataFile);
@@ -142,35 +143,40 @@ namespace meta {
         metadataFile.close();
     }
 
-    void MetadataGenerator::writeDisclaimer(std::ofstream &file)
+    void MetadataGenerator::writeDisclaimer(std::ofstream& file)
     {
         file << "/*\n";
         file << "* CAUTION: This file was generated automatically.\n";
         file << "* Do not modify it, as your changes will be lost.\n";
         file << "*/\n\n";
         file << "#include <sstream>\n";
+        file << "#include \"ToBytes.hpp\"\n";
     }
 
-    void MetadataGenerator::initFunctions(std::string &loadFunction,
-        std::string &saveFunction,
-        std::string &getMetadataFunction,
-        const std::string &className)
+    void MetadataGenerator::initFunctions(std::string& loadFunction,
+        std::string& saveFunction,
+        std::string& getMetadataFunction,
+        const std::string& className)
     {
 
         loadFunction = "void " + className + "::Load(const std::string &filepath)\n{\n";
-        loadFunction += "\tlibconfig::Config config;\n";
-        loadFunction += "\tconfig.readFile(filepath.c_str());\n";
-        loadFunction += "\tlibconfig::Setting &setting = config.getRoot();\n";
+        // loadFunction += "\tlibconfig::Config config;\n";
+        // loadFunction += "\tconfig.readFile(filepath.c_str());\n";
+        // loadFunction += "\tlibconfig::Setting &setting = config.getRoot();\n";
+        loadFunction += "\tbytes::ToBytes bytes;\n";
+        loadFunction += "\tbytes.Load(filepath";
 
         saveFunction = "void " + className + "::Save(const std::string &filepath)\n{\n";
-        saveFunction += "\tlibconfig::Config config;\n";
-        saveFunction += "\tlibconfig::Setting &root = config.getRoot();\n";
+        // saveFunction += "\tlibconfig::Config config;\n";
+        // saveFunction += "\tlibconfig::Setting &root = config.getRoot();\n";
+        saveFunction += "\tbytes::ToBytes bytes;\n";
+        saveFunction += "\tbytes.Save(filepath";
 
         getMetadataFunction = "std::map<std::string, metadata_t> " + className + "::GetMetadata()\n{\n";
         getMetadataFunction += "\tstd::map<std::string, metadata_t> metadata;\n";
     }
 
-    bool MetadataGenerator::wordBeginsWith(const std::string &word, const std::string &beginning)
+    bool MetadataGenerator::wordBeginsWith(const std::string& word, const std::string& beginning)
     {
         if (word.length() < beginning.length())
             return false;
@@ -179,12 +185,11 @@ namespace meta {
         return false;
     }
 
-    void MetadataGenerator::updateMetadataVector(const std::vector<std::string> &words,
-        size_t &i,
-        std::string &loadFunction,
-        std::string &saveFunction,
-        std::string &getMetadataFunction
-        )
+    void MetadataGenerator::updateMetadataVector(const std::vector<std::string>& words,
+        size_t& i,
+        std::string& loadFunction,
+        std::string& saveFunction,
+        std::string& getMetadataFunction)
     {
         std::string type;
         std::string name;
@@ -197,18 +202,19 @@ namespace meta {
         name = words[++i];
         size = "sizeof(" + type + ")";
 
-        loadFunction += TEMPLATE_LOAD_VECTOR(name, contained_type);
-        saveFunction += TEMPLATE_SAVE_VECTOR(name, contained_type);
+        // loadFunction += TEMPLATE_LOAD_VECTOR(name, contained_type);
+        // saveFunction += TEMPLATE_SAVE_VECTOR(name, contained_type);
+        loadFunction += ", " + name;
+        saveFunction += ", " + name;
         getMetadataFunction += "\tmetadata[\"" + name + "\"] = {\"" + type + "\", \"" + name + "\", " + size + ", " + TEMPLATE_GENERATE_SETTER_VECTOR(name) + ", " + TEMPLATE_GENERATE_GETTER_VECTOR(name) + ", " + TEMPLATE_GENERATE_TO_STRING_VECTOR(name) + "};\n";
     }
 
     void MetadataGenerator::updateMetadataMap(
-        const std::vector<std::string> &words,
-        size_t &i,
-        std::string &loadFunction,
-        std::string &saveFunction,
-        std::string &getMetadataFunction
-    )
+        const std::vector<std::string>& words,
+        size_t& i,
+        std::string& loadFunction,
+        std::string& saveFunction,
+        std::string& getMetadataFunction)
     {
         std::string type;
         std::string name;
@@ -218,17 +224,19 @@ namespace meta {
         name = words[++i];
         size = "sizeof(" + type + ")";
 
-        loadFunction += TEMPLATE_LOAD_MAP(name);
-        saveFunction += TEMPLATE_SAVE_MAP(name);
+        // loadFunction += TEMPLATE_LOAD_MAP(name);
+        // saveFunction += TEMPLATE_SAVE_MAP(name);
+        loadFunction += ", " + name;
+        saveFunction += ", " + name;
         getMetadataFunction += "\tmetadata[\"" + name + "\"] = {\"" + type + "\", \"" + name + "\", " + size + ", " + TEMPLATE_GENERATE_SETTER_MAP(name) + ", " + TEMPLATE_GENERATE_GETTER_MAP(name) + ", " + TEMPLATE_GENERATE_TO_STRING_MAP(name) + "};\n";
     }
 
     void MetadataGenerator::updateMetadataFunctions(
-        const std::vector<std::string> &words,
-        size_t &i,
-        std::string &loadFunction,
-        std::string &saveFunction,
-        std::string &getMetadataFunction)
+        const std::vector<std::string>& words,
+        size_t& i,
+        std::string& loadFunction,
+        std::string& saveFunction,
+        std::string& getMetadataFunction)
     {
         std::string type;
         std::string name;
@@ -248,13 +256,15 @@ namespace meta {
         name = words[++i];
         size = "sizeof(" + type + ")";
 
-        loadFunction += "try {\n";
-        loadFunction += "\t\tsetting.lookupValue(\"cfg_" + name + "\", " + name + ");\n";
-        loadFunction += "\t} catch (const libconfig::SettingNotFoundException &e) {\n";
-        loadFunction += "\t\tstd::cerr << \"Warning: could not find setting " + name + " in file \" << filepath << std::endl;\n";
-        loadFunction += "\t}\n";
-        saveFunction += "\tauto &setting_" + name + " = root.add(\"cfg_" + name + "\", " + typeConversionTable[type] + ");\n";
-        saveFunction += "\tsetting_" + name + " = " + name + ";\n";
+        // loadFunction += "try {\n";
+        // loadFunction += "\t\tsetting.lookupValue(\"cfg_" + name + "\", " + name + ");\n";
+        // loadFunction += "\t} catch (const libconfig::SettingNotFoundException &e) {\n";
+        // loadFunction += "\t\tstd::cerr << \"Warning: could not find setting " + name + " in file \" << filepath << std::endl;\n";
+        // loadFunction += "\t}\n";
+        // saveFunction += "\tauto &setting_" + name + " = root.add(\"cfg_" + name + "\", " + typeConversionTable[type] + ");\n";
+        // saveFunction += "\tsetting_" + name + " = " + name + ";\n";
+        loadFunction += ", " + name;
+        saveFunction += ", " + name;
 
         getMetadataFunction += "\tmetadata[\"" + name + "\"] = {\"" + type + "\", \"" + name + "\", " + size + ", " + GENERATE_SETTER(name) + ", " + GENERATE_GETTER(name) + ", " + GENERATE_TO_STRING(name) + "};\n";
     }
@@ -274,8 +284,8 @@ namespace meta {
         _cmakefile += ")\n";
     }
 
-    void MetadataGenerator::cmakeAppendShared(const std::string &filename, const std::string &filepath,
-        std::vector<std::string> &words)
+    void MetadataGenerator::cmakeAppendShared(const std::string& filename, const std::string& filepath,
+        std::vector<std::string>& words)
     {
         std::string filenameNoExtension = filename.substr(0, filename.find_last_of("."));
         std::string metadataFilename = "./.metadata/" + filenameNoExtension + "Meta" + ".cpp";
@@ -316,8 +326,8 @@ namespace meta {
         }
     }
 
-    void MetadataGenerator::detectDependencies(std::vector<std::string> &words,
-        const std::string &targetName)
+    void MetadataGenerator::detectDependencies(std::vector<std::string>& words,
+        const std::string& targetName)
     {
         std::string dependencies = "";
         for (size_t i = 0; i < words.size(); ++i) {

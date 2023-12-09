@@ -249,10 +249,18 @@ void Animator::registerUIElements()
                 .length = 20,
                 .callback = [&](std::string text) {
                     _animEditorAnimationName = text;
+                    if (_animations.find(text) == _animations.end())
+                        createNewAnim(text);
                 },
                 .layer = 10 },
             ui::UIManager::Text { .text = "Animation Editor", .position = Vector2 { 10, 10 }, .fontSize = 20, .color = WHITE, .layer = 10 });
     } catch (std::exception& e) {
         Console::err << "Failed to register ui elements: " << e.what() << std::endl;
     }
+}
+
+void Animator::createNewAnim(const std::string& name)
+{
+    // todo try to load the animation first
+    _animations[name] = Animation(name);
 }
