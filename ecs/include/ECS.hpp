@@ -14,6 +14,7 @@
 #include "ResourceManager.hpp"
 #include <algorithm>
 #include <array>
+#include <chrono>
 #include <cstddef>
 #include <filesystem>
 #include <fstream>
@@ -904,8 +905,11 @@ namespace ecs {
 
         bool FrameIsSkipped() const { return _skipFrame; }
 
+        float GetDeltaTime() const;
+
     private:
-        std::shared_ptr<graph::IGraphicalModule> _graphicalModule = nullptr;
+        std::shared_ptr<graph::IGraphicalModule> _graphicalModule
+            = nullptr;
         std::queue<int> _freeIds;
         std::vector<Entity> _usedIds;
         std::queue<int> _deletedThisFrame;
@@ -928,6 +932,7 @@ namespace ecs {
         bool _skipFrame = true;
         std::vector<std::variant<VanillaComponents...>> cloneBase = { VanillaComponents()... };
         std::string m_savePath = "";
+        float _deltaTime = 0.0f;
 
         Entity _editorEntityContext = 0;
     };

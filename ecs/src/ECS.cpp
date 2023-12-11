@@ -24,11 +24,24 @@ namespace ecs {
     template <>
     void ECSImpl::Run(Action preUpdate, Action postUpdate)
     {
+        auto lastTime = std::chrono::high_resolution_clock::now();
+
         while (_running) {
+            auto currentTime = std::chrono::high_resolution_clock::now();
+            _deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - lastTime).count();
+
             preUpdate();
             Update();
             postUpdate();
+
+            lastTime = currentTime;
             _skipFrame = false;
         }
+    }
+
+    template <>
+    float ECSImpl::GetDeltaTime() const
+    {
+        return _deltaTime;
     }
 }
