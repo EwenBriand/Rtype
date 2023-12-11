@@ -9,19 +9,20 @@
 #define AB1794DB_72E6_4ECF_848A_91CD7A70EDE6
 #include "ECS.hpp"
 
+#include "Components.Vanilla/Animator.hpp"
+#include "Components.Vanilla/AudioSource.hpp"
 #include "Components.Vanilla/CLI.hpp"
 #include "Components.Vanilla/CoreTransform.hpp"
-#include "Components.Vanilla/EventGraph.hpp"
-#include "Components.Vanilla/UserComponentWrapper.hpp"
-#include "Components.Vanilla/NodePrintStr.hpp"
-#include "Components.Vanilla/NodeStr.hpp"
-#include "Components.Vanilla/UIDiv.hpp"
-#include "Components.Vanilla/UIMenu.hpp"
-#include "Components.Vanilla/TextField.hpp"
-#include "Components.Vanilla/UIButton.hpp"
 #include "Components.Vanilla/EditorMouseManager.hpp"
 #include "Components.Vanilla/EntityExplorer.hpp"
-#include "Components.Vanilla/Animator.hpp"
+#include "Components.Vanilla/EventGraph.hpp"
+#include "Components.Vanilla/NodePrintStr.hpp"
+#include "Components.Vanilla/NodeStr.hpp"
+#include "Components.Vanilla/TextField.hpp"
+#include "Components.Vanilla/UIButton.hpp"
+#include "Components.Vanilla/UIDiv.hpp"
+#include "Components.Vanilla/UIMenu.hpp"
+#include "Components.Vanilla/UserComponentWrapper.hpp"
 
 namespace ecs {
     /**
@@ -42,11 +43,11 @@ namespace ecs {
         TextField,
         EditorMouseManager,
         EntityExplorer,
-        Animator
-    >;
+        Animator,
+        AudioSource>;
 
-    #define Sys ecs::ECSImpl::GetSystem()
-    #define Console ecs::ECSImpl
+#define Sys ecs::ECSImpl::GetSystem()
+#define Console ecs::ECSImpl
 }
 
 #endif /* AB1794DB_72E6_4ECF_848A_91CD7A70EDE6 */

@@ -49,10 +49,19 @@ namespace raylib {
         // SetTraceLogLevel(LOG_ERROR);
         InitWindow(1920, 1080, "ECS");
         SetTargetFPS(60);
+
+        InitAudioDevice();
+        if (IsAudioDeviceReady() == false) {
+            Console::err << "Error in initializing audio device" << std::endl;
+        } else
+            std::cout << "Audio device initialized" << std::endl;
     }
 
     void GraphicalRayLib::Stop()
     {
+        if (IsAudioDeviceReady()) {
+            CloseAudioDevice();
+        }
         CloseWindow();
     }
 

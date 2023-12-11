@@ -8,6 +8,8 @@
 #pragma once
 
 #include "Component.hpp"
+#include "Components.Vanilla/CLI.hpp"
+#include "ECSImpl.hpp"
 #include "Entity.hpp"
 #include "IGraphicalModule.hpp"
 #include "InputManager.hpp"
@@ -26,6 +28,7 @@
 #include <stdexcept>
 #include <type_traits>
 #include <typeindex>
+#include <typeinfo>
 #include <unordered_map>
 #include <variant>
 #include <vector>
@@ -224,6 +227,32 @@ namespace ecs {
             },
                 _components[idx][e].back());
             return std::get<T>(_components[idx][e].back());
+        }
+
+        /**
+         * @brief Get the component type if find else create it
+         *
+         * @tparam T
+         * @param value, client  element to catch and the client
+         * @return T&
+         */
+
+        template <typename T>
+        T& SafeGet(CLI& cli)
+        {
+            T* result = nullptr;
+            if (cli.GetContext() == GetSystemHolder()) {
+                throw std::runtime_error("Can't add " + std::string(typeid(T).name()) + " to the system holder");
+            }
+            try {
+                result = &GetComponent<T>(cli.GetContext());
+            } catch (std::exception& e) {
+                AddComponent<T>(cli.GetContext());
+                result = &GetComponent<T>(cli.GetContext());
+            }
+            if (result == nullptr)
+                throw std::runtime_error("Can't add " + std::string(typeid(T).name()) + " to the system holder");
+            return *result;
         }
 
         /**

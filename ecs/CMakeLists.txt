@@ -96,6 +96,7 @@ add_library(
     ./src/Message.cpp
 )
 
+find_package(Threads REQUIRED)
 add_executable(
     server_test_main
     ./src/server_test_main.cpp
@@ -103,6 +104,7 @@ add_executable(
 target_link_libraries(
     server_test_main
     server
+    Threads::Threads
 )
 
 add_library(
@@ -143,12 +145,14 @@ target_link_libraries(ecs
     ${METADATA_SRC}/libUIMenu.so
     ${METADATA_SRC}/libTextField.so
     ${METADATA_SRC}/libAnimator.so
+    ${METADATA_SRC}/libAudioSource.so
     editorMouseManager
     usercomponentwrapper
     entityExplorer
     cli
     server
 )
+
 
 target_link_libraries(testtarget engine)
 
@@ -157,7 +161,8 @@ target_link_libraries(testtarget engine)
 add_executable(
     test_generic_storage_system
     ./src/test_generic_storage_system.cpp
-)
+    )
+
 target_link_libraries(
     test_generic_storage_system
     engine

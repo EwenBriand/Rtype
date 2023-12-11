@@ -5,17 +5,19 @@ import os
 import subprocess
 import datetime
 
-def print_color(color, text, end = "\n"):
+
+def print_color(color, text, end="\n"):
     colors = {
-        "red" : "\033[91m",
-        "green" : "\033[92m",
-        "yellow" : "\033[93m",
-        "blue" : "\033[94m",
-        "purple" : "\033[95m",
-        "cyan" : "\033[96m",
-        "white" : "\033[97m",
+        "red": "\033[91m",
+        "green": "\033[92m",
+        "yellow": "\033[93m",
+        "blue": "\033[94m",
+        "purple": "\033[95m",
+        "cyan": "\033[96m",
+        "white": "\033[97m",
     }
-    print(colors[color] + text + "\033[0m", end = end)
+    print(colors[color] + text + "\033[0m", end=end)
+
 
 def chain_commands(cmds):
     cmd = ""
@@ -25,8 +27,9 @@ def chain_commands(cmds):
             cmd += " && "
     return cmd
 
-def prompt(message, closed_question = True):
-    print_color("blue", message, end = "")
+
+def prompt(message, closed_question=True):
+    print_color("blue", message, end="")
     if closed_question:
         print_color("yellow", " (y/n)")
     else:
@@ -38,13 +41,17 @@ def prompt(message, closed_question = True):
             answer = input()
     return answer
 
+
 def cd_gitroot():
-    git_root = subprocess.check_output(["git", "rev-parse", "--show-toplevel"]).strip().decode('utf-8')
+    git_root = subprocess.check_output(
+        ["git", "rev-parse", "--show-toplevel"]).strip().decode('utf-8')
     os.chdir(git_root)
+
 
 def exec_system_command(command):
     (return_code, output) = subprocess.getstatusoutput(command)
     return (return_code, output)
+
 
 def deep_clean_impl(args):
     cd_gitroot()
@@ -66,10 +73,18 @@ def deep_clean_impl(args):
         print("Executing: " + command)
         os.system(command)
 
+
 def build_root(args):
     cd_gitroot()
 
     os.system("mkdir -p build && cd build && cmake -DWITH_PIC=on -DBUILD_SHARED_LIBS=on -DCMAKE_BUILD_TYPE=Release .. && make")
+
+
+def debug_root(args):
+    cd_gitroot()
+
+    os.system("mkdir -p build && cd build && cmake -DWITH_PIC=on -DBUILD_SHARED_LIBS=on -DCMAKE_BUILD_TYPE=Debug .. && make")
+
 
 def run_tests(args):
     cd_gitroot()
@@ -79,6 +94,7 @@ def run_tests(args):
     for command in test_commands:
         print("Executing: " + command)
         os.system(command)
+
 
 def push(args):
     cd_gitroot()
@@ -91,8 +107,10 @@ def push(args):
     if answer == "n":
         exec_system_command("git reset")
         return
-    type = prompt("Type of the commit (e.g. \"add\", \"update\", \"del\", \"fix\", \"feat\", \"refactor\", etc.)", False)
-    scope = prompt("Scope of the commit (e.g. \"core\", \"gui\", \"tests\", etc.)", False)
+    type = prompt(
+        "Type of the commit (e.g. \"add\", \"update\", \"del\", \"fix\", \"feat\", \"refactor\", etc.)", False)
+    scope = prompt(
+        "Scope of the commit (e.g. \"core\", \"gui\", \"tests\", etc.)", False)
     issue_id = prompt("Issue id (e.g. \"123\", Enter for none)", False)
     message = prompt("Commit message", False)
     issue_id = "" if issue_id == "" else "#" + issue_id
@@ -100,6 +118,7 @@ def push(args):
     os.system("git commit -m \"" + message + "\"")
     prompt("Push to remote?")
     os.system("git push")
+
 
 vanilla_cpp_template = """
 /*
@@ -143,6 +162,7 @@ serialize class {} : public ecs::Component<{}> {{
 
 """
 
+
 def fast_vanilla(args):
     name = args[0]
     cd_gitroot()
@@ -153,12 +173,16 @@ def fast_vanilla(args):
     for step in steps:
         os.system(step)
     cpp_file = open("ecs/include/Components.Vanilla/" + name + ".cpp", "w")
-    cpp_file.write(vanilla_cpp_template.format(name, name, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), name, name))
+    cpp_file.write(vanilla_cpp_template.format(
+        name, name, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), name, name))
     cpp_file.close()
     hpp_file = open("ecs/include/Components.Vanilla/" + name + ".hpp", "w")
-    hpp_file.write(vanilla_hpp_template.format(name, name, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), name, name, name, name, name, name, name, name, name, name, name, name, name))
+    hpp_file.write(vanilla_hpp_template.format(name, name, datetime.datetime.now().strftime(
+        "%Y-%m-%d %H:%M:%S"), name, name, name, name, name, name, name, name, name, name, name, name, name))
     hpp_file.close()
-    print("Don't forget to add the new component to the CMakeLists.txt file") # todo make it automatic
+    # todo make it automatic
+    print("Don't forget to add the new component to the CMakeLists.txt file")
+
 
 ucpt_cpp_template = """
 /*
@@ -208,6 +232,7 @@ serialize class {} : public AUserComponent {{
 
 """
 
+
 def fast_ucpt(args):
     name = args[0]
     cd_gitroot()
@@ -219,16 +244,22 @@ def fast_ucpt(args):
     for step in steps:
         os.system(step)
     cpp_file = open("ecs/include/Components.User/" + name + ".cpp", "w")
-    cpp_file.write(ucpt_cpp_template.format(name, name, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), name, name, name, name))
+    cpp_file.write(ucpt_cpp_template.format(name, name, datetime.datetime.now(
+    ).strftime("%Y-%m-%d %H:%M:%S"), name, name, name, name))
     cpp_file.close()
     hpp_file = open("ecs/include/Components.User/" + name + ".hpp", "w")
-    hpp_file.write(ucpt_hpp_template.format(name, name, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), name, name, name, name, name, name, name, name, name, name, name, name, name, name))
+    hpp_file.write(ucpt_hpp_template.format(name, name, datetime.datetime.now().strftime(
+        "%Y-%m-%d %H:%M:%S"), name, name, name, name, name, name, name, name, name, name, name, name, name, name))
     hpp_file.close()
-    print("Don't forget to add the new component to the CMakeLists.txt file") # todo make it automatic
+    # todo make it automatic
+    print("Don't forget to add the new component to the CMakeLists.txt file")
+
 
 def setup_cmake(args):
     cd_gitroot()
-    os.system("mkdir -p build && cd build && cmake -DCMAKE_BUILD_TYPE=SHARED -DWITH_PIC=on ..")
+    os.system(
+        "mkdir -p build && cd build && cmake -DCMAKE_BUILD_TYPE=SHARED -DWITH_PIC=on ..")
+
 
 def fast_doc(args):
     cd_gitroot()
@@ -236,16 +267,20 @@ def fast_doc(args):
     if len(args) == 0:
         os.system("cd build && make doc && firefox documentation/html/index.html")
     else:
-        os.system("cd build && make doc && " + args[0] + " documentation/html/index.html")
+        os.system("cd build && make doc && " +
+                  args[0] + " documentation/html/index.html")
+
 
 def is_path_absolute(path):
     return path[0] == "/"
+
 
 base_cfg_template = """
 scenesSavePath="{}/.engine/scenes"
 userScriptsPath="{}/ecs/include/Components.User/"
 assetRoot="{}/assets/"
 """
+
 
 def create_cfg(args):
     cd_gitroot()
@@ -256,18 +291,21 @@ def create_cfg(args):
     if not os.path.exists(path_without_filename):
         os.makedirs(os.path.dirname(path))
     with open(path, "w+") as f:
-        f.write(base_cfg_template.format(os.getcwd(), os.getcwd(), os.getcwd()))
+        f.write(base_cfg_template.format(
+            os.getcwd(), os.getcwd(), os.getcwd()))
+
 
 commands = {
-    "clean" : ("performs a deep clean of the repository", lambda args: deep_clean_impl(args)),
-    "build" : ("builds the project", lambda args: build_root(args)),
-    "test" : ("runs all tests", lambda args: run_tests(args)),
-    "push" : ("pushes the current branch", lambda args: push(args)),
-    "vanilla" : ("creates a vanilla component class with the given name", lambda args: fast_vanilla(args)),
-    "ucpt" : ("creates a user component class with the given name", lambda args: fast_ucpt(args)),
-    "cmake" : ("runs cmake", lambda args: setup_cmake(args)),
-    "doc" : ("generates the documentation and opens it using the browser given in argument, or firefox.", lambda args: fast_doc(args)),
-    "setcfg" : ("creates and sets up the default configuration directory for a project", lambda args: create_cfg(args)),
+    "clean": ("performs a deep clean of the repository", lambda args: deep_clean_impl(args)),
+    "build": ("builds the project", lambda args: build_root(args)),
+    "debug": ("builds the project in debug mode", lambda args: debug_root(args)),
+    "test": ("runs all tests", lambda args: run_tests(args)),
+    "push": ("pushes the current branch", lambda args: push(args)),
+    "vanilla": ("creates a vanilla component class with the given name", lambda args: fast_vanilla(args)),
+    "ucpt": ("creates a user component class with the given name", lambda args: fast_ucpt(args)),
+    "cmake": ("runs cmake", lambda args: setup_cmake(args)),
+    "doc": ("generates the documentation and opens it using the browser given in argument, or firefox.", lambda args: fast_doc(args)),
+    "setcfg": ("creates and sets up the default configuration directory for a project", lambda args: create_cfg(args)),
 }
 
 if __name__ == "__main__":
