@@ -874,6 +874,30 @@ namespace ecs {
             }
         }
 
+        /**
+         * @brief Calls a function on all the components of the given type. if the type is not found,
+         * throws an exception.
+         *
+         * @tparam T
+         * @param e
+         * @param func
+         */
+        template <typename T>
+        void ForEach(std::function<void(T&)> func)
+        {
+            size_t idx = 0;
+            try {
+                idx = _cptTypesIndexes.at(std::type_index(typeid(T)));
+            } catch (std::exception& e) {
+                throw std::logic_error("Component not found: " + std::string(typeid(T).name()));
+            }
+            AllCptOfSameType& cpt = _components[idx];
+            for (auto e : _usedIds)
+                for (auto cpt : cpt[e]) {
+                    func(std::get<T>(cpt));
+                }
+        }
+
         // #define MAKE_HCPT(cpttypename) \
             //     {#cpttypename, [&](Entity e, libconfig::Setting &setting) { \
             //         AddComponent<cpttypename>(e).Init(setting); \

@@ -143,6 +143,7 @@ target_link_libraries(ecs
     ${METADATA_SRC}/libUIMenu.so
     ${METADATA_SRC}/libTextField.so
     ${METADATA_SRC}/libAnimator.so
+    ${METADATA_SRC}/libCollider2D.so
     editorMouseManager
     usercomponentwrapper
     entityExplorer
