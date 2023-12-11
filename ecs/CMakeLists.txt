@@ -72,7 +72,6 @@ add_library(
 
 target_link_libraries(engine
     ecs
-    config++
     metadatagen
     # lightgraph
 )

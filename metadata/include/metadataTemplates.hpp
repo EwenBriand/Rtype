@@ -8,6 +8,56 @@
 #pragma once
 
 #include <string>
+#include <type_trait.hpp>
+
+
+
+template<typename T, typename = void>
+struct is_iterable : std::false_type {};
+
+template<typename T>
+struct is_iterable<T, std::void_t<decltype(std::begin(std::declval<T>())), decltype(std::end(std::declval<T>()))>> : std::true_type {};
+
+template <typename T>
+static std::enable_if_t<!is_iterable<T>::value> Serialize(const T &object, std::vector<unsigned char> &data)
+{
+    std::vector<unsigned char> tmp;
+    tmp.resize(sizeof(T));
+    memcpy(tmp.data(), &object, sizeof(T));
+    data.insert(data.end(), tmp.begin(), tmp.end());
+}
+
+template <typename T>
+static std::enable_if_t<is_iterable<T>::value> Serialize(const T &object, std::vector<unsigned char> &data)
+{
+    Serialize(object.size(), data);
+    for (const auto &item : object)
+    {
+        Serialize(item, data);
+    }
+}
+
+template <typename T>
+static std::enable_if_t<!is_iterable<T>::value> Deserialize(const std::vector<unsigned char> &data, std::vector<unsigned char>::iterator &it, T &object)
+{
+    memcpy(&object, &(*it), sizeof(T));
+    it += sizeof(T);
+}
+
+template <typename T>
+static std::enable_if_t<is_iterable<T>::value> Deserialize(const std::vector<unsigned char> &data, std::vector<unsigned char>::iterator &it, T &object)
+{
+    size_t size;
+    Deserialize(data, it, size);
+    object.resize(size);
+    for (size_t i = 0; i < size; ++i)
+    {
+        typename T::value_type item;
+        Deserialize(data, it, item);
+        object[i] = item;
+    }
+}
+
 
 static const std::string THIS_DIR = "./";
 
@@ -31,15 +81,6 @@ static const std::string METADATA_FILE_INCLUDES = R"(
 #include <iostream>
 #include "metadata.hpp"
 )";
-
-#define INIT_LOAD_FUNCTION(className) \
-    "void " + className + "::Load(const std::string& filepath)\n{\n\tlibconfig::Config config;\n\tconfig.readFile(filepath.c_str());\n\tlibconfig::Setting& root = config.getRoot();\n"
-
-#define INIT_SAVE_FUNCTION(className) \
-    "void " + className + "::Save(const std::string& filepath)\n{\n\tlibconfig::Config config;\n\tlibconfig::Setting& root = config.getRoot();\n"
-
-#define INIT_METADATA_FUNCTION(className) \
-    "std::map<std::string, metadata_t> " + className + "::GetMetadata()\n{\n\tstd::map<std::string, metadata_t> metadata;\n"
 
 #define INIT_CMAKE(folder)                                                                         \
     "cmake_minimum_required(VERSION 3.0)\n"                                                        \

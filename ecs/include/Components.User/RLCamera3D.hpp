@@ -7,66 +7,65 @@
 
 #pragma once
 
-#include <string>
-#include <iostream>
-#include <raylib.h>
 #include "Component.hpp"
-#include "metadata.hpp"
 #include "Components.Vanilla/UserComponentWrapper.hpp"
 #include "IGraphicalModule.hpp"
+#include "metadata.hpp"
+#include <iostream>
+#include <raylib.h>
+#include <string>
 
-needs(-lconfig++)
 needs(libraylib.so)
-serialize class RLCamera3D : public AUserComponent {
-    public:
-        GENERATE_METADATA(RLCamera3D)
-        ~RLCamera3D();
+    serialize class RLCamera3D : public AUserComponent {
+public:
+    GENERATE_METADATA(RLCamera3D)
+    ~RLCamera3D();
 
-        void Update(int entityID) override;
-        void OnAddComponent(int entityID) override;
-        void Start() override;
-        void OnLoad() override;
-    private:
-        /**
-         * @brief px, py, pz, the 3D position of the camera.
-         *
-         */
-        serialize float m_px = 5.0f;
-        serialize float m_py = 5.0f;
-        serialize float m_pz = 5.0f;
+    void Update(int entityID) override;
+    void OnAddComponent(int entityID) override;
+    void Start() override;
+    void OnLoad() override;
 
-        /**
-         * @brief tx, ty, tz, the 3D position of the target, which is the point
-         * in space the camera is looking at.
-         *
-         */
-        serialize float m_tx = 0.0f;
-        serialize float m_ty = 0.0f;
-        serialize float m_tz = 0.0f;
+private:
+    /**
+     * @brief px, py, pz, the 3D position of the camera.
+     *
+     */
+    serialize float m_px = 5.0f;
+    serialize float m_py = 5.0f;
+    serialize float m_pz = 5.0f;
 
-        /**
-         * @brief ux, uy, uz, the 3D vector representing the up direction of the
-         * camera.
-         *
-         */
-        serialize float m_ux = 0.0f;
-        serialize float m_uy = 0.1f;
-        serialize float m_uz = 0.0f;
+    /**
+     * @brief tx, ty, tz, the 3D position of the target, which is the point
+     * in space the camera is looking at.
+     *
+     */
+    serialize float m_tx = 0.0f;
+    serialize float m_ty = 0.0f;
+    serialize float m_tz = 0.0f;
 
+    /**
+     * @brief ux, uy, uz, the 3D vector representing the up direction of the
+     * camera.
+     *
+     */
+    serialize float m_ux = 0.0f;
+    serialize float m_uy = 0.1f;
+    serialize float m_uz = 0.0f;
 
-        /**
-         * @brief fov, the field of view in Y (in degrees), i.e. the extent of
-         * the screen that is seen in the camera.
-         *
-         */
-        serialize float m_fov = 45.0f;
+    /**
+     * @brief fov, the field of view in Y (in degrees), i.e. the extent of
+     * the screen that is seen in the camera.
+     *
+     */
+    serialize float m_fov = 45.0f;
 
-        /**
-         * @brief projection, the camera type, either perspective or orthographic.
-         *
-         */
-        serialize std::string m_projection = "CAMERA_PERSPECTIVE";
+    /**
+     * @brief projection, the camera type, either perspective or orthographic.
+     *
+     */
+    serialize std::string m_projection = "CAMERA_PERSPECTIVE";
 
-        bool m_mode3DEnabled = false;
-        Camera m_camera = { { 5.0f, 5.0f, 5.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, 45.0f, 0 };
+    bool m_mode3DEnabled = false;
+    Camera m_camera = { { 5.0f, 5.0f, 5.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, 45.0f, 0 };
 };

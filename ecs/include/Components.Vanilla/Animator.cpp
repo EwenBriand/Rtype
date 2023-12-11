@@ -10,9 +10,12 @@
 #include "ECSImpl.hpp"
 #include "Engine.hpp"
 #include "ResourceManager.hpp"
+#include "ToBytes.hpp"
 #include "UIButton.hpp"
 #include "UIManager.hpp"
 #include "raygui.h"
+#include <fstream>
+#include <iostream>
 
 //-----------------------------------------------------------------------------
 // SPRITE
@@ -32,9 +35,18 @@ Sprite::Sprite(const std::string& path)
 {
 }
 
+Sprite::~Sprite()
+{
+}
+
 void Sprite::Draw()
 {
-    DrawTexturePro(_texture, _rect, Rectangle { 0, 0, _rect.width * _scale.x, _rect.height * _scale.y }, _origin, _rotation, _color);
+    if (!_visible)
+        return;
+    Rectangle source = { _rect.x, _rect.y, _rect.width, _rect.height };
+    Rectangle dest = { _origin.x, _origin.y, _rect.width * _scale.x, _rect.height * _scale.y };
+    Vector2 origin = { 0.0f, 0.0f };
+    DrawTexturePro(_texture, source, dest, origin, _rotation, _color);
 }
 
 std::string& Sprite::GetPath()
@@ -127,7 +139,12 @@ Animation::Animation(const std::string& name)
 
 Animation::Animation()
 {
-    _name = "new_animatinon_" + std::to_string(rand());
+    _name = "new_animation_" + std::to_string(rand());
+}
+
+std::string& Animation::GetName()
+{
+    return _name;
 }
 
 void Animation::AddFrame(const Frame& frame)
@@ -149,19 +166,19 @@ std::vector<unsigned char> Animation::Serialize()
 {
     std::vector<unsigned char> data;
 
-    ecs::ResourceManager::Serialize(_name, data);
-    ecs::ResourceManager::Serialize(_frames, data);
-    ecs::ResourceManager::Serialize(_sprite.GetPath(), data);
+    bytes::ToBytes::Serialize(_name, data);
+    bytes::ToBytes::Serialize(_frames, data);
+    bytes::ToBytes::Serialize(_sprite->GetPath(), data);
     return data;
 }
 
 void Animation::Deserialize(const std::vector<unsigned char>& data, std::vector<unsigned char>::iterator& it)
 {
-    ecs::ResourceManager::Deserialize(data, it, _name);
-    ecs::ResourceManager::Deserialize(data, it, _frames);
+    bytes::ToBytes::Deserialize(data, it, _name);
+    bytes::ToBytes::Deserialize(data, it, _frames);
     std::string path;
-    ecs::ResourceManager::Deserialize(data, it, path);
-    _sprite = Sprite(path);
+    bytes::ToBytes::Deserialize(data, it, path);
+    _sprite = std::make_shared<Sprite>(path);
 }
 
 void Animation::SetName(const std::string& name)
@@ -171,22 +188,41 @@ void Animation::SetName(const std::string& name)
 
 void Animation::SetSpritePath(const std::string& path)
 {
-    _sprite = Sprite(path);
+    std::string assetRoot = eng::Engine::GetEngine()->GetConfigValue("assetRoot");
+    std::string spritePath = ecs::ResourceManager::MakePath({ assetRoot, path }, true);
+
+    _sprite = std::make_shared<Sprite>(spritePath);
 }
 
-void Animation::RenderFrame()
+void Animation::RenderFrame(int entityId)
 {
     if (_frames.empty())
         return;
-    _sprite.SetRect(_frames[_currentFrame].rect);
-    _sprite.SetOrigin(_frames[_currentFrame].origin);
-    _sprite.SetScale(_frames[_currentFrame].scale);
-    _sprite.SetRotation(_frames[_currentFrame].rotation);
-    _sprite.SetColor(_frames[_currentFrame].color);
-    _sprite.SetFlipX(_frames[_currentFrame].flipX);
-    _sprite.SetFlipY(_frames[_currentFrame].flipY);
-    _sprite.Draw();
-    _currentFrame = (_currentFrame + 1) % _frames.size();
+    _sprite->SetRect(_frames[_currentFrame].rect);
+    try {
+        auto transform = Sys.GetComponent<CoreTransform>(entityId);
+        auto x = transform.x;
+        auto y = transform.y;
+        _sprite->SetOrigin({ x, y });
+    } catch (std::exception& e) {
+        _sprite->SetOrigin(_frames[_currentFrame].origin);
+    }
+    _sprite->SetScale(_frames[_currentFrame].scale);
+    _sprite->SetRotation(_frames[_currentFrame].rotation);
+    _sprite->SetColor(_frames[_currentFrame].color);
+    _sprite->SetFlipX(_frames[_currentFrame].flipX);
+    _sprite->SetFlipY(_frames[_currentFrame].flipY);
+    _sprite->Draw();
+    _frameStartTime += Sys.GetDeltaTime();
+    if (_frameStartTime >= _frames[_currentFrame].duration) { // todo fix for skipping frames in case of lag
+        _frameStartTime = 0;
+        _currentFrame = (_currentFrame + 1) % _frames.size();
+    }
+}
+
+void Animation::SetLoop(bool loop)
+{
+    _loop = loop;
 }
 
 //-----------------------------------------------------------------------------
@@ -233,6 +269,52 @@ void Animator::OnLoad()
             }
         },
         "Close the animation editor");
+
+    cli.RegisterCustomCommand(
+        "anme-load", [](CLI& cli, std::vector<std::string> args) {
+            if (args.size() != 2) {
+                Console::warn << "Usage: anme-add <path>" << std::endl;
+                return;
+            }
+            std::string name = "";
+            Animation anim;
+            Animator* animator = nullptr;
+            if (cli.GetContext() == Sys.GetSystemHolder()) {
+                throw std::runtime_error("Can't add animation to the system holder");
+            }
+            try {
+                animator = &Sys.GetComponent<Animator>(cli.GetContext());
+            } catch (std::exception& e) {
+                Sys.AddComponent<Animator>(cli.GetContext());
+                animator = &Sys.GetComponent<Animator>(cli.GetContext());
+            }
+            if (animator == nullptr)
+                throw std::runtime_error("Failed to get animator component");
+            try {
+                anim = animator->loadAnimationFromFile(args[0], name);
+            } catch (std::exception& e) {
+                Console::err << "Failed to load animation: " << e.what() << std::endl;
+                return;
+            }
+            animator->AddAnimation(name, anim);
+        },
+        "Add an animation to the current entity");
+
+    cli.RegisterCustomCommand(
+        "anme-play", [](CLI& cli, std::vector<std::string> args) {
+            if (args.size() != 2) {
+                Console::warn << "Usage: anme-play <name>" << std::endl;
+                return;
+            }
+
+            try {
+                Animator& animator = Sys.GetComponent<Animator>(cli.GetContext());
+                animator.Play(args[0]);
+            } catch (std::exception& e) {
+                Console::err << "Failed to play animation: " << e.what() << std::endl;
+            }
+        },
+        "Plays an animation from its name. The animation must be loaded first.");
 }
 
 void Animator::registerUIElements()
@@ -249,10 +331,196 @@ void Animator::registerUIElements()
                 .length = 20,
                 .callback = [&](std::string text) {
                     _animEditorAnimationName = text;
+                    if (_animations.find(text) == _animations.end())
+                        createNewAnim(text);
                 },
                 .layer = 10 },
             ui::UIManager::Text { .text = "Animation Editor", .position = Vector2 { 10, 10 }, .fontSize = 20, .color = WHITE, .layer = 10 });
     } catch (std::exception& e) {
         Console::err << "Failed to register ui elements: " << e.what() << std::endl;
     }
+}
+
+void Animator::createNewAnim(const std::string& name)
+{
+    // todo try to load the animation first
+    _animations[name] = Animation(name);
+}
+
+void Animator::AddAnimation(const std::string& path)
+{
+    std::string name = "";
+    Animation anim = loadAnimationFromFile(path, name);
+    _animations[name] = anim;
+}
+
+std::vector<std::string> Animator::loadRawAnimFile(const std::string& path, std::string& name)
+{
+    std::vector<std::string> lines;
+    const std::string assetRoot = eng::Engine::GetEngine()->GetConfigValue("assetRoot");
+    std::string animPath = ecs::ResourceManager::MakePath({ assetRoot, path }, true);
+    std::ifstream file(animPath);
+    std::string line;
+
+    if (!file.is_open())
+        throw std::runtime_error("Failed to open file: " + animPath);
+    while (std::getline(file, line)) {
+        line.erase(line.begin(), std::find_if(line.begin(), line.end(), [](int ch) {
+            return !std::isspace(ch);
+        }));
+        if (line == "" || line[0] == '#' || line[0] == '\n')
+            continue;
+        lines.push_back(line);
+    }
+    file.close();
+    return lines;
+}
+
+void Animator::AddAnimation(const std::string& name, Animation& anim)
+{
+    std::cout << "Setting animation with name " << name << std::endl;
+    _animations[name] = anim;
+}
+
+Animation Animator::loadAnimationFromFile(const std::string& path, std::string& name)
+{
+    std::vector<std::string> lines = loadRawAnimFile(path, name);
+    decltype(lines)::iterator it = lines.begin();
+    Animation anim;
+    bool isFrameSection = false;
+    int frameIndex = -1;
+    Animation::Frame defaultFrame {
+        .rect = Rectangle { 0, 0, 0, 0 },
+        .origin = Vector2 { 0, 0 },
+        .scale = Vector2 { 1, 1 },
+        .rotation = 0,
+        .color = WHITE,
+        .flipX = false,
+        .flipY = false,
+        .duration = 1.0 / 60.0
+    };
+
+    while (it != lines.end()) {
+        if (*it == "===FRAMES===") {
+            isFrameSection = true;
+            continue;
+        }
+
+        auto [key, value] = parse(*it);
+
+        if (key == "auto") {
+            handleAutoMode(defaultFrame, anim, value);
+            name = anim.GetName();
+            return anim;
+        }
+
+        if (isFrameSection) {
+            if (key == "frame id") {
+                anim.AddFrame(defaultFrame);
+                ++frameIndex;
+            } else {
+                handleFrameProperties(anim, frameIndex, key, value);
+            }
+        } else {
+            handleAnimationProperties(anim, key, value, defaultFrame);
+        }
+
+        ++it;
+    }
+    name = anim.GetName();
+    return anim;
+}
+
+void Animator::handleAutoMode(Animation::Frame& defaultFrame, Animation& anim, const std::string& value)
+{
+    int width = 0;
+    int height = 0;
+    int frameNbr = 0;
+    std::istringstream iss(value);
+
+    iss >> width >> height >> frameNbr;
+    width = width / frameNbr;
+    for (int i = 0; i < frameNbr; ++i) {
+        Animation::Frame frame = defaultFrame;
+        frame.rect = Rectangle { (float)(i * width), 0, (float)width, (float)height };
+        anim.AddFrame(frame);
+    }
+}
+
+std::string
+Animator::trim(const std::string& str)
+{
+    size_t first = str.find_first_not_of(' ');
+    if (std::string::npos == first) {
+        return str;
+    }
+    size_t last = str.find_last_not_of(' ');
+    return str.substr(first, (last - first + 1));
+}
+
+std::pair<std::string, std::string> Animator::parse(const std::string& line)
+{
+    std::istringstream iss(line);
+    std::string key = "";
+    std::string value = "";
+
+    std::getline(iss, key, ':');
+    std::getline(iss, value);
+    value.erase(std::remove(value.begin(), value.end(), '\n'), value.end());
+    return { trim(key), trim(value) };
+}
+
+void Animator::handleAnimationProperties(Animation& anim, const std::string& key, const std::string& value, Animation::Frame& defaultFrame)
+{
+    if (key == "name")
+        anim.SetName(value);
+    else if (key == "sprite path")
+        anim.SetSpritePath(value);
+    else if (key == "loop")
+        anim.SetLoop(value == "true");
+    else if (key == "fps")
+        defaultFrame.duration = 1.0 / std::stof(value);
+    else if (key == "scale")
+        defaultFrame.scale = Vector2 { std::stof(value), std::stof(value) };
+    else
+        throw std::runtime_error("Unknown animation property: " + key);
+}
+
+void Animator::handleFrameProperties(Animation& anim, int frameIndex, const std::string& key, const std::string& value)
+{
+    if (key == "origin") {
+        std::istringstream iss(value);
+        iss >> anim.GetFrame(frameIndex).origin.x >> anim.GetFrame(frameIndex).origin.y;
+    } else if (key == "scale") {
+        std::istringstream iss(value);
+        iss >> anim.GetFrame(frameIndex).scale.x >> anim.GetFrame(frameIndex).scale.y;
+    } else if (key == "rotation")
+        anim.GetFrame(frameIndex).rotation = std::stof(value);
+    else if (key == "flip x")
+        anim.GetFrame(frameIndex).flipX = value == "true";
+    else if (key == "flip y")
+        anim.GetFrame(frameIndex).flipY = value == "true";
+    else if (key == "color") {
+        std::istringstream iss(value);
+        iss >> anim.GetFrame(frameIndex).color.r >> anim.GetFrame(frameIndex).color.g >> anim.GetFrame(frameIndex).color.b >> anim.GetFrame(frameIndex).color.a;
+    } else if (key == "rect") {
+        std::istringstream iss(value);
+        iss >> anim.GetFrame(frameIndex).rect.x >> anim.GetFrame(frameIndex).rect.y >> anim.GetFrame(frameIndex).rect.width >> anim.GetFrame(frameIndex).rect.height;
+    } else {
+        throw std::runtime_error("Unknown frame property: " + key);
+    }
+}
+
+void Animator::Play(const std::string& name)
+{
+    if (_animations.find(name) == _animations.end())
+        throw std::runtime_error("Animation not found: " + name);
+    _currentAnimation = name;
+}
+
+void Animator::Update(int entityId)
+{
+    if (_currentAnimation == "")
+        return;
+    _animations[_currentAnimation].RenderFrame(entityId);
 }
