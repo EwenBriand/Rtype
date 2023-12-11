@@ -18,6 +18,13 @@
 
 void Collider2D::OnLoad()
 {
+    eng::Engine::GetEngine()->pushPipeline([]() {
+        Sys.ForEach<Collider2D>([](Collider2D& collider) {
+            collider.recalculateEdgesAndNormals();
+        });
+    },
+        -600);
+
     if (eng::Engine::GetEngine()->IsOptionSet("--editor")) {
         auto& cli = Sys.GetComponent<CLI>(Sys.GetSystemHolder());
 
@@ -228,7 +235,7 @@ void Collider2D::checkCollisions()
     Sys.ForEach<Collider2D>([this](Collider2D collider) {
         if (collider.GetEntityID() == _entityID)
             return; // don't check collision with self
-        collider.recalculateEdgesAndNormals(); // todo : move to pipeline to avoid recalculating twice every frame
+        // collider.recalculateEdgesAndNormals(); // todo : move to pipeline to avoid recalculating twice every frame
         checkCollision(collider);
     });
     if (!_isColliding && _wasColliding && _onCollisionExit) {
