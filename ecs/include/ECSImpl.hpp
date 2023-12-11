@@ -12,6 +12,7 @@
 #include "Components.Vanilla/Animator.hpp"
 #include "Components.Vanilla/AudioSource.hpp"
 #include "Components.Vanilla/CLI.hpp"
+#include "Components.Vanilla/Collider2D.hpp"
 #include "Components.Vanilla/CoreTransform.hpp"
 #include "Components.Vanilla/EditorMouseManager.hpp"
 #include "Components.Vanilla/EntityExplorer.hpp"
@@ -44,8 +45,11 @@ namespace ecs {
         EditorMouseManager,
         EntityExplorer,
         Animator,
+        Collider2D,
         AudioSource>;
 
+#define Sys ecs::ECSImpl::GetSystem()
+#define Console ecs::ECSImpl
 #define Sys ecs::ECSImpl::GetSystem()
 #define Console ecs::ECSImpl
 }
