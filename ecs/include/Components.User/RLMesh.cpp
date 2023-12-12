@@ -38,7 +38,7 @@ void RLMesh::Update(int entityID)
     updatePosition(entityID);
 
     DrawModel(m_model, {0, 0, 0}, 1.0f, WHITE);
-    if (eng::Engine::GetEngine()->IsOptionSet("--editor")) {
+    if (eng::Engine::GetEngine()->IsOptionSet(eng::Engine::Options::EDITOR)) {
         DrawBoundingBox(m_boundingBox, RED);
     }
 }

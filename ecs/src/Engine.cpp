@@ -18,6 +18,9 @@
 
 namespace eng {
     std::ofstream Engine::m_logFile = std::ofstream(".engine/log.txt", std::ios::out | std::ios::trunc);
+    const std::string Engine::Options::EDITOR = "--editor";
+    const std::string Engine::Options::GAME = "--game";
+    const std::string Engine::Options::CONFIG_DIR = "--config-dir";
 
     Engine* Engine::GetEngine()
     {
@@ -112,7 +115,7 @@ namespace eng {
     void Engine::Run()
     {
         try {
-            discoverConfig(m_options["--config-dir"]);
+            discoverConfig(m_options[eng::Engine::Options::CONFIG_DIR]);
         } catch (EngineException& e) {
             Console::err << "\nWhile discovering config: \n"
                          << e.what() << std::endl;
@@ -120,14 +123,25 @@ namespace eng {
         }
         Sys.SetGraphicalModule(m_graphicalModule);
         Sys.GetInputManager().SetupDefaults();
-        if (IsOptionSet("--editor")) {
+        if (IsOptionSet(eng::Engine::Options::EDITOR)) {
             Sys.AddComponent<CLI>(Sys.GetSystemHolder());
             Sys.AddComponent<EditorMouseManager>(Sys.GetSystemHolder());
             Sys.AddComponent<EntityExplorer>(Sys.GetSystemHolder());
             ecs::SceneManager::Get().InitEditorMode();
         }
+        if (IsOptionSet(eng::Engine::Options::GAME)) {
+            try {
+                m_game = Sys.GetResourceManager().LoadGame(GetOptionValue(eng::Engine::Options::GAME));
+            } catch (EngineException& e) {
+                Console::err << "\nWhile loading game: \n"
+                             << e.what() << std::endl;
+                Stop();
+            }
+        }
 
         Sys.LoadVanilla();
+        if (m_game)
+            m_game->Init();
         Sys.GetResourceManager().CheckHotReload();
 
         for (auto e : Sys.GetEntities()) {
@@ -138,13 +152,14 @@ namespace eng {
                     cpt);
             });
         }
+
+        if (m_game && m_game->IsOnLine())
+            m_game->WaitConnect();
+
         m_graphicalModule->Start();
         setupPipeline();
         sortPipeline();
 
-        // if (IsOptionSet("--wow-graphics")) {
-        //     wow::WowGraphicsEngine::Enable();
-        // }
         Sys.CallStart();
         Sys.Run(
             [&]() {
@@ -167,6 +182,8 @@ namespace eng {
                 }
             });
         m_graphicalModule->Stop();
+        if (m_game)
+            m_game->Cleanup();
     }
 
     bool Engine::IsOptionSet(const std::string& optionName)
@@ -176,6 +193,7 @@ namespace eng {
 
     void Engine::Stop()
     {
+        exit(0);
     }
 
     void Engine::discoverConfig(const std::string& configDir)

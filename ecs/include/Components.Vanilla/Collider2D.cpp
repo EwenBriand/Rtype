@@ -26,7 +26,7 @@ void Collider2D::OnLoad()
     },
         -600);
 
-    if (eng::Engine::GetEngine()->IsOptionSet("--editor")) {
+    if (eng::Engine::GetEngine()->IsOptionSet(eng::Engine::Options::EDITOR)) {
         auto& cli = Sys.GetComponent<CLI>(Sys.GetSystemHolder());
 
         cli.RegisterCustomCommand(
@@ -146,7 +146,7 @@ std::vector<float> Collider2D::GetVerticesWithPosition() const noexcept
 
 void Collider2D::DebugDraw() const
 {
-    if (eng::Engine::GetEngine()->IsOptionSet("--editor")) {
+    if (eng::Engine::GetEngine()->IsOptionSet(eng::Engine::Options::EDITOR)) {
         auto vertices = _vertices;
         try {
             auto transform = Sys.GetComponent<CoreTransform>(_entityID);

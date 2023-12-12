@@ -246,7 +246,7 @@ void Animator::saveCurrAnim()
 
 void Animator::OnLoad()
 {
-    if (!eng::Engine::GetEngine()->IsOptionSet("--editor"))
+    if (!eng::Engine::GetEngine()->IsOptionSet(eng::Engine::Options::EDITOR))
         return;
     Entity e = Sys.GetSystemHolder();
     CLI& cli = Sys.GetComponent<CLI>(e);
