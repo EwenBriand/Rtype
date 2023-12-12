@@ -35,7 +35,6 @@ namespace ecs {
     using ECSImpl = ECS<
         CoreTransform,
         CLI,
-        EventGraph,
         UserComponentWrapper,
         UIDiv,
         UIButton,

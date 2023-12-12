@@ -137,7 +137,7 @@ target_link_libraries(
 target_link_libraries(ecs
     raylibgraph
     ${METADATA_SRC}/libCoreTransform.so
-    ${METADATA_SRC}/libEventGraph.so
+    # ${METADATA_SRC}/libEventGraph.so
     # ${METADATA_SRC}/libNodePrintStr.so
     # ${METADATA_SRC}/libNodeStr.so
     ${METADATA_SRC}/libUIDiv.so
