@@ -18,9 +18,86 @@ CLI::CLI()
 {
 }
 
+std::map<std::string, std::function<void(CLI&, std::vector<std::string>)>> CLI::m_commands = {
+    { "help", [](CLI& cli, std::vector<std::string> args) { cli.showHelp(); } },
+    { "ne", [](CLI& cli, std::vector<std::string> args) { cli.createEntity(); } },
+    { "ctxt", [](CLI& cli, std::vector<std::string> args) { cli.setContext(args); } },
+    { "mv", [](CLI& cli, std::vector<std::string> args) { cli.moveEntity(args); } },
+    { "save", [](CLI& cli, std::vector<std::string> args) { cli.save(args); } },
+    { "exit", [](CLI& cli, std::vector<std::string> args) { exit(0); } },
+    { "skip", [](CLI& cli, std::vector<std::string> args) { cli.skipNFrames(args); } },
+    { "addcpt", [](CLI& cli, std::vector<std::string> args) { cli.addVanillaCptFromIndex(args); } },
+    { "add", [](CLI& cli, std::vector<std::string> args) { cli.addVanillaCptFromName(args); } },
+    { "clear", [](CLI& cli, std::vector<std::string> args) { system("clear"); } },
+    { "reload", [](CLI& cli, std::vector<std::string> args) { cli.reloadEntities(args); } },
+    { "le", [](CLI& cli, std::vector<std::string> args) { cli.listEntities(); } },
+    { "hotreload", [](CLI& cli, std::vector<std::string> args) { cli.hotReload(); } },
+    { "rme", [](CLI& cli, std::vector<std::string> args) { cli.removeEntity(args); } },
+    { "setmbr", [](CLI& cli, std::vector<std::string> args) { cli.setMember(args); } },
+    { "listmbr", [](CLI& cli, std::vector<std::string> args) { cli.listExposedMembers(args); } },
+    { "lsctxt", [](CLI& cli, std::vector<std::string> args) { cli.showContext(); } },
+};
+
+const std::map<std::string, std::function<void(CLI&, std::vector<std::string>)>> CLI::getM_commands()
+{
+    return m_commands;
+}
+
+void CLI::setM_commands(const std::map<std::string, std::function<void(CLI&, std::vector<std::string>)>>& m_commands)
+{
+    CLI::m_commands = m_commands;
+}
+
 CLI::CLI(const CLI& cpy)
 {
     m_commands = cpy.m_commands;
+}
+
+void feedVector(std::vector<std::string>& vector, std::vector<std::string>& files)
+{
+    for (const auto& kv : CLI::getM_commands()) {
+        vector.push_back(kv.first);
+    }
+
+    std::string path = eng::Engine::GetEngine()->GetConfigValue("assetRoot");
+    if (!std::filesystem::exists(path)) {
+        throw std::runtime_error("Path does not exist");
+    }
+
+    for (const auto& entry : std::filesystem::recursive_directory_iterator(path)) {
+        if (std::filesystem::is_regular_file(entry)) {
+            std::filesystem::path relative_path = std::filesystem::relative(entry.path(), path);
+            files.push_back(relative_path.string());
+        }
+    }
+}
+
+void SetCompletion(const char* buf, linenoiseCompletions* lc)
+{
+    static std::vector<std::string> commands;
+    static std::vector<std::string> files;
+    std::string bufStr(buf);
+    std::string fileName;
+    std::string::size_type pos = bufStr.rfind(' ');
+
+    if (commands.size() == 0 || files.size() == 0)
+        feedVector(commands, files);
+
+    if (pos != std::string::npos && pos != bufStr.length() - 1) {
+        fileName = bufStr.substr(pos + 1);
+        bufStr = bufStr.substr(0, pos + 1);
+    } else {
+        fileName = bufStr;
+        bufStr = "";
+    }
+
+    for (const auto& command : commands)
+        if (command.compare(0, fileName.length(), fileName) == 0)
+            linenoiseAddCompletion(lc, (bufStr + command.c_str()).c_str());
+
+    for (const auto& file : files)
+        if (file.compare(0, fileName.length(), fileName) == 0)
+            linenoiseAddCompletion(lc, (bufStr + file.c_str()).c_str());
 }
 
 void CLI::OnLoad()
@@ -34,15 +111,19 @@ void CLI::OnLoad()
     UIButton::RegisterCallback("cli::hotreload", [&] {
         hotReload({});
     });
+
+    linenoiseSetCompletionCallback(SetCompletion);
 }
 
 std::string CLI::consoleGetLine()
 {
-    std::string line;
-
-    Console::prompt << "CLI _> " << std::flush;
-    std::getline(std::cin, line);
-    return line;
+    char* line = linenoise("CLI _> ");
+    if (line == nullptr) {
+        return "";
+    }
+    std::string result(line);
+    free(line);
+    return result;
 }
 
 void CLI::Update(int entityID)
@@ -60,6 +141,8 @@ void CLI::Update(int entityID)
     if (m_future.wait_for(m_timeOut) == std::future_status::ready) {
         command = m_future.get();
         m_prompted = false;
+        linenoiseHistoryAdd(command.c_str());
+        m_history.push_back(command);
         parseCommand(command);
     }
 }
