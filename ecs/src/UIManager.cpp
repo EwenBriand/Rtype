@@ -27,7 +27,7 @@ namespace ui {
         // _storage.RegisterComponent<Text>(_systemText);
 
 
-        if (eng::Engine::GetEngine()->IsOptionSet("--editor")) {
+        if (eng::Engine::GetEngine()->IsOptionSet(eng::Engine::Options::EDITOR)) {
             registerEditorHandles();
         }
 
