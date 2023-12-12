@@ -147,6 +147,7 @@ target_link_libraries(ecs
     ${METADATA_SRC}/libAnimator.so
     ${METADATA_SRC}/libCollider2D.so
     ${METADATA_SRC}/libAudioSource.so
+    ${METADATA_SRC}/libRigidBody2D.so
     editorMouseManager
     usercomponentwrapper
     entityExplorer
