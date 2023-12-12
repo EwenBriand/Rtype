@@ -5,6 +5,7 @@
 ** ECS.cpp
 */
 
+#include "CoreTransform.hpp"
 #include "ECSImpl.hpp"
 #include "Engine.hpp"
 

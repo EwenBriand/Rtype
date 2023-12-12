@@ -152,6 +152,7 @@ private:
      * [sprite path]: string            // path to the sprite
      * [loop]: bool                     // whether the animation loops or not
      * [fps]: int                       // fps of the animation
+     * [scale]: float, float            // scale of the sprite
      * [auto]: int, int, int            // wether the rect of the sprite should be automatically calculated or not. This works only if all the sprites are the same size and are aligned on a line. The parameters are: width, height, number of sprites
      * ===FRAMES===                     // keyword to indicate the start of the frames specification
      * [frame id] {                     // frames, each scope is one frame

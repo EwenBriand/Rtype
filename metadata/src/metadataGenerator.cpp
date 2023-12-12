@@ -110,11 +110,13 @@ namespace meta {
         std::string getMetadataFunction = "";
         std::string className = words[++i];
         _className = className;
+        bool needsInit = true;
 
         for (; i < words.size() && (!nonTrivialEnd || openBrackets > 0); ++i) {
-            if (words[i] == "{") {
+            if (words[i] == "{" && needsInit) {
                 ++openBrackets;
                 nonTrivialEnd = true;
+                needsInit = false;
                 initFunctions(loadFunction, saveFunction, getMetadataFunction, className);
 
             } else if (words[i] == "}")
@@ -123,9 +125,6 @@ namespace meta {
                 updateMetadataFunctions(words, i, loadFunction, saveFunction, getMetadataFunction);
             }
         }
-        // loadFunction += "}\n";
-        // saveFunction += "\tconfig.writeFile(filepath.c_str());\n";
-        // saveFunction += "}\n";
         loadFunction += ");\n}\n";
         saveFunction += ");\n}\n";
         getMetadataFunction += "\treturn metadata;\n";
@@ -160,15 +159,10 @@ namespace meta {
     {
 
         loadFunction = "void " + className + "::Load(const std::string &filepath)\n{\n";
-        // loadFunction += "\tlibconfig::Config config;\n";
-        // loadFunction += "\tconfig.readFile(filepath.c_str());\n";
-        // loadFunction += "\tlibconfig::Setting &setting = config.getRoot();\n";
         loadFunction += "\tbytes::ToBytes bytes;\n";
         loadFunction += "\tbytes.Load(filepath";
 
         saveFunction = "void " + className + "::Save(const std::string &filepath)\n{\n";
-        // saveFunction += "\tlibconfig::Config config;\n";
-        // saveFunction += "\tlibconfig::Setting &root = config.getRoot();\n";
         saveFunction += "\tbytes::ToBytes bytes;\n";
         saveFunction += "\tbytes.Save(filepath";
 
@@ -202,8 +196,6 @@ namespace meta {
         name = words[++i];
         size = "sizeof(" + type + ")";
 
-        // loadFunction += TEMPLATE_LOAD_VECTOR(name, contained_type);
-        // saveFunction += TEMPLATE_SAVE_VECTOR(name, contained_type);
         loadFunction += ", " + name;
         saveFunction += ", " + name;
         getMetadataFunction += "\tmetadata[\"" + name + "\"] = {\"" + type + "\", \"" + name + "\", " + size + ", " + TEMPLATE_GENERATE_SETTER_VECTOR(name) + ", " + TEMPLATE_GENERATE_GETTER_VECTOR(name) + ", " + TEMPLATE_GENERATE_TO_STRING_VECTOR(name) + "};\n";
@@ -224,8 +216,6 @@ namespace meta {
         name = words[++i];
         size = "sizeof(" + type + ")";
 
-        // loadFunction += TEMPLATE_LOAD_MAP(name);
-        // saveFunction += TEMPLATE_SAVE_MAP(name);
         loadFunction += ", " + name;
         saveFunction += ", " + name;
         getMetadataFunction += "\tmetadata[\"" + name + "\"] = {\"" + type + "\", \"" + name + "\", " + size + ", " + TEMPLATE_GENERATE_SETTER_MAP(name) + ", " + TEMPLATE_GENERATE_GETTER_MAP(name) + ", " + TEMPLATE_GENERATE_TO_STRING_MAP(name) + "};\n";
@@ -255,14 +245,6 @@ namespace meta {
         type = words[i];
         name = words[++i];
         size = "sizeof(" + type + ")";
-
-        // loadFunction += "try {\n";
-        // loadFunction += "\t\tsetting.lookupValue(\"cfg_" + name + "\", " + name + ");\n";
-        // loadFunction += "\t} catch (const libconfig::SettingNotFoundException &e) {\n";
-        // loadFunction += "\t\tstd::cerr << \"Warning: could not find setting " + name + " in file \" << filepath << std::endl;\n";
-        // loadFunction += "\t}\n";
-        // saveFunction += "\tauto &setting_" + name + " = root.add(\"cfg_" + name + "\", " + typeConversionTable[type] + ");\n";
-        // saveFunction += "\tsetting_" + name + " = " + name + ";\n";
         loadFunction += ", " + name;
         saveFunction += ", " + name;
 
@@ -271,7 +253,7 @@ namespace meta {
 
     void MetadataGenerator::initCMake()
     {
-        _cmakefile += "cmake_minimum_required(VERSION 3.0)\n";
+        _cmakefile += "cmake_minimum_required(VERSION 3.5)\n";
         _cmakefile += "project(autogen)\n";
         _cmakefile += "\n";
         _cmakefile += "set(CMAKE_CXX_STANDARD 20)\n";
@@ -304,7 +286,6 @@ namespace meta {
         std::filesystem::create_directory(_outputDirectory);
 
         _cmakefile += "add_compile_options(-g3)";
-        // std::ofstream cmakefile("./metabuild/CMakeLists.txt", std::ios::out);
         std::ofstream cmakefile("./" + _outputDirectory + "/CMakeLists.txt", std::ios::out);
 
         if (!cmakefile.is_open()) {
@@ -317,7 +298,6 @@ namespace meta {
 
     void MetadataGenerator::buildCMake()
     {
-        // std::string command = "cd metabuild && cmake . && make -j 8";
         std::string command = "cd " + _outputDirectory + " && cmake . && make -j 8";
         int out = system(command.c_str());
         if (out != 0) {

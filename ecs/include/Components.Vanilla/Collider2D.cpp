@@ -10,6 +10,7 @@
 #include "CLI.hpp"
 #include "ECSImpl.hpp"
 #include "Engine.hpp"
+#include "RigidBody2D.hpp"
 #include "raylib.h"
 
 // ===============================================================
@@ -234,8 +235,7 @@ void Collider2D::checkCollisions()
     _wasColliding = _isColliding;
     Sys.ForEach<Collider2D>([this](Collider2D collider) {
         if (collider.GetEntityID() == _entityID)
-            return; // don't check collision with self
-        // collider.recalculateEdgesAndNormals(); // todo : move to pipeline to avoid recalculating twice every frame
+            return; // doesn't check collision with self
         checkCollision(collider);
     });
     if (!_isColliding && _wasColliding && _onCollisionExit) {
@@ -260,9 +260,13 @@ void Collider2D::checkCollision(Collider2D& other)
             return;
         }
     _isColliding = true;
-    std::cout << "COLLISION" << std::endl;
     if (_onCollisionEnter) {
         _onCollisionEnter(_entityID, other.GetEntityID());
+    }
+    try {
+        Sys.GetComponent<RigidBody2D>(_entityID).CollideWith(other.GetEntityID());
+    } catch (std::exception& e) {
+        // no rigidbody, no collision
     }
 }
 
