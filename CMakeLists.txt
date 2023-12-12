@@ -44,19 +44,25 @@ add_subdirectory(ecs)
 
 add_custom_target(call_metagen ALL
     DEPENDS MetaData generate_metadata
-    )
+)
 
-    add_custom_command(OUTPUT MetaData
+if(WIN32)
+add_custom_command(OUTPUT MetaData
+    # COMMAND echo "-- Generating Metadata from Vanilla Components"
+    # COMMAND metadata\\generate_metadata.exe ${CMAKE_SOURCE_DIR}\\ecs\\include\\Components.Vanilla
+    # COMMAND echo "-- Resuming build"
+    # DEPENDS always_rebuild
+    COMMAND echo "-- Generate Metadata manually then restart"
+)
+else()
+add_custom_command(OUTPUT MetaData
     COMMAND echo "-- Generating Metadata from Vanilla Components"
-    
-    if(WIN32)
-        COMMAND metadata\\generate_metadata.exe ${CMAKE_SOURCE_DIR}\\ecs\\include\\Components.Vanilla
-    else()
-        COMMAND ./metadata/generate_metadata ${CMAKE_SOURCE_DIR}/ecs/include/Components.Vanilla/
-    endif()
+    COMMAND ./metadata/generate_metadata ${CMAKE_SOURCE_DIR}/ecs/include/Components.Vanilla/
     COMMAND echo "-- Resuming build"
     DEPENDS always_rebuild
 )
+
+endif()
 
 add_custom_command(OUTPUT always_rebuild
 COMMAND echo ""
