@@ -273,7 +273,7 @@ void Animator::OnLoad()
     cli.RegisterCustomCommand(
         "anme-load", [](CLI& cli, std::vector<std::string> args) {
             if (args.size() != 2) {
-                Console::warn << "Usage: anme-add <path>" << std::endl;
+                Console::warn << "Usage: anme-load <path>" << std::endl;
                 return;
             }
             std::string name = "";
