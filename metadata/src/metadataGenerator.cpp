@@ -257,12 +257,10 @@ namespace meta {
         _cmakefile += "project(autogen)\n";
         _cmakefile += "\n";
         _cmakefile += "set(CMAKE_CXX_STANDARD 20)\n";
-        _cmakefile += "include_directories(" + folder + " " + folder + "../../../metadata/include/ ../../metadata/include/ ../../ecs/include/ ../../ecs/raylib/raylib/include/ " + folder + "/../../ecs/raylib/src/ " + folder + "../../raylib/src/ " + folder + "../../raylib/examples/shapes/ )\n";
+        _cmakefile += "include_directories(" + folder + " " + folder + "../../../metadata/include/ ../../metadata/include/ ../../ecs/include/ " + folder + "/../../ecs/raylib/src/ " + folder + "../../raylib/src/ " + folder + "../../raylib/examples/shapes/ )\n";
         _cmakefile += "set(CMAKE_RUNTIME_OUTPUT_DIRECTORY " + folder + ")\n";
         _cmakefile += "set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH}  ${CMAKE_CURRENT_SOURCE_DIR}/../build/)\n";
         _cmakefile += "link_directories(\n";
-        _cmakefile += "\t${CMAKE_CURRENT_SOURCE_DIR}/ecs/raylib/raylib/\n";
-        _cmakefile += "\t${CMAKE_CURRENT_SOURCE_DIR}/../ecs/raylib/raylib/\n";
         _cmakefile += ")\n";
     }
 

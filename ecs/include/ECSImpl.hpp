@@ -37,8 +37,6 @@ namespace ecs {
         CLI,
         EventGraph,
         UserComponentWrapper,
-        NodePrintStr,
-        NodeStr,
         UIDiv,
         UIButton,
         UIMenu,

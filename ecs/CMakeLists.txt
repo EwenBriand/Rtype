@@ -40,7 +40,7 @@ set(SRC
     src/SceneManager.cpp
     src/GenericStorageSystem.cpp
     src/UIManager.cpp
-    ./include/Components.Vanilla/INode.cpp
+    # ./include/Components.Vanilla/INode.cpp
 )
 set(CMAKE_CXX_STANDARD 17)
 
@@ -83,7 +83,7 @@ add_executable(testtarget
 add_library(
     cli SHARED
     ./include/Components.Vanilla/CLI.cpp
-    ./include/Components.Vanilla/INode.cpp
+    # ./include/Components.Vanilla/INode.cpp
 )
 
 
@@ -138,8 +138,8 @@ target_link_libraries(ecs
     raylibgraph
     ${METADATA_SRC}/libCoreTransform.so
     ${METADATA_SRC}/libEventGraph.so
-    ${METADATA_SRC}/libNodePrintStr.so
-    ${METADATA_SRC}/libNodeStr.so
+    # ${METADATA_SRC}/libNodePrintStr.so
+    # ${METADATA_SRC}/libNodeStr.so
     ${METADATA_SRC}/libUIDiv.so
     ${METADATA_SRC}/libUIButton.so
     ${METADATA_SRC}/libUIMenu.so

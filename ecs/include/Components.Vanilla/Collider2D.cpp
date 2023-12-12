@@ -39,8 +39,6 @@ void Collider2D::OnLoad()
                 }
                 std::vector<float> vertices;
                 for (size_t i = 0; i < size; i += 2) {
-                    std::cout << "stof: " << args[i] << std::endl;
-                    std::cout << "stof: " << args[i + 1] << std::endl;
                     vertices.push_back(std::stof(args[i]));
                     vertices.push_back(std::stof(args[i + 1]));
                 }

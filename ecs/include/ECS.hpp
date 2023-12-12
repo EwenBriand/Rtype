@@ -930,7 +930,7 @@ namespace ecs {
         std::shared_ptr<graph::IGraphicalModule> GetGraphicalModule() { return _graphicalModule; }
         void SetGraphicalModule(std::shared_ptr<graph::IGraphicalModule> module) { _graphicalModule = module; }
 
-        ResourceManager& GetResourceManager() { return _resourceManager; }
+        inline ResourceManager& GetResourceManager() { return _resourceManager; }
         InputManager& GetInputManager() { return _inputManager; }
 
         void SetEditorEntityContext(Entity e) { _editorEntityContext = e; }
