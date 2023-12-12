@@ -19,6 +19,7 @@
 #include "Components.Vanilla/EventGraph.hpp"
 #include "Components.Vanilla/NodePrintStr.hpp"
 #include "Components.Vanilla/NodeStr.hpp"
+#include "Components.Vanilla/RigidBody2D.hpp"
 #include "Components.Vanilla/TextField.hpp"
 #include "Components.Vanilla/UIButton.hpp"
 #include "Components.Vanilla/UIDiv.hpp"
@@ -46,7 +47,8 @@ namespace ecs {
         EntityExplorer,
         Animator,
         Collider2D,
-        AudioSource>;
+        AudioSource,
+        RigidBody2D>;
 
 #define Sys ecs::ECSImpl::GetSystem()
 #define Console ecs::ECSImpl

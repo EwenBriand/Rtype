@@ -20,7 +20,7 @@ RLCamera3D::~RLCamera3D() {
 
 void RLCamera3D::Update(int entityID) {
     UpdateCamera(&m_camera, CAMERA_PERSPECTIVE);
-    if (eng::Engine::GetEngine()->IsOptionSet("--editor")) {
+    if (eng::Engine::GetEngine()->IsOptionSet(eng::Engine::Options::EDITOR)) {
         DrawGrid(10, 1.0f);
     }
 }
@@ -48,4 +48,3 @@ void RLCamera3D::OnAddComponent(int entityID) {
     }
     m_camera = { { m_px, m_py, m_pz }, { m_tx, m_ty, m_tz }, { m_ux, m_uy, m_uz }, m_fov, 0 };
 }
-

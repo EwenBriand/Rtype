@@ -8,6 +8,7 @@
 #pragma once
 
 #include "Components.Vanilla/UserComponentWrapper.hpp"
+#include "IGame.hpp"
 #include "IGraphicalModule.hpp"
 #include "Types.hpp"
 #include <cstring>
@@ -123,6 +124,12 @@ namespace ecs {
          */
         static std::string MakePath(const std::vector<std::string>& pathElements, bool throwIfNotExist = false);
 
+        /**
+         * @brief Loads an instance of the IGame interface from the given file path.
+         *
+         */
+        std::shared_ptr<eng::IGame> LoadGame(const std::string& path);
+
     private:
         unsigned int m_changesNbr = 0;
         std::string m_userComponentsPath = "./metabuild/";
@@ -131,5 +138,7 @@ namespace ecs {
 
         std::unordered_map<std::string, Action> _availableActions;
         std::tuple<void*, std::shared_ptr<graph::IGraphicalModule>> _graphicalModule = { nullptr, nullptr };
+        std::shared_ptr<eng::IGame> _game = nullptr;
+        void* _gameHandle = nullptr;
     };
 }

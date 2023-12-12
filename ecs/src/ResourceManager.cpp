@@ -24,6 +24,8 @@ namespace ecs {
     {
         if (std::get<0>(_graphicalModule))
             dlclose(std::get<0>(_graphicalModule));
+        if (_gameHandle)
+            dlclose(_gameHandle);
     }
 
     std::shared_ptr<AUserComponent> ResourceManager::LoadUserComponent(
@@ -236,5 +238,27 @@ namespace ecs {
             throw eng::EngineException("Path does not exist : " + p.string(), __FILE__, __FUNCTION__, __LINE__);
         }
         return p.string();
+    }
+
+    std::shared_ptr<eng::IGame> ResourceManager::LoadGame(const std::string& path)
+    {
+        if (_gameHandle) {
+            throw eng::EngineException("Game already loaded", __FILE__, __FUNCTION__, __LINE__);
+        }
+
+        void* handle = dlopen(path.c_str(), RTLD_LAZY);
+        if (!handle) {
+            throw eng::EngineException(dlerror(), __FILE__, __FUNCTION__, __LINE__);
+        }
+        eng::IGame* (*create)() = reinterpret_cast<eng::IGame* (*)()>(dlsym(handle, "create"));
+        if (!create) {
+            throw eng::EngineException(dlerror(), __FILE__, __FUNCTION__, __LINE__);
+        }
+        _game = std::shared_ptr<eng::IGame>(create());
+        if (!_game) {
+            throw eng::EngineException("Game creation failed", __FILE__, __FUNCTION__, __LINE__);
+        }
+        _gameHandle = handle;
+        return _game;
     }
 }

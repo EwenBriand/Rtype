@@ -922,15 +922,10 @@ namespace ecs {
             }
             AllCptOfSameType& cpt = _components[idx];
             for (auto e : _usedIds)
-                for (auto cpt : cpt[e]) {
+                for (auto& cpt : cpt[e]) {
                     func(std::get<T>(cpt));
                 }
         }
-
-        // #define MAKE_HCPT(cpttypename) \
-            //     {#cpttypename, [&](Entity e, libconfig::Setting &setting) { \
-            //         AddComponent<cpttypename>(e).Init(setting); \
-            //     }}
 
         std::shared_ptr<graph::IGraphicalModule> GetGraphicalModule() { return _graphicalModule; }
         void SetGraphicalModule(std::shared_ptr<graph::IGraphicalModule> module) { _graphicalModule = module; }
