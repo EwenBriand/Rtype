@@ -15,7 +15,7 @@
 #include "../Types.hpp"
 #include "../IGraphicalModule.hpp"
 
-class UIScrollableList : public AFocusable {
+class UIScrollableList {
     public:
         void OnAddComponent(int entityID);
 

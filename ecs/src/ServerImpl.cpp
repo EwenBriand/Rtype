@@ -6,19 +6,26 @@
 */
 
 #include <stdexcept>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <unistd.h>
 #include <iostream>
 #include <cstring>
-#include <arpa/inet.h>
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <algorithm>
 #include "../include/Server.hpp"
+#include "Poll.hpp"
 
 #define DEBUG
+#ifdef _WIN32
+    #define SOCKET_OPTIONS SO_EXCLUSIVEADDRUSE
+    #include <winsock2.h>
+    #include <ws2tcpip.h>
+#else
+    #define SOCKET_OPTIONS SO_REUSEADDR | SO_REUSEPORT
+    #include <sys/socket.h>
+    #include <netinet/in.h>
+    #include <unistd.h>
+#endif
 
 namespace serv {
     std::unique_ptr<ServerImpl> ServerImpl::_instance = nullptr;
@@ -38,9 +45,14 @@ namespace serv {
             throw std::runtime_error("Failed to create socket.");
 
         int opt = 1;
-        if (setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)))
-            throw std::runtime_error("Failed to set socket options.");
 
+#ifdef _WIN32
+        if (setsockopt(_socket, SOL_SOCKET, SOCKET_OPTIONS, (char *)&opt, sizeof(opt)))
+            throw std::runtime_error("Failed to set socket options.");
+#else
+        if (setsockopt(_socket, SOL_SOCKET, SOCKET_OPTIONS, &opt, sizeof(opt)))
+            throw std::runtime_error("Failed to set socket options.");
+#endif
         _address.sin_family = AF_INET;
         _address.sin_addr.s_addr = INADDR_ANY;
         _address.sin_port = htons(_port);
@@ -88,13 +100,7 @@ namespace serv {
         if (newSocket < 0)
             throw std::runtime_error("Failed to accept new client.");
 
-        int flags = fcntl(newSocket, F_GETFL, 0);
-        if (flags < 0)
-            throw std::runtime_error("Failed to get socket flags.");
-
-        if (fcntl(newSocket, F_SETFL, flags | O_NONBLOCK) < 0)
-            throw std::runtime_error("Failed to set socket flags.");
-
+        myposix::Poll::initSocket(newSocket);
         _clients.emplace_back(newSocket);
         _clients.back() << Message::WaitingForHandshake;
         std::cout << "New client connected, waiting for handshake." << std::endl;
@@ -102,14 +108,14 @@ namespace serv {
 
     void ServerImpl::Poll()
     {
-        std::vector<pollfd> pollfds;
-        pollfds.emplace_back(pollfd{.fd = _socket, .events = POLLIN, .revents = 0});
+        std::vector<myposix::Poll::aPollfd> pollfds;
+        pollfds.emplace_back(myposix::Poll::aPollfd{.fd = _socket, .events = POLLIN, .revents = 0});
         for (auto &client : _clients) {
-            pollfds.emplace_back(pollfd{.fd = client.GetSocket(), .events = POLLIN, .revents = 0});
+            pollfds.emplace_back(myposix::Poll::aPollfd{.fd = client.GetSocket(), .events = POLLIN, .revents = 0});
         }
 
         int timeout = 100;
-        int ret = poll(pollfds.data(), pollfds.size(), timeout);
+        int ret = myposix::Poll::poll(pollfds, timeout);
         if (ret < 0)
             throw std::runtime_error("Failed to poll sockets.");
 

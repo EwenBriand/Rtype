@@ -13,14 +13,14 @@
 
 void EditorMouseManager::OnAddComponent(int entityID)
 {
-    Sys.GetInputManager().RegisterBinding(
+    SYS.GetInputManager().RegisterBinding(
         "MouseClick-Editor",
         {
             .testTriggered = [&](__attribute__((unused)) InputManager::EventInfo &info) {
-                bool clicked = Sys.GetGraphicalModule()->WindowIsMouseLeftDown();
+                bool clicked = SYS.GetGraphicalModule()->WindowIsMouseLeftDown();
                 if (!clicked) {
                     m_isPressed = false;
-                    m_mousePrevPos = Sys.GetGraphicalModule()->WindowGetMousePos();
+                    m_mousePrevPos = SYS.GetGraphicalModule()->WindowGetMousePos();
                 }
                 return clicked;
             },
@@ -33,7 +33,7 @@ void EditorMouseManager::OnAddComponent(int entityID)
 
 void EditorMouseManager::setCtxtClosestEntity()
 {
-    std::vector<Entity> entities = Sys.GetEntities();
+    std::vector<Entity> entities = SYS.GetEntities();
     Entity closestEntity = -1;
     float closestDistance = INT32_MAX;
 
@@ -42,13 +42,13 @@ void EditorMouseManager::setCtxtClosestEntity()
     m_isPressed = true;
     for (auto &entity : entities) {
         try {
-            auto &transform = Sys.GetComponent<CoreTransform>(entity);
+            auto &transform = SYS.GetComponent<CoreTransform>(entity);
             if (closestEntity == -1) {
                 closestEntity = entity;
-                closestDistance = graph::distance(transform.GetScreenPosition(), Sys.GetGraphicalModule()->WindowGetMousePos());
+                closestDistance = graph::distance(transform.GetScreenPosition(), SYS.GetGraphicalModule()->WindowGetMousePos());
                 continue;
             }
-            float distance = graph::distance(transform.GetScreenPosition(), Sys.GetGraphicalModule()->WindowGetMousePos());
+            float distance = graph::distance(transform.GetScreenPosition(), SYS.GetGraphicalModule()->WindowGetMousePos());
             if (distance < closestDistance) {
                 closestEntity = entity;
                 closestDistance = distance;
@@ -58,14 +58,14 @@ void EditorMouseManager::setCtxtClosestEntity()
         }
     }
     if (closestEntity != -1 && closestDistance < 5) {
-        Sys.SetEditorEntityContext(closestEntity);
-        Console::info << "Selected entity: " << closestEntity << std::endl;
+        SYS.SetEditorEntityContext(closestEntity);
+        CONSOLE::info << "Selected entity: " << closestEntity << std::endl;
     }
 }
 
 void EditorMouseManager::checkForDrag()
 {
-    graph::vec2f mousePos = Sys.GetGraphicalModule()->WindowGetMousePos();
+    graph::vec2f mousePos = SYS.GetGraphicalModule()->WindowGetMousePos();
     graph::vec2f delta = {
         mousePos.x - m_mousePrevPos.x,
         mousePos.y - m_mousePrevPos.y};
@@ -74,11 +74,11 @@ void EditorMouseManager::checkForDrag()
         return;
     }
     m_mousePrevPos = mousePos;
-    Entity entity = Sys.GetEditorEntityContext();
+    Entity entity = SYS.GetEditorEntityContext();
     if (entity == -1)
         return;
     try {
-        auto &transform = Sys.GetComponent<CoreTransform>(entity);
+        auto &transform = SYS.GetComponent<CoreTransform>(entity);
         transform.x += delta.x;
         transform.y += delta.y;
     } catch (std::exception &e) {
@@ -88,13 +88,13 @@ void EditorMouseManager::checkForDrag()
 
 void EditorMouseManager::Update(int entityID)
 {
-    Entity ctxt = Sys.GetEditorEntityContext();
+    Entity ctxt = SYS.GetEditorEntityContext();
 
     if (ctxt == -1)
         return;
     try {
-        auto &transform = Sys.GetComponent<CoreTransform>(ctxt);
-        Sys.GetGraphicalModule()->WindowDrawCircle({
+        auto &transform = SYS.GetComponent<CoreTransform>(ctxt);
+        SYS.GetGraphicalModule()->WindowDrawCircle({
             .pos = transform.GetScreenPosition(),
             .radius = 5,
             .borderColor = {255, 255, 255, 255},

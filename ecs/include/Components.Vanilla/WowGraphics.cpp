@@ -28,7 +28,7 @@ namespace wow {
     }
 
     WowGraphicsEngine::WowGraphicsEngine() :
-        _camera(Sys.AddComponent(Sys.GetSystemHolder(), "RLCamera3D")),
+        _camera(SYS.AddComponent(SYS.GetSystemHolder(), "RLCamera3D")),
         _vao(std::make_shared<lg::VAO>()),
         _screenQuadVBO(std::make_shared<lg::VBO>(_screenQuadVertices, sizeof(_screenQuadVertices))),
         _screenQuadEBO(std::make_shared<lg::EBO>(_screenQuadIndices, sizeof(_screenQuadIndices)))
@@ -73,7 +73,7 @@ namespace wow {
 
     void WowGraphicsEngine::InitWowGraphicsEngine()
     {
-        _raymarchingShader = LoadShader(0, Sys.GetResourceManager().LoadFileText(
+        _raymarchingShader = LoadShader(0, SYS.GetResourceManager().LoadFileText(
             "shaders/raymarching/fragment.glsl"
         ).c_str());
 

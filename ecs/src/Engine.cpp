@@ -33,7 +33,7 @@ namespace eng {
     }
 
     Engine::Engine()
-        : m_graphicalModule(Sys.GetResourceManager().LoadGraphicalModule())
+        : m_graphicalModule(SYS.GetResourceManager().LoadGraphicalModule())
     {
         m_preUpdatePipeline = std::make_shared<std::vector<Action>>();
         m_postUpdatePipeline = std::make_shared<std::vector<Action>>();
@@ -48,7 +48,7 @@ namespace eng {
     void Engine::setupPipeline()
     {
         pushPipeline([&]() {
-            Sys.GetInputManager().PollEvents();
+            SYS.GetInputManager().PollEvents();
         },
             -1000);
         m_graphicalModule->ModPipeline();
@@ -80,9 +80,9 @@ namespace eng {
             std::ofstream pipinfo(".pipinfo.txt", std::ios::out | std::ios::trunc);
             pipinfo << pipelineAsStr;
             pipinfo.close();
-            Console::info << "More information on the pipeline in .pipinfo.txt" << std::endl;
+            CONSOLE::info << "More information on the pipeline in .pipinfo.txt" << std::endl;
         } catch (std::exception& e) {
-            Console::warn << "Could not save pipeline information" << std::endl;
+            CONSOLE::warn << "Could not save pipeline information" << std::endl;
         }
         m_pipelineChanged = false;
     }
@@ -117,35 +117,35 @@ namespace eng {
         try {
             discoverConfig(m_options[eng::Engine::Options::CONFIG_DIR]);
         } catch (EngineException& e) {
-            Console::err << "\nWhile discovering config: \n"
+            CONSOLE::err << "\nWhile discovering config: \n"
                          << e.what() << std::endl;
             Stop();
         }
-        Sys.SetGraphicalModule(m_graphicalModule);
-        Sys.GetInputManager().SetupDefaults();
+        SYS.SetGraphicalModule(m_graphicalModule);
+        SYS.GetInputManager().SetupDefaults();
         if (IsOptionSet(eng::Engine::Options::EDITOR)) {
-            Sys.AddComponent<CLI>(Sys.GetSystemHolder());
-            Sys.AddComponent<EditorMouseManager>(Sys.GetSystemHolder());
-            Sys.AddComponent<EntityExplorer>(Sys.GetSystemHolder());
+            SYS.AddComponent<CLI>(SYS.GetSystemHolder());
+            SYS.AddComponent<EditorMouseManager>(SYS.GetSystemHolder());
+            SYS.AddComponent<EntityExplorer>(SYS.GetSystemHolder());
             ecs::SceneManager::Get().InitEditorMode();
         }
         if (IsOptionSet(eng::Engine::Options::GAME)) {
             try {
-                m_game = Sys.GetResourceManager().LoadGame(GetOptionValue(eng::Engine::Options::GAME));
+                m_game = SYS.GetResourceManager().LoadGame(GetOptionValue(eng::Engine::Options::GAME));
             } catch (EngineException& e) {
-                Console::err << "\nWhile loading game: \n"
+                CONSOLE::err << "\nWhile loading game: \n"
                              << e.what() << std::endl;
                 Stop();
             }
         }
 
-        Sys.LoadVanilla();
+        SYS.LoadVanilla();
         if (m_game)
             m_game->Init();
-        Sys.GetResourceManager().CheckHotReload();
+        SYS.GetResourceManager().CheckHotReload();
 
-        for (auto e : Sys.GetEntities()) {
-            Sys.ForEachComponent(e, [&](ecs::ECSImpl::AnyCpt& cpt) {
+        for (auto e : SYS.GetEntities()) {
+            SYS.ForEachComponent(e, [&](ecs::ECSImpl::AnyCpt& cpt) {
                 std::visit([&](auto&& arg) {
                     arg.Start();
                 },
@@ -160,11 +160,11 @@ namespace eng {
         setupPipeline();
         sortPipeline();
 
-        Sys.CallStart();
-        Sys.Run(
+        SYS.CallStart();
+        SYS.Run(
             [&]() {
                 for (auto action : *m_preUpdatePipeline) {
-                    if (Sys.FrameIsSkipped()) {
+                    if (SYS.FrameIsSkipped()) {
                         return;
                     }
                     action();
@@ -172,11 +172,11 @@ namespace eng {
             },
             [&]() {
                 if (m_pipelineChanged) {
-                    Console::info << "Updating pipeline" << std::endl;
+                    CONSOLE::info << "Updating pipeline" << std::endl;
                     sortPipeline();
                 }
                 for (auto action : *m_postUpdatePipeline) {
-                    if (Sys.FrameIsSkipped())
+                    if (SYS.FrameIsSkipped())
                         break;
                     action();
                 }
@@ -202,7 +202,7 @@ namespace eng {
         std::string configExt = ".cfg";
         std::string configPath = std::filesystem::current_path().string() + "/" + configDir;
 
-        Console::info << "Discovering config files in: " << configPath << std::endl;
+        CONSOLE::info << "Discovering config files in: " << configPath << std::endl;
         if (!std::filesystem::exists(configPath))
             throw EngineException("Config directory not found", __FILE__, __FUNCTION__, __LINE__);
         for (auto& p : std::filesystem::directory_iterator(configPath)) {
@@ -212,14 +212,14 @@ namespace eng {
         if (configFiles.size() == 0)
             throw EngineException("No config file found", __FILE__, __FUNCTION__, __LINE__);
         for (auto& file : configFiles) {
-            Console::info << "Loading config file: " << file << std::endl;
+            CONSOLE::info << "Loading config file: " << file << std::endl;
             loadConfig(file);
         }
         std::string savePath = GetConfigValue("scenesSavePath");
         if (!std::filesystem::exists(savePath))
             std::filesystem::create_directory(savePath);
-        Console::info << "Data will be saved at " << savePath << std::endl;
-        Sys.SetSavePath(savePath);
+        CONSOLE::info << "Data will be saved at " << savePath << std::endl;
+        SYS.SetSavePath(savePath);
     }
 
     void Engine::loadConfig(const std::string& path)
@@ -230,7 +230,7 @@ namespace eng {
         }
 
         std::string line;
-        Console::info << "Loading config file: " << path << std::endl;
+        CONSOLE::info << "Loading config file: " << path << std::endl;
         while (std::getline(config_file, line)) {
             if (line.empty() || line.front() == '#' || line.front() == '\n')
                 continue;

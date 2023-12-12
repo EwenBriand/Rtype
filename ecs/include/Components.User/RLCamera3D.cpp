@@ -43,7 +43,7 @@ void RLCamera3D::OnLoad() {
 }
 
 void RLCamera3D::OnAddComponent(int entityID) {
-    if (Sys.GetGraphicalModule()->GetID() != "GraphicalRayLib") {
+    if (SYS.GetGraphicalModule()->GetID() != "GraphicalRayLib") {
         throw eng::CompatibilityException("RLCamera3D is only compatible with the RayLib graphical module");
     }
     m_camera = { { m_px, m_py, m_pz }, { m_tx, m_ty, m_tz }, { m_ux, m_uy, m_uz }, m_fov, 0 };

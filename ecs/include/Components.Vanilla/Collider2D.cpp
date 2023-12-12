@@ -20,14 +20,14 @@
 void Collider2D::OnLoad()
 {
     eng::Engine::GetEngine()->pushPipeline([]() {
-        Sys.ForEach<Collider2D>([](Collider2D& collider) {
+        SYS.ForEach<Collider2D>([](Collider2D& collider) {
             collider.recalculateEdgesAndNormals();
         });
     },
         -600);
 
     if (eng::Engine::GetEngine()->IsOptionSet(eng::Engine::Options::EDITOR)) {
-        auto& cli = Sys.GetComponent<CLI>(Sys.GetSystemHolder());
+        auto& cli = SYS.GetComponent<CLI>(SYS.GetSystemHolder());
 
         cli.RegisterCustomCommand(
             "col.adv", [this](CLI& c, std::vector<std::string> args) {
@@ -42,24 +42,24 @@ void Collider2D::OnLoad()
                     vertices.push_back(std::stof(args[i]));
                     vertices.push_back(std::stof(args[i + 1]));
                 }
-                if (c.GetContext() == Sys.GetSystemHolder())
+                if (c.GetContext() == SYS.GetSystemHolder())
                     throw std::runtime_error("system cannot have a collider");
                 try {
-                    collider = &Sys.GetComponent<Collider2D>(c.GetContext());
+                    collider = &SYS.GetComponent<Collider2D>(c.GetContext());
                 } catch (std::exception& e) {
-                    collider = &Sys.AddComponent<Collider2D>(c.GetContext());
+                    collider = &SYS.AddComponent<Collider2D>(c.GetContext());
                 }
                 collider->AddVertices(vertices);
-                Console::info << "OK" << std::endl;
+                CONSOLE::info << "OK" << std::endl;
             },
             "Adds a set of vertices to the collider.");
 
         cli.RegisterCustomCommand(
             "col.rmv", [this](CLI& c, std::vector<std::string> args) {
-                if (c.GetContext() == Sys.GetSystemHolder())
+                if (c.GetContext() == SYS.GetSystemHolder())
                     throw std::runtime_error("system cannot have a collider");
                 try {
-                    auto& collider = Sys.GetComponent<Collider2D>(c.GetContext());
+                    auto& collider = SYS.GetComponent<Collider2D>(c.GetContext());
                     auto& vertices = collider.GetVerticesMutable();
                     if (vertices.size() < 2) {
                         throw std::runtime_error("Cannot remove vertices from a collider with zero vertices");
@@ -76,7 +76,6 @@ void Collider2D::OnLoad()
 
 void Collider2D::Update(int entityID)
 {
-    recalculateEdgesAndNormals();
     checkCollisions();
     DebugDraw();
 }
@@ -131,7 +130,7 @@ std::vector<float> Collider2D::GetVerticesWithPosition() const noexcept
 {
     std::vector<float> vertices;
     try {
-        auto transform = Sys.GetComponent<CoreTransform>(_entityID);
+        auto transform = SYS.GetComponent<CoreTransform>(_entityID);
         for (int i = 0; i < _vertices.size(); i += 2) {
             vertices.push_back(_vertices[i] + transform.x);
             vertices.push_back(_vertices[i + 1] + transform.y);
@@ -147,7 +146,7 @@ void Collider2D::DebugDraw() const
     if (eng::Engine::GetEngine()->IsOptionSet(eng::Engine::Options::EDITOR)) {
         auto vertices = _vertices;
         try {
-            auto transform = Sys.GetComponent<CoreTransform>(_entityID);
+            auto transform = SYS.GetComponent<CoreTransform>(_entityID);
             for (int i = 0; i < vertices.size(); i += 2) {
                 vertices[i] += transform.x;
                 vertices[i + 1] += transform.y;
@@ -214,7 +213,7 @@ void Collider2D::recalculateEdgesAndNormals()
         vertices.push_back({ _vertices[i], _vertices[i + 1] });
     }
     try {
-        auto transform = Sys.GetComponent<CoreTransform>(_entityID);
+        auto transform = SYS.GetComponent<CoreTransform>(_entityID);
         for (auto& vertex : vertices) {
             vertex.x += transform.x;
             vertex.y += transform.y;
@@ -231,7 +230,7 @@ void Collider2D::recalculateEdgesAndNormals()
 void Collider2D::checkCollisions()
 {
     _wasColliding = _isColliding;
-    Sys.ForEach<Collider2D>([this](Collider2D collider) {
+    SYS.ForEach<Collider2D>([this](Collider2D collider) {
         if (collider.GetEntityID() == _entityID)
             return; // doesn't check collision with self
         checkCollision(collider);
@@ -262,7 +261,7 @@ void Collider2D::checkCollision(Collider2D& other)
         _onCollisionEnter(_entityID, other.GetEntityID());
     }
     try {
-        Sys.GetComponent<RigidBody2D>(_entityID).CollideWith(other.GetEntityID());
+        SYS.GetComponent<RigidBody2D>(_entityID).CollideWith(other.GetEntityID());
     } catch (std::exception& e) {
         // no rigidbody, no collision
     }

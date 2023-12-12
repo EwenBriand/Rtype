@@ -882,7 +882,7 @@ namespace ecs {
          * The syntax to use is:
          * @code
          *
-         * Sys.ForEachComponent(entity, [&](ecs::ECSImpl::AnyCpt &cpt) {
+         * SYS.ForEachComponent(entity, [&](ecs::ECSImpl::AnyCpt &cpt) {
          *     std::visit([&](auto &&arg) {
          *        // do something with arg
          *     }, cpt);

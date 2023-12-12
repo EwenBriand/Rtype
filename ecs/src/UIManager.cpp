@@ -105,19 +105,19 @@ namespace ui {
 // ----------------------------------------------------------------------------
     void UIManager::registerEditorHandles() {
         try {
-            auto  &cli = Sys.GetComponent<CLI>(Sys.GetSystemHolder());
+            auto  &cli = SYS.GetComponent<CLI>(SYS.GetSystemHolder());
 
     // TEXT ///////////////////////////////////////////////////////////////////
 
             cli.RegisterCustomCommand("ui-ls-texts", [&](__attribute__((unused)) CLI &, __attribute__((unused)) const std::vector<std::string> &) {
                 _storage.ForEach<Text>([&](Text *text, std::size_t index) {
-                    Console::info << "[" << index << "]: '" << text->text << "'" << std::endl;
+                    CONSOLE::info << "[" << index << "]: '" << text->text << "'" << std::endl;
                 });
             }, "List all texts in the ui manager with their id");
 
             cli.RegisterCustomCommand("ui-set-text", [&](CLI &, const std::vector<std::string> &args) {
                 if (args.size() - 1 != 2) {
-                    Console::err << "Invalid number of arguments" << std::endl;
+                    CONSOLE::err << "Invalid number of arguments" << std::endl;
                     return;
                 }
                 std::size_t index = std::stoi(args[0]);
@@ -125,13 +125,13 @@ namespace ui {
                     auto text = _storage.GetComponent<Text>(index);
                     text->text = args[1];
                 } catch (std::exception &e) {
-                    Console::err << "Invalid text id" << std::endl;
+                    CONSOLE::err << "Invalid text id" << std::endl;
                 }
             }, "Set the text of a text element in the ui manager");
 
             cli.RegisterCustomCommand("ui-mv-text", [&](CLI &, const std::vector<std::string> &args) {
                 if (args.size() - 1 != 3) {
-                    Console::err << "Invalid number of arguments" << std::endl;
+                    CONSOLE::err << "Invalid number of arguments" << std::endl;
                     return;
                 }
                 std::size_t index = std::stoi(args[0]);
@@ -140,12 +140,12 @@ namespace ui {
                     text->position.x = std::stoi(args[1]);
                     text->position.y = std::stoi(args[2]);
                 } catch (std::exception &e) {
-                    Console::err << "Invalid text id" << std::endl;
+                    CONSOLE::err << "Invalid text id" << std::endl;
                 }
             }, "Move a text element in the ui manager");
 
         } catch (std::exception &e) {
-            Console::warn << "No CLI component found in the system holder entity. "
+            CONSOLE::warn << "No CLI component found in the system holder entity. "
                           << "The ui manager's editor handles will not be registered." << std::endl;
         }
 

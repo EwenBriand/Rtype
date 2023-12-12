@@ -19,14 +19,14 @@ void RigidBody2D::OnLoad()
     auto engine = eng::Engine::GetEngine();
 
     engine->pushPipeline([]() { // resets the acceleration of all the RigidBody2D
-        Sys.ForEach<RigidBody2D>([](RigidBody2D& r) {
+        SYS.ForEach<RigidBody2D>([](RigidBody2D& r) {
             r._acceleration = { 0, 0 };
         });
     },
         -500);
 
     engine->pushPipeline([]() { // applies gravity to all the RigidBody2D with a mass
-        Sys.ForEach<RigidBody2D>([](RigidBody2D& r) {
+        SYS.ForEach<RigidBody2D>([](RigidBody2D& r) {
             if (r.SimulateGravity())
                 r._acceleration.y += 9.81;
         });
@@ -34,8 +34,8 @@ void RigidBody2D::OnLoad()
         -499);
 
     engine->pushPipeline([]() { // updates the velocity of all the RigidBody2D
-        auto deltaTime = Sys.GetDeltaTime();
-        Sys.ForEach<RigidBody2D>([deltaTime](RigidBody2D& r) {
+        auto deltaTime = SYS.GetDeltaTime();
+        SYS.ForEach<RigidBody2D>([deltaTime](RigidBody2D& r) {
             r._velocity.x += r._acceleration.x * deltaTime;
             r._velocity.y += r._acceleration.y * deltaTime;
         });
@@ -43,10 +43,10 @@ void RigidBody2D::OnLoad()
         100);
 
     engine->pushPipeline([]() { // updates the position of all the RigidBody2D
-        auto deltaTime = Sys.GetDeltaTime();
-        Sys.ForEach<RigidBody2D>([deltaTime](RigidBody2D& r) {
+        auto deltaTime = SYS.GetDeltaTime();
+        SYS.ForEach<RigidBody2D>([deltaTime](RigidBody2D& r) {
             try {
-                auto& transform = Sys.GetComponent<CoreTransform>(r._entityID);
+                auto& transform = SYS.GetComponent<CoreTransform>(r._entityID);
                 r.OverridePrevPosition({ transform.x, transform.y });
                 transform.x += r._velocity.x * deltaTime;
                 transform.y += r._velocity.y * deltaTime;
@@ -66,9 +66,9 @@ void RigidBody2D::OnAddComponent(int entityID)
 {
     _entityID = entityID;
     try {
-        _transform = &Sys.GetComponent<CoreTransform>(entityID);
+        _transform = &SYS.GetComponent<CoreTransform>(entityID);
     } catch (std::exception& e) {
-        Console::warn << "Attaching a RigidBody2D to an entity without transform" << entityID << std::endl;
+        CONSOLE::warn << "Attaching a RigidBody2D to an entity without transform" << entityID << std::endl;
     }
 }
 
@@ -165,7 +165,7 @@ void RigidBody2D::CollideWith(int entityID)
 {
     RigidBody2D* other = nullptr;
     try {
-        other = &Sys.GetComponent<RigidBody2D>(entityID);
+        other = &SYS.GetComponent<RigidBody2D>(entityID);
     } catch (std::exception& e) {
         return;
     }
@@ -173,7 +173,7 @@ void RigidBody2D::CollideWith(int entityID)
     if (_mass == 0 || other->_mass == 0)
         return;
 
-    const auto& otherTransform = Sys.GetComponent<CoreTransform>(entityID);
+    const auto& otherTransform = SYS.GetComponent<CoreTransform>(entityID);
     graph::vec2f position = { _transform->x, _transform->y };
     graph::vec2f otherPosition = { otherTransform.x, otherTransform.y };
 

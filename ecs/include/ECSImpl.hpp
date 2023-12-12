@@ -47,10 +47,9 @@ namespace ecs {
         AudioSource,
         RigidBody2D>;
 
-#define Sys ecs::ECSImpl::GetSystem()
-#define Console ecs::ECSImpl
-#define Sys ecs::ECSImpl::GetSystem()
-#define Console ecs::ECSImpl
 }
+
+#define SYS ecs::ECSImpl::GetSystem()
+#define CONSOLE ecs::ECSImpl
 
 #endif /* AB1794DB_72E6_4ECF_848A_91CD7A70EDE6 */

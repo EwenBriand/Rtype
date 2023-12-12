@@ -76,8 +76,10 @@ def deep_clean_impl(args):
 
 def build_root(args):
     cd_gitroot()
-
-    os.system("mkdir -p build && cd build && cmake -DWITH_PIC=on -DBUILD_SHARED_LIBS=on -DCMAKE_BUILD_TYPE=Release .. && make")
+    if os.name == "nt":
+        os.system('mkdir -p build && cd build && cmake -G "Unix Makefiles" -DWITH_PIC=on -DBUILD_SHARED_LIBS=on -DCMAKE_BUILD_TYPE=Release .. && make')
+    else:
+        os.system("mkdir -p build && cd build && cmake -DWITH_PIC=on -DBUILD_SHARED_LIBS=on -DCMAKE_BUILD_TYPE=Release .. && make")
 
 
 def debug_root(args):

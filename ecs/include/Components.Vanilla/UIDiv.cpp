@@ -58,7 +58,7 @@ graph::vec2f UIDiv::GetPosition() const
     int dx, dy = 0;
 
     try {
-        auto transform = Sys.GetComponent<CoreTransform>(m_parentID);
+        auto transform = SYS.GetComponent<CoreTransform>(m_parentID);
         dx = transform.x;
         dy = transform.y;
     } catch (std::exception &e) {
@@ -77,14 +77,14 @@ void UIDiv::Draw() const
 {
     int dx, dy = 0;
     try {
-        auto transform = Sys.GetComponent<CoreTransform>(m_parentID);
+        auto transform = SYS.GetComponent<CoreTransform>(m_parentID);
         dx = transform.x;
         dy = transform.y;
     } catch (std::exception &e) {
         dx = 0;
         dy = 0;
     }
-    Sys.GetGraphicalModule()->WindowDrawRectangle({
+    SYS.GetGraphicalModule()->WindowDrawRectangle({
         .pos = {dx + m_x, dy + m_y},
         .dimensions = {m_width, m_height},
         .bgColor = {

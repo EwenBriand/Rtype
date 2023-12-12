@@ -53,7 +53,11 @@ namespace serv {
         return _client;
     }
 
+#ifdef _WIN32
+    long long ServerImpl::ClientBucket::GetSocket() const
+#else
     int ServerImpl::ClientBucket::GetSocket() const
+#endif
     {
         return _socket;
     }

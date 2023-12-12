@@ -63,7 +63,7 @@ void AudioSource::AddMusicName(const std::string& name)
         return;
     _music_List_Name.push_back(name);
     if (IsAudioDeviceReady() == false) {
-        Console::err << "Error in initializing audio device" << std::endl;
+        CONSOLE::err << "Error in initializing audio device" << std::endl;
     } else
         std::cout << "Audio device initialized" << std::endl;
 
@@ -243,8 +243,8 @@ void AudioSource::OnLoad()
 
     if (!eng::Engine::GetEngine()->IsOptionSet(eng::Engine::Options::EDITOR))
         return;
-    Entity e = Sys.GetSystemHolder();
-    CLI& cli = Sys.GetComponent<CLI>(e);
+    Entity e = SYS.GetSystemHolder();
+    CLI& cli = SYS.GetComponent<CLI>(e);
 
     cli.RegisterCustomCommand(
         "AddMusic", [&](__attribute__((unused)) CLI& cli, std::vector<std::string> args) {
@@ -253,10 +253,10 @@ void AudioSource::OnLoad()
                 return;
             }
             try {
-                AudioSource& audio = Sys.SafeGet<AudioSource>(cli);
+                AudioSource& audio = SYS.SafeGet<AudioSource>(cli);
                 audio.AddMusicName(args[0]);
             } catch (std::exception& e) {
-                Console::err << "Error in adding a music : " << e.what() << std::endl;
+                CONSOLE::err << "Error in adding a music : " << e.what() << std::endl;
             }
         },
         "Add a music");
@@ -268,10 +268,10 @@ void AudioSource::OnLoad()
                 return;
             }
             try {
-                AudioSource& audio = Sys.SafeGet<AudioSource>(cli);
+                AudioSource& audio = SYS.SafeGet<AudioSource>(cli);
                 audio.AddSoundName(args[0]);
             } catch (std::exception& e) {
-                Console::err << "Error in adding a sound : " << e.what() << std::endl;
+                CONSOLE::err << "Error in adding a sound : " << e.what() << std::endl;
             }
         },
         "Add a sound");
@@ -283,10 +283,10 @@ void AudioSource::OnLoad()
                 return;
             }
             try {
-                AudioSource& audio = Sys.SafeGet<AudioSource>(cli);
+                AudioSource& audio = SYS.SafeGet<AudioSource>(cli);
                 audio.Play<Music>(args[0]);
             } catch (std::exception& e) {
-                Console::err << "Error in playing a music : " << e.what() << std::endl;
+                CONSOLE::err << "Error in playing a music : " << e.what() << std::endl;
             }
         },
         "Play a music");
@@ -298,10 +298,10 @@ void AudioSource::OnLoad()
                 return;
             }
             try {
-                AudioSource& audio = Sys.SafeGet<AudioSource>(cli);
+                AudioSource& audio = SYS.SafeGet<AudioSource>(cli);
                 audio.Play<Sound>(args[0]);
             } catch (std::exception& e) {
-                Console::err << "Error in playing a sound : " << e.what() << std::endl;
+                CONSOLE::err << "Error in playing a sound : " << e.what() << std::endl;
             }
         },
         "Play a sound");
@@ -313,10 +313,10 @@ void AudioSource::OnLoad()
                 return;
             }
             try {
-                AudioSource& audio = Sys.SafeGet<AudioSource>(cli);
+                AudioSource& audio = SYS.SafeGet<AudioSource>(cli);
                 audio.Stop<Music>(args[0]);
             } catch (std::exception& e) {
-                Console::err << "Error in stopping a music : " << e.what() << std::endl;
+                CONSOLE::err << "Error in stopping a music : " << e.what() << std::endl;
             }
         },
         "Stop a music");
@@ -328,10 +328,10 @@ void AudioSource::OnLoad()
                 return;
             }
             try {
-                AudioSource& audio = Sys.SafeGet<AudioSource>(cli);
+                AudioSource& audio = SYS.SafeGet<AudioSource>(cli);
                 audio.Stop<Sound>(args[0]);
             } catch (std::exception& e) {
-                Console::err << "Error in stopping a sound : " << e.what() << std::endl;
+                CONSOLE::err << "Error in stopping a sound : " << e.what() << std::endl;
             }
         },
         "Stop a sound");
@@ -343,10 +343,10 @@ void AudioSource::OnLoad()
                 return;
             }
             try {
-                AudioSource& audio = Sys.SafeGet<AudioSource>(cli);
+                AudioSource& audio = SYS.SafeGet<AudioSource>(cli);
                 audio.Pause<Music>(args[0]);
             } catch (std::exception& e) {
-                Console::err << "Error in pausing a music : " << e.what() << std::endl;
+                CONSOLE::err << "Error in pausing a music : " << e.what() << std::endl;
             }
         },
         "Pause a music");
@@ -358,10 +358,10 @@ void AudioSource::OnLoad()
                 return;
             }
             try {
-                AudioSource& audio = Sys.SafeGet<AudioSource>(cli);
+                AudioSource& audio = SYS.SafeGet<AudioSource>(cli);
                 audio.Pause<Sound>(args[0]);
             } catch (std::exception& e) {
-                Console::err << "Error in pausing a sound : " << e.what() << std::endl;
+                CONSOLE::err << "Error in pausing a sound : " << e.what() << std::endl;
             }
         },
         "Pause a sound");
@@ -373,10 +373,10 @@ void AudioSource::OnLoad()
                 return;
             }
             try {
-                AudioSource& audio = Sys.SafeGet<AudioSource>(cli);
+                AudioSource& audio = SYS.SafeGet<AudioSource>(cli);
                 audio.Resume<Music>(args[0]);
             } catch (std::exception& e) {
-                Console::err << "Error in resuming a music : " << e.what() << std::endl;
+                CONSOLE::err << "Error in resuming a music : " << e.what() << std::endl;
             }
         },
         "Resume a music");
@@ -388,10 +388,10 @@ void AudioSource::OnLoad()
                 return;
             }
             try {
-                AudioSource& audio = Sys.SafeGet<AudioSource>(cli);
+                AudioSource& audio = SYS.SafeGet<AudioSource>(cli);
                 audio.Resume<Sound>(args[0]);
             } catch (std::exception& e) {
-                Console::err << "Error in resuming a sound : " << e.what() << std::endl;
+                CONSOLE::err << "Error in resuming a sound : " << e.what() << std::endl;
             }
         },
         "Resume a sound");
@@ -403,10 +403,10 @@ void AudioSource::OnLoad()
                 return;
             }
             try {
-                AudioSource& audio = Sys.SafeGet<AudioSource>(cli);
+                AudioSource& audio = SYS.SafeGet<AudioSource>(cli);
                 audio.Delete<Music>(args[0]);
             } catch (std::exception& e) {
-                Console::err << "Error in deleting a music : " << e.what() << std::endl;
+                CONSOLE::err << "Error in deleting a music : " << e.what() << std::endl;
             }
         },
         "Delete a music");
@@ -418,10 +418,10 @@ void AudioSource::OnLoad()
                 return;
             }
             try {
-                AudioSource& audio = Sys.SafeGet<AudioSource>(cli);
+                AudioSource& audio = SYS.SafeGet<AudioSource>(cli);
                 audio.Delete<Sound>(args[0]);
             } catch (std::exception& e) {
-                Console::err << "Error in deleting a sound : " << e.what() << std::endl;
+                CONSOLE::err << "Error in deleting a sound : " << e.what() << std::endl;
             }
         },
         "Delete a sound");
@@ -433,10 +433,10 @@ void AudioSource::OnLoad()
                 return;
             }
             try {
-                AudioSource& audio = Sys.SafeGet<AudioSource>(cli);
+                AudioSource& audio = SYS.SafeGet<AudioSource>(cli);
                 audio.SetVolume<Music>(args[0], std::stof(args[1]));
             } catch (std::exception& e) {
-                Console::err << "Error in setting volume of a music : " << e.what() << std::endl;
+                CONSOLE::err << "Error in setting volume of a music : " << e.what() << std::endl;
             }
         },
         "Set the volume of a music");
@@ -448,10 +448,10 @@ void AudioSource::OnLoad()
                 return;
             }
             try {
-                AudioSource& audio = Sys.SafeGet<AudioSource>(cli);
+                AudioSource& audio = SYS.SafeGet<AudioSource>(cli);
                 audio.SetVolume<Sound>(args[0], std::stof(args[1]));
             } catch (std::exception& e) {
-                Console::err << "Error in setting volume of a sound : " << e.what() << std::endl;
+                CONSOLE::err << "Error in setting volume of a sound : " << e.what() << std::endl;
             }
         },
         "Set the volume of a sound");
@@ -463,10 +463,10 @@ void AudioSource::OnLoad()
                 return;
             }
             try {
-                AudioSource& audio = Sys.SafeGet<AudioSource>(cli);
+                AudioSource& audio = SYS.SafeGet<AudioSource>(cli);
                 audio.SetGlobalVolume(std::stof(args[0]));
             } catch (std::exception& e) {
-                Console::err << "Error in setting global volume : " << e.what() << std::endl;
+                CONSOLE::err << "Error in setting global volume : " << e.what() << std::endl;
             }
         },
         "Set the global volume");
@@ -478,10 +478,10 @@ void AudioSource::OnLoad()
                 return;
             }
             try {
-                AudioSource& audio = Sys.SafeGet<AudioSource>(cli);
+                AudioSource& audio = SYS.SafeGet<AudioSource>(cli);
                 std::cout << audio.IsPlaying<Music>(args[0]) << std::endl;
             } catch (std::exception& e) {
-                Console::err << "Error in checking if a music is playing : " << e.what() << std::endl;
+                CONSOLE::err << "Error in checking if a music is playing : " << e.what() << std::endl;
             }
         },
         "Check if a music is playing");
@@ -493,10 +493,10 @@ void AudioSource::OnLoad()
                 return;
             }
             try {
-                AudioSource& audio = Sys.SafeGet<AudioSource>(cli);
+                AudioSource& audio = SYS.SafeGet<AudioSource>(cli);
                 std::cout << audio.IsPlaying<Sound>(args[0]) << std::endl;
             } catch (std::exception& e) {
-                Console::err << "Error in checking if a sound is playing : " << e.what() << std::endl;
+                CONSOLE::err << "Error in checking if a sound is playing : " << e.what() << std::endl;
             }
         },
         "Check if a sound is playing");
@@ -508,10 +508,10 @@ void AudioSource::OnLoad()
                 return;
             }
             try {
-                AudioSource& audio = Sys.SafeGet<AudioSource>(cli);
+                AudioSource& audio = SYS.SafeGet<AudioSource>(cli);
                 std::cout << audio.GetMusicTPlayed(args[0]) << std::endl;
             } catch (std::exception& e) {
-                Console::err << "Error in getting time played of a music : " << e.what() << std::endl;
+                CONSOLE::err << "Error in getting time played of a music : " << e.what() << std::endl;
             }
         },
         "Get the time played of a music");
@@ -523,10 +523,10 @@ void AudioSource::OnLoad()
                 return;
             }
             try {
-                AudioSource& audio = Sys.SafeGet<AudioSource>(cli);
+                AudioSource& audio = SYS.SafeGet<AudioSource>(cli);
                 std::cout << audio.GetMusicTLength(args[0]) << std::endl;
             } catch (std::exception& e) {
-                Console::err << "Error in getting time length of a music : " << e.what() << std::endl;
+                CONSOLE::err << "Error in getting time length of a music : " << e.what() << std::endl;
             }
         },
         "Get the time length of a music");
