@@ -16,10 +16,10 @@ namespace ecs {
         std::cout << "on add component node" << std::endl;
         EventGraph *eventGraph;
         try {
-            eventGraph = &(Sys.GetComponent<EventGraph>(entityID));
+            eventGraph = &(SYS.GetComponent<EventGraph>(entityID));
         } catch (std::exception &e) {
-            Sys.AddComponent<EventGraph>(entityID);
-            eventGraph = &(Sys.GetComponent<EventGraph>(entityID));
+            SYS.AddComponent<EventGraph>(entityID);
+            eventGraph = &(SYS.GetComponent<EventGraph>(entityID));
         }
         eventGraph->AddNode(this);
     }

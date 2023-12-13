@@ -17,30 +17,30 @@ void UserComponentWrapper::Update(int entityID)
 void UserComponentWrapper::OnLoad()
 {
     try {
-        Entity e = Sys.GetSystemHolder();
-        CLI& cli = Sys.GetComponent<CLI>(e);
+        Entity e = SYS.GetSystemHolder();
+        CLI& cli = SYS.GetComponent<CLI>(e);
         cli.RegisterCustomCommand("usercpt-load", [&](CLI& c, std::vector<std::string> args) {
             if (args.size() < 2)
                 return;
             Entity currE = cli.GetContext();
-            if (currE == Sys.GetSystemHolder())
+            if (currE == SYS.GetSystemHolder())
                 throw std::runtime_error("Cannot add user component to system holder");
-            Sys.AddComponent<UserComponentWrapper>(currE);
+            SYS.AddComponent<UserComponentWrapper>(currE);
             try {
-                UserComponentWrapper& wrapper = Sys.GetComponent<UserComponentWrapper>(currE);
-                std::shared_ptr<AUserComponent> internal = Sys.GetResourceManager().LoadUserComponent(std::string(args[0]));
+                UserComponentWrapper& wrapper = SYS.GetComponent<UserComponentWrapper>(currE);
+                std::shared_ptr<AUserComponent> internal = SYS.GetResourceManager().LoadUserComponent(std::string(args[0]));
                 internal->OnAddComponent(currE);
                 wrapper.SetInternalComponent(internal);
                 std::cout << "setting resource Id to " << args[0] << std::endl; // TODO: remove this line
                 wrapper.SetResourceID(args[0]);
             } catch (std::exception& e) {
-                Console::err << "Failed to load component: " << e.what() << std::endl;
-                Console::warn << "If you think this is because the binary has not been rebuilt, try manually deleting the " << args[0] << ".checksum file associated with the component." << std::endl;
+                CONSOLE::err << "Failed to load component: " << e.what() << std::endl;
+                CONSOLE::warn << "If you think this is because the binary has not been rebuilt, try manually deleting the " << args[0] << ".checksum file associated with the component." << std::endl;
             }
         });
 
     } catch (std::exception& e) {
-        Console::err << "Failed to load user component wrapper: " << e.what() << std::endl;
+        CONSOLE::err << "Failed to load user component wrapper: " << e.what() << std::endl;
     }
 }
 
@@ -58,7 +58,7 @@ void UserComponentWrapper::Load(const std::string& path)
     // setting.lookupValue("resourceID", resourceID);
     // if (resourceID == "")
     //     return;
-    // m_internalComponent = Sys.GetResourceManager().LoadUserComponent(resourceID);
+    // m_internalComponent = SYS.GetResourceManager().LoadUserComponent(resourceID);
     // if (m_internalComponent) {
     //     m_internalComponent->Load(path + "_internal");
     //     m_internalComponent->OnLoad();
@@ -72,7 +72,7 @@ void UserComponentWrapper::Load(const std::string& path)
     file.close();
     if (resourceID == "")
         return;
-    m_internalComponent = Sys.GetResourceManager().LoadUserComponent(resourceID);
+    m_internalComponent = SYS.GetResourceManager().LoadUserComponent(resourceID);
     if (m_internalComponent) {
         m_internalComponent->Load(path + "_internal");
         m_internalComponent->OnLoad();

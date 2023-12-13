@@ -13,7 +13,6 @@
 #include "ToBytes.hpp"
 #include "UIButton.hpp"
 #include "UIManager.hpp"
-#include "raygui.h"
 #include <fstream>
 #include <iostream>
 
@@ -200,7 +199,7 @@ void Animation::RenderFrame(int entityId)
         return;
     _sprite->SetRect(_frames[_currentFrame].rect);
     try {
-        auto transform = Sys.GetComponent<CoreTransform>(entityId);
+        auto transform = SYS.GetComponent<CoreTransform>(entityId);
         auto x = transform.x;
         auto y = transform.y;
         _sprite->SetOrigin({ x, y });
@@ -213,7 +212,7 @@ void Animation::RenderFrame(int entityId)
     _sprite->SetFlipX(_frames[_currentFrame].flipX);
     _sprite->SetFlipY(_frames[_currentFrame].flipY);
     _sprite->Draw();
-    _frameStartTime += Sys.GetDeltaTime();
+    _frameStartTime += SYS.GetDeltaTime();
     if (_frameStartTime >= _frames[_currentFrame].duration) { // todo fix for skipping frames in case of lag
         _frameStartTime = 0;
         _currentFrame = (_currentFrame + 1) % _frames.size();
@@ -239,7 +238,7 @@ void Animator::editorRegisterUIButtonExposed()
 void Animator::saveCurrAnim()
 {
     if (_animEditorAnimationName == "") {
-        Console::warn << "Couldn't save the animation because it has no name." << std::endl;
+        CONSOLE::warn << "Couldn't save the animation because it has no name." << std::endl;
         return;
     }
 }
@@ -248,8 +247,8 @@ void Animator::OnLoad()
 {
     if (!eng::Engine::GetEngine()->IsOptionSet(eng::Engine::Options::EDITOR))
         return;
-    Entity e = Sys.GetSystemHolder();
-    CLI& cli = Sys.GetComponent<CLI>(e);
+    Entity e = SYS.GetSystemHolder();
+    CLI& cli = SYS.GetComponent<CLI>(e);
 
     editorRegisterUIButtonExposed();
 
@@ -264,8 +263,8 @@ void Animator::OnLoad()
             try {
                 ui::UIManager::Get().RemoveGroup(_animationEditorUIGroupHandle);
             } catch (std::exception& e) {
-                Console::err << "Failed to remove ui group: " << e.what() << std::endl;
-                Console::err << "This is probably because the group doesn't exist." << std::endl;
+                CONSOLE::err << "Failed to remove ui group: " << e.what() << std::endl;
+                CONSOLE::err << "This is probably because the group doesn't exist." << std::endl;
             }
         },
         "Close the animation editor");
@@ -273,27 +272,27 @@ void Animator::OnLoad()
     cli.RegisterCustomCommand(
         "anme-load", [](CLI& cli, std::vector<std::string> args) {
             if (args.size() != 2) {
-                Console::warn << "Usage: anme-add <path>" << std::endl;
+                CONSOLE::warn << "Usage: anme-add <path>" << std::endl;
                 return;
             }
             std::string name = "";
             Animation anim;
             Animator* animator = nullptr;
-            if (cli.GetContext() == Sys.GetSystemHolder()) {
+            if (cli.GetContext() == SYS.GetSystemHolder()) {
                 throw std::runtime_error("Can't add animation to the system holder");
             }
             try {
-                animator = &Sys.GetComponent<Animator>(cli.GetContext());
+                animator = &SYS.GetComponent<Animator>(cli.GetContext());
             } catch (std::exception& e) {
-                Sys.AddComponent<Animator>(cli.GetContext());
-                animator = &Sys.GetComponent<Animator>(cli.GetContext());
+                SYS.AddComponent<Animator>(cli.GetContext());
+                animator = &SYS.GetComponent<Animator>(cli.GetContext());
             }
             if (animator == nullptr)
                 throw std::runtime_error("Failed to get animator component");
             try {
                 anim = animator->loadAnimationFromFile(args[0], name);
             } catch (std::exception& e) {
-                Console::err << "Failed to load animation: " << e.what() << std::endl;
+                CONSOLE::err << "Failed to load animation: " << e.what() << std::endl;
                 return;
             }
             animator->AddAnimation(name, anim);
@@ -303,15 +302,15 @@ void Animator::OnLoad()
     cli.RegisterCustomCommand(
         "anme-play", [](CLI& cli, std::vector<std::string> args) {
             if (args.size() != 2) {
-                Console::warn << "Usage: anme-play <name>" << std::endl;
+                CONSOLE::warn << "Usage: anme-play <name>" << std::endl;
                 return;
             }
 
             try {
-                Animator& animator = Sys.GetComponent<Animator>(cli.GetContext());
+                Animator& animator = SYS.GetComponent<Animator>(cli.GetContext());
                 animator.Play(args[0]);
             } catch (std::exception& e) {
-                Console::err << "Failed to play animation: " << e.what() << std::endl;
+                CONSOLE::err << "Failed to play animation: " << e.what() << std::endl;
             }
         },
         "Plays an animation from its name. The animation must be loaded first.");
@@ -337,7 +336,7 @@ void Animator::registerUIElements()
                 .layer = 10 },
             ui::UIManager::Text { .text = "Animation Editor", .position = Vector2 { 10, 10 }, .fontSize = 20, .color = WHITE, .layer = 10 });
     } catch (std::exception& e) {
-        Console::err << "Failed to register ui elements: " << e.what() << std::endl;
+        CONSOLE::err << "Failed to register ui elements: " << e.what() << std::endl;
     }
 }
 

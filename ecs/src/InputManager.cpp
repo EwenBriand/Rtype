@@ -44,7 +44,7 @@ void InputManager::RegisterBinding(const std::string &key, InputManager::EventDe
 void InputManager::PollEvents()
 {
     char tmpChar = 1;
-    auto graphical = Sys.GetGraphicalModule();
+    auto graphical = SYS.GetGraphicalModule();
     m_polledEvents.clear();
     m_charPressed.clear();
     while ((tmpChar = graphical->GetNextCharPressed()) != -1) {

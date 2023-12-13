@@ -12,7 +12,6 @@
 #include "IGraphicalModule.hpp"
 #include "Types.hpp"
 #include <cstring>
-#include <dlfcn.h>
 #include <filesystem>
 #include <iostream>
 #include <iterator>
@@ -21,6 +20,14 @@
 #include <type_traits>
 #include <unordered_map>
 #include <vector>
+
+// typedef HINSTANCE__ *HINSTANCE;
+// typedef HINSTANCE HMODULE;
+// typedef long long INT_PTR
+// typedef INT_PTR (__stdcall *FARPROC)()
+// #include <windows.h>
+
+
 
 namespace ecs {
     class ResourceManager {
@@ -134,11 +141,11 @@ namespace ecs {
         unsigned int m_changesNbr = 0;
         std::string m_userComponentsPath = "./metabuild/";
         std::vector<std::shared_ptr<AUserComponent>> _instances;
-        std::unordered_map<std::string, void*> _handles;
+        std::unordered_map<std::string, void *> _handles;
 
         std::unordered_map<std::string, Action> _availableActions;
         std::tuple<void*, std::shared_ptr<graph::IGraphicalModule>> _graphicalModule = { nullptr, nullptr };
         std::shared_ptr<eng::IGame> _game = nullptr;
-        void* _gameHandle = nullptr;
+        void *_gameHandle = nullptr;
     };
 }

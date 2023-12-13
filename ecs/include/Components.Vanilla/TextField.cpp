@@ -28,7 +28,7 @@ void TextField::SetParent(UIDiv &parent)
 
 void TextField::Draw()
 {
-    std::shared_ptr<graph::IGraphicalModule> graphics = Sys.GetGraphicalModule();
+    std::shared_ptr<graph::IGraphicalModule> graphics = SYS.GetGraphicalModule();
     graph::vec2f divPos = m_hoverDiv->GetPosition();
 
     graphics->WindowDrawRectangle({
@@ -63,15 +63,15 @@ void TextField::Draw()
 
 void TextField::SetupCallbacks()
 {
-    auto graphics = Sys.GetGraphicalModule().get();
+    auto graphics = SYS.GetGraphicalModule().get();
     if (graphics == nullptr)
         throw std::runtime_error("No graphical module found");
 
-    Sys.GetInputManager().RegisterBinding(
+    SYS.GetInputManager().RegisterBinding(
         "Pressed Backspace",
         {
             .testTriggered = [&](InputManager::EventInfo &info) {
-                return Sys.GetGraphicalModule()->isKeyPressed(KEY_BACKSPACE);
+                return SYS.GetGraphicalModule()->isKeyPressed(KEY_BACKSPACE);
             },
             .onTriggerCallback = [&](InputManager::EventInfo info) {
                 if (m_text.size() > 0) {
@@ -81,11 +81,11 @@ void TextField::SetupCallbacks()
         }
     );
 
-    Sys.GetInputManager().RegisterBinding(
+    SYS.GetInputManager().RegisterBinding(
         "Pressed Enter",
         {
             .testTriggered = [&](InputManager::EventInfo &info) {
-                return Sys.GetGraphicalModule()->isKeyPressed(KEY_ENTER);
+                return SYS.GetGraphicalModule()->isKeyPressed(KEY_ENTER);
             },
             .onTriggerCallback = nullptr
         }
@@ -100,10 +100,10 @@ void TextField::OnAddComponent(int entityID)
 {
     UIDiv *div = nullptr;
     try {
-        div = &Sys.GetComponent<UIDiv>(entityID);
+        div = &SYS.GetComponent<UIDiv>(entityID);
     } catch (std::exception &e) {
-        Sys.AddComponent<UIDiv>(entityID);
-        div = &Sys.GetComponent<UIDiv>(entityID);
+        SYS.AddComponent<UIDiv>(entityID);
+        div = &SYS.GetComponent<UIDiv>(entityID);
     }
     m_hoverDiv = div;
     SetupCallbacks();
@@ -122,7 +122,7 @@ void TextField::SetPosition(graph::vec2f pos)
 
 void TextField::collectInput()
 {
-    auto inputManager = Sys.GetInputManager();
+    auto inputManager = SYS.GetInputManager();
     std::vector<std::string> consumedInputs;
     std::vector<InputManager::EventInfo> inputs = inputManager.GetPolled();
     for (size_t i = 0; i < inputs.size(); ++i) {

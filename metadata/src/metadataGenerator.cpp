@@ -37,15 +37,17 @@ namespace meta {
         initCMake();
         for (const auto& entry : std::filesystem::directory_iterator(path)) {
             if (entry.is_directory() && entry.path().filename() != ".metadata")
-                generateMetadata(entry.path());
+                generateMetadata(entry.path().string());
             else {
-                _filename = entry.path().filename();
+                _filename = entry.path().filename().string();
                 if (entry.path().extension() == ".hpp")
-                    generateMetadataForFile(entry.path(), entry.path().filename());
+                    generateMetadataForFile(entry.path().string(), entry.path().filename().string());
             }
         }
         saveCMake();
+#ifndef _WIN32
         buildCMake();
+#endif
     }
 
     std::vector<std::string> MetadataGenerator::tokenize(std::ifstream& file)

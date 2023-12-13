@@ -20,16 +20,16 @@ EventGraph::EventGraph()
 
 void EventGraph::OnLoad()
 {
-    Entity system = Sys.GetSystemHolder();
+    Entity system = SYS.GetSystemHolder();
     try {
-        CLI &cli = Sys.GetComponent<CLI>(system);
+        CLI &cli = SYS.GetComponent<CLI>(system);
         cli.RegisterCustomCommand("evtgraph-addnode", [&](CLI &c, std::vector<std::string> args) {
-            Console::warn << "evtgraph-addnode: " << args[0] << " not yet implemented" << std::endl;
+            CONSOLE::warn << "evtgraph-addnode: " << args[0] << " not yet implemented" << std::endl;
         });
         cli.RegisterCustomCommand("evtgraph-listnodes", [&](CLI &c, std::vector<std::string> args) {
             std::vector<std::string> nodes = GetAvailableNodes();
             for (auto &node : nodes)
-                Console::info << node << std::endl;
+                CONSOLE::info << node << std::endl;
         });
     } catch (std::exception &e) {}
 }

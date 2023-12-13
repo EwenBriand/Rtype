@@ -28,12 +28,12 @@ namespace ecs
 
     void SceneManager::InitEditorMode()
     {
-        Entity sysHolder = Sys.GetSystemHolder();
-        CLI &cli = Sys.GetComponent<CLI>(sysHolder);
+        Entity sysHolder = SYS.GetSystemHolder();
+        CLI &cli = SYS.GetComponent<CLI>(sysHolder);
 
         cli.RegisterCustomCommand("scm", [this](CLI &c, const std::vector<std::string> &args) {
             if (args.size() != 2) {
-                Console::err << "Usage: scmLoadScene <sceneName>" << std::endl;
+                CONSOLE::err << "Usage: scmLoadScene <sceneName>" << std::endl;
                 return;
             }
             LoadSceneAsync(args[0]);
@@ -41,7 +41,7 @@ namespace ecs
 
         cli.RegisterCustomCommand("scmsw", [this](CLI &c, const std::vector<std::string> &args) {
             if (args.size() != 2) {
-                Console::err << "Usage: scmSwitchScene <sceneName>" << std::endl;
+                CONSOLE::err << "Usage: scmSwitchScene <sceneName>" << std::endl;
                 return;
             }
             SwitchScene(args[0]);
@@ -49,7 +49,7 @@ namespace ecs
 
         cli.RegisterCustomCommand("scmdel", [this](CLI &c, const std::vector<std::string> &args) {
             if (args.size() != 2) {
-                Console::err << "Usage: scmDelScene <sceneName>" << std::endl;
+                CONSOLE::err << "Usage: scmDelScene <sceneName>" << std::endl;
                 return;
             }
             UnloadScene(args[0]);
@@ -65,7 +65,7 @@ namespace ecs
             auto &s = _scenes.at(sceneName);
             return s.IsReady();
         } catch (std::exception &e) {
-            Console::err << "Error: " << e.what() << std::endl;
+            CONSOLE::err << "Error: " << e.what() << std::endl;
             return false;
         }
     }
@@ -79,9 +79,9 @@ namespace ecs
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
         try {
-            Sys.ReplaceScene(_scenes.at(sceneName).GetComponents());
+            SYS.ReplaceScene(_scenes.at(sceneName).GetComponents());
         } catch (std::exception &e) {
-            Console::err << "Error: " << e.what() << std::endl;
+            CONSOLE::err << "Error: " << e.what() << std::endl;
             return;
         }
     }
@@ -90,7 +90,7 @@ namespace ecs
     void SceneManager::UnloadScene(const std::string &sceneName)
     {
         if (_scenes.find(sceneName) == _scenes.end()) {
-            Console::err << "Error: scene [" << sceneName << "] not found" << std::endl;
+            CONSOLE::err << "Error: scene [" << sceneName << "] not found" << std::endl;
             return;
         }
         _scenes.erase(sceneName);
@@ -116,12 +116,12 @@ namespace ecs
 
             std::string path = eng::Engine::GetEngine()->GetConfigValue("scenesSavePath")
                 + "/" + sceneName;
-            _components = Sys.PrepareScene(path);
+            _components = SYS.PrepareScene(path);
             int entityNumber = _components[0].size();
-            Console::info << "Scene [" << sceneName << "] OK\nLoaded " << ecs::yellow << entityNumber << ecs::green << " entities" << std::endl;
+            CONSOLE::info << "Scene [" << sceneName << "] OK\nLoaded " << ecs::yellow << entityNumber << ecs::green << " entities" << std::endl;
 
         } catch (std::exception &e) {
-            Console::err << "Error: " << e.what() << std::endl;
+            CONSOLE::err << "Error: " << e.what() << std::endl;
             return;
         }
     }

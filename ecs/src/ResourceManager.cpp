@@ -5,6 +5,75 @@
 ** ResourceManager.cpp
 */
 
+// /*
+// ** EPITECH PROJECT, 2023
+// ** ia
+// ** File description:
+// ** LibLoader.hpp
+// */
+
+// #pragma once
+
+// #include <map>
+// // if windows
+// #ifdef _WIN32
+// #include <windows.h>
+// #else
+// #include <dlfcn.h>
+// #endif
+// #include <string>
+// #include <memory>
+// #include <iostream>
+// #include <stdexcept>
+
+// #define LOADABLE(class) \
+//     extern "C" std::shared_ptr<class> create() { \
+//         return std::make_shared<class>(); \
+//     }
+
+// namespace ai {
+//     class LibLoader {
+//         public:
+//             ~LibLoader();
+//             void LoadLib(const std::string &path);
+//             void UnloadLib(const std::string &path);
+
+// #ifdef _WIN32
+//             template <typename T>
+//             std::shared_ptr<T> GetLib(const std::string &path) {
+//                 HMODULE hModule = LoadLibrary(path.c_str());
+//                 if (hModule == NULL) {
+//                     throw std::runtime_error("Failed to load library");
+//                 }
+//                 FARPROC functionPointer = GetProcAddress(hModule, "create");
+//                 if (functionPointer == NULL) {
+//                     LibUtils::closeLibHandlerary(hModule);
+//                     throw std::runtime_error("Failed to get function pointer");
+//                 }
+//                 typedef std::shared_ptr<T> (*CreateFunctionType)();
+//                 CreateFunctionType createFunction = reinterpret_cast<CreateFunctionType>(functionPointer);
+//                 std::shared_ptr<T> result = createFunction();
+//                 _libs[path] = hModule;
+//                 return result;
+//             }
+
+// #else
+//             template <typename T>
+//             std::shared_ptr<T> GetLib(const std::string &path) {
+//                 if (_libs.find(path) == _libs.end())
+//                     LoadLib(path);
+//                 void *getter = GETSYMBOL(_libs[path], "create");
+//                 if (!getter)
+//                     throw std::runtime_error(ERRORLIB());
+//                 return reinterpret_cast<std::shared_ptr<T>(*)()>(getter)();
+//             }
+// #endif
+//         private:
+//             std::map<std::string, void *> _libs;
+//     };
+// }
+
+
 #include "ResourceManager.hpp"
 #include "ECSImpl.hpp"
 #include "Engine.hpp"
@@ -18,14 +87,16 @@
 #include <iterator>
 #include <type_traits>
 #include <unistd.h>
+#include "LibUtils.hpp"
+
 
 namespace ecs {
-    ResourceManager::~ResourceManager()
+       ResourceManager::~ResourceManager()
     {
         if (std::get<0>(_graphicalModule))
-            dlclose(std::get<0>(_graphicalModule));
+            lib::LibUtils::closeLibHandle(std::get<0>(_graphicalModule));
         if (_gameHandle)
-            dlclose(_gameHandle);
+            lib::LibUtils::closeLibHandle(_gameHandle);
     }
 
     std::shared_ptr<AUserComponent> ResourceManager::LoadUserComponent(
@@ -33,22 +104,15 @@ namespace ecs {
     {
         std::cout << "Loading user component " << resourceID << std::endl;
         if (_handles.find(resourceID) != _handles.end()) {
-            AUserComponent* (*create)() = reinterpret_cast<AUserComponent* (*)()>(dlsym(_handles[resourceID], "create"));
-            if (!create)
-                throw eng::EngineException(dlerror(), __FILE__, __FUNCTION__, __LINE__);
+            AUserComponent* (*create)() = reinterpret_cast<AUserComponent* (*)()>(lib::LibUtils::getSymHandle(_handles[resourceID], "create"));
             _instances.emplace_back(create());
             return _instances.back();
         }
 
         std::string libName = m_userComponentsPath + "lib" + resourceID + ".so";
-        void* handle = dlopen(libName.c_str(), RTLD_LAZY);
-
-        if (!handle)
-            throw eng::EngineException(dlerror(), __FILE__, __FUNCTION__, __LINE__);
+        void* handle = lib::LibUtils::getLibHandle(libName.c_str());
         _handles[resourceID] = handle;
-        AUserComponent* (*create)() = reinterpret_cast<AUserComponent* (*)()>(dlsym(handle, "create"));
-        if (!create)
-            throw eng::EngineException(dlerror(), __FILE__, __FUNCTION__, __LINE__);
+        AUserComponent* (*create)() = reinterpret_cast<AUserComponent* (*)()>(lib::LibUtils::getSymHandle(handle, "create"));
         _handles[resourceID] = handle;
         _instances.emplace_back(create());
         _instances.back()->OnLoad();
@@ -67,7 +131,7 @@ namespace ecs {
         try {
             meta::MetadataGenerator().generateMetadata(copyPath);
         } catch (std::exception& e) {
-            Console::err << "Build failed: " << path << std::endl;
+            CONSOLE::err << "Build failed: " << path << std::endl;
             std::ofstream checksumPath(rawPath + ".checksum", std::ios::trunc | std::ios::out);
             checksumPath << "build failed, retry";
             checksumPath.close();
@@ -107,27 +171,27 @@ namespace ecs {
         m_changesNbr = 0;
         try {
             for (auto& entry : std::filesystem::directory_iterator(userScriptDir)) {
-                Console::info << "Checking " << entry.path() << std::endl;
+                CONSOLE::info << "Checking " << entry.path() << std::endl;
                 if (entry.path().extension() == ".cpp") {
                     ManageUpdate(entry.path().string());
                 }
             }
             if (m_changesNbr == 0)
-                Console::info << "No changes detected in user scripts" << std::endl;
+                CONSOLE::info << "No changes detected in user scripts" << std::endl;
         } catch (std::runtime_error& e) {
-            Console::err << "Compilation error during hot reload : " << e.what() << std::endl;
-            Console::err << "Aborting" << std::endl;
+            CONSOLE::err << "Compilation error during hot reload : " << e.what() << std::endl;
+            CONSOLE::err << "Aborting" << std::endl;
             return;
         }
         if (m_changesNbr > 0)
-            Sys.ReloadEntities();
+            SYS.ReloadEntities();
     }
 
     void ResourceManager::ManageUpdate(const std::string& path)
     {
         if (FileHasChanged(path)) {
             ++m_changesNbr;
-            Console::info << "Detected changes in source file " << path << std::endl;
+            CONSOLE::info << "Detected changes in source file " << path << std::endl;
             if (!CompileUserScript(path))
                 throw std::runtime_error("Compilation failed");
         }
@@ -159,7 +223,7 @@ namespace ecs {
         }
         _instances.clear();
         for (auto& handle : _handles) {
-            dlclose(handle.second);
+            lib::LibUtils::closeLibHandle(handle.second);
         }
         _handles.clear();
     }
@@ -196,14 +260,8 @@ namespace ecs {
             return std::get<1>(_graphicalModule);
         }
 
-        void* handle = dlopen(path.c_str(), RTLD_LAZY);
-        if (!handle) {
-            throw eng::EngineException(dlerror(), __FILE__, __FUNCTION__, __LINE__);
-        }
-        graph::IGraphicalModule* (*create)() = reinterpret_cast<graph::IGraphicalModule* (*)()>(dlsym(handle, "create"));
-        if (!create) {
-            throw eng::EngineException(dlerror(), __FILE__, __FUNCTION__, __LINE__);
-        }
+        void* handle = lib::LibUtils::getLibHandle(path.c_str());
+        graph::IGraphicalModule* (*create)() = reinterpret_cast<graph::IGraphicalModule* (*)()>(lib::LibUtils::getSymHandle(handle, "create"));
         auto tmp = std::shared_ptr<graph::IGraphicalModule>(create());
         if (!std::get<1>(_graphicalModule)) {
             throw eng::EngineException("Graphical module creation failed", __FILE__, __FUNCTION__, __LINE__);
@@ -246,14 +304,8 @@ namespace ecs {
             throw eng::EngineException("Game already loaded", __FILE__, __FUNCTION__, __LINE__);
         }
 
-        void* handle = dlopen(path.c_str(), RTLD_LAZY);
-        if (!handle) {
-            throw eng::EngineException(dlerror(), __FILE__, __FUNCTION__, __LINE__);
-        }
-        eng::IGame* (*create)() = reinterpret_cast<eng::IGame* (*)()>(dlsym(handle, "create"));
-        if (!create) {
-            throw eng::EngineException(dlerror(), __FILE__, __FUNCTION__, __LINE__);
-        }
+        void *handle = lib::LibUtils::getLibHandle(path.c_str());
+        eng::IGame* (*create)() = reinterpret_cast<eng::IGame* (*)()>(lib::LibUtils::getSymHandle(handle, "create"));
         _game = std::shared_ptr<eng::IGame>(create());
         if (!_game) {
             throw eng::EngineException("Game creation failed", __FILE__, __FUNCTION__, __LINE__);

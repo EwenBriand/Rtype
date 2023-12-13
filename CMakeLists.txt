@@ -37,20 +37,32 @@ include_directories(metadata/include)
 
 add_subdirectory(metadata)
 
-add_subdirectory(ecs)
 add_subdirectory(ecs/raylib/)
+add_subdirectory(ecs)
 # add_subdirectory(tests)
 # add_subdirectory(graph)
 
 add_custom_target(call_metagen ALL
     DEPENDS MetaData generate_metadata
-    )
+)
 
-    add_custom_command(OUTPUT MetaData
-    COMMAND echo "-- Generating Metadata from Vanilla Components" && ./metadata/generate_metadata ${CMAKE_SOURCE_DIR}/ecs/include/Components.Vanilla/
+if(WIN32)
+add_custom_command(OUTPUT MetaData
+    # COMMAND echo "-- Generating Metadata from Vanilla Components"
+    # COMMAND metadata\\generate_metadata.exe ${CMAKE_SOURCE_DIR}\\ecs\\include\\Components.Vanilla
+    # COMMAND echo "-- Resuming build"
+    # DEPENDS always_rebuild
+    COMMAND echo "-- Generate Metadata manually then restart"
+)
+else()
+add_custom_command(OUTPUT MetaData
+    COMMAND echo "-- Generating Metadata from Vanilla Components"
+    COMMAND ./metadata/generate_metadata ${CMAKE_SOURCE_DIR}/ecs/include/Components.Vanilla/
     COMMAND echo "-- Resuming build"
     DEPENDS always_rebuild
 )
+
+endif()
 
 add_custom_command(OUTPUT always_rebuild
 COMMAND echo ""

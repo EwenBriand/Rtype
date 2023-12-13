@@ -21,7 +21,7 @@ void UIButton::Update(int entityID)
         m_prevClickCallbackName = m_clickCallbackName;
     }
     TestClick();
-    Sys.GetGraphicalModule()->WindowDrawText(
+    SYS.GetGraphicalModule()->WindowDrawText(
         {
             .pos = {m_uiDiv->GetPosition().x + 5, m_uiDiv->GetPosition().y + 2},
             .text = m_text,
@@ -36,17 +36,17 @@ void UIButton::OnAddComponent(int entityID)
     UIDiv *uiDiv = nullptr;
 
     try {
-        uiDiv = &(Sys.GetComponent<UIDiv>(entityID));
+        uiDiv = &(SYS.GetComponent<UIDiv>(entityID));
     } catch (std::exception &e) {
-        Sys.AddComponent<UIDiv>(entityID);
-        uiDiv = &(Sys.GetComponent<UIDiv>(entityID));
+        SYS.AddComponent<UIDiv>(entityID);
+        uiDiv = &(SYS.GetComponent<UIDiv>(entityID));
     }
     m_uiDiv = uiDiv;
     m_hoverDiv = uiDiv;
     m_clickable = true;
     SetHoverCallback([&]{
-        graph::vec2f mousePos = Sys.GetGraphicalModule()->WindowGetMousePos();
-        Sys.GetGraphicalModule()->WindowDrawText({
+        graph::vec2f mousePos = SYS.GetGraphicalModule()->WindowGetMousePos();
+        SYS.GetGraphicalModule()->WindowDrawText({
             .pos = {mousePos.x + 10, mousePos.y + 10},
             .text = m_description,
             .color = {255, 255, 255, 255},
@@ -62,24 +62,24 @@ void UIButton::RegisterCallback(const std::string &name, std::function<void()> &
 
 void UIButton::OnLoad()
 {
-    Entity systemHolder = Sys.GetSystemHolder();
+    Entity systemHolder = SYS.GetSystemHolder();
     try {
-        auto &cli = Sys.GetComponent<CLI>(systemHolder);
+        auto &cli = SYS.GetComponent<CLI>(systemHolder);
         cli.RegisterCustomCommand("bt-listcb", [&](CLI &c, std::vector<std::string> args) {
-            Console::info << "Available callbacks:" << std::endl;
+            CONSOLE::info << "Available callbacks:" << std::endl;
             for (auto &cb : AvailableActionsClick)
-                Console::info << "\t - " << cb.first << std::endl;
+                CONSOLE::info << "\t - " << cb.first << std::endl;
         });
         cli.RegisterCustomCommand("bt-setcb", [&](CLI &c, std::vector<std::string> args) {
             Entity ctxt = c.GetContext();
             try {
-                auto &bt = Sys.GetComponent<UIButton>(ctxt);
+                auto &bt = SYS.GetComponent<UIButton>(ctxt);
                 bt.m_clickCallbackName = args[0];
             } catch (std::exception &e) {
-                Console::warn << "No UIButton component on entity " << ctxt << std::endl;
+                CONSOLE::warn << "No UIButton component on entity " << ctxt << std::endl;
             }
         });
     } catch (std::exception &e) {
-        Console::warn << "No Cli, cannot change commands for UIButton" << std::endl;
+        CONSOLE::warn << "No Cli, cannot change commands for UIButton" << std::endl;
     }
 }
