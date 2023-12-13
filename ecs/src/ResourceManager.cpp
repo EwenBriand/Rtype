@@ -73,12 +73,12 @@
 //     };
 // }
 
-
 #include "ResourceManager.hpp"
 #include "ECSImpl.hpp"
 #include "Engine.hpp"
 #include "GraphicalRayLib/GraphicalRayLib.hpp"
 #include "IGraphicalModule.hpp"
+#include "LibUtils.hpp"
 #include "metadataGenerator.hpp"
 #include <cstdio>
 #include <cstring>
@@ -87,11 +87,9 @@
 #include <iterator>
 #include <type_traits>
 #include <unistd.h>
-#include "LibUtils.hpp"
-
 
 namespace ecs {
-       ResourceManager::~ResourceManager()
+    ResourceManager::~ResourceManager()
     {
         if (std::get<0>(_graphicalModule))
             lib::LibUtils::closeLibHandle(std::get<0>(_graphicalModule));
@@ -129,7 +127,9 @@ namespace ecs {
         std::string command = "mkdir -p " + copyPath + " && cp " + rawPath + ".cpp " + rawPath + ".hpp " + copyPath;
         system(command.c_str());
         try {
-            meta::MetadataGenerator().generateMetadata(copyPath);
+            auto metagen = meta::MetadataGenerator();
+            metagen.generateMetadata(copyPath);
+            metagen.buildCMake();
         } catch (std::exception& e) {
             CONSOLE::err << "Build failed: " << path << std::endl;
             std::ofstream checksumPath(rawPath + ".checksum", std::ios::trunc | std::ios::out);
@@ -304,7 +304,7 @@ namespace ecs {
             throw eng::EngineException("Game already loaded", __FILE__, __FUNCTION__, __LINE__);
         }
 
-        void *handle = lib::LibUtils::getLibHandle(path.c_str());
+        void* handle = lib::LibUtils::getLibHandle(path.c_str());
         eng::IGame* (*create)() = reinterpret_cast<eng::IGame* (*)()>(lib::LibUtils::getSymHandle(handle, "create"));
         _game = std::shared_ptr<eng::IGame>(create());
         if (!_game) {

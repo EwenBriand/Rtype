@@ -79,6 +79,11 @@ def build_root(args):
     if os.name == "nt":
         os.system('mkdir build && cd build && cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release .. && make')
     else:
+        print_color("yellow", "Building metadata generator")
+        os.system("cd metadata && mkdir -p build && cd build && cmake .. && make")
+        print_color("yellow", "Generating metadata")
+        os.system("cd build && ../metadata/build/generate_metadata ../ecs/include/Components.Vanilla")
+        print_color("yellow", "Building engine")
         os.system("mkdir -p build && cd build && cmake -DWITH_PIC=on -DBUILD_SHARED_LIBS=on -DCMAKE_BUILD_TYPE=Release .. && make")
 
 
