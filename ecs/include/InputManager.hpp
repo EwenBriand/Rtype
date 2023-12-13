@@ -7,134 +7,302 @@
 
 #ifndef B93CCB91_6BD6_4169_B10A_5BE69A806B2A
 #define B93CCB91_6BD6_4169_B10A_5BE69A806B2A
+#include "raylib.h"
+#include <functional>
+#include <iostream>
+#include <memory>
+#include <string>
 #include <unordered_map>
 #include <vector>
-#include <memory>
-#include <functional>
-#include <string>
-#include <iostream>
-
 
 class InputManager {
-    public:
+public:
+    struct EventInfo {
+        std::string name;
+        bool status; // true if the event is still down, false if the event is still up
+        int countPressing;
+        std::vector<char> infoChar;
+        std::vector<int> infoInt;
+        std::vector<float> infoFloat;
+    };
 
-        struct EventInfo {
-            std::string name;
-            std::vector<char> infoChar;
-            std::vector<int> infoInt;
-            std::vector<float> infoFloat;
-        };
-
-        struct EventDescription {
-            /**
-             * @brief The function to call to check if the event is triggered.
-             * If the function returns true, the event is triggered.
-             * If needed, fills the EventInfo structure with information about the event.
-             * All char pressed are consumed before this function is called, and can be retrieved
-             * using the WasCharPressed function.
-             *
-             */
-            std::function<bool(EventInfo &)> testTriggered;
-
-            /**
-             * @brief The function to call when the event is triggered.
-             *
-             */
-            std::function<void(EventInfo)> onTriggerCallback;
-        };
-        static std::unordered_map<std::string, EventDescription> Bindings;
-        static std::unordered_map<std::string, bool> Flags;
-
+    struct EventDescription {
         /**
-         * @brief Registers a binding to the input manager. This function needs
-         * to know the name corresponding to the event, as well as the function
-         * to call when the event is triggered. It also needs a function to call
-         * to check if the event is triggered.
-         *
-         * @param key
-         * @param description
-         */
-        static void RegisterBinding(const std::string &key, EventDescription description);
-
-        /**
-         * @brief Raises a flag.
-         *
-         * @param flag
-         */
-        static void RaiseFlag(const std::string &flag);
-
-        /**
-         * @brief Lowers a flag.
-         *
-         * @param flag
-         */
-        static void LowerFlag(const std::string &flag);
-
-        /**
-         * @brief Returns true if the flag is up, false if it is down or not set.
-         *
-         * @param flag
-         */
-        static bool IsFlagUp(const std::string &flag);
-
-        /**
-         * @brief Polls the events and calls the callbacks if the key is pressed.
-         *
-         * @param entityID
-         */
-        void PollEvents();
-
-        /**
-         * @brief Returns a vector with the string id of all events polled during the frame.
-         * Events are not duplicated.
+         * @brief The function to call to check if the event is triggered.
+         * If the function returns true, the event is triggered.
+         * If needed, fills the EventInfo structure with information about the event.
+         * All char pressed are consumed before this function is called, and can be retrieved
+         * using the WasCharPressed function.
          *
          */
-        std::vector<EventInfo> GetEvents();
+        std::function<bool(EventInfo&)> testTriggered;
 
         /**
-         * @brief returns true if the char was pressed during the frame.
+         * @brief The function to call when the event is triggered.
          *
          */
-        bool WasCharPressed(char c);
+        std::function<void(EventInfo)> onTriggerCallback;
+    };
+    static std::unordered_map<std::string, EventDescription> Bindings;
 
-        /**
-         * @brief Sets up the default inputs (letters for exemple)
-         *
-         */
-        void SetupDefaults();
+    /**
+     * @brief Add a new event to the InputManager.
+     *
+     * @param name The name of the event.
+     * @param description The description of the event.
+     */
 
-        /**
-         * @brief returns a reference to the polled events
-         *
-         */
-        std::vector<EventInfo> &GetPolled();
+    static void RegisterBinding(const std::string& name, InputManager::EventDescription description);
 
-        /**
-         * @brief removes an input from the list of polled inputs.
-         *
-         */
-        void Consume(const std::string &name);
+    /**
+     * @brief Remove an event from the InputManager.
+     *
+     * @param name The name of the event to remove.
+     */
 
-    private:
-        std::vector<EventInfo> m_polledEvents;
-        std::vector<int> m_charPressed;
+    static void RemoveEvent(const std::string& name);
 
-        const std::vector<char> m_defaultKeys = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
-                                           'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
-                                           'u', 'v', 'w', 'x', 'y', 'z',
-                                           '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-                                           ' ', '\n', '\t', '\b', '\r', '\f', '\v', '\a', '\\',
-                                           ' ', ',', ';', ':', '.', '!', '?', '/', '"', '\'',
-                                           '(', ')', '[', ']', '{', '}', '<', '>', '|', '-',
-                                           '_', '=', '+', '*', '&', '^', '%', '$', '#', '@'};
-        std::function<bool(char, EventInfo &)> m_defaultCharPressedTest = [&](char c, EventInfo &info) {
-            if (WasCharPressed(c)) {
-                info.name = std::string(1, c);
-                info.infoChar.push_back(c);
-                return true;
-            }
-            return false;
-        };
+    /**
+     * @brief Check if an event is triggered.
+     *
+     * @param name The name of the event to check.
+     * @return true If the event is triggered.
+     * @return false If the event is not triggered.
+     */
+
+    bool isDown(const std::string& name);
+
+    /**
+     * @brief Get the EventInfo structure of an event.
+     *
+     * @param name The name of the event.
+     * @return EventInfo The EventInfo structure of the event.
+     */
+
+    std::shared_ptr<InputManager::EventInfo> GetEventInfo(const std::string& name);
+
+    /**
+     * @brief Get PolledEvent.
+     *
+     * @return a std::vector<std::shared_ptr<EventInfo>>.
+     */
+
+    std::vector<std::shared_ptr<EventInfo>> GetPolledEvents();
+
+    /**
+     * @brief Check if the event have been realesed.
+     *
+     * @param name The name of the event.
+     * @return Bool set to true if the key is up after being pressed.
+     */
+
+    bool isUp(const std::string& name);
+
+    /**
+     * @brief Get the number of press an event take.
+     *
+     * @param name The name of the event.
+     * @return the number of time a key have been pressed.
+     */
+
+    int GetCountPressing(const std::string& name);
+
+    /**
+     * @brief Get the PollEvent.
+     *
+     * @param
+     * @return none.
+     */
+
+    void PollEvents();
+
+private:
+    std::vector<std::shared_ptr<EventInfo>> m_polledEvents;
+
+    const std::vector<char> m_defaultKeys = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
+        'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+        'u', 'v', 'w', 'x', 'y', 'z',
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+        ' ', '\n', '\t', '\b', '\r', '\f', '\v', '\a', '\\',
+        ' ', ',', ';', ':', '.', '!', '?', '/', '"', '\'',
+        '(', ')', '[', ']', '{', '}', '<', '>', '|', '-',
+        '_', '=', '+', '*', '&', '^', '%', '$', '#', '@' };
+    std::function<bool(char, EventInfo&)> m_defaultCharPressedTest = [&](char c, EventInfo& info) {
+        if (IsKeyPressed(c)) {
+            info.name = std::string(1, c);
+            info.infoChar.push_back(c);
+            return true;
+        }
+        return false;
+    };
 };
+
+// Enum 03: KeyboardKey (110 values)
+//   Name: KeyboardKey
+//   Description: Keyboard keys (US keyboard layout)
+//   Value[KEY_NULL]: 0
+//   Value[KEY_APOSTROPHE]: 39
+//   Value[KEY_COMMA]: 44
+//   Value[KEY_MINUS]: 45
+//   Value[KEY_PERIOD]: 46
+//   Value[KEY_SLASH]: 47
+//   Value[KEY_ZERO]: 48
+//   Value[KEY_ONE]: 49
+//   Value[KEY_TWO]: 50
+//   Value[KEY_THREE]: 51
+//   Value[KEY_FOUR]: 52
+//   Value[KEY_FIVE]: 53
+//   Value[KEY_SIX]: 54
+//   Value[KEY_SEVEN]: 55
+//   Value[KEY_EIGHT]: 56
+//   Value[KEY_NINE]: 57
+//   Value[KEY_SEMICOLON]: 59
+//   Value[KEY_EQUAL]: 61
+//   Value[KEY_A]: 65
+//   Value[KEY_B]: 66
+//   Value[KEY_C]: 67
+//   Value[KEY_D]: 68
+//   Value[KEY_E]: 69
+//   Value[KEY_F]: 70
+//   Value[KEY_G]: 71
+//   Value[KEY_H]: 72
+//   Value[KEY_I]: 73
+//   Value[KEY_J]: 74
+//   Value[KEY_K]: 75
+//   Value[KEY_L]: 76
+//   Value[KEY_M]: 77
+//   Value[KEY_N]: 78
+//   Value[KEY_O]: 79
+//   Value[KEY_P]: 80
+//   Value[KEY_Q]: 81
+//   Value[KEY_R]: 82
+//   Value[KEY_S]: 83
+//   Value[KEY_T]: 84
+//   Value[KEY_U]: 85
+//   Value[KEY_V]: 86
+//   Value[KEY_W]: 87
+//   Value[KEY_X]: 88
+//   Value[KEY_Y]: 89
+//   Value[KEY_Z]: 90
+//   Value[KEY_LEFT_BRACKET]: 91
+//   Value[KEY_BACKSLASH]: 92
+//   Value[KEY_RIGHT_BRACKET]: 93
+//   Value[KEY_GRAVE]: 96
+//   Value[KEY_SPACE]: 32
+//   Value[KEY_ESCAPE]: 256
+//   Value[KEY_ENTER]: 257
+//   Value[KEY_TAB]: 258
+//   Value[KEY_BACKSPACE]: 259
+//   Value[KEY_INSERT]: 260
+//   Value[KEY_DELETE]: 261
+//   Value[KEY_RIGHT]: 262
+//   Value[KEY_LEFT]: 263
+//   Value[KEY_DOWN]: 264
+//   Value[KEY_UP]: 265
+//   Value[KEY_PAGE_UP]: 266
+//   Value[KEY_PAGE_DOWN]: 267
+//   Value[KEY_HOME]: 268
+//   Value[KEY_END]: 269
+//   Value[KEY_CAPS_LOCK]: 280
+//   Value[KEY_SCROLL_LOCK]: 281
+//   Value[KEY_NUM_LOCK]: 282
+//   Value[KEY_PRINT_SCREEN]: 283
+//   Value[KEY_PAUSE]: 284
+//   Value[KEY_F1]: 290
+//   Value[KEY_F2]: 291
+//   Value[KEY_F3]: 292
+//   Value[KEY_F4]: 293
+//   Value[KEY_F5]: 294
+//   Value[KEY_F6]: 295
+//   Value[KEY_F7]: 296
+//   Value[KEY_F8]: 297
+//   Value[KEY_F9]: 298
+//   Value[KEY_F10]: 299
+//   Value[KEY_F11]: 300
+//   Value[KEY_F12]: 301
+//   Value[KEY_LEFT_SHIFT]: 340
+//   Value[KEY_LEFT_CONTROL]: 341
+//   Value[KEY_LEFT_ALT]: 342
+//   Value[KEY_LEFT_SUPER]: 343
+//   Value[KEY_RIGHT_SHIFT]: 344
+//   Value[KEY_RIGHT_CONTROL]: 345
+//   Value[KEY_RIGHT_ALT]: 346
+//   Value[KEY_RIGHT_SUPER]: 347
+//   Value[KEY_KB_MENU]: 348
+//   Value[KEY_KP_0]: 320
+//   Value[KEY_KP_1]: 321
+//   Value[KEY_KP_2]: 322
+//   Value[KEY_KP_3]: 323
+//   Value[KEY_KP_4]: 324
+//   Value[KEY_KP_5]: 325
+//   Value[KEY_KP_6]: 326
+//   Value[KEY_KP_7]: 327
+//   Value[KEY_KP_8]: 328
+//   Value[KEY_KP_9]: 329
+//   Value[KEY_KP_DECIMAL]: 330
+//   Value[KEY_KP_DIVIDE]: 331
+//   Value[KEY_KP_MULTIPLY]: 332
+//   Value[KEY_KP_SUBTRACT]: 333
+//   Value[KEY_KP_ADD]: 334
+//   Value[KEY_KP_ENTER]: 335
+//   Value[KEY_KP_EQUAL]: 336
+//   Value[KEY_BACK]: 4
+//   Value[KEY_MENU]: 82
+//   Value[KEY_VOLUME_UP]: 24
+//   Value[KEY_VOLUME_DOWN]: 25
+// Enum 04: MouseButton (7 values)
+//   Name: MouseButton
+//   Description: Mouse buttons
+//   Value[MOUSE_BUTTON_LEFT]: 0
+//   Value[MOUSE_BUTTON_RIGHT]: 1
+//   Value[MOUSE_BUTTON_MIDDLE]: 2
+//   Value[MOUSE_BUTTON_SIDE]: 3
+//   Value[MOUSE_BUTTON_EXTRA]: 4
+//   Value[MOUSE_BUTTON_FORWARD]: 5
+//   Value[MOUSE_BUTTON_BACK]: 6
+// Enum 05: MouseCursor (11 values)
+//   Name: MouseCursor
+//   Description: Mouse cursor
+//   Value[MOUSE_CURSOR_DEFAULT]: 0
+//   Value[MOUSE_CURSOR_ARROW]: 1
+//   Value[MOUSE_CURSOR_IBEAM]: 2
+//   Value[MOUSE_CURSOR_CROSSHAIR]: 3
+//   Value[MOUSE_CURSOR_POINTING_HAND]: 4
+//   Value[MOUSE_CURSOR_RESIZE_EW]: 5
+//   Value[MOUSE_CURSOR_RESIZE_NS]: 6
+//   Value[MOUSE_CURSOR_RESIZE_NWSE]: 7
+//   Value[MOUSE_CURSOR_RESIZE_NESW]: 8
+//   Value[MOUSE_CURSOR_RESIZE_ALL]: 9
+//   Value[MOUSE_CURSOR_NOT_ALLOWED]: 10
+// Enum 06: GamepadButton (18 values)
+//   Name: GamepadButton
+//   Description: Gamepad buttons
+//   Value[GAMEPAD_BUTTON_UNKNOWN]: 0
+//   Value[GAMEPAD_BUTTON_LEFT_FACE_UP]: 1
+//   Value[GAMEPAD_BUTTON_LEFT_FACE_RIGHT]: 2
+//   Value[GAMEPAD_BUTTON_LEFT_FACE_DOWN]: 3
+//   Value[GAMEPAD_BUTTON_LEFT_FACE_LEFT]: 4
+//   Value[GAMEPAD_BUTTON_RIGHT_FACE_UP]: 5
+//   Value[GAMEPAD_BUTTON_RIGHT_FACE_RIGHT]: 6
+//   Value[GAMEPAD_BUTTON_RIGHT_FACE_DOWN]: 7
+//   Value[GAMEPAD_BUTTON_RIGHT_FACE_LEFT]: 8
+//   Value[GAMEPAD_BUTTON_LEFT_TRIGGER_1]: 9
+//   Value[GAMEPAD_BUTTON_LEFT_TRIGGER_2]: 10
+//   Value[GAMEPAD_BUTTON_RIGHT_TRIGGER_1]: 11
+//   Value[GAMEPAD_BUTTON_RIGHT_TRIGGER_2]: 12
+//   Value[GAMEPAD_BUTTON_MIDDLE_LEFT]: 13
+//   Value[GAMEPAD_BUTTON_MIDDLE]: 14
+//   Value[GAMEPAD_BUTTON_MIDDLE_RIGHT]: 15
+//   Value[GAMEPAD_BUTTON_LEFT_THUMB]: 16
+//   Value[GAMEPAD_BUTTON_RIGHT_THUMB]: 17
+// Enum 07: GamepadAxis (6 values)
+//   Name: GamepadAxis
+//   Description: Gamepad axis
+//   Value[GAMEPAD_AXIS_LEFT_X]: 0
+//   Value[GAMEPAD_AXIS_LEFT_Y]: 1
+//   Value[GAMEPAD_AXIS_RIGHT_X]: 2
+//   Value[GAMEPAD_AXIS_RIGHT_Y]: 3
+//   Value[GAMEPAD_AXIS_LEFT_TRIGGER]: 4
+//   Value[GAMEPAD_AXIS_RIGHT_TRIGGER]: 5
 
 #endif /* B93CCB91_6BD6_4169_B10A_5BE69A806B2A */

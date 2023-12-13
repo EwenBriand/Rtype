@@ -5,30 +5,24 @@
 ** EditorMouseManager.cpp
 */
 
-#include <functional>
-#include "../Engine.hpp"
-#include "../ECSImpl.hpp"
-#include "../IGraphicalModule.hpp"
 #include "EditorMouseManager.hpp"
+#include "../ECSImpl.hpp"
+#include "../Engine.hpp"
+#include "../IGraphicalModule.hpp"
+#include <functional>
 
 void EditorMouseManager::OnAddComponent(int entityID)
 {
     SYS.GetInputManager().RegisterBinding(
         "MouseClick-Editor",
-        {
-            .testTriggered = [&](__attribute__((unused)) InputManager::EventInfo &info) {
+        { .testTriggered = [&](__attribute__((unused)) InputManager::EventInfo& info) {
                 bool clicked = SYS.GetGraphicalModule()->WindowIsMouseLeftDown();
                 if (!clicked) {
                     m_isPressed = false;
                     m_mousePrevPos = SYS.GetGraphicalModule()->WindowGetMousePos();
                 }
-                return clicked;
-            },
-            .onTriggerCallback = [&](__attribute__((unused)) InputManager::EventInfo info){
-                setCtxtClosestEntity();
-            }
-        }
-    );
+                return clicked; },
+            .onTriggerCallback = [&](__attribute__((unused)) InputManager::EventInfo info) { setCtxtClosestEntity(); } });
 }
 
 void EditorMouseManager::setCtxtClosestEntity()
@@ -40,9 +34,9 @@ void EditorMouseManager::setCtxtClosestEntity()
     if (m_isPressed)
         return;
     m_isPressed = true;
-    for (auto &entity : entities) {
+    for (auto& entity : entities) {
         try {
-            auto &transform = SYS.GetComponent<CoreTransform>(entity);
+            auto& transform = SYS.GetComponent<CoreTransform>(entity);
             if (closestEntity == -1) {
                 closestEntity = entity;
                 closestDistance = graph::distance(transform.GetScreenPosition(), SYS.GetGraphicalModule()->WindowGetMousePos());
@@ -53,7 +47,7 @@ void EditorMouseManager::setCtxtClosestEntity()
                 closestEntity = entity;
                 closestDistance = distance;
             }
-        } catch (std::exception &e) {
+        } catch (std::exception& e) {
             continue;
         }
     }
@@ -68,8 +62,9 @@ void EditorMouseManager::checkForDrag()
     graph::vec2f mousePos = SYS.GetGraphicalModule()->WindowGetMousePos();
     graph::vec2f delta = {
         mousePos.x - m_mousePrevPos.x,
-        mousePos.y - m_mousePrevPos.y};
-    if (graph::distance(delta, {0, 0}) < 5) {
+        mousePos.y - m_mousePrevPos.y
+    };
+    if (graph::distance(delta, { 0, 0 }) < 5) {
         m_mousePrevPos = mousePos;
         return;
     }
@@ -78,10 +73,10 @@ void EditorMouseManager::checkForDrag()
     if (entity == -1)
         return;
     try {
-        auto &transform = SYS.GetComponent<CoreTransform>(entity);
+        auto& transform = SYS.GetComponent<CoreTransform>(entity);
         transform.x += delta.x;
         transform.y += delta.y;
-    } catch (std::exception &e) {
+    } catch (std::exception& e) {
         return;
     }
 }
@@ -93,14 +88,12 @@ void EditorMouseManager::Update(int entityID)
     if (ctxt == -1)
         return;
     try {
-        auto &transform = SYS.GetComponent<CoreTransform>(ctxt);
-        SYS.GetGraphicalModule()->WindowDrawCircle({
-            .pos = transform.GetScreenPosition(),
+        auto& transform = SYS.GetComponent<CoreTransform>(ctxt);
+        SYS.GetGraphicalModule()->WindowDrawCircle({ .pos = transform.GetScreenPosition(),
             .radius = 5,
-            .borderColor = {255, 255, 255, 255},
-            .borderSize = 1
-        });
-    } catch (std::exception &e) {
+            .borderColor = { 255, 255, 255, 255 },
+            .borderSize = 1 });
+    } catch (std::exception& e) {
         return;
     }
     if (m_isPressed)
@@ -112,7 +105,6 @@ std::string EditorMouseManager::GetClassName() const
     return "EditorMouseManager";
 }
 
-void EditorMouseManager::Save(const std::string &path)
+void EditorMouseManager::Save(const std::string& path)
 {
-
 }

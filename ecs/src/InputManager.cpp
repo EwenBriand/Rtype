@@ -5,108 +5,109 @@
 ** InputManager.cpp
 */
 
-#include <stdexcept>
-#include <algorithm>
-#include <string>
 #include "InputManager.hpp"
 #include "ECSImpl.hpp"
+#include <algorithm>
+#include <stdexcept>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 std::unordered_map<std::string, InputManager::EventDescription> InputManager::Bindings;
-std::unordered_map<std::string, bool> InputManager::Flags;
 
-
-void InputManager::SetupDefaults() {
-    for (auto letter : m_defaultKeys) {
-        RegisterBinding(
-            "PressedKey " + std::string(1, letter),
-            {
-                std::bind(m_defaultCharPressedTest, letter, std::placeholders::_1),
-            }
-        );
-    }
-}
-
-bool InputManager::WasCharPressed(char c)
-{
-    for (int i = 0; i < m_charPressed.size(); ++i) {
-        if (m_charPressed[i] == c) {
-            return true;
-        }
-    }
-    return false;
-}
-
-void InputManager::RegisterBinding(const std::string &key, InputManager::EventDescription description)
+void InputManager::RegisterBinding(const std::string& key, InputManager::EventDescription description)
 {
     Bindings[key] = description;
 }
 
 void InputManager::PollEvents()
 {
-    char tmpChar = 1;
-    auto graphical = SYS.GetGraphicalModule();
-    m_polledEvents.clear();
-    m_charPressed.clear();
-    while ((tmpChar = graphical->GetNextCharPressed()) != -1) {
-        if (tmpChar != 0) {
-            m_charPressed.push_back(tmpChar);
-        }
+    std::vector<int> event_list;
+    int act_event = GetCharPressed();
+
+    while (act_event != 0) {
+        event_list.push_back(act_event);
+        act_event = GetCharPressed();
     }
-    bool duplicate = false;
-    for (auto &binding : Bindings) {
-        EventInfo tmp;
-        duplicate = false;
-        if (binding.second.testTriggered(tmp)) {
-            for (auto evt : m_polledEvents) {
-                if (evt.name == binding.first) {
-                    duplicate = true;
-                    break;
-                }
+
+    for (const auto& event : m_polledEvents) {
+        event->countPressing = 0;
+    }
+
+    for (int i = 0; i < event_list.size(); i++) {
+        std::string current(1, static_cast<char>(event_list[i]));
+        if (m_polledEvents.empty()) {
+            EventInfo newEvent;
+            newEvent.name = current;
+            newEvent.status = false;
+            newEvent.countPressing = 1;
+            m_polledEvents.push_back(std::make_shared<EventInfo>(newEvent));
+            continue;
+        }
+        for (const auto& event : m_polledEvents) {
+            if (event->name == current) {
+                event->status = false;
+                event->countPressing++;
+                break;
             }
-            if (duplicate)
-                continue;
-            if (binding.second.onTriggerCallback)
-                binding.second.onTriggerCallback(tmp);
-            m_polledEvents.push_back({binding.first, tmp.infoChar, tmp.infoInt, tmp.infoFloat});
+            if (event == m_polledEvents.back()) {
+                EventInfo newEvent;
+                newEvent.name = current;
+                newEvent.status = false;
+                newEvent.countPressing = 1;
+                m_polledEvents.push_back(std::make_shared<EventInfo>(newEvent));
+                break;
+            }
         }
+    }
+
+    for (const auto& event : m_polledEvents) {
+        if (event->countPressing > 0)
+            std::cout << event->name << " " << event->countPressing << " " << event->status << std::endl;
     }
 }
 
-std::vector<InputManager::EventInfo> InputManager::GetEvents()
+bool InputManager::isDown(const std::string& name)
+{
+    for (const auto& event : m_polledEvents) {
+        if (event->name == name && event->countPressing > 0) {
+            return event->status;
+        }
+    }
+    return false;
+}
+
+bool InputManager::isUp(const std::string& name)
+{
+    for (const auto& event : m_polledEvents) {
+        if (event->name == name && event->countPressing > 0) {
+            return event->countPressing == 1;
+        }
+    }
+    return false;
+}
+
+std::shared_ptr<InputManager::EventInfo> InputManager::GetEventInfo(const std::string& name)
+{
+    for (const auto& event : m_polledEvents) {
+        if (event->name == name) {
+            return event;
+        }
+    }
+    throw std::runtime_error("Event not found");
+}
+
+std::vector<std::shared_ptr<InputManager::EventInfo>> InputManager::GetPolledEvents()
 {
     return m_polledEvents;
 }
 
-void InputManager::RaiseFlag(const std::string &flag)
+int InputManager::GetCountPressing(const std::string& name)
 {
-    Flags[flag] = true;
-}
-
-void InputManager::LowerFlag(const std::string &flag)
-{
-    Flags[flag] = false;
-}
-
-bool InputManager::IsFlagUp(const std::string &flag)
-{
-    try {
-        return Flags.at(flag);
-    } catch (std::out_of_range &e) {
-        return false;
-    }
-}
-
-std::vector<InputManager::EventInfo> &InputManager::GetPolled()
-{
-    return m_polledEvents;
-}
-
-void InputManager::Consume(const std::string &name)
-{
-    for (int i = 0; i < m_polledEvents.size(); ++i) {
-        if (m_polledEvents[i].name == name) {
-            m_polledEvents.erase(m_polledEvents.begin() + i);
-            return;
+    for (const auto& event : m_polledEvents) {
+        if (event->name == name) {
+            return event->countPressing;
         }
     }
+    return 0;
 }

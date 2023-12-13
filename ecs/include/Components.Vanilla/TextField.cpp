@@ -5,12 +5,12 @@
 ** TextField.cpp
 */
 
-#include <algorithm>
-#include <functional>
-#include "../ECSImpl.hpp"
 #include "TextField.hpp"
+#include "../ECSImpl.hpp"
 #include "../Hoverable.hpp"
 #include "../IGraphicalModule.hpp"
+#include <algorithm>
+#include <functional>
 
 void TextField::Update(int entityID)
 {
@@ -21,7 +21,7 @@ void TextField::Update(int entityID)
     Draw();
 }
 
-void TextField::SetParent(UIDiv &parent)
+void TextField::SetParent(UIDiv& parent)
 {
     m_hoverDiv = &parent;
 }
@@ -31,19 +31,15 @@ void TextField::Draw()
     std::shared_ptr<graph::IGraphicalModule> graphics = SYS.GetGraphicalModule();
     graph::vec2f divPos = m_hoverDiv->GetPosition();
 
-    graphics->WindowDrawRectangle({
-        .pos = {divPos.x + m_x + 11.0f * m_label.size(), divPos.y + m_y},
-        .dimensions = {100, 20},
-        .bgColor = {255, 255, 255, 255},
-        .borderColor = {255, 255, 255, 255},
-        .borderSize = 0
-    });
-    graphics->WindowDrawText({
-        .pos = {divPos.x + m_x, divPos.y + m_y},
+    graphics->WindowDrawRectangle({ .pos = { divPos.x + m_x + 11.0f * m_label.size(), divPos.y + m_y },
+        .dimensions = { 100, 20 },
+        .bgColor = { 255, 255, 255, 255 },
+        .borderColor = { 255, 255, 255, 255 },
+        .borderSize = 0 });
+    graphics->WindowDrawText({ .pos = { divPos.x + m_x, divPos.y + m_y },
         .text = m_label,
-        .color = {255, 255, 255, 255},
-        .fontSize = 11
-    });
+        .color = { 255, 255, 255, 255 },
+        .fontSize = 11 });
 
     size_t start = 0;
     if (m_text.size() - 20 > 0)
@@ -54,11 +50,10 @@ void TextField::Draw()
     else
         text = m_text.substr((m_text.size() > 20) ? (m_text.size() - 20) : 0, m_text.size());
     graphics->WindowDrawText((graph::graphText_t) {
-        .pos = {divPos.x + m_x + 11.0f * m_label.size() + 5, divPos.y + m_y},
+        .pos = { divPos.x + m_x + 11.0f * m_label.size() + 5, divPos.y + m_y },
         .text = text,
-        .color = (m_text == "") ? (graph::vec4uc) {100, 100, 100, 255} : (graph::vec4uc) {0, 0, 0, 255},
-        .fontSize = 11
-    });
+        .color = (m_text == "") ? (graph::vec4uc) { 100, 100, 100, 255 } : (graph::vec4uc) { 0, 0, 0, 255 },
+        .fontSize = 11 });
 }
 
 void TextField::SetupCallbacks()
@@ -69,27 +64,18 @@ void TextField::SetupCallbacks()
 
     SYS.GetInputManager().RegisterBinding(
         "Pressed Backspace",
-        {
-            .testTriggered = [&](InputManager::EventInfo &info) {
-                return SYS.GetGraphicalModule()->isKeyPressed(KEY_BACKSPACE);
-            },
+        { .testTriggered = [&](InputManager::EventInfo& info) { return SYS.GetGraphicalModule()->isKeyPressed(KEY_BACKSPACE); },
             .onTriggerCallback = [&](InputManager::EventInfo info) {
                 if (m_text.size() > 0) {
                     m_text.pop_back();
-                }
-            }
-        }
-    );
+                } } });
 
     SYS.GetInputManager().RegisterBinding(
         "Pressed Enter",
-        {
-            .testTriggered = [&](InputManager::EventInfo &info) {
-                return SYS.GetGraphicalModule()->isKeyPressed(KEY_ENTER);
-            },
-            .onTriggerCallback = nullptr
-        }
-    );
+        { .testTriggered = [&](InputManager::EventInfo& info) {
+             return SYS.GetGraphicalModule()->isKeyPressed(KEY_ENTER);
+         },
+            .onTriggerCallback = nullptr });
 
     SetClickCallback([&]() {
         Focusable::Focus(m_isFocused);
@@ -98,10 +84,10 @@ void TextField::SetupCallbacks()
 
 void TextField::OnAddComponent(int entityID)
 {
-    UIDiv *div = nullptr;
+    UIDiv* div = nullptr;
     try {
         div = &SYS.GetComponent<UIDiv>(entityID);
-    } catch (std::exception &e) {
+    } catch (std::exception& e) {
         SYS.AddComponent<UIDiv>(entityID);
         div = &SYS.GetComponent<UIDiv>(entityID);
     }
@@ -120,17 +106,18 @@ void TextField::SetPosition(graph::vec2f pos)
     m_y = pos.y;
 }
 
+// need to remake it with the new input manager
 void TextField::collectInput()
 {
     auto inputManager = SYS.GetInputManager();
     std::vector<std::string> consumedInputs;
-    std::vector<InputManager::EventInfo> inputs = inputManager.GetPolled();
+    std::vector<std::shared_ptr<InputManager::EventInfo>> inputs = inputManager.GetPolledEvents();
     for (size_t i = 0; i < inputs.size(); ++i) {
-        auto evtName = inputs[i].name;
+        auto evtName = inputs[i]->name;
         if (evtName.substr(0, 10) == "PressedKey") {
             if (std::find(consumedInputs.begin(), consumedInputs.end(), evtName) != consumedInputs.end())
                 continue;
-            m_text += inputs[i].infoChar[0];
+            m_text += inputs[i]->infoChar[0];
             consumedInputs.push_back(evtName);
         }
         if (evtName == "Pressed Backspace") {
@@ -146,9 +133,6 @@ void TextField::collectInput()
             Focusable::UnFocus(m_isFocused);
             consumedInputs.push_back(evtName);
         }
-    }
-    for (auto e : consumedInputs) {
-        inputManager.Consume(e);
     }
 }
 

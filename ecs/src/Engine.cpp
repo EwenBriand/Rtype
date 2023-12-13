@@ -122,7 +122,6 @@ namespace eng {
             Stop();
         }
         SYS.SetGraphicalModule(m_graphicalModule);
-        SYS.GetInputManager().SetupDefaults();
         if (IsOptionSet(eng::Engine::Options::EDITOR)) {
             SYS.AddComponent<CLI>(SYS.GetSystemHolder());
             SYS.AddComponent<EditorMouseManager>(SYS.GetSystemHolder());
