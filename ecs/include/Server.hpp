@@ -17,12 +17,23 @@
 #include <tuple>
 #include <vector>
 #include <functional>
-#include <poll.h>
-#include <netinet/in.h>
+
 #include <thread>
 #include <mutex>
 #include "Component.hpp"
 #include "ThreadPool.hpp"
+#include "Poll.hpp"
+
+#ifdef _WIN32
+    #include <winsock2.h>
+    #include <ws2tcpip.h>
+#else
+    #include <sys/socket.h>
+    #include <netinet/in.h>
+    #include <arpa/inet.h>
+    #include <unistd.h>
+#endif
+
 
 #define registerHandshake(type) RegisterHandshake<type>(#type)
 
@@ -198,7 +209,11 @@ namespace serv {
                     void Send(const std::string &data);
                     void Receive(const std::string &data);
                     std::shared_ptr<IClient> GetClient() const;
-                    int GetSocket() const;
+                    #ifdef _WIN32
+                        long long GetSocket() const;
+                    #else
+                        int GetSocket() const;
+                    #endif
 
                     ClientBucket &operator<<(const Message &message);
 
@@ -211,7 +226,11 @@ namespace serv {
                     CircularBuffer _buffer;
                     std::shared_ptr<IClient> _client;
                     std::shared_ptr<td::ThreadedQueue<50>> _tasks;
-                    int _socket;
+                    #ifdef _WIN32
+                        long long _socket;
+                    #else
+                        int _socket;
+                    #endif
             };
 
             static ServerImpl *Get();
@@ -273,7 +292,11 @@ namespace serv {
 
             int _port;
             int _maxClients = -1;
-            int _socket;
+            #ifdef _WIN32
+                long long _socket;
+            #else
+                int _socket;
+            #endif
             struct sockaddr_in _address;
             socklen_t _addrlen;
 
@@ -282,7 +305,7 @@ namespace serv {
             fd_set _exceptfds;
 
             std::map<std::string, std::function<std::shared_ptr<IClient>()>> _handshakes;
-            std::vector<pollfd> _pollfds;
+            std::vector<myposix::Poll::aPollfd> _pollfds;
             std::map<int, std::queue<std::string>> _bufferedMessages;
     };
 

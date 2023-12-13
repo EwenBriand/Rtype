@@ -11,12 +11,12 @@
 EntityExplorer::EntityWatcher::EntityWatcher(Entity e) :
     entityID(e)
 {
-    // std::vector<std::string> types = Sys.GetComponentsTypes();
+    // std::vector<std::string> types = SYS.GetComponentsTypes();
     int delta = 0;
     int cptIndex = 0;
 
     cptCount = countCpt();
-    Sys.ForEachComponent(e, [&](ecs::ECSImpl::AnyCpt &cpt) {
+    SYS.ForEachComponent(e, [&](ecs::ECSImpl::AnyCpt &cpt) {
         std::visit([&](auto &&arg) {
             metadata.push_back(arg.GetMetadata());
             std::map<std::string, metadata_t> &m = metadata.back();
@@ -53,10 +53,10 @@ EntityExplorer::EntityWatcher::EntityWatcher(Entity e) :
 int EntityExplorer::EntityWatcher::countCpt() const
 {
     int count = 0;
-    std::vector<std::string> types = Sys.GetComponentsTypes();
+    std::vector<std::string> types = SYS.GetComponentsTypes();
 
     for (auto type : types) {
-        std::vector<ecs::ECSImpl::AnyCpt> cpts = Sys.GetComponentsByName(entityID, type);
+        std::vector<ecs::ECSImpl::AnyCpt> cpts = SYS.GetComponentsByName(entityID, type);
         count += cpts.size();
     }
     return count;
@@ -66,7 +66,7 @@ void EntityExplorer::EntityWatcher::updateTextFieldsValues()
 {
     int i = 0;
     int fieldIdx = 0;
-    Sys.ForEachComponent(entityID, [&](ecs::ECSImpl::AnyCpt &cpt) {
+    SYS.ForEachComponent(entityID, [&](ecs::ECSImpl::AnyCpt &cpt) {
         std::visit([&](auto &&arg) {
             std::map<std::string, metadata_t> &m = metadata[i];
 
@@ -83,7 +83,7 @@ void EntityExplorer::EntityWatcher::updateTextFieldsValues()
 
 void EntityExplorer::EntityWatcher::Update()
 {
-    auto validEntities = Sys.GetEntities();
+    auto validEntities = SYS.GetEntities();
     if (std::find(validEntities.begin(), validEntities.end(), entityID) == validEntities.end()) {
         throw std::runtime_error("EntityWatcher::Update: entityID is not valid");
     }
@@ -103,7 +103,7 @@ void EntityExplorer::EntityWatcher::Update()
 
 void EntityExplorer::Update(int entityID)
 {
-    Entity context = Sys.GetEditorEntityContext();
+    Entity context = SYS.GetEditorEntityContext();
 
     if (context <= 0)
         return;

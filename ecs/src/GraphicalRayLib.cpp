@@ -22,8 +22,8 @@ namespace raylib {
         auto engine = eng::Engine::GetEngine();
         engine->pushPipeline([&]() {
             if (WindowShouldClose()) {
-                Console::info << "Window closed" << std::endl;
-                Sys.Exit();
+                CONSOLE::info << "Window closed" << std::endl;
+                SYS.Exit();
             }
         },
             -999);
@@ -52,7 +52,7 @@ namespace raylib {
 
         InitAudioDevice();
         if (IsAudioDeviceReady() == false) {
-            Console::err << "Error in initializing audio device" << std::endl;
+            CONSOLE::err << "Error in initializing audio device" << std::endl;
         } else
             std::cout << "Audio device initialized" << std::endl;
     }

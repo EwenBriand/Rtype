@@ -15,7 +15,7 @@ namespace graph
         if (!m_hoverable || !m_hoverDiv)
             return;
 
-        vec2f mousePos = Sys.GetGraphicalModule()->WindowGetMousePos();
+        vec2f mousePos = SYS.GetGraphicalModule()->WindowGetMousePos();
         vec2f divPos = m_hoverDiv->GetPosition();
         vec2f divSize = m_hoverDiv->GetSize();
 
@@ -67,7 +67,7 @@ namespace graph
     void Clickable::TestClick()
     {
         if (IsHovered() && m_clickable && m_clickCallback &&
-            Sys.GetGraphicalModule()->WindowIsMouseLeftPressed()) {
+            SYS.GetGraphicalModule()->WindowIsMouseLeftPressed()) {
             m_clickCallback();
         }
     }

@@ -882,7 +882,7 @@ namespace ecs {
          * The syntax to use is:
          * @code
          *
-         * Sys.ForEachComponent(entity, [&](ecs::ECSImpl::AnyCpt &cpt) {
+         * SYS.ForEachComponent(entity, [&](ecs::ECSImpl::AnyCpt &cpt) {
          *     std::visit([&](auto &&arg) {
          *        // do something with arg
          *     }, cpt);
@@ -930,7 +930,7 @@ namespace ecs {
         std::shared_ptr<graph::IGraphicalModule> GetGraphicalModule() { return _graphicalModule; }
         void SetGraphicalModule(std::shared_ptr<graph::IGraphicalModule> module) { _graphicalModule = module; }
 
-        ResourceManager& GetResourceManager() { return _resourceManager; }
+        inline ResourceManager& GetResourceManager() { return _resourceManager; }
         InputManager& GetInputManager() { return _inputManager; }
 
         void SetEditorEntityContext(Entity e) { _editorEntityContext = e; }

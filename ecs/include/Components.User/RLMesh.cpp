@@ -46,7 +46,7 @@ void RLMesh::Update(int entityID)
 void RLMesh::updatePosition(int entityID)
 {
     try {
-        auto transform = Sys.GetComponent<CoreTransform>(entityID);
+        auto transform = SYS.GetComponent<CoreTransform>(entityID);
         m_model.transform = MatrixRotateXYZ({transform.rotationX, transform.rotationY, transform.rotationZ});
         m_model.transform = MatrixMultiply(m_model.transform, MatrixScale(transform.scaleX, transform.scaleY, transform.scaleZ));
         m_model.transform = MatrixMultiply(m_model.transform, MatrixTranslate(transform.x, transform.y, transform.z));
@@ -64,12 +64,12 @@ void RLMesh::Start()
 
 void RLMesh::OnLoad()
 {
-    Console::info << "RLMesh module was loaded correctly" << std::endl;
+    CONSOLE::info << "RLMesh module was loaded correctly" << std::endl;
 }
 
 void RLMesh::OnAddComponent(int e)
 {
-    if (Sys.GetGraphicalModule()->GetID() != "GraphicalRayLib") {
+    if (SYS.GetGraphicalModule()->GetID() != "GraphicalRayLib") {
         throw eng::CompatibilityException("RLMesh is only compatible with the RayLib graphical module");
     }
     if (!m_modelIsLoaded)
@@ -93,7 +93,7 @@ bool RLMesh::doLoad() {
             if (assetRoot[assetRoot.size() - 1] != '/')
                 assetRoot += '/';
         } catch (std::exception) {
-            Console::warn << "No asset directory specified in config, using current directory" << std::endl;
+            CONSOLE::warn << "No asset directory specified in config, using current directory" << std::endl;
             assetRoot = "./";
         }
         std::string pathStr = assetRoot + m_path;
@@ -101,7 +101,7 @@ bool RLMesh::doLoad() {
             pathStr = pathStr.substr(0, pathStr.size() - 1);
         std::filesystem::path path = pathStr;
         if (not std::filesystem::exists(path)) {
-            Console::err << "Asset [" << path << "] not found" << std::endl;
+            CONSOLE::err << "Asset [" << path << "] not found" << std::endl;
             return false;
         }
         withLocation(path) {
@@ -109,7 +109,7 @@ bool RLMesh::doLoad() {
         }
         m_boundingBox = GetMeshBoundingBox(m_model.meshes[0]);
         if (errno != 0) {
-            Console::err << "Failed to load model " << path << std::endl;
+            CONSOLE::err << "Failed to load model " << path << std::endl;
             perror("Error: ");
             m_path = "";
             return false;
@@ -139,10 +139,10 @@ void RLMesh::loadModelAsync() {
 //     while (path[path.size() - 1] == '\n' or path[path.size() - 1] == ' ')
 //         path = path.substr(0, path.size() - 1);
 //     if (not std::filesystem::exists(path)) {
-//         Console::err << "Asset [" << path << "] not found" << std::endl;
+//         CONSOLE::err << "Asset [" << path << "] not found" << std::endl;
 //         return false;
 //     }
-//     Console::info << "Loading texture " << path << std::endl;
+//     CONSOLE::info << "Loading texture " << path << std::endl;
 //     m_texture = LoadTexture(path.c_str());
 //     return true;
 // }

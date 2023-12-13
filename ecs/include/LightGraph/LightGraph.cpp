@@ -39,7 +39,7 @@ namespace graph
         engine->pushPipeline([&]() {
             if (_window->ShouldClose())
                 std::cout << "Window closed" << std::endl;
-                Sys.Exit();
+                SYS.Exit();
         }, -999);
         engine->pushPipeline([&]() {
             _window->PollEvents();

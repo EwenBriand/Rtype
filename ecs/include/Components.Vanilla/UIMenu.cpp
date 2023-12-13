@@ -19,8 +19,8 @@ void UIMenu::OnAddComponent(int entityID)
 {
     UIDiv *uiDiv = nullptr;
 
-    Sys.AddComponent<UIDiv>(entityID);
-    uiDiv = &(Sys.GetComponent<UIDiv>(entityID));
+    SYS.AddComponent<UIDiv>(entityID);
+    uiDiv = &(SYS.GetComponent<UIDiv>(entityID));
     m_hoverDiv = uiDiv;
 }
 

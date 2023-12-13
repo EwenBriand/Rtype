@@ -16,6 +16,6 @@ add_executable(generate_metadata
 
 add_library(
     metadatagen
-    SHARED
+    STATIC
     ${SRC}/metadataGenerator.cpp
 )
