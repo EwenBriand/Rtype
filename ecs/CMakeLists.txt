@@ -15,6 +15,7 @@ include_directories(
     ../include/
     ../graph/lightgraph/include/
     ../graph/glad/include/glad/
+    ./linenoise
 )
 
 set(CMAKE_LIBRARY_PATH
@@ -33,11 +34,8 @@ link_directories(
 
 set(CMAKE_CXX_STANDARD 20)
 
-set(ECS_SRC
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
-)
-
 set(ECS
+    ${ECS_SRC}/linenoise/linenoise.c
     ${ECS_SRC}/ECS.cpp
     ${ECS_SRC}/LibUtils.cpp
     ${ECS_SRC}/ResourceManager.cpp

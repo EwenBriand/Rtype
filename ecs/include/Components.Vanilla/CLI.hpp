@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "../../linenoise/linenoise.h"
 #include "../Component.hpp"
 #include <chrono>
 #include <functional>
@@ -138,35 +139,25 @@ public:
     std::string GetClassName() const;
     Entity GetContext() const;
 
+    static const std::map<std::string, std::function<void(CLI&, std::vector<std::string>)>> getM_commands();
+    static void setM_commands(const std::map<std::string, std::function<void(CLI&, std::vector<std::string>)>>& m_commands);
+
+    // void SetCompletion(const char* buf, linenoiseCompletions* lc);
+
 private:
     void parseCommand(const std::string& command);
     std::string consoleGetLine();
 
     std::string m_buffer;
     std::future<std::string> m_future;
+    std::vector<std::string> m_history;
+    std::vector<std::string>::iterator m_historyIt;
     bool m_prompted = false;
 
     std::chrono::milliseconds m_timeOut = std::chrono::milliseconds(100);
     int m_skipFrames = 0;
-    std::map<std::string, std::function<void(CLI&, std::vector<std::string>)>> m_commands = {
-        { "help", [](CLI& cli, std::vector<std::string> args) { cli.showHelp(); } },
-        { "ne", [](CLI& cli, std::vector<std::string> args) { cli.createEntity(); } },
-        { "ctxt", [](CLI& cli, std::vector<std::string> args) { cli.setContext(args); } },
-        { "mv", [](CLI& cli, std::vector<std::string> args) { cli.moveEntity(args); } },
-        { "save", [](CLI& cli, std::vector<std::string> args) { cli.save(args); } },
-        { "exit", [](CLI& cli, std::vector<std::string> args) { exit(0); } },
-        { "skip", [](CLI& cli, std::vector<std::string> args) { cli.skipNFrames(args); } },
-        { "addcpt", [](CLI& cli, std::vector<std::string> args) { cli.addVanillaCptFromIndex(args); } },
-        { "add", [](CLI& cli, std::vector<std::string> args) { cli.addVanillaCptFromName(args); } },
-        { "clear", [](CLI& cli, std::vector<std::string> args) { system("clear"); } },
-        { "reload", [](CLI& cli, std::vector<std::string> args) { cli.reloadEntities(args); } },
-        { "le", [](CLI& cli, std::vector<std::string> args) { cli.listEntities(); } },
-        { "hotreload", [](CLI& cli, std::vector<std::string> args) { cli.hotReload(); } },
-        { "rme", [](CLI& cli, std::vector<std::string> args) { cli.removeEntity(args); } },
-        { "setmbr", [](CLI& cli, std::vector<std::string> args) { cli.setMember(args); } },
-        { "listmbr", [](CLI& cli, std::vector<std::string> args) { cli.listExposedMembers(args); } },
-        { "lsctxt", [](CLI& cli, std::vector<std::string> args) { cli.showContext(); } },
-    };
+
+    static std::map<std::string, std::function<void(CLI&, std::vector<std::string>)>> m_commands;
 
     std::map<std::string, std::string> m_commandsHelp = {
         { "help", "Shows this help message." },
@@ -186,5 +177,6 @@ private:
         { "setmbr", "Sets the member of the component to the given value." },
         { "listmbr", "Lists the exposed members of the component at the given index in the entitiy's components." },
         { "lsctxt", "Show information on the entity set as the context." },
+        { "exit", "Quit the cli" },
     };
 };
