@@ -36,6 +36,7 @@ Sprite::Sprite(const std::string& path)
 
 Sprite::~Sprite()
 {
+    UnloadTexture(_texture);
 }
 
 void Sprite::Draw()
@@ -189,7 +190,6 @@ void Animation::SetSpritePath(const std::string& path)
 {
     std::string assetRoot = eng::Engine::GetEngine()->GetConfigValue("assetRoot");
     std::string spritePath = ecs::ResourceManager::MakePath({ assetRoot, path }, true);
-
     _sprite = std::make_shared<Sprite>(spritePath);
 }
 
@@ -227,6 +227,18 @@ void Animation::SetLoop(bool loop)
 //-----------------------------------------------------------------------------
 // ANIMATOR
 //-----------------------------------------------------------------------------
+
+void Animator::OnAddComponent(int entityId)
+{
+    std::cout << "Animator added to entity " << entityId << std::endl;
+
+    for (auto name : _registeredAnimations) {
+        std::string out = "";
+        Animation anim = loadAnimationFromFile(name, out);
+        _animations[out] = anim;
+        std::cout << "Loaded animation " << out << std::endl;
+    }
+}
 
 void Animator::editorRegisterUIButtonExposed()
 {
@@ -383,6 +395,7 @@ void Animator::AddAnimation(const std::string& name, Animation& anim)
 
 Animation Animator::loadAnimationFromFile(const std::string& path, std::string& name)
 {
+    std::cout << "loading animation from file: " << path << std::endl; // todo remove
     std::vector<std::string> lines = loadRawAnimFile(path, name);
     decltype(lines)::iterator it = lines.begin();
     Animation anim;
@@ -410,6 +423,8 @@ Animation Animator::loadAnimationFromFile(const std::string& path, std::string& 
         if (key == "auto") {
             handleAutoMode(defaultFrame, anim, value);
             name = anim.GetName();
+            if (std::find(_registeredAnimations.begin(), _registeredAnimations.end(), path) == _registeredAnimations.end())
+                _registeredAnimations.push_back(path);
             return anim;
         }
 
@@ -427,7 +442,14 @@ Animation Animator::loadAnimationFromFile(const std::string& path, std::string& 
         ++it;
     }
     name = anim.GetName();
+    if (std::find(_registeredAnimations.begin(), _registeredAnimations.end(), path) == _registeredAnimations.end())
+        _registeredAnimations.push_back(path);
     return anim;
+}
+
+std::vector<std::string> Animator::GetRegisteredAnimations() const
+{
+    return _registeredAnimations;
 }
 
 void Animator::handleAutoMode(Animation::Frame& defaultFrame, Animation& anim, const std::string& value)
@@ -446,8 +468,7 @@ void Animator::handleAutoMode(Animation::Frame& defaultFrame, Animation& anim, c
     }
 }
 
-std::string
-Animator::trim(const std::string& str)
+std::string Animator::trim(const std::string& str)
 {
     size_t first = str.find_first_not_of(' ');
     if (std::string::npos == first) {

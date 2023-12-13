@@ -47,6 +47,18 @@ namespace ui {
             int layer = DEFAULT_TEXT_LAYER;
         };
 
+        struct Button {
+            std::string text;
+            Vector2 position;
+            int fontSize;
+            Color colorDefault = BLACK;
+            Color colorHover = GRAY;
+            Color colorPressed = YELLOW;
+            bool pressed = false;
+            std::function<void()> callback = []() {};
+            int layer = DEFAULT_TEXT_LAYER;
+        };
+
         // ----------------------------------------------------------------------------
         // public methods
         // ----------------------------------------------------------------------------
@@ -55,7 +67,8 @@ namespace ui {
          *
          * @return UIManager&
          */
-        static UIManager& Get();
+        static UIManager&
+        Get();
 
         /**
          * @brief Construct a new UIManager object.

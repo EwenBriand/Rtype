@@ -5,74 +5,6 @@
 ** ResourceManager.cpp
 */
 
-// /*
-// ** EPITECH PROJECT, 2023
-// ** ia
-// ** File description:
-// ** LibLoader.hpp
-// */
-
-// #pragma once
-
-// #include <map>
-// // if windows
-// #ifdef _WIN32
-// #include <windows.h>
-// #else
-// #include <dlfcn.h>
-// #endif
-// #include <string>
-// #include <memory>
-// #include <iostream>
-// #include <stdexcept>
-
-// #define LOADABLE(class) \
-//     extern "C" std::shared_ptr<class> create() { \
-//         return std::make_shared<class>(); \
-//     }
-
-// namespace ai {
-//     class LibLoader {
-//         public:
-//             ~LibLoader();
-//             void LoadLib(const std::string &path);
-//             void UnloadLib(const std::string &path);
-
-// #ifdef _WIN32
-//             template <typename T>
-//             std::shared_ptr<T> GetLib(const std::string &path) {
-//                 HMODULE hModule = LoadLibrary(path.c_str());
-//                 if (hModule == NULL) {
-//                     throw std::runtime_error("Failed to load library");
-//                 }
-//                 FARPROC functionPointer = GetProcAddress(hModule, "create");
-//                 if (functionPointer == NULL) {
-//                     LibUtils::closeLibHandlerary(hModule);
-//                     throw std::runtime_error("Failed to get function pointer");
-//                 }
-//                 typedef std::shared_ptr<T> (*CreateFunctionType)();
-//                 CreateFunctionType createFunction = reinterpret_cast<CreateFunctionType>(functionPointer);
-//                 std::shared_ptr<T> result = createFunction();
-//                 _libs[path] = hModule;
-//                 return result;
-//             }
-
-// #else
-//             template <typename T>
-//             std::shared_ptr<T> GetLib(const std::string &path) {
-//                 if (_libs.find(path) == _libs.end())
-//                     LoadLib(path);
-//                 void *getter = GETSYMBOL(_libs[path], "create");
-//                 if (!getter)
-//                     throw std::runtime_error(ERRORLIB());
-//                 return reinterpret_cast<std::shared_ptr<T>(*)()>(getter)();
-//             }
-// #endif
-//         private:
-//             std::map<std::string, void *> _libs;
-//     };
-// }
-
 #include "ResourceManager.hpp"
 #include "ECSImpl.hpp"
 #include "Engine.hpp"
@@ -93,8 +25,9 @@ namespace ecs {
     {
         if (std::get<0>(_graphicalModule))
             lib::LibUtils::closeLibHandle(std::get<0>(_graphicalModule));
-        if (_gameHandle)
-            lib::LibUtils::closeLibHandle(_gameHandle);
+        // if (_gameHandle) {
+        //     lib::LibUtils::closeLibHandle(_gameHandle);
+        // }
     }
 
     std::shared_ptr<AUserComponent> ResourceManager::LoadUserComponent(
@@ -305,12 +238,13 @@ namespace ecs {
         }
 
         void* handle = lib::LibUtils::getLibHandle(path.c_str());
-        eng::IGame* (*create)() = reinterpret_cast<eng::IGame* (*)()>(lib::LibUtils::getSymHandle(handle, "create"));
-        _game = std::shared_ptr<eng::IGame>(create());
+        std::shared_ptr<eng::IGame> (*create)() = reinterpret_cast<std::shared_ptr<eng::IGame> (*)()>(lib::LibUtils::getSymHandle(handle, "create"));
+        _game = create();
         if (!_game) {
             throw eng::EngineException("Game creation failed", __FILE__, __FUNCTION__, __LINE__);
         }
         _gameHandle = handle;
+        CONSOLE::info << "Game successfully loaded" << std::endl;
         return _game;
     }
 }

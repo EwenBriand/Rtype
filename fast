@@ -76,23 +76,16 @@ def deep_clean_impl(args):
 
 def build_root(args):
     cd_gitroot()
+    j_option = "-j" if "-j" in args else ""
     if os.name == "nt":
         os.system('mkdir build && cd build && cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release .. && make')
     else:
         print_color("yellow", "Building metadata generator")
-        os.system("""
-                  cd metadata \
-                    && mkdir -p build
-                    && cd build \
-                    && cmake .. \
-                    && make
-                  """)
+        os.system("cd metadata && mkdir -p build && cd build && cmake .. && make")
         print_color("yellow", "Generating metadata for vanilla components")
-        os.system("""
-                    mkdir -p build && pwd && cd build && ../metadata/build/generate_metadata ../ecs/include/Components.Vanilla
-                """)
+        os.system(f"mkdir -p build && pwd && cd build && ../metadata/build/generate_metadata ../ecs/include/Components.Vanilla")
         print_color("yellow", "Building engine")
-        os.system("mkdir -p build && cd build && cmake -DWITH_PIC=on -DBUILD_SHARED_LIBS=on -DCMAKE_BUILD_TYPE=Release .. && make")
+        os.system("mkdir -p build && cd build && cmake -DWITH_PIC=on -DBUILD_SHARED_LIBS=on -DCMAKE_BUILD_TYPE=Release .. && make " + j_option)
 
 
 def debug_root(args):

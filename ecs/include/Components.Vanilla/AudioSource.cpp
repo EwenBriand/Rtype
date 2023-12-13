@@ -17,17 +17,10 @@
 
 AudioSource::~AudioSource()
 {
-    // for (auto& [name, music] : _music_List)
-    //     if (IsMusicReady(*music))
-    //         UnloadMusicStream(*music);
-    // for (auto& [name, sound] : _sound_List)
-    //     if (IsSoundReady(*sound))
-    //         UnloadSound(*sound);
 }
 
 AudioSource::AudioSource()
 {
-    std::cout << "AudioSource created" << std::endl;
 }
 
 void AudioSource::Update(int entityID)

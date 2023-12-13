@@ -22,6 +22,11 @@ namespace eng {
     const std::string Engine::Options::GAME = "--game";
     const std::string Engine::Options::CONFIG_DIR = "--config-dir";
 
+    ecs::ECSImpl& Engine::GetECS()
+    {
+        return m_ecs;
+    }
+
     Engine* Engine::GetEngine()
     {
         static std::unique_ptr<Engine> engine;
@@ -34,10 +39,12 @@ namespace eng {
 
     Engine::Engine()
         : m_graphicalModule(SYS.GetResourceManager().LoadGraphicalModule())
+        , m_ecs(SYS)
     {
         m_preUpdatePipeline = std::make_shared<std::vector<Action>>();
         m_postUpdatePipeline = std::make_shared<std::vector<Action>>();
         m_unsortedPipeline = std::make_shared<std::vector<std::tuple<int, std::tuple<std::string, Action>>>>();
+        m_sceneManager = std::make_shared<eng::SceneManager>(*this);
     }
 
     Engine::~Engine()
@@ -87,6 +94,16 @@ namespace eng {
         m_pipelineChanged = false;
     }
 
+    void Engine::SetupEditor()
+    {
+        if (IsOptionSet(eng::Engine::Options::EDITOR)) {
+            SYS.AddComponent<CLI>(SYS.GetSystemHolder());
+            SYS.AddComponent<EditorMouseManager>(SYS.GetSystemHolder());
+            SYS.AddComponent<EntityExplorer>(SYS.GetSystemHolder());
+            m_sceneManager->InitEditorMode();
+        }
+    }
+
     void Engine::NotifyPipelineChange()
     {
         m_pipelineChanged = true;
@@ -123,12 +140,7 @@ namespace eng {
         }
         SYS.SetGraphicalModule(m_graphicalModule);
         SYS.GetInputManager().SetupDefaults();
-        if (IsOptionSet(eng::Engine::Options::EDITOR)) {
-            SYS.AddComponent<CLI>(SYS.GetSystemHolder());
-            SYS.AddComponent<EditorMouseManager>(SYS.GetSystemHolder());
-            SYS.AddComponent<EntityExplorer>(SYS.GetSystemHolder());
-            ecs::SceneManager::Get().InitEditorMode();
-        }
+        SetupEditor();
         if (IsOptionSet(eng::Engine::Options::GAME)) {
             try {
                 m_game = SYS.GetResourceManager().LoadGame(GetOptionValue(eng::Engine::Options::GAME));
@@ -140,8 +152,12 @@ namespace eng {
         }
 
         SYS.LoadVanilla();
-        if (m_game)
-            m_game->Init();
+        if (m_game != nullptr) {
+            std::cout << "game init" << std::endl;
+            m_game->Init(this);
+            std::cout << "survived" << std::endl;
+        }
+
         SYS.GetResourceManager().CheckHotReload();
 
         for (auto e : SYS.GetEntities()) {
@@ -153,14 +169,16 @@ namespace eng {
             });
         }
 
-        if (m_game && m_game->IsOnLine())
-            m_game->WaitConnect();
+        if (m_game && m_game->IsOnLine(this))
+            m_game->WaitConnect(this);
 
         m_graphicalModule->Start();
         setupPipeline();
         sortPipeline();
 
         SYS.CallStart();
+        if (m_game)
+            m_game->LoadFirstScene(this);
         SYS.Run(
             [&]() {
                 for (auto action : *m_preUpdatePipeline) {
@@ -183,7 +201,13 @@ namespace eng {
             });
         m_graphicalModule->Stop();
         if (m_game)
-            m_game->Cleanup();
+            m_game->Cleanup(this);
+        m_game.reset();
+    }
+
+    SceneManager& Engine::GetSceneManager()
+    {
+        return *m_sceneManager;
     }
 
     bool Engine::IsOptionSet(const std::string& optionName)
@@ -196,15 +220,27 @@ namespace eng {
         exit(0);
     }
 
+    void Engine::configUpdateRelativePath()
+    {
+        std::string configDir = GetOptionValue(Options::CONFIG_DIR);
+
+        for (auto& [key, value] : m_config) {
+            if ((value.size() > 2) && (value[0] == '.') && (value[1] == '/')
+                || (value.size() > 3) && (value[0] == '.') && (value[1] == '.') && (value[2] == '/')) {
+                value = std::filesystem::canonical(configDir + value.substr(2)).string();
+            }
+        }
+    }
+
     void Engine::discoverConfig(const std::string& configDir)
     {
         std::vector<std::string> configFiles;
         std::string configExt = ".cfg";
-        std::string configPath = std::filesystem::current_path().string() + "/" + configDir;
+        std::string configPath = configDir;
 
         CONSOLE::info << "Discovering config files in: " << configPath << std::endl;
         if (!std::filesystem::exists(configPath))
-            throw EngineException("Config directory not found", __FILE__, __FUNCTION__, __LINE__);
+            throw EngineException("Config directory not found : " + configPath, __FILE__, __FUNCTION__, __LINE__);
         for (auto& p : std::filesystem::directory_iterator(configPath)) {
             if (p.path().extension() == configExt)
                 configFiles.push_back(p.path().string());
@@ -215,7 +251,11 @@ namespace eng {
             CONSOLE::info << "Loading config file: " << file << std::endl;
             loadConfig(file);
         }
+        configUpdateRelativePath();
         std::string savePath = GetConfigValue("scenesSavePath");
+        for (auto [key, value] : m_config) {
+            CONSOLE::info << "\t" << key << " = " << GetConfigValue(key) << std::endl;
+        }
         if (!std::filesystem::exists(savePath))
             std::filesystem::create_directory(savePath);
         CONSOLE::info << "Data will be saved at " << savePath << std::endl;
@@ -230,7 +270,6 @@ namespace eng {
         }
 
         std::string line;
-        CONSOLE::info << "Loading config file: " << path << std::endl;
         while (std::getline(config_file, line)) {
             if (line.empty() || line.front() == '#' || line.front() == '\n')
                 continue;
@@ -254,8 +293,6 @@ namespace eng {
             if (key.empty() || value.empty()) {
                 throw std::runtime_error("Invalid config grammar: " + line);
             }
-
-            std::cout << "\t" << key << " = " << value << std::endl;
             m_config[key] = value;
         }
 

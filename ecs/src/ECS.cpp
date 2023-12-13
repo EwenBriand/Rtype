@@ -45,4 +45,10 @@ namespace ecs {
     {
         return _deltaTime;
     }
+
+    template <>
+    void ECSImpl::EngineReloadEditorMode()
+    {
+        eng::Engine::GetEngine()->SetupEditor();
+    }
 }
