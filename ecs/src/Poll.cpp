@@ -7,23 +7,26 @@
 
 #include "Poll.hpp"
 #ifdef _WIN32
-#include <winsock2.h>
 #include <windows.h>
+#include <winsock2.h>
 #else
+#include <fcntl.h>
 #include <poll.h>
 #endif
+#include <stdexcept>
 
-namespace myposix
-{
-    int Poll::poll(std::vector<aPollfd> &fds, int timeout) {
+namespace myposix {
+    int Poll::poll(std::vector<aPollfd>& fds, int timeout)
+    {
 #ifdef _WIN32
         return WSAPoll(reinterpret_cast<LPWSAPOLLFD>(fds.data()), fds.size(), timeout);
 #else
-        return ::poll(fds.data(), fds.size(), timeout);
+        return ::poll(reinterpret_cast<pollfd*>(fds.data()), fds.size(), timeout);
 #endif
     }
-    
-    bool Poll::isReadable(aPollfd &fd) {
+
+    bool Poll::isReadable(aPollfd& fd)
+    {
 #ifdef _WIN32
         return fd.revents & (POLLRDNORM | POLLRDBAND);
 #else
@@ -31,7 +34,8 @@ namespace myposix
 #endif
     }
 
-    void Poll::initSocket(int &fd) {
+    void Poll::initSocket(int& fd)
+    {
 #ifdef _WIN32
         u_long mode = 1;
         ioctlsocket(fd, FIONBIO, &mode);
@@ -44,7 +48,5 @@ namespace myposix
             throw std::runtime_error("fcntl");
 #endif
     }
-
-
 
 } // namespace myposix
