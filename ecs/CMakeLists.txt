@@ -84,7 +84,7 @@ set(VANILLA
 )
 
 set(META_VANILLA_SRC
-    ${CMAKE_CURRENT_SOURCE_DIR}/../.metadata
+    ${CMAKE_CURRENT_SOURCE_DIR}/../build/.metadata
 )
 
 set(META_VANILLA
@@ -126,7 +126,7 @@ add_executable(run_engine
 
 target_link_libraries(run_engine
     lengine
-    
+
 )
 
 # add_library(
