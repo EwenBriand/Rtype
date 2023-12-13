@@ -36,11 +36,7 @@ include_directories(metadata/include)
 
 
 add_subdirectory(metadata)
-
 add_subdirectory(ecs/raylib/)
-add_subdirectory(ecs)
-# add_subdirectory(tests)
-# add_subdirectory(graph)
 
 add_custom_target(call_metagen ALL
     DEPENDS MetaData generate_metadata
@@ -75,3 +71,5 @@ add_custom_target(install_fast
 add_custom_target(doc
     COMMAND doxygen ../Doxyfile
 )
+
+add_subdirectory(ecs)

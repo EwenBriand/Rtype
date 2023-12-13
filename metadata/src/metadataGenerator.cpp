@@ -45,9 +45,9 @@ namespace meta {
             }
         }
         saveCMake();
-#ifndef _WIN32
-        buildCMake();
-#endif
+        // #ifndef _WIN32
+        // buildCMake();
+        // #endif
     }
 
     std::vector<std::string> MetadataGenerator::tokenize(std::ifstream& file)

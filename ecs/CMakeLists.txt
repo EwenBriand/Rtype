@@ -34,8 +34,12 @@ link_directories(
 
 set(CMAKE_CXX_STANDARD 20)
 
+set(ECS_SRC
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
+
 set(ECS
-    ${ECS_SRC}/linenoise/linenoise.c
+    ${ECS_SRC}/../linenoise/linenoise.c
     ${ECS_SRC}/ECS.cpp
     ${ECS_SRC}/LibUtils.cpp
     ${ECS_SRC}/ResourceManager.cpp
@@ -113,6 +117,10 @@ target_link_libraries(lengine
     raylib
 )
 
+add_dependencies(lengine
+    call_metagen
+)
+
 if(WIN32)
     target_link_libraries(lengine
         ws2_32
@@ -126,141 +134,3 @@ target_link_libraries(run_engine
     lengine
 
 )
-
-# add_library(
-#     raylibgraph SHARED
-#     src/GraphicalRayLib.cpp
-# )
-
-# target_link_libraries(raylibgraph
-#     engine
-#     raylib)
-
-# set(CMAKE_CXX_STANDARD 20)
-# add_library(
-#     ecs SHARED
-#     ${SRC}
-# )
-
-# add_library(
-#     engine SHARED
-#     src/Engine.cpp
-#     src/ScopeLocation.cpp
-#     # ./include/Components.Vanilla/WowGraphics.cpp
-# )
-
-# target_link_libraries(engine
-#     ecs
-#     metadatagen
-#     # lightgraph
-# )
-
-# add_executable(testtarget
-#     src/test_main.cpp)
-
-# # manually build components that do not have metadata
-# add_library(
-#     cli SHARED
-#     ./include/Components.Vanilla/CLI.cpp
-#     # ./include/Components.Vanilla/INode.cpp
-# )
-
-
-# add_library(
-#     server SHARED
-#     ./src/Server.cpp
-#     ./src/ServerImpl.cpp
-#     ./src/CircularBuffer.cpp
-#     ./src/ClientBucket.cpp
-#     ./src/Message.cpp
-# )
-
-# find_package(Threads REQUIRED)
-# add_executable(
-#     server_test_main
-#     ./src/server_test_main.cpp
-# )
-# target_link_libraries(
-#     server_test_main
-#     server
-#     Threads::Threads
-# )
-
-# add_library(
-#     usercomponentwrapper SHARED
-#     ./include/Components.Vanilla/UserComponentWrapper.cpp
-# )
-
-# target_link_libraries(
-#     usercomponentwrapper
-#     cli
-# )
-
-# add_library(
-#     editorMouseManager SHARED
-#     ./include/Components.Vanilla/EditorMouseManager.cpp
-# )
-
-# target_link_libraries(
-#     editorMouseManager
-#     m
-# )
-
-# add_library(
-#     entityExplorer SHARED
-#     ./include/Components.Vanilla/EntityExplorer.cpp
-# )
-
-# target_link_libraries(
-#     entityExplorer
-#     ${METADATA_SRC}/libTextField.so
-# )
-
-
-# # link libraries for the components that have metadata
-# target_link_libraries(ecs
-#     ${METADATA_SRC}/libCoreTransform.so
-#     ${METADATA_SRC}/libUIDiv.so
-#     ${METADATA_SRC}/libUIButton.so
-#     ${METADATA_SRC}/libUIMenu.so
-#     ${METADATA_SRC}/libTextField.so
-#     ${METADATA_SRC}/libAnimator.so
-#     ${METADATA_SRC}/libCollider2D.so
-#     ${METADATA_SRC}/libAudioSource.so
-#     ${METADATA_SRC}/libRigidBody2D.so
-#     editorMouseManager
-#     usercomponentwrapper
-#     entityExplorer
-#     cli
-#     server
-# )
-
-
-
-# target_link_libraries(testtarget engine)
-
-# add_library(
-#     engine SHARED
-#     $(ECS)
-#     $(ENGINE)
-#     $(SERVER)
-#     $(VANILLA)
-#     $(META_VANILLA)
-# )
-
-
-# tests
-# add_executable(
-#     test_generic_storage_system
-#     ./src/test_generic_storage_system.cpp
-#     )
-
-# target_link_libraries(
-#     test_generic_storage_system
-#     engine
-#     ecs
-# )
-# add_test(
-#     NAME test_generic_storage_system
-#     COMMAND test_generic_storage_system
-# )

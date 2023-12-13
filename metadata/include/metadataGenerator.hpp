@@ -32,6 +32,7 @@ namespace meta {
         MetadataGenerator();
         ~MetadataGenerator();
         void generateMetadata(const std::string& path, const std::string& outputDirectory = "./metabuild");
+        void buildCMake();
 
     private:
         void generateMetadataForFile(const std::string& filepath, const std::string& filename);
@@ -46,7 +47,6 @@ namespace meta {
         void initCMake();
         void cmakeAppendShared(const std::string& filename, const std::string& filepath, std::vector<std::string>& words);
         void saveCMake();
-        void buildCMake();
         void detectDependencies(std::vector<std::string>& words, const std::string& targetname);
         bool wordBeginsWith(const std::string& word, const std::string& beginning);
         void updateMetadataVector(const std::vector<std::string>& words, size_t& i,
