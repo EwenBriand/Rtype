@@ -214,7 +214,7 @@ private:
      * @brief The tag of the entity the collider is colliding with.
      *
      */
-    serialize std::string _collidedTag = "";
+    std::string _collidedTag = "";
 
     /**
      * @brief The layer of the collider.

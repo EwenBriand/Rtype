@@ -46,7 +46,8 @@ namespace raylib {
 
     void GraphicalRayLib::Start()
     {
-        // SetTraceLogLevel(LOG_ERROR);
+        if (!eng::Engine::GetEngine()->IsOptionSet(eng::Engine::Options::VERBOSE))
+            SetTraceLogLevel(LOG_NONE);
         InitWindow(1920, 1080, "ECS");
         SetTargetFPS(60);
 

@@ -6,43 +6,52 @@
 */
 
 #include "RLCamera3D.hpp"
-#include "Engine.hpp"
 #include "ECSImpl.hpp"
+#include "Engine.hpp"
 
 MANAGED_RESOURCE(RLCamera3D)
 
-RLCamera3D::~RLCamera3D() {
+RLCamera3D::~RLCamera3D()
+{
     std::cout << "destroy camera" << std::endl;
     if (m_mode3DEnabled)
         EndMode3D();
     std::cout << "destroyed camera" << std::endl;
 }
 
-void RLCamera3D::Update(int entityID) {
-    UpdateCamera(&m_camera, CAMERA_PERSPECTIVE);
+void RLCamera3D::Update(int entityID)
+{
+    if (m_projection == "PERSPECTIVE")
+        UpdateCamera(&m_camera, CAMERA_PERSPECTIVE);
+    else
+        UpdateCamera(&m_camera, CAMERA_ORBITAL);
     if (eng::Engine::GetEngine()->IsOptionSet(eng::Engine::Options::EDITOR)) {
         DrawGrid(10, 1.0f);
     }
 }
 
-void RLCamera3D::Start() {
-
+void RLCamera3D::Start()
+{
 }
 
-void RLCamera3D::OnLoad() {
+void RLCamera3D::OnLoad()
+{
     auto engine = eng::Engine::GetEngine();
     DisableCursor();
     engine->pushPipeline([&]() {
         BeginMode3D(m_camera);
         m_mode3DEnabled = true;
-    }, -400);
+    },
+        -400);
     engine->pushPipeline([&]() {
         EndMode3D();
         m_mode3DEnabled = false;
-    }, 400);
+    },
+        400);
 }
 
-void RLCamera3D::OnAddComponent(int entityID) {
+void RLCamera3D::OnAddComponent(int entityID)
+{
     if (SYS.GetGraphicalModule()->GetID() != "GraphicalRayLib") {
         throw eng::CompatibilityException("RLCamera3D is only compatible with the RayLib graphical module");
     }

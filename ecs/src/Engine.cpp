@@ -21,6 +21,7 @@ namespace eng {
     const std::string Engine::Options::EDITOR = "--editor";
     const std::string Engine::Options::GAME = "game";
     const std::string Engine::Options::CONFIG_DIR = "--config-dir";
+    const std::string Engine::Options::VERBOSE = "--verbose";
 
     ecs::ECSImpl& Engine::GetECS()
     {

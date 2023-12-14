@@ -7,6 +7,7 @@
 */
 
 #include "MenuScript.hpp"
+#include "Engine.hpp"
 #include "UIManager.hpp"
 #include <iostream>
 
@@ -25,8 +26,8 @@ void MenuScript::OnAddComponent(int e)
                 .position = { 100, 100 },
                 .fontSize = 70,
                 .callback = [this]() {
-                    std::cout << "Play button pressed" << std::endl;
-                    // ui::UIManager::Get().RemoveGroup(_menuUIHandle);
+                    ui::UIManager::Get().RemoveGroup(_menuUIHandle);
+                    eng::Engine::GetEngine()->GetSceneManager().SwitchScene("level1");
                 } });
     } catch (const std::exception& e) {
         std::cerr << e.what() << std::endl;
