@@ -53,15 +53,20 @@ namespace ecs {
     bool ResourceManager::CompileUserScript(const std::string& path)
     {
         std::string tmpCopyDirectory = ".tmpCompileSrc";
+        std::string rootDir = "./";
+        try {
+            rootDir = eng::Engine::GetEngine()->GetConfigValue("tmpBuildDir");
+        } catch (std::exception& e) {
+            CONSOLE::warn << "Error: " << e.what() << std::endl;
+            CONSOLE::warn << "Could not find tmpBuildDir in config, using default value" << std::endl;
+        }
         std::string rawPath = path.substr(0, path.find_last_of('.'));
-        char buff[1024] = { 0 };
-        getcwd(buff, 1024);
-        std::string copyPath = std::string(buff) + tmpCopyDirectory + "/" + rawPath.substr(rawPath.find_last_of('/') + 1);
-        std::string command = "mkdir -p " + copyPath + " && cp " + rawPath + ".cpp " + rawPath + ".hpp " + copyPath;
+        std::string copyPath = rootDir + "/" + tmpCopyDirectory + "/" + rawPath.substr(rawPath.find_last_of('/') + 1);
+        std::string command = "mkdir -p " + copyPath + " && cp " + rawPath + ".cpp " + rawPath + ".hpp " + copyPath; // todo windows
         system(command.c_str());
         try {
             auto metagen = meta::MetadataGenerator();
-            metagen.generateMetadata(copyPath);
+            metagen.generateMetadata(copyPath, "./metabuild", rootDir);
             metagen.buildCMake();
         } catch (std::exception& e) {
             CONSOLE::err << "Build failed: " << path << std::endl;

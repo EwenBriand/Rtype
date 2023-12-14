@@ -255,6 +255,23 @@ namespace ecs {
             return *result;
         }
 
+        template <typename T>
+        T& SafeGet(Entity e)
+        {
+            T* result = nullptr;
+            if (e == GetSystemHolder()) {
+                throw std::runtime_error("Can't add " + std::string(typeid(T).name()) + " to the system holder");
+            }
+            try {
+                result = &GetComponent<T>(e);
+            } catch (std::exception& except) {
+                result = &AddComponent<T>(e);
+            }
+            if (result == nullptr)
+                throw std::runtime_error("Can't add " + std::string(typeid(T).name()) + " to the system holder");
+            return *result;
+        }
+
         /**
          * @brief Adds a component loaded dynamically from a shared library.
          *
@@ -633,8 +650,10 @@ namespace ecs {
          */
         Entity LoadEntity(const std::string& path)
         {
+            std::cout << "loading entity from " << path << std::endl;
             if (path.substr(path.find_last_of("/"), path.size()) == std::to_string(_systemHolder))
                 return -1;
+            std::cout << "path is not system holder" << std::endl;
             Entity e = RegisterEntity();
             std::ifstream cptTypes(path + "/cptTypes");
             std::string type = "";
@@ -643,7 +662,13 @@ namespace ecs {
             for (auto& p : std::filesystem::directory_iterator(path)) {
                 filesAlphabetical.push_back(p.path().string());
             }
-            std::sort(filesAlphabetical.begin(), filesAlphabetical.end());
+            std::sort(filesAlphabetical.begin(), filesAlphabetical.end(), [](const std::string& a, const std::string& b) {
+                try {
+                    return std::stoi(a.substr(a.find_last_of("_") + 1, a.size())) < std::stoi(b.substr(b.find_last_of("_") + 1, b.size()));
+                } catch (std::exception& e) {
+                    return false;
+                }
+            });
 
             for (auto& p : filesAlphabetical) {
                 if (p.substr(p.find_last_of("/"), p.size()) == "/cptTypes")
@@ -651,6 +676,7 @@ namespace ecs {
                 if (p.substr(p.find_last_of("_"), p.size()) == "_internal")
                     continue;
                 std::getline(cptTypes, type);
+
                 for (size_t i = 0; i < sizeof...(VanillaComponents); ++i) {
                     std::visit([&](auto&& arg) {
                         if (arg.GetClassName() == type) {
@@ -687,7 +713,13 @@ namespace ecs {
             for (auto& p : std::filesystem::directory_iterator(path)) {
                 filesAlphabetical.push_back(p.path().string());
             }
-            std::sort(filesAlphabetical.begin(), filesAlphabetical.end());
+            std::sort(filesAlphabetical.begin(), filesAlphabetical.end(), [](const std::string& a, const std::string& b) {
+                try {
+                    return std::stoi(a.substr(a.find_last_of("_") + 1, a.size())) < std::stoi(b.substr(b.find_last_of("_") + 1, b.size()));
+                } catch (std::exception& e) {
+                    return false;
+                }
+            });
             for (auto& cptCol : storage) {
                 cptCol.emplace_back();
             }
@@ -728,7 +760,6 @@ namespace ecs {
             for (auto& e : entities) {
                 if (e == _systemHolder)
                     continue;
-                std::cout << "clearing entity " << e << std::endl;
                 for (size_t i = 0; i < sizeof...(VanillaComponents); ++i) {
                     _components[i][e].clear();
                 }
@@ -737,13 +768,8 @@ namespace ecs {
             }
             _skipFrame = true;
             _deletedThisFrame = std::queue<int>();
-            std::cout << green << "Unloading resources" << white << std::endl;
             _resourceManager.Clear();
-            std::cout << green << "Reloading resources" << white << std::endl;
             _resourceManager.CheckHotReload();
-            std::cout << green << "OK" << white << std::endl;
-            std::cout << green << "Loading entities" << std::endl;
-            std::cout << "Parsing directory: " << m_savePath << std::endl;
             for (auto& p : std::filesystem::directory_iterator(m_savePath)) {
                 if (p.path().filename() == std::to_string(_systemHolder))
                     continue;
@@ -751,7 +777,6 @@ namespace ecs {
             }
             _editorEntityContext = _systemHolder;
             NotifyEnginePipelineErased();
-            std::cout << green << "OK" << white << std::endl;
         }
 
         /**
@@ -807,6 +832,9 @@ namespace ecs {
             }
 
             NotifyEnginePipelineErased();
+
+            // calling start on all components
+            CallStart();
         }
 
         void EngineReloadEditorMode();

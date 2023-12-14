@@ -69,11 +69,9 @@ namespace eng {
         if (_scenes.find(sceneName) == _scenes.end()) {
             LoadSceneAsync(sceneName);
         }
-        std::cout << "waiting for scene to be ready" << std::endl;
         while (!IsSceneReady(sceneName)) {
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
-        std::cout << "scene is ready" << std::endl;
         try {
             m_engine.GetECS().ReplaceScene(_scenes.at(sceneName)->GetComponents());
         } catch (std::exception& e) {

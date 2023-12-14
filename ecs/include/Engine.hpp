@@ -38,6 +38,7 @@ namespace eng {
             static const std::string EDITOR;
             static const std::string GAME;
             static const std::string CONFIG_DIR;
+            static const std::string VERBOSE;
         };
 
         Engine();

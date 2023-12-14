@@ -64,7 +64,7 @@ private:
      * @brief projection, the camera type, either perspective or orthographic.
      *
      */
-    serialize std::string m_projection = "CAMERA_PERSPECTIVE";
+    serialize std::string m_projection = "ORBITAL";
 
     bool m_mode3DEnabled = false;
     Camera m_camera = { { 5.0f, 5.0f, 5.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, 45.0f, 0 };

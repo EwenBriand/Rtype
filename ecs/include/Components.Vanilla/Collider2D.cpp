@@ -72,6 +72,7 @@ void Collider2D::OnLoad()
             },
             "Removes the last vertices (x, y) from the collider of the selected entity.");
     }
+    std::cout << "DEBUG done loading collider" << std::endl;
 }
 
 void Collider2D::Update(int entityID)

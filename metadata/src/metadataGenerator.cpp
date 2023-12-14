@@ -10,6 +10,7 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <stdexcept>
 #include <unistd.h>
 #include <vector>
 
@@ -23,8 +24,22 @@ namespace meta {
     {
     }
 
-    void MetadataGenerator::generateMetadata(const std::string& path, const std::string& outputDirectory)
+    std::string MetadataGenerator::MakePath(const std::vector<std::string>& pathElements, bool throwIfNotExist)
     {
+        std::filesystem::path p;
+        for (const auto& element : pathElements) {
+            p /= element;
+        }
+        p = std::filesystem::canonical(p);
+        if (throwIfNotExist && !std::filesystem::exists(p)) {
+            throw std::runtime_error("Path " + p.string() + " does not exist");
+        }
+        return p.string();
+    }
+
+    void MetadataGenerator::generateMetadata(const std::string& path, const std::string& outputDirectory, const std::string& buildRoot)
+    {
+        _buildRoot = buildRoot;
         _outputDirectory = outputDirectory;
         if (!std::filesystem::exists("./.metadata"))
             std::filesystem::create_directory("./.metadata");
@@ -45,9 +60,6 @@ namespace meta {
             }
         }
         saveCMake();
-        // #ifndef _WIN32
-        // buildCMake();
-        // #endif
     }
 
     std::vector<std::string> MetadataGenerator::tokenize(std::ifstream& file)
@@ -259,7 +271,7 @@ namespace meta {
         _cmakefile += "project(autogen)\n";
         _cmakefile += "\n";
         _cmakefile += "set(CMAKE_CXX_STANDARD 20)\n";
-        _cmakefile += "include_directories(" + folder + " " + folder + "../../../metadata/include/ ../../metadata/include/ ../../ecs/include/ " + folder + "/../../ecs/raylib/src/ " + folder + "../../raylib/src/ " + folder + "../../raylib/examples/shapes/ )\n";
+        _cmakefile += "include_directories(" + folder + " " + folder + " " + _buildRoot + "/metadata/include/ " + _buildRoot + "/ecs/include/ " + _buildRoot + "/ecs/raylib/src/ " + _buildRoot + "/ecs/raylib/examples/shapes/ )\n";
         _cmakefile += "set(CMAKE_RUNTIME_OUTPUT_DIRECTORY " + folder + ")\n";
         _cmakefile += "set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH}  ${CMAKE_CURRENT_SOURCE_DIR}/../build/)\n";
         _cmakefile += "link_directories(\n";

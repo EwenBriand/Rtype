@@ -51,8 +51,9 @@ namespace ui {
             std::string text;
             Vector2 position;
             int fontSize;
-            Color colorDefault = BLACK;
-            Color colorHover = GRAY;
+            Color textColor = BLACK;
+            Color colorDefault = GRAY;
+            Color colorHover = DARKGRAY;
             Color colorPressed = YELLOW;
             bool pressed = false;
             std::function<void()> callback = []() {};
@@ -115,10 +116,8 @@ namespace ui {
          */
         void RemoveGroup(std::size_t handle)
         {
-            std::cout << "removing group: " << handle << std::endl;
             if (_groups.find(handle) == _groups.end())
                 throw std::runtime_error("Invalid handle");
-            std::cout << "no error here" << std::endl;
             std::vector<std::tuple<std::string, std::size_t>> group = _groups[handle];
             std::for_each(group.begin(), group.end(), [&](auto& elem) {
                 _storage.RemoveAt(std::get<1>(elem), std::get<0>(elem));

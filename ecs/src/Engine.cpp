@@ -21,6 +21,7 @@ namespace eng {
     const std::string Engine::Options::EDITOR = "--editor";
     const std::string Engine::Options::GAME = "game";
     const std::string Engine::Options::CONFIG_DIR = "--config-dir";
+    const std::string Engine::Options::VERBOSE = "--verbose";
 
     ecs::ECSImpl& Engine::GetECS()
     {
@@ -87,7 +88,7 @@ namespace eng {
             std::ofstream pipinfo(".pipinfo.txt", std::ios::out | std::ios::trunc);
             pipinfo << pipelineAsStr;
             pipinfo.close();
-            CONSOLE::info << "More information on the pipeline in .pipinfo.txt" << std::endl;
+            CONSOLE::info << "More information about the pipeline in .pipinfo.txt" << std::endl;
         } catch (std::exception& e) {
             CONSOLE::warn << "Could not save pipeline information" << std::endl;
         }
@@ -154,9 +155,7 @@ namespace eng {
 
         SYS.LoadVanilla();
         if (m_game != nullptr) {
-            std::cout << "game init" << std::endl;
             m_game->Init(this);
-            std::cout << "survived" << std::endl;
         }
 
         SYS.GetResourceManager().CheckHotReload();

@@ -49,6 +49,7 @@ set(ECS
     ${ECS_SRC}/GenericStorageSystem.cpp
     ${ECS_SRC}/UIManager.cpp
     ${ECS_SRC}/GraphicalRayLib.cpp
+    ${ECS_SRC}/AController.cpp
 )
 
 set(ENGINE
