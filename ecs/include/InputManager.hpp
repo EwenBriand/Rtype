@@ -21,6 +21,8 @@ public:
         std::string name;
         bool status; // true if the event is still down, false if the event is still up
         int countPressing;
+        int key_code;
+        int type; // 0 = keyboard, 1 = mouse, 2 = gamepad
         std::vector<char> infoChar;
         std::vector<int> infoInt;
         std::vector<float> infoFloat;
@@ -115,6 +117,22 @@ public:
      */
 
     void PollEvents();
+    /**
+     * @brief Get the name of a key code.
+     *
+     * @param keyCode
+     * @return none.
+     */
+    std::string KeyCodeTOName(int keyCode);
+    /**
+     * @brief Get the value of a key code.
+     *
+     * @param
+     * @return none.
+     */
+    char KeyCodeTOChar(int keyCode);
+
+    char GetLastCharPressed();
 
 private:
     std::vector<std::shared_ptr<EventInfo>> m_polledEvents;
