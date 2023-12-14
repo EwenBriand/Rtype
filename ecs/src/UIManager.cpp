@@ -26,9 +26,6 @@ namespace ui {
     {
         registerSystems();
 
-        // here be the declaration of all ui elements
-        // _storage.RegisterComponent<Text>(_systemText);
-
         if (eng::Engine::GetEngine()->IsOptionSet(eng::Engine::Options::EDITOR)) {
             registerEditorHandles();
         }
@@ -84,10 +81,10 @@ namespace ui {
             _drawBuffer.push_back(std::make_tuple(button->layer, [button, this]() {
                 Color color = button->colorDefault;
                 if (CheckCollisionPointRec(GetMousePosition(), { button->position.x, button->position.y, static_cast<float>(button->text.size() * button->fontSize), static_cast<float>(button->fontSize) })) {
-                    color = button->colorHover;
+                    color = button->colorPressed;
                     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                         button->pressed = true;
-                        color = button->colorPressed;
+                        color = button->colorHover;
                     }
                 }
                 if (button->pressed && !IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
@@ -95,10 +92,8 @@ namespace ui {
                     if (button->callback)
                         button->callback();
                 }
-                _drawBuffer.push_back(std::make_tuple(button->layer, [button, color]() {
-                    DrawRectangle(button->position.x, button->position.y, button->text.size() * button->fontSize, button->fontSize, color);
-                    DrawText(button->text.c_str(), button->position.x, button->position.y, button->fontSize, button->colorDefault);
-                }));
+                DrawRectangle(button->position.x, button->position.y, button->text.size() * button->fontSize, button->fontSize, color);
+                DrawText(button->text.c_str(), button->position.x, button->position.y, button->fontSize, button->textColor);
             }));
         });
         _storage.RegisterComponent<Button>(systemButton);
@@ -108,7 +103,8 @@ namespace ui {
     {
         _storage.RunSystems<
             Text,
-            TextField>();
+            TextField,
+            Button>();
         std::sort(_drawBuffer.begin(), _drawBuffer.end(), [](auto& a, auto& b) {
             return std::get<0>(a) < std::get<0>(b);
         });

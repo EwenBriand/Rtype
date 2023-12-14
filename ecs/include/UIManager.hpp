@@ -51,8 +51,9 @@ namespace ui {
             std::string text;
             Vector2 position;
             int fontSize;
-            Color colorDefault = BLACK;
-            Color colorHover = GRAY;
+            Color textColor = BLACK;
+            Color colorDefault = GRAY;
+            Color colorHover = DARKGRAY;
             Color colorPressed = YELLOW;
             bool pressed = false;
             std::function<void()> callback = []() {};
