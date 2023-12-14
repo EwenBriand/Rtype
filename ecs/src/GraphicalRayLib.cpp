@@ -89,18 +89,18 @@ namespace raylib {
 
     graph::vec2f GraphicalRayLib::WindowGetMousePos() const
     {
-        auto pos = GetMousePosition();
+        auto pos = SYS.GetInputManager().MousePosition();
         return { pos.x, pos.y };
     }
 
     bool GraphicalRayLib::WindowIsMouseRightPressed() const
     {
-        return IsMouseButtonPressed(MOUSE_RIGHT_BUTTON);
+        return SYS.GetInputManager().MouseButtonPressed(MOUSE_RIGHT_BUTTON);
     }
 
     bool GraphicalRayLib::WindowIsMouseLeftPressed() const
     {
-        return IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
+        return SYS.GetInputManager().MouseButtonPressed(MOUSE_LEFT_BUTTON);
     }
 
     int GraphicalRayLib::WindowGetMouseWheelDelta() const
@@ -110,10 +110,7 @@ namespace raylib {
 
     int GraphicalRayLib::GetNextCharPressed()
     {
-        int c = GetCharPressed();
-        if (c == 0)
-            c = -1;
-        return c;
+        return (int)SYS.GetInputManager().GetLastCharPressed();
     }
 
     bool GraphicalRayLib::isKeyPressed(int key)

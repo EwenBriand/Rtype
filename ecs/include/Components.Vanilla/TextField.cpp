@@ -16,6 +16,7 @@ void TextField::Update(int entityID)
 {
     TestClick();
     if (Focusable::IsFocused(m_isFocused)) {
+        std::cout << "focused" << std::endl;
         collectInput();
     }
     Draw();

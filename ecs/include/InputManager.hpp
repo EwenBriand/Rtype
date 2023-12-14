@@ -22,10 +22,10 @@ public:
         bool status; // true if the event is still down, false if the event is still up
         int countPressing;
         int key_code;
-        int type; // 0 = keyboard, 1 = mouse, 2 = gamepad
+        int type; // 0 = keyboard, 1 = mouse button, 2 = mouse position
         std::vector<char> infoChar;
-        std::vector<int> infoInt;
-        std::vector<float> infoFloat;
+        Vector2 infoInt;
+        Vector2 infoFloat;
     };
 
     struct EventDescription {
@@ -65,12 +65,12 @@ public:
     static void RemoveEvent(const std::string& name);
 
     /**
-     * @brief Check if an event is triggered.
+     * @brief Check if a binding is triggered. and execute his function if its the case
      *
-     * @param name The name of the event to check.
-     * @return true If the event is triggered.
-     * @return false If the event is not triggered.
+     * @return none
      */
+
+    void check_event_binding();
 
     bool isDown(const std::string& name);
 
@@ -131,8 +131,54 @@ public:
      * @return none.
      */
     char KeyCodeTOChar(int keyCode);
-
+    /**
+     * @brief Get the last char pressed, take into account if caps lock was enabled.
+     *
+     * @param
+     * @return none.
+     */
     char GetLastCharPressed();
+
+    /**
+     * @brief Get mouse position.
+     *
+     * @param none.
+     * @return none.
+     */
+    Vector2 MousePosition();
+
+    /**
+     * @brief Get mouse delta between frame.
+     *
+     * @param none.
+     * @return none.
+     */
+    Vector2 MouseDelta();
+
+    /**
+     * @brief Get wheel movement.
+     *
+     * @param none.
+     * @return none.
+     */
+    Vector2 MouseWheelMove();
+
+    /**
+     * @brief Get mouse button pressed.
+     *
+     * @param none.
+     * @return none.
+     */
+    bool MouseButtonPressed(int button);
+
+    /**
+     * @brief Get mouse button released.
+     *
+     * @param none.
+     * @return none.
+     */
+
+    bool MouseButtonReleased(int button);
 
 private:
     std::vector<std::shared_ptr<EventInfo>> m_polledEvents;

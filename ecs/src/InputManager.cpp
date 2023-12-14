@@ -47,7 +47,7 @@ void InputManager::PollEvents()
             continue;
         }
         for (const auto& event : m_polledEvents) {
-            if (event->key_code == event_list[i]) {
+            if (event->key_code == event_list[i] && event->type == 0) {
                 event->status = true;
                 event->countPressing++;
                 break;
@@ -77,6 +77,8 @@ void InputManager::PollEvents()
             // std::cout << event->name << " " << event->countPressing << " " << event->status << std::endl;
         }
     }
+
+    check_event_binding();
 }
 
 bool InputManager::isDown(const std::string& name)
@@ -111,6 +113,7 @@ std::shared_ptr<InputManager::EventInfo> InputManager::GetEventInfo(const std::s
 
 std::vector<std::shared_ptr<InputManager::EventInfo>> InputManager::GetPolledEvents()
 {
+    std::cout << "GetPolledEvents " << m_polledEvents.size() << std::endl;
     return m_polledEvents;
 }
 
@@ -223,4 +226,39 @@ char InputManager::GetLastCharPressed()
         }
     }
     return '\0';
+}
+
+Vector2 InputManager::MousePosition()
+{
+    return GetMousePosition();
+}
+
+Vector2 InputManager::MouseDelta()
+{
+    return GetMouseDelta();
+}
+
+Vector2 InputManager::MouseWheelMove()
+{
+    return GetMouseWheelMoveV();
+}
+
+bool InputManager::MouseButtonPressed(int button)
+{
+    return IsMouseButtonPressed(button);
+}
+
+bool InputManager::MouseButtonReleased(int button)
+{
+    return IsMouseButtonReleased(button);
+}
+
+void InputManager::check_event_binding()
+{
+
+    for (const auto& bind : Bindings)
+        for (const auto& event : m_polledEvents)
+            if (bind.second.testTriggered(*event)) {
+                bind.second.onTriggerCallback(*event);
+            }
 }
