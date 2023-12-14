@@ -117,7 +117,7 @@ void CLI::OnLoad()
 
 std::string CLI::consoleGetLine()
 {
-    char *line = linenoise("CLI _> ");
+    char* line = linenoise("CLI _> ");
     if (line == nullptr) {
         return "";
     }
@@ -244,6 +244,8 @@ void CLI::save(std::vector<std::string> args)
     std::filesystem::create_directory(args[0]);
     SYS.SetSavePath(std::string(args[0]));
     for (auto& entity : SYS.GetEntities()) {
+        if (entity == SYS.GetSystemHolder())
+            continue;
         SYS.SaveEntity(entity);
     }
     CONSOLE::info << "Saved entities to " << args[0] << std::endl;

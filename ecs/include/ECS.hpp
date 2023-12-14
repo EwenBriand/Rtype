@@ -704,7 +704,7 @@ namespace ecs {
                             storage[i][storage[i].size() - 1].emplace_back(arg);
                             std::visit([&](auto&& tmp) {
                                 tmp.Load(p);
-                                tmp.OnAddComponent(storage[i].size() - 1);
+                                // tmp.OnAddComponent(storage[i].size() - 1);
                             },
                                 storage[i][storage[i].size() - 1].back());
                         }
@@ -764,34 +764,29 @@ namespace ecs {
             std::vector<Entity> entities = GetEntities();
 
             RequestEngineClearPipeline();
-            // clearing current scene
-            for (auto& e : entities) {
-                if (e == _systemHolder)
-                    continue;
-                std::cout << "clearing entity " << e << std::endl;
-                for (size_t i = 0; i < sizeof...(VanillaComponents); ++i) {
-                    _components[i][e].clear();
-                }
-                _usedIds.erase(std::remove(_usedIds.begin(), _usedIds.end(), e), _usedIds.end());
-                _freeIds.push(e);
+
+            // inserting the system holder at the index 0 of the storage
+            for (size_t i = 0; i < sizeof...(VanillaComponents); ++i) {
+                storage[i].insert(storage[i].begin(), std::move(_components[i][_systemHolder]));
             }
+            _systemHolder = 0;
+            EngineReloadEditorMode();
+
+            // moving the components from the storage to the ECS
+            _components
+                = std::move(storage);
+
+            // calling all components to reload, this should update the pipeline
+            for (int i = 0; i < cloneBase.size(); ++i) {
+                std::visit([&](auto&& arg) {
+                    arg.OnLoad();
+                },
+                    cloneBase[i]);
+            }
+
+            // we deleted the entities manually so let's stop the engine from doing it
             _skipFrame = true;
             _deletedThisFrame = std::queue<int>();
-
-            // backup of the system holder, beware of dark magic.
-            // if crashes, maybe moved data gets deleted in SceneManager.cpp
-            // when the SceneBuffer get cleared.
-            for (size_t i = 0; i < sizeof...(VanillaComponents); ++i) {
-                storage[i].emplace_back();
-                storage[i][storage[i].size() - 1] = std::move(_components[i][_systemHolder]);
-            }
-            _systemHolder = std::move(storage[0].size() - 1);
-
-            // loading new scene
-            _components = decltype(_components)();
-            for (size_t i = 0; i < sizeof...(VanillaComponents); ++i) {
-                _components[i] = std::move(storage[i]);
-            }
 
             // synchronizing the ids queue
             _usedIds = decltype(_usedIds)();
@@ -800,34 +795,21 @@ namespace ecs {
                 _usedIds.push_back(i);
             }
             _editorEntityContext = _systemHolder;
+
+            // calling OnAddComponent on all components
+            for (Entity e : _usedIds) {
+                ForEachComponent(e, [&](AnyCpt& cpt) {
+                    std::visit([&](auto&& arg) {
+                        arg.OnAddComponent(e);
+                    },
+                        cpt);
+                });
+            }
+
             NotifyEnginePipelineErased();
-            std::cout << green << "OK" << white << std::endl;
         }
 
-        // /**
-        //  * @brief Saves all entities to the save directory.
-        //  *
-        //  */
-        // void SaveAllEntities() {
-        //     for (auto &e : _usedIds) {
-        //         if (e == _systemHolder)
-        //             continue;
-        //         SaveEntity(e);
-        //     }
-        // }
-
-        // /**
-        //  * @brief Saves all entities to the save directory.
-        //  *
-        //  */
-        // void SaveAllEntities(const std::string &path) {
-        //     _savepath = path;
-        //     for (auto &e : _usedIds) {
-        //         if (e == _systemHolder)
-        //             continue;
-        //         SaveEntity(e);
-        //     }
-        // }
+        void EngineReloadEditorMode();
 
         /**
          * @brief Does the same as ReloadEntities, but does not delete the current
@@ -835,7 +817,8 @@ namespace ecs {
          *
          * @return AllCpt
          */
-        AllCpt PrepareScene(const std::string& scenePath)
+        AllCpt
+        PrepareScene(const std::string& scenePath)
         {
             AllCpt result;
             for (auto& p : std::filesystem::directory_iterator(scenePath)) {

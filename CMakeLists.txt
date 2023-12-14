@@ -52,9 +52,9 @@ add_custom_command(OUTPUT MetaData
 )
 else()
 add_custom_command(OUTPUT MetaData
-    COMMAND echo "-- Generating Metadata from Vanilla Components"
-    COMMAND ./metadata/generate_metadata ${CMAKE_SOURCE_DIR}/ecs/include/Components.Vanilla/
-    COMMAND echo "-- Resuming build"
+    # COMMAND echo "-- Generating Metadata from Vanilla Components"
+    # COMMAND ./metadata/generate_metadata ${CMAKE_SOURCE_DIR}/ecs/include/Components.Vanilla/
+    # COMMAND echo "-- Resuming build"
     DEPENDS always_rebuild
 )
 
@@ -73,3 +73,5 @@ add_custom_target(doc
 )
 
 add_subdirectory(ecs)
+add_subdirectory(game_rtype)
+add_subdirectory(tests)

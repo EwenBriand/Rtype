@@ -104,7 +104,7 @@ set(META_VANILLA
     ${META_VANILLA_SRC}/UIMenuMeta.cpp
 )
 
-add_library(lengine STATIC
+add_library(lengine SHARED
     ${ECS}
     ${ENGINE}
     ${SERVER}

@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "ToBytes.hpp"
 #include <functional>
 #include <map>
 #include <sstream>
@@ -59,19 +60,82 @@ public:                                     \
     }
 
 #include <iostream>
+
 template <typename T>
-T fromString(const std::string& str)
+T fromString(const std::string& str);
+
+template <typename T, typename = void>
+struct is_iterable : std::false_type { };
+
+template <typename T>
+struct is_iterable<T, std::void_t<decltype(std::begin(std::declval<T>())), decltype(std::end(std::declval<T>()))>> : std::true_type { };
+
+template <typename T>
+std::enable_if_t<is_iterable<T>::value> fromStringImpl(const std::string& str, T& out, typename T::value_type* = 0)
+{
+    std::stringstream ss(str);
+    T result;
+    std::string token;
+    while (std::getline(ss, token, ',')) {
+        result.push_back(fromStringImpl<typename T::value_type>(token));
+    }
+    out = result;
+}
+
+template <typename T>
+std::enable_if_t<!is_iterable<T>::value> fromStringImpl(const std::string& str, T& out)
 {
     std::istringstream iss(str);
     T result;
     iss >> result;
-    return result;
+    out = result;
 }
 
 template <>
-inline std::string fromString<std::string>(const std::string& str)
+inline std::string fromString(const std::string& str)
 {
     return str;
+}
+
+template <typename T>
+T fromString(const std::string& str)
+{
+    T result;
+    fromStringImpl<T>(str, result);
+    return result;
+}
+
+template <typename T>
+std::string toStringImpl(const T& value);
+
+template <typename T>
+std::enable_if<bytes::ToBytes::is_iterable<T>::value, std::string> toStringImpl(const T& value)
+{
+    std::ostringstream oss;
+    for (auto& v : value) {
+        oss << toStringImpl<typename T::value_type>(v) << ",";
+    }
+    return oss.str();
+}
+
+template <typename T>
+std::enable_if<!bytes::ToBytes::is_iterable<T>::value, std::string> toStringImpl(const T& value)
+{
+    std::ostringstream oss;
+    oss << value;
+    return oss.str();
+}
+
+template <>
+inline std::string toStringImpl<std::string>(const std::string& value)
+{
+    return value;
+}
+
+template <typename T>
+std::string toString(const T& value)
+{
+    return toStringImpl<T>(value);
 }
 
 #define GENERATE_SETTER(name)                                  \

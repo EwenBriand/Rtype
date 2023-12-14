@@ -1,20 +1,35 @@
-#include <vector>
-#include <string>
-#include <criterion/criterion.h>
+#include "Animation.hpp"
+#include "Animator.hpp"
 #include "ResourceManager.hpp"
+#include <string>
+#include <vector>
 
-Test(serialize_vec, test_serialize_vec) {
-    std::vector<int> v = {1, 2, 3, 4, 5};
-    std::vector<unsigned char> data;
+void TestSaveAnimator()
+{
+    Animator animator;
+    animator.AddAnimation("tests/testanim.anim");
+    auto registered = animator.GetRegisteredAnimations();
 
-    ecs::ResourceManager::Serialize<std::vector<int>>(v, data);
+    if (registered.size() != 1)
+        throw std::runtime_error("Animator::GetRegisteredAnimations() failed, zero");
+    if (registered[0] != "tests/testanim.anim")
+        throw std::runtime_error("Animator::GetRegisteredAnimations() failed, bad path");
 
-    std::vector<int> v2;
-    std::vector<unsigned char>::iterator it = data.begin();
-    ecs::ResourceManager::Deserialize(data, it, v2);
+    animator.Save("testsaveanim.bin");
+    Animator animator2;
+    animator2.Load("testsaveanim.bin");
+    registered = animator2.GetRegisteredAnimations();
 
-    cr_assert_eq(v.size(), v2.size());
-    for (size_t i = 0; i < v.size(); i++) {
-        cr_assert_eq(v[i], v2[i]);
-    }
+    if (registered.size() != 1)
+        throw std::runtime_error("Animator::GetRegisteredAnimations() failed, loaded: zero");
+    if (registered[0] != "tests/testanim.anim")
+        throw std::runtime_error("Animator::GetRegisteredAnimations() failed, loaded: bad path");
+}
+
+int main()
+{
+    TestSaveAnimator();
+
+    std::cout << "All tests passed!" << std::endl;
+    return 0;
 }

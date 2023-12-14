@@ -6,8 +6,10 @@
 */
 
 #pragma once
+#include "ECSImpl.hpp"
 #include "IGame.hpp"
 #include "IGraphicalModule.hpp"
+#include "SceneManager.hpp"
 #include "Types.hpp"
 #include <exception>
 #include <fstream>
@@ -114,7 +116,25 @@ namespace eng {
          */
         std::shared_ptr<graph::IGraphicalModule> GetGraphicalModule() const;
 
+        /**
+         * @brief Returns a reference to the scene manager.
+         *
+         */
+        SceneManager& GetSceneManager();
+
+        /**
+         * @brief Returns a reference to the ecs.
+         *
+         */
+        ecs::ECSImpl& GetECS();
+
         static std::ofstream m_logFile;
+
+        /**
+         * @brief Sets the engine up in the case of being ran as the editor
+         *
+         */
+        void SetupEditor();
 
     private:
         /**
@@ -139,11 +159,19 @@ namespace eng {
         void sortPipeline();
         void setupPipeline();
 
+        /**
+         * @brief Updates all the path red from the config file to be absolute.
+         * Relative path are relative to the config file.
+         *
+         */
+        void configUpdateRelativePath();
+
         std::map<std::string, std::string> m_config;
         std::map<std::string, std::string> m_options = {
             { eng::Engine::Options::CONFIG_DIR, "../.engine/config" }
         };
 
+        std::shared_ptr<SceneManager> m_sceneManager;
         std::shared_ptr<graph::IGraphicalModule> m_graphicalModule;
 
         using Pipeline = std::vector<Action>;
@@ -152,6 +180,7 @@ namespace eng {
         bool m_pipelineChanged = false;
         std::shared_ptr<std::vector<std::tuple<int, std::tuple<std::string, Action>>>> m_unsortedPipeline;
         std::shared_ptr<IGame> m_game = nullptr;
+        ecs::ECSImpl& m_ecs;
     };
 
     class EngineException : public std::exception {
@@ -186,6 +215,32 @@ namespace eng {
         std::string m_file;
         std::string m_function;
         int m_line;
+        std::string m_what;
+    };
+
+    class ConfigException : public std::exception {
+    public:
+        /**
+         * @brief Signals the fact that the config file is missing or
+         * has an invalid format.
+         *
+         * @param msg
+         */
+        ConfigException(const std::string& msg)
+            : m_msg(msg)
+        {
+            m_what = "[Config exception] " + m_msg;
+            Engine::Log(m_what);
+        }
+        ~ConfigException() = default;
+
+        const char* what() const noexcept override
+        {
+            return (m_what).c_str();
+        }
+
+    private:
+        std::string m_msg;
         std::string m_what;
     };
 

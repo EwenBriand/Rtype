@@ -7,8 +7,10 @@
 
 #pragma once
 
-namespace eng {
+#include <memory>
 
+namespace eng {
+    class Engine;
     /**
      * @brief Interface for the game class, which shall be loaded dynamically by the engine.
      * The classes inheriting from this interface will be given an occasion to initialize their
@@ -22,13 +24,13 @@ namespace eng {
          * @brief Called when the game is loaded by the engine.
          *
          */
-        virtual void Init() = 0;
+        virtual void Init(Engine*) = 0;
 
         /**
          * @brief Called when the game is unloaded by the engine.
          *
          */
-        virtual void Cleanup() = 0;
+        virtual void Cleanup(Engine*) = 0;
 
         /**
          * @brief Returns true if the game is online, false otherwise.
@@ -36,12 +38,18 @@ namespace eng {
          * the game.
          *
          */
-        virtual bool IsOnLine() = 0;
+        virtual bool IsOnLine(Engine*) = 0;
 
         /**
          * @brief Called when the game is online, before the game is launched.
          *
          */
-        virtual void WaitConnect() = 0;
+        virtual void WaitConnect(Engine*) = 0;
+
+        /**
+         * @brief Is called to allow the game to load its first scene
+         *
+         */
+        virtual void LoadFirstScene(Engine*) = 0;
     };
 }
