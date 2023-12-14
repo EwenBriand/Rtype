@@ -19,7 +19,7 @@
 namespace eng {
     std::ofstream Engine::m_logFile = std::ofstream(".engine/log.txt", std::ios::out | std::ios::trunc);
     const std::string Engine::Options::EDITOR = "--editor";
-    const std::string Engine::Options::GAME = "--game";
+    const std::string Engine::Options::GAME = "game";
     const std::string Engine::Options::CONFIG_DIR = "--config-dir";
 
     ecs::ECSImpl& Engine::GetECS()
@@ -141,14 +141,15 @@ namespace eng {
         SYS.SetGraphicalModule(m_graphicalModule);
         SYS.GetInputManager().SetupDefaults();
         SetupEditor();
-        if (IsOptionSet(eng::Engine::Options::GAME)) {
-            try {
-                m_game = SYS.GetResourceManager().LoadGame(GetOptionValue(eng::Engine::Options::GAME));
-            } catch (EngineException& e) {
-                CONSOLE::err << "\nWhile loading game: \n"
-                             << e.what() << std::endl;
-                Stop();
-            }
+        try {
+            m_game = SYS.GetResourceManager().LoadGame(GetConfigValue(eng::Engine::Options::GAME));
+            CONSOLE::info << "Project loaded" << std::endl;
+        } catch (ConfigException& e) {
+            CONSOLE::warn << "No project loaded" << std::endl;
+            m_game = nullptr; // no game loaded
+        } catch (EngineException& e) {
+            CONSOLE::err << "\nWhile loading game: \n"
+                         << e.what() << std::endl;
         }
 
         SYS.LoadVanilla();
@@ -331,7 +332,7 @@ namespace eng {
         try {
             return m_config.at(config);
         } catch (std::out_of_range& e) {
-            throw EngineException("Config not found : " + config, __FILE__, __FUNCTION__, __LINE__);
+            throw ConfigException("Config not found : " + config);
         }
     }
 

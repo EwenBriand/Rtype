@@ -218,6 +218,32 @@ namespace eng {
         std::string m_what;
     };
 
+    class ConfigException : public std::exception {
+    public:
+        /**
+         * @brief Signals the fact that the config file is missing or
+         * has an invalid format.
+         *
+         * @param msg
+         */
+        ConfigException(const std::string& msg)
+            : m_msg(msg)
+        {
+            m_what = "[Config exception] " + m_msg;
+            Engine::Log(m_what);
+        }
+        ~ConfigException() = default;
+
+        const char* what() const noexcept override
+        {
+            return (m_what).c_str();
+        }
+
+    private:
+        std::string m_msg;
+        std::string m_what;
+    };
+
     class CompatibilityException : public std::exception {
     public:
         /**
