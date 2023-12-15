@@ -17,6 +17,12 @@
 
 class InputManager {
 public:
+    enum {
+        KEYBOARD = 0,
+        MBUTTON = 1,
+        MPOSITION = 2,
+    };
+
     struct EventInfo {
         std::string name;
         bool status; // true if the event is still down, false if the event is still up
@@ -24,8 +30,8 @@ public:
         int key_code;
         int type; // 0 = keyboard, 1 = mouse button, 2 = mouse position
         std::vector<char> infoChar;
-        Vector2 infoInt;
-        Vector2 infoFloat;
+        Vector2 infoInt; // for mouse position
+        Vector2 infoFloat; // for mouse wheel
     };
 
     struct EventDescription {
@@ -98,7 +104,7 @@ public:
      * @return Bool set to true if the key is up after being pressed.
      */
 
-    bool isUp(const std::string& name);
+    bool isReleased(const std::string& name);
 
     /**
      * @brief Get the number of press an event take.

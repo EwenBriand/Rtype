@@ -42,7 +42,7 @@ void InputManager::PollEvents()
             newEvent.status = true;
             newEvent.countPressing = 1;
             newEvent.key_code = event_list[i];
-            newEvent.type = 0;
+            newEvent.type = KEYBOARD;
             m_polledEvents.push_back(std::make_shared<EventInfo>(newEvent));
             continue;
         }
@@ -58,7 +58,7 @@ void InputManager::PollEvents()
                 newEvent.status = true;
                 newEvent.countPressing = 1;
                 newEvent.key_code = event_list[i];
-                newEvent.type = 0;
+                newEvent.type = KEYBOARD;
                 m_polledEvents.push_back(std::make_shared<EventInfo>(newEvent));
                 break;
             }
@@ -78,7 +78,7 @@ void InputManager::PollEvents()
         }
     }
 
-    check_event_binding();
+    // check_event_binding();
 }
 
 bool InputManager::isDown(const std::string& name)
@@ -88,13 +88,15 @@ bool InputManager::isDown(const std::string& name)
             return event->status;
         }
     }
-    throw std::runtime_error("Event not found");
+    return false;
 }
 
-bool InputManager::isUp(const std::string& name)
+bool InputManager::isReleased(const std::string& name)
 {
+    std::cout << event->name << " " << event->countPressing << " " << event->status << std::endl;
+
     for (const auto& event : m_polledEvents) {
-        if (event->name == name && event->countPressing > 0 && !event->status) {
+        if (event->name == name && IsKeyReleased(event->key_code)) {
             return true;
         }
     }
@@ -113,7 +115,6 @@ std::shared_ptr<InputManager::EventInfo> InputManager::GetEventInfo(const std::s
 
 std::vector<std::shared_ptr<InputManager::EventInfo>> InputManager::GetPolledEvents()
 {
-    std::cout << "GetPolledEvents " << m_polledEvents.size() << std::endl;
     return m_polledEvents;
 }
 
@@ -205,6 +206,9 @@ char InputManager::KeyCodeTOChar(int keyCode)
         { 335, '\n' },
         { 336, '=' }
     };
+
+    if (map.find(keyCode) == map.end())
+        return '\0';
     return map[keyCode];
 }
 
@@ -212,7 +216,7 @@ char InputManager::GetLastCharPressed()
 {
     if (isDown(KeyCodeTOName(KEY_LEFT_SHIFT)) || isDown(KeyCodeTOName(KEY_RIGHT_SHIFT)) || isDown(KeyCodeTOName(KEY_CAPS_LOCK))) {
         for (const auto& event : m_polledEvents) {
-            if (event->type == 0 && isDown(event->name)) {
+            if (event->type == KEYBOARD && isDown(event->name)) {
                 if (event->key_code >= 65 && event->key_code <= 90)
                     return KeyCodeTOChar(event->key_code) + 32;
                 return KeyCodeTOChar(event->key_code);
@@ -220,7 +224,7 @@ char InputManager::GetLastCharPressed()
         }
     } else {
         for (const auto& event : m_polledEvents) {
-            if (event->type == 0 && isDown(event->name)) {
+            if (event->type == KEYBOARD && (isDown(event->name) || isReleased(event->name))) {
                 return KeyCodeTOChar(event->key_code);
             }
         }

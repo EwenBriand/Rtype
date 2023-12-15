@@ -16,7 +16,6 @@ void TextField::Update(int entityID)
 {
     TestClick();
     if (Focusable::IsFocused(m_isFocused)) {
-        std::cout << "focused" << std::endl;
         collectInput();
     }
     Draw();
@@ -111,20 +110,20 @@ void TextField::SetPosition(graph::vec2f pos)
 void TextField::collectInput()
 {
     auto inputManager = SYS.GetInputManager();
-    std::vector<std::string> consumedInputs;
     std::vector<std::shared_ptr<InputManager::EventInfo>> inputs = inputManager.GetPolledEvents();
     for (size_t i = 0; i < inputs.size(); ++i) {
         auto evtName = inputs[i]->key_code;
-        if (evtName == KEY_BACKSPACE) {
+        if (inputs[i]->type == inputManager.KEYBOARD && evtName == KEY_BACKSPACE && inputManager.isDown(inputManager.KeyCodeTOName(evtName))) {
             if (m_text.size() > 0) {
                 m_text.pop_back();
             }
-        } else if (evtName == KEY_ENTER) {
+        } else if (inputs[i]->type == inputManager.KEYBOARD && evtName == KEY_ENTER && inputManager.isReleased(inputManager.KeyCodeTOName(evtName))) {
             if (m_onEnterCallback) {
                 m_onEnterCallback();
             }
             Focusable::UnFocus(m_isFocused);
-        } else if (inputs[i]->type == 0 && inputManager.isDown(inputManager.KeyCodeTOName(evtName))) {
+        } else if (inputs[i]->type == inputManager.KEYBOARD && inputManager.isReleased(inputManager.KeyCodeTOName(evtName))) {
+            std::cout << "text: " << m_text << std::endl;
             m_text += inputManager.GetLastCharPressed();
         }
     }
