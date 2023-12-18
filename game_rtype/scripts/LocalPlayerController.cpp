@@ -62,25 +62,25 @@ LocalPlayerController::~LocalPlayerController()
 
 bool LocalPlayerController::testUp()
 {
-    return false;
+    return SYS.GetInputManager().isDown(KEY_UP);
 }
 
 bool LocalPlayerController::testDown()
 {
-    return false;
+    return SYS.GetInputManager().isDown(KEY_DOWN);
 }
 
 bool LocalPlayerController::testLeft()
 {
-    return false;
+    return SYS.GetInputManager().isDown(KEY_LEFT);
 }
 
 bool LocalPlayerController::testRight()
 {
-    return false;
+    return SYS.GetInputManager().isDown(KEY_RIGHT);
 }
 
 bool LocalPlayerController::testShoot()
 {
-    return false;
+    return SYS.GetInputManager().MouseButtonPressed(MOUSE_BUTTON_LEFT);
 }

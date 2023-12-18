@@ -5,38 +5,38 @@
 ** EntityExplorer.cpp
 */
 
-#include "../ECSImpl.hpp"
 #include "EntityExplorer.hpp"
+#include "../ECSImpl.hpp"
 
-EntityExplorer::EntityWatcher::EntityWatcher(Entity e) :
-    entityID(e)
+EntityExplorer::EntityWatcher::EntityWatcher(Entity e)
+    : entityID(e)
 {
     // std::vector<std::string> types = SYS.GetComponentsTypes();
     int delta = 0;
     int cptIndex = 0;
 
     cptCount = countCpt();
-    SYS.ForEachComponent(e, [&](ecs::ECSImpl::AnyCpt &cpt) {
-        std::visit([&](auto &&arg) {
+    SYS.ForEachComponent(e, [&](ecs::ECSImpl::AnyCpt& cpt) {
+        std::visit([&](auto&& arg) {
             metadata.push_back(arg.GetMetadata());
-            std::map<std::string, metadata_t> &m = metadata.back();
+            std::map<std::string, metadata_t>& m = metadata.back();
 
-            for (auto &[key, value] : m) {
+            for (auto& [key, value] : m) {
                 fieldsAccessors.emplace_back();
-                auto &[div, text] = fieldsAccessors[delta];
+                auto& [div, text] = fieldsAccessors[delta];
                 div.SetParentID(0);
-                div.SetPosition({32, 50.0f + delta * 20});
-                div.SetSize({200, 20});
-                div.SetColor({33, 33, 33, 255});
+                div.SetPosition({ 32, 50.0f + delta * 20 });
+                div.SetSize({ 200, 20 });
+                div.SetColor({ 33, 33, 33, 255 });
 
                 text = std::make_shared<TextField>();
                 text->SetParent(div);
                 text->SetLabel(key);
                 text->SetPlaceholder(value.type + " : " + value.tostring());
                 text->SetupCallbacks();
-                text->RegisterOnEnterCallback([this, delta, key, cptIndex](){
+                text->RegisterOnEnterCallback([this, delta, key, cptIndex]() {
                     auto textfield = std::get<1>(fieldsAccessors[delta]);
-                    auto &valueMeta = metadata[cptIndex][key];
+                    auto& valueMeta = metadata[cptIndex][key];
                     valueMeta.set(textfield->GetText());
                     textfield->SetText("");
                     textfield->SetPlaceholder(valueMeta.type + " : " + valueMeta.tostring());
@@ -45,8 +45,8 @@ EntityExplorer::EntityWatcher::EntityWatcher(Entity e) :
                 ++delta;
             }
             ++cptIndex;
-
-        }, cpt);
+        },
+            cpt);
     });
 }
 
@@ -66,18 +66,19 @@ void EntityExplorer::EntityWatcher::updateTextFieldsValues()
 {
     int i = 0;
     int fieldIdx = 0;
-    SYS.ForEachComponent(entityID, [&](ecs::ECSImpl::AnyCpt &cpt) {
-        std::visit([&](auto &&arg) {
-            std::map<std::string, metadata_t> &m = metadata[i];
+    SYS.ForEachComponent(entityID, [&](ecs::ECSImpl::AnyCpt& cpt) {
+        std::visit([&](auto&& arg) {
+            std::map<std::string, metadata_t>& m = metadata[i];
 
-            for (auto &[key, value] : m) {
-                auto &textfield = std::get<1>(fieldsAccessors[fieldIdx++]);
+            for (auto& [key, value] : m) {
+                auto& textfield = std::get<1>(fieldsAccessors[fieldIdx++]);
                 if (textfield->IsFocused())
                     continue;
                 textfield->SetPlaceholder(value.type + " : " + value.tostring());
             }
             ++i;
-        }, cpt);
+        },
+            cpt);
     });
 }
 
@@ -93,7 +94,7 @@ void EntityExplorer::EntityWatcher::Update()
         throw std::runtime_error("EntityWatcher::Update: cptCount != newCount");
 
     updateTextFieldsValues();
-    for (auto &field : fieldsAccessors) {
+    for (auto& field : fieldsAccessors) {
         std::get<0>(field).SetParentID(0);
         std::get<1>(field)->SetParent(std::get<0>(field));
         std::get<0>(field).Update(entityID);
@@ -110,13 +111,12 @@ void EntityExplorer::Update(int entityID)
 
     if (m_watcher == nullptr) {
         m_watcher = std::make_shared<EntityWatcher>(context);
-    }
-    else if (m_watcher->entityID != context) {
+    } else if (m_watcher->entityID != context) {
         m_watcher = std::make_shared<EntityWatcher>(context);
     }
     try {
         m_watcher->Update();
-    } catch (std::exception &e) {
+    } catch (std::exception& e) {
         m_watcher = std::make_shared<EntityWatcher>(context);
     }
 }

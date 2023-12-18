@@ -140,7 +140,6 @@ namespace eng {
             Stop();
         }
         SYS.SetGraphicalModule(m_graphicalModule);
-        SYS.GetInputManager().SetupDefaults();
         SetupEditor();
         try {
             m_game = SYS.GetResourceManager().LoadGame(GetConfigValue(eng::Engine::Options::GAME));

@@ -63,7 +63,7 @@ void TextField::SetupCallbacks()
         throw std::runtime_error("No graphical module found");
 
     SYS.GetInputManager().RegisterBinding(
-        "Pressed Backspace",
+        "key code " + std::to_string(KEY_BACKSPACE),
         { .testTriggered = [&](InputManager::EventInfo& info) { return SYS.GetGraphicalModule()->isKeyPressed(KEY_BACKSPACE); },
             .onTriggerCallback = [&](InputManager::EventInfo info) {
                 if (m_text.size() > 0) {
@@ -71,7 +71,7 @@ void TextField::SetupCallbacks()
                 } } });
 
     SYS.GetInputManager().RegisterBinding(
-        "Pressed Enter",
+        "key code " + std::to_string(KEY_ENTER),
         { .testTriggered = [&](InputManager::EventInfo& info) {
              return SYS.GetGraphicalModule()->isKeyPressed(KEY_ENTER);
          },
@@ -106,35 +106,26 @@ void TextField::SetPosition(graph::vec2f pos)
     m_y = pos.y;
 }
 
+// need to remake it with the new input manager
 void TextField::collectInput()
 {
     auto inputManager = SYS.GetInputManager();
-    std::vector<std::string> consumedInputs;
-    std::vector<InputManager::EventInfo> inputs = inputManager.GetPolled();
+    std::vector<std::shared_ptr<InputManager::EventInfo>> inputs = inputManager.GetPolledEvents();
     for (size_t i = 0; i < inputs.size(); ++i) {
-        auto evtName = inputs[i].name;
-        if (evtName.substr(0, 10) == "PressedKey") {
-            if (std::find(consumedInputs.begin(), consumedInputs.end(), evtName) != consumedInputs.end())
-                continue;
-            m_text += inputs[i].infoChar[0];
-            consumedInputs.push_back(evtName);
-        }
-        if (evtName == "Pressed Backspace") {
+        auto evtName = inputs[i]->key_code;
+        if (inputs[i]->type == inputManager.KEYBOARD && evtName == KEY_BACKSPACE && inputManager.isDown(inputManager.KeyCodeTOName(evtName))) {
             if (m_text.size() > 0) {
                 m_text.pop_back();
             }
-            consumedInputs.push_back(evtName);
-        }
-        if (evtName == "Pressed Enter") {
+        } else if (inputs[i]->type == inputManager.KEYBOARD && evtName == KEY_ENTER && inputManager.isReleased(inputManager.KeyCodeTOName(evtName))) {
             if (m_onEnterCallback) {
                 m_onEnterCallback();
             }
             Focusable::UnFocus(m_isFocused);
-            consumedInputs.push_back(evtName);
+        } else if (inputs[i]->type == inputManager.KEYBOARD && inputManager.isReleased(inputManager.KeyCodeTOName(evtName))) {
+            std::cout << "text: " << m_text << std::endl;
+            m_text += inputManager.GetLastCharPressed();
         }
-    }
-    for (auto e : consumedInputs) {
-        inputManager.Consume(e);
     }
 }
 
