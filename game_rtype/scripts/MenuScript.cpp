@@ -23,6 +23,10 @@ void MenuScript::Start()
 {
 }
 
+void MenuScript::Update(int entityID)
+{
+}
+
 void MenuScript::OnAddComponent(int e)
 {
     try {
@@ -39,8 +43,4 @@ void MenuScript::OnAddComponent(int e)
     } catch (const std::exception& e) {
         std::cerr << e.what() << std::endl;
     }
-}
-
-void MenuScript::Update(int entityID)
-{
 }

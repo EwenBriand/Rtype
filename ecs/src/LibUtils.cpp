@@ -6,6 +6,8 @@
 */
 
 #include "LibUtils.hpp"
+#include <filesystem>
+#include <iostream>
 #include <stdexcept>
 #include <string>
 
@@ -31,13 +33,23 @@ namespace lib {
 
     void* LibUtils::getLibHandle(const std::string& path)
     {
+        std::cout << "path library : " << path << std::endl;
+        std::string path_copy = path;
+        if (path.size() > 2 and path.substr(0, 2) == "./")
+            path_copy = std::filesystem::current_path().string() + path.substr(1);
 #ifdef _WIN32
-        LIBHANDLE handle = LOADLIB(path.c_str());
+        LIBHANDLE handle = LOADLIB(path_copy.c_str());
 #else
-        LIBHANDLE handle = LOADLIB(path.c_str(), RTLD_LAZY);
+        LIBHANDLE handle = LOADLIB(path_copy.c_str(), RTLD_LAZY);
 #endif
-        if (!handle)
-            throw std::runtime_error("Cannot load library: " + path + " : " + std::string(ERRORLIB()));
+        if (!handle) {
+            std::cout << "execution path is : " << std::filesystem::current_path() << std::endl;
+            std::cout << "nm result : " << std::endl;
+            std::string nm_command = "nm " + path_copy + " | grep _ZN10MenuScript6UpdateEi";
+            std::system(nm_command.c_str());
+
+            throw std::runtime_error("Cannot load library: [" + path_copy + "] : " + std::string(ERRORLIB()));
+        }
         return static_cast<void*>(handle);
     }
 

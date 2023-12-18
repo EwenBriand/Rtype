@@ -44,7 +44,7 @@ private:
      */
     void applyDirectives();
 
-    serialize float _speed = 0.1f;
+    serialize float _speed = 1.0f;
     serialize int _damage = 1;
     serialize int _health = 10;
 

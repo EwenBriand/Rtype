@@ -8,24 +8,6 @@
 #include "LocalPlayerController.hpp"
 #include "Engine.hpp"
 
-MANAGED_RESOURCE(LocalPlayerController)
-
-// ====================================================================
-// Component methods
-// ====================================================================
-
-void LocalPlayerController::Start()
-{
-}
-
-void LocalPlayerController::OnAddComponent(int e)
-{
-}
-
-void LocalPlayerController::Update(int e)
-{
-}
-
 // ====================================================================
 // IController methods
 // ====================================================================
@@ -39,18 +21,15 @@ void LocalPlayerController::PollDirectives()
 {
     _directives.clear();
     for (auto& [directive, test] : _directivesTests) {
-        if ((this->*test)())
+        if ((this->*test)()) {
             _directives.push_back(directive);
+        }
     }
 }
 
 // ====================================================================
 // public methods
 // ====================================================================
-
-LocalPlayerController::~LocalPlayerController()
-{
-}
 
 // ====================================================================
 // getters/setters

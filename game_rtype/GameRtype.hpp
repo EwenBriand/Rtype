@@ -15,5 +15,6 @@ namespace eng {
         void PreSceneInstantiationHook(Engine*, const std::string& sceneName) override;
 
     private:
+        void loadDependencies(Engine*);
     };
 } // namespace eng

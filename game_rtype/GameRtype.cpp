@@ -1,6 +1,9 @@
 #include "GameRtype.hpp"
+#include "ECSImpl.hpp"
 #include "Engine.hpp"
+#include "LocalPlayerController.hpp"
 #include "SceneManager.hpp"
+#include "Ship.hpp"
 #include <iostream>
 #include <memory>
 
@@ -20,6 +23,7 @@ namespace eng {
 
     void RType::Init(eng::Engine* e)
     {
+        loadDependencies(e);
     }
 
     void RType::Cleanup(eng::Engine* e)
@@ -44,10 +48,19 @@ namespace eng {
     {
         if (sceneName == "menu")
             return;
+
+        // update this to account for networking, other players, etc
+        int player = SYS.GetResourceManager().LoadPrefab("ship");
+        Ship* ship = GetUComponent(player, Ship);
+        ship->Possess(player, std::make_shared<LocalPlayerController>());
     }
 
     // =========================================================================================================== //
     // ============================================== PRIVATE ==================================================== //
     // =========================================================================================================== //
+
+    void RType::loadDependencies(Engine*)
+    {
+    }
 
 } // namespace eng

@@ -35,15 +35,17 @@ namespace ecs {
     {
         std::cout << "Loading user component " << resourceID << std::endl;
         if (_handles.find(resourceID) != _handles.end()) {
-            AUserComponent* (*create)() = reinterpret_cast<AUserComponent* (*)()>(lib::LibUtils::getSymHandle(_handles[resourceID], "create"));
+            AUserComponent* (*create)() = reinterpret_cast<AUserComponent* (*)()>(lib::LibUtils::getSymHandle(_handles[resourceID], "create_" + resourceID));
             _instances.emplace_back(create());
             return _instances.back();
         }
-
+        std::cout << "resource id is [" << resourceID << "]" << std::endl;
         std::string libName = m_userComponentsPath + "lib" + resourceID + ".so";
+        std::cout << "Loading " << libName << " with libutils " << std::endl;
         void* handle = lib::LibUtils::getLibHandle(libName.c_str());
+        std::cout << "done" << std::endl;
         _handles[resourceID] = handle;
-        AUserComponent* (*create)() = reinterpret_cast<AUserComponent* (*)()>(lib::LibUtils::getSymHandle(handle, "create"));
+        AUserComponent* (*create)() = reinterpret_cast<AUserComponent* (*)()>(lib::LibUtils::getSymHandle(handle, "create_" + resourceID));
         _handles[resourceID] = handle;
         _instances.emplace_back(create());
         _instances.back()->OnLoad();
@@ -54,6 +56,7 @@ namespace ecs {
     {
         std::string tmpCopyDirectory = ".tmpCompileSrc";
         std::string rootDir = "./";
+        std::string userScriptDir = eng::Engine::GetEngine()->GetConfigValue("userScriptsPath");
         try {
             rootDir = eng::Engine::GetEngine()->GetConfigValue("tmpBuildDir");
         } catch (std::exception& e) {
@@ -63,13 +66,11 @@ namespace ecs {
         std::string rawPath = path.substr(0, path.find_last_of('.'));
         std::string rawFolder = path.substr(0, path.find_last_of('/'));
         std::string copyPath = rootDir + "/" + tmpCopyDirectory + "/" + rawPath.substr(rawPath.find_last_of('/') + 1);
-        std::string command = "mkdir -p " + copyPath + " && cp " + rawPath + ".cpp " + copyPath; // todo windows
-        system(command.c_str());
-        command = "cp " + rawFolder + "/*.hpp " + copyPath; // todo windows
+        std::string command = "mkdir -p " + copyPath + " && cp " + rawPath + ".cpp " + rawPath + ".hpp " + copyPath; // todo windows
         system(command.c_str());
         try {
             auto metagen = meta::MetadataGenerator();
-            metagen.generateMetadata(copyPath, "./metabuild", rootDir);
+            metagen.generateMetadata(copyPath, "./metabuild", rootDir, { userScriptDir });
             metagen.buildCMake();
         } catch (std::exception& e) {
             CONSOLE::err << "Build failed: " << path << std::endl;
@@ -112,8 +113,8 @@ namespace ecs {
         m_changesNbr = 0;
         try {
             for (auto& entry : std::filesystem::directory_iterator(userScriptDir)) {
-                CONSOLE::info << "Checking " << entry.path() << std::endl;
                 if (entry.path().extension() == ".cpp") {
+                    CONSOLE::info << "Checking " << entry.path() << std::endl;
                     ManageUpdate(entry.path().string());
                 }
             }
@@ -262,7 +263,14 @@ namespace ecs {
         std::string path = MakePath({ assetRoot, "prefabs", name }, true);
 
         try {
-            return SYS.LoadEntity(path);
+            int e = SYS.LoadEntity(path);
+            SYS.ForEachComponent(e, [&](auto& cpt) {
+                std::visit([&](auto&& arg) {
+                    arg.Start();
+                },
+                    cpt);
+            });
+            return e;
         } catch (std::exception& e) {
             CONSOLE::err << "Error: " << e.what() << std::endl;
             return -1;
@@ -272,19 +280,32 @@ namespace ecs {
     void ResourceManager::SavePrefab(const std::string& name, int entity)
     {
         std::string assetRoot = eng::Engine::GetEngine()->GetConfigValue("assetRoot");
-        // std::string path = MakePath({ assetRoot, "prefabs", name }, false);
         std::string path = assetRoot + "/prefabs/" + name;
 
         try {
-            if (std::filesystem::exists(path)) {
-                throw std::runtime_error("Prefab already exists");
+            if (not std::filesystem::exists(path)) {
+                std::filesystem::create_directories(path);
             }
             CONSOLE::info << "Saving prefab " << name << " to " << path << std::endl;
-            std::filesystem::create_directories(path);
             SYS.SaveEntity(entity, path);
         } catch (std::exception& e) {
             CONSOLE::err << "Error: " << e.what() << std::endl;
             return;
         }
+    }
+
+    void ResourceManager::HotLoadLibrary(const std::string& path)
+    {
+        std::string srcCpp = eng::Engine::GetEngine()->GetConfigValue("userScriptsPath");
+        srcCpp += "/" + path + ".cpp";
+        std::string srcHpp = eng::Engine::GetEngine()->GetConfigValue("userScriptsPath");
+        srcHpp += "/" + path + ".hpp";
+
+        ManageUpdate(srcCpp);
+        ManageUpdate(srcHpp);
+        std::string libName = m_userComponentsPath + "lib" + path + ".so";
+        void* handle = lib::LibUtils::getLibHandle(libName.c_str());
+        std::cout << "done" << std::endl;
+        _handles[path] = handle;
     }
 }

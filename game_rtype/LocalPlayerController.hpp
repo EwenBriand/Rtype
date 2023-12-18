@@ -7,22 +7,10 @@
 
 #pragma once
 #include "./Ship.hpp"
-#include "Components.Vanilla/UserComponentWrapper.hpp"
 #include "IController.hpp"
-#include "metadata.hpp"
 
-serialize class LocalPlayerController : public AUserComponent, public ecs::AController {
+class LocalPlayerController : public ecs::AController {
 public:
-    GENERATE_METADATA(LocalPlayerController);
-
-    // ====================================================================
-    // Component methods
-    // ====================================================================
-
-    void Start() override;
-    void Update(int entityID) override;
-    void OnAddComponent(int entityID) override;
-
     // ====================================================================
     // IController methods
     // ====================================================================
@@ -33,9 +21,6 @@ public:
     // ====================================================================
     // public methods
     // ====================================================================
-
-    LocalPlayerController() = default;
-    ~LocalPlayerController();
 
     // ====================================================================
     // getters/setters

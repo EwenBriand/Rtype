@@ -68,6 +68,7 @@ def deep_clean_impl(args):
         "find . -name \"CMakeCache.txt\" -type f -delete",
         "find . -name \"cmake_install.cmake\" -type f -delete",
         "find . -name \"Makefile\" -type f -delete",
+        "find . -name \"*.checksum\" -type f -delete",
     ]
     for command in clean_commands:
         print("Executing: " + command)

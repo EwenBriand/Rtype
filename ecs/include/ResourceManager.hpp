@@ -148,6 +148,14 @@ namespace ecs {
          */
         void SavePrefab(const std::string& name, int entity);
 
+        /**
+         * @brief HotLoads the given library. (meaning it will try to compile it before loading it)
+         *
+         *  @param path : the name of the .cpp file containing the code of the library.
+         *  This file should be in the userScriptsPath defined in base.cfg.
+         */
+        void HotLoadLibrary(const std::string& path);
+
     private:
         unsigned int m_changesNbr = 0;
         std::string m_userComponentsPath = "./metabuild/";
