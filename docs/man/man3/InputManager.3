@@ -1,0 +1,342 @@
+.TH "InputManager" 3 "Mon Dec 18 2023" "My Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+InputManager
+.SH SYNOPSIS
+.br
+.PP
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "struct \fBEventDescription\fP"
+.br
+.ti -1c
+.RI "struct \fBEventInfo\fP"
+.br
+.in -1c
+.SS "Public Types"
+
+.in +1c
+.ti -1c
+.RI "enum { \fBKEYBOARD\fP = 0, \fBMBUTTON\fP = 1, \fBMPOSITION\fP = 2 }"
+.br
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBcheck_event_binding\fP ()"
+.br
+.RI "Check if a binding is triggered\&. and execute his function if its the case\&. "
+.ti -1c
+.RI "bool \fBisDown\fP (const std::string &name)"
+.br
+.ti -1c
+.RI "bool \fBisDown\fP (const int key_code)"
+.br
+.ti -1c
+.RI "std::shared_ptr< \fBInputManager::EventInfo\fP > \fBGetEventInfo\fP (const std::string &name)"
+.br
+.RI "Get the \fBEventInfo\fP structure of an event\&. "
+.ti -1c
+.RI "std::vector< std::shared_ptr< \fBEventInfo\fP > > \fBGetPolledEvents\fP ()"
+.br
+.RI "Get PolledEvent\&. "
+.ti -1c
+.RI "bool \fBisReleased\fP (const std::string &name)"
+.br
+.RI "Check if the event have been realesed\&. "
+.ti -1c
+.RI "bool \fBisReleased\fP (const int key_code)"
+.br
+.ti -1c
+.RI "int \fBGetCountPressing\fP (const std::string &name)"
+.br
+.RI "Get the number of press an event take\&. "
+.ti -1c
+.RI "void \fBPollEvents\fP ()"
+.br
+.RI "Get the PollEvent\&. "
+.ti -1c
+.RI "std::string \fBKeyCodeTOName\fP (int keyCode)"
+.br
+.RI "Get the name of a key code\&. "
+.ti -1c
+.RI "char \fBKeyCodeTOChar\fP (int keyCode)"
+.br
+.RI "Get the value of a key code\&. "
+.ti -1c
+.RI "char \fBGetLastCharPressed\fP ()"
+.br
+.RI "Get the last char pressed, take into account if caps lock was enabled\&. "
+.ti -1c
+.RI "Vector2 \fBMousePosition\fP ()"
+.br
+.RI "Get mouse position\&. "
+.ti -1c
+.RI "Vector2 \fBMouseDelta\fP ()"
+.br
+.RI "Get mouse delta between frame\&. "
+.ti -1c
+.RI "Vector2 \fBMouseWheelMove\fP ()"
+.br
+.RI "Get wheel movement\&. "
+.ti -1c
+.RI "bool \fBMouseButtonPressed\fP (int button)"
+.br
+.RI "Get mouse button pressed\&. "
+.ti -1c
+.RI "bool \fBMouseButtonReleased\fP (int button)"
+.br
+.RI "Get mouse button released\&. "
+.in -1c
+.SS "Static Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "static void \fBRegisterBinding\fP (const std::string &name, \fBInputManager::EventDescription\fP description)"
+.br
+.RI "Add a new event to the \fBInputManager\fP\&. "
+.ti -1c
+.RI "static void \fBRemoveEvent\fP (const std::string &name)"
+.br
+.RI "Remove an event from the \fBInputManager\fP\&. "
+.in -1c
+.SS "Static Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "static std::unordered_map< std::string, \fBEventDescription\fP > \fBBindings\fP"
+.br
+.in -1c
+.SH "Member Function Documentation"
+.PP 
+.SS "void InputManager::check_event_binding ()"
+
+.PP
+Check if a binding is triggered\&. and execute his function if its the case\&. 
+.PP
+\fBReturns\fP
+.RS 4
+none 
+.RE
+.PP
+
+.SS "int InputManager::GetCountPressing (const std::string & name)"
+
+.PP
+Get the number of press an event take\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIname\fP The name of the event\&. 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+the number of time a key have been pressed\&. 
+.RE
+.PP
+
+.SS "std::shared_ptr< \fBInputManager::EventInfo\fP > InputManager::GetEventInfo (const std::string & name)"
+
+.PP
+Get the \fBEventInfo\fP structure of an event\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIname\fP The name of the event\&. 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+\fBEventInfo\fP The \fBEventInfo\fP structure of the event\&. 
+.RE
+.PP
+
+.SS "char InputManager::GetLastCharPressed ()"
+
+.PP
+Get the last char pressed, take into account if caps lock was enabled\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fI\fP 
+.RE
+.PP
+return none\&. 
+.SS "std::vector< std::shared_ptr< \fBInputManager::EventInfo\fP > > InputManager::GetPolledEvents ()"
+
+.PP
+Get PolledEvent\&. 
+.PP
+\fBReturns\fP
+.RS 4
+a std::vector<std::shared_ptr<EventInfo>>\&. 
+.RE
+.PP
+
+.SS "bool InputManager::isReleased (const std::string & name)"
+
+.PP
+Check if the event have been realesed\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIname\fP The name of the event\&. 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+Bool set to true if the key is up after being pressed\&. 
+.RE
+.PP
+
+.SS "char InputManager::KeyCodeTOChar (int keyCode)"
+
+.PP
+Get the value of a key code\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fI\fP 
+.RE
+.PP
+return none\&. 
+.SS "std::string InputManager::KeyCodeTOName (int keyCode)"
+
+.PP
+Get the name of a key code\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIkeyCode\fP 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+none\&. 
+.RE
+.PP
+
+.SS "bool InputManager::MouseButtonPressed (int button)"
+
+.PP
+Get mouse button pressed\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fInone\&.\fP 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+none\&. 
+.RE
+.PP
+
+.SS "bool InputManager::MouseButtonReleased (int button)"
+
+.PP
+Get mouse button released\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fInone\&.\fP 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+none\&. 
+.RE
+.PP
+
+.SS "Vector2 InputManager::MouseDelta ()"
+
+.PP
+Get mouse delta between frame\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fInone\&.\fP 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+none\&. 
+.RE
+.PP
+
+.SS "Vector2 InputManager::MousePosition ()"
+
+.PP
+Get mouse position\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fInone\&.\fP 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+none\&. 
+.RE
+.PP
+
+.SS "Vector2 InputManager::MouseWheelMove ()"
+
+.PP
+Get wheel movement\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fInone\&.\fP 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+none\&. 
+.RE
+.PP
+
+.SS "void InputManager::PollEvents ()"
+
+.PP
+Get the PollEvent\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fI\fP 
+.RE
+.PP
+return none\&. 
+.SS "void InputManager::RegisterBinding (const std::string & name, \fBInputManager::EventDescription\fP description)\fC [static]\fP"
+
+.PP
+Add a new event to the \fBInputManager\fP\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIname\fP The name of the event\&. 
+.br
+\fIdescription\fP The description of the event\&. 
+.RE
+.PP
+
+.SS "static void InputManager::RemoveEvent (const std::string & name)\fC [static]\fP"
+
+.PP
+Remove an event from the \fBInputManager\fP\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIname\fP The name of the event to remove\&. 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for My Project from the source code\&.

@@ -1,0 +1,116 @@
+.TH "NodeStr" 3 "Mon Dec 18 2023" "My Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+NodeStr \- The node is simply a container for some text\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <NodeStr\&.hpp>\fP
+.PP
+Inherits \fBecs::ANode\fP\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBExecute\fP (int entityID) override"
+.br
+.RI "Does Nothing\&. The node is simply a container for the text\&. "
+.ti -1c
+.RI "void \fBOnLoad\fP ()"
+.br
+.RI "Registers the node type in the \fBEventGraph\fP class\&. "
+.ti -1c
+.RI "void \fBUpdate\fP (int entityID)"
+.br
+.RI "Checks for user input and updates the text\&. "
+.in -1c
+
+Public Member Functions inherited from \fBecs::ANode\fP
+.in +1c
+.ti -1c
+.RI "void \fBOnAddComponent\fP (int entityID)"
+.br
+.ti -1c
+.RI "void \fBDraw\fP () override"
+.br
+.RI "Draws the node on the screen\&. "
+.in -1c
+.in +1c
+.ti -1c
+.RI "virtual void \fBExecute\fP (int entityID)=0"
+.br
+.RI "Executes the script of the node\&. It should register the fact that it has run during this frame\&. The outputs fields of the node should be updated to reflect the changes made by the script\&. "
+.ti -1c
+.RI "virtual void \fBDraw\fP ()=0"
+.br
+.RI "Draws the node on the screen\&. "
+.in -1c
+
+Public Member Functions inherited from \fBecs::Component< ANode >\fP
+.in +1c
+.ti -1c
+.RI "void \fBUpdate\fP (int entityID)"
+.br
+.RI "This is played every frame\&. "
+.ti -1c
+.RI "void \fBStart\fP ()"
+.br
+.RI "This is played once at the start of the game\&. "
+.ti -1c
+.RI "void \fBLoad\fP (const std::string &path)"
+.br
+.RI "This is played when the components is to be loaded from a file\&. "
+.ti -1c
+.RI "void \fBSave\fP (const std::string &path)"
+.br
+.RI "This is to be played when the component is to be saved to a file\&. "
+.ti -1c
+.RI "void \fBOnLoad\fP ()"
+.br
+.RI "This is to be played when the component is loaded (not necessarily from a file)\&. "
+.ti -1c
+.RI "void \fBOnAddComponent\fP (int entityID)"
+.br
+.RI "This function is called once when the component is added to an entity\&. "
+.ti -1c
+.RI "std::map< std::string, metadata_t > \fBGetMetadata\fP ()"
+.br
+.ti -1c
+.RI "std::string \fBGetClassName\fP () const"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+The node is simply a container for some text\&. 
+
+
+.SH "Member Function Documentation"
+.PP 
+.SS "void NodeStr::Execute (int entityID)\fC [override]\fP, \fC [virtual]\fP"
+
+.PP
+Does Nothing\&. The node is simply a container for the text\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIentityID\fP 
+.RE
+.PP
+
+.PP
+Implements \fBecs::INode\fP\&.
+.SS "void NodeStr::OnLoad ()"
+
+.PP
+Registers the node type in the \fBEventGraph\fP class\&. 
+.SS "void NodeStr::Update (int entityID)"
+
+.PP
+Checks for user input and updates the text\&. 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for My Project from the source code\&.

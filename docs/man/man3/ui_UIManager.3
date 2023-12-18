@@ -1,0 +1,116 @@
+.TH "ui::UIManager" 3 "Mon Dec 18 2023" "My Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ui::UIManager \- A class to manage the ui\&. It uses its own types to represent the UI elements\&. Do not mix them with the ecs components such as \fBUIButton\fP, \fBTextField\fP, etc\&. All available elements are subclasses of the UIElement class\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <UIManager\&.hpp>\fP
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "struct \fBButton\fP"
+.br
+.ti -1c
+.RI "struct \fBText\fP"
+.br
+.ti -1c
+.RI "struct \fBTextField\fP"
+.br
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBUIManager\fP ()"
+.br
+.RI "Construct a new \fBUIManager\fP object\&. \fBUIManager\fP is a singleton, don't use unless you know what you are doing! "
+.ti -1c
+.RI "void \fBDraw\fP ()"
+.br
+.RI "Draws the UI\&. "
+.ti -1c
+.RI "template<typename\&.\&.\&. Args> std::size_t \fBAddGroup\fP (Args\&.\&.\&. args)"
+.br
+.RI "Adds a group of UIElements to the ui and returns a handle to the group\&. This handle can be used to remove the group from the ui using the RemoveGroup method\&. The Added Elements must be copy constructible\&. "
+.ti -1c
+.RI "void \fBRemoveGroup\fP (std::size_t handle)"
+.br
+.RI "Removes a group of UIElements from the ui\&. "
+.ti -1c
+.RI "std::size_t \fBAddText\fP (const struct \fBText\fP &)"
+.br
+.in -1c
+.SS "Static Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "static \fBUIManager\fP & \fBGet\fP ()"
+.br
+.RI "Getter to implement the singleton pattern\&. "
+.in -1c
+.SS "Static Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "static const int \fBDEFAULT_TEXT_LAYER\fP = 10"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+A class to manage the ui\&. It uses its own types to represent the UI elements\&. Do not mix them with the ecs components such as \fBUIButton\fP, \fBTextField\fP, etc\&. All available elements are subclasses of the UIElement class\&. 
+
+
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "ui::UIManager::UIManager ()"
+
+.PP
+Construct a new \fBUIManager\fP object\&. \fBUIManager\fP is a singleton, don't use unless you know what you are doing! 
+.SH "Member Function Documentation"
+.PP 
+.SS "template<typename\&.\&.\&. Args> std::size_t ui::UIManager::AddGroup (Args\&.\&.\&. args)\fC [inline]\fP"
+
+.PP
+Adds a group of UIElements to the ui and returns a handle to the group\&. This handle can be used to remove the group from the ui using the RemoveGroup method\&. The Added Elements must be copy constructible\&. 
+.PP
+\fBReturns\fP
+.RS 4
+std::size_t 
+.RE
+.PP
+
+.SS "void ui::UIManager::Draw ()"
+
+.PP
+Draws the UI\&. 
+.SS "\fBUIManager\fP & ui::UIManager::Get ()\fC [static]\fP"
+
+.PP
+Getter to implement the singleton pattern\&. 
+.PP
+\fBReturns\fP
+.RS 4
+\fBUIManager\fP& 
+.RE
+.PP
+
+.SS "void ui::UIManager::RemoveGroup (std::size_t handle)\fC [inline]\fP"
+
+.PP
+Removes a group of UIElements from the ui\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIhandle\fP 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for My Project from the source code\&.

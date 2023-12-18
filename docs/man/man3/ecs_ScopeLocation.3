@@ -1,0 +1,55 @@
+.TH "ecs::ScopeLocation" 3 "Mon Dec 18 2023" "My Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ecs::ScopeLocation \- Moves the execution directory of the program to the directory given in the constructor\&. Returns to the previous directory when the object is destroyed\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <ScopeLocation\&.hpp>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBScopeLocation\fP (const std::string &path)"
+.br
+.RI "Moves the execution directory of the program to the directory given in the constructor\&. "
+.ti -1c
+.RI "\fBScopeLocation\fP (const std::filesystem::path &path)"
+.br
+.ti -1c
+.RI "\fB~ScopeLocation\fP ()"
+.br
+.RI "Returns to the previous directory\&. "
+.ti -1c
+.RI "\fBoperator bool\fP () const"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Moves the execution directory of the program to the directory given in the constructor\&. Returns to the previous directory when the object is destroyed\&. 
+
+
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "ecs::ScopeLocation::ScopeLocation (const std::string & path)"
+
+.PP
+Moves the execution directory of the program to the directory given in the constructor\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIpath\fP 
+.RE
+.PP
+
+.SS "ecs::ScopeLocation::~ScopeLocation ()"
+
+.PP
+Returns to the previous directory\&. 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for My Project from the source code\&.

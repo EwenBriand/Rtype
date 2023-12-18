@@ -1,0 +1,127 @@
+.TH "ecs::Component< T >" 3 "Mon Dec 18 2023" "My Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ecs::Component< T >
+.SH SYNOPSIS
+.br
+.PP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBUpdate\fP (int entityID)"
+.br
+.RI "This is played every frame\&. "
+.ti -1c
+.RI "void \fBStart\fP ()"
+.br
+.RI "This is played once at the start of the game\&. "
+.ti -1c
+.RI "void \fBLoad\fP (const std::string &path)"
+.br
+.RI "This is played when the components is to be loaded from a file\&. "
+.ti -1c
+.RI "void \fBSave\fP (const std::string &path)"
+.br
+.RI "This is to be played when the component is to be saved to a file\&. "
+.ti -1c
+.RI "void \fBOnLoad\fP ()"
+.br
+.RI "This is to be played when the component is loaded (not necessarily from a file)\&. "
+.ti -1c
+.RI "void \fBOnAddComponent\fP (int entityID)"
+.br
+.RI "This function is called once when the component is added to an entity\&. "
+.ti -1c
+.RI "std::map< std::string, metadata_t > \fBGetMetadata\fP ()"
+.br
+.ti -1c
+.RI "std::string \fBGetClassName\fP () const"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+
+.SS "template<typename T>
+.br
+class ecs::Component< T >"
+.PP
+\fBExamples\fP
+.in +1c
+\fB/home/amour/Documents/epitech/rtype/ecs/include/Component\&.hpp\fP\&.
+.SH "Member Function Documentation"
+.PP 
+.SS "template<typename T > void \fBecs::Component\fP< T >::Load (const std::string & path)\fC [inline]\fP"
+
+.PP
+This is played when the components is to be loaded from a file\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIpath\fP 
+.RE
+.PP
+
+.PP
+\fBExamples\fP
+.in +1c
+\fB/home/amour/Documents/epitech/rtype/ecs/include/Component\&.hpp\fP\&.
+.SS "template<typename T > void \fBecs::Component\fP< T >::OnAddComponent (int entityID)\fC [inline]\fP"
+
+.PP
+This function is called once when the component is added to an entity\&. 
+.PP
+\fBReturns\fP
+.RS 4
+std::map<std::string, metadata_t> 
+.RE
+.PP
+
+.PP
+\fBExamples\fP
+.in +1c
+\fB/home/amour/Documents/epitech/rtype/ecs/include/Component\&.hpp\fP\&.
+.SS "template<typename T > void \fBecs::Component\fP< T >::OnLoad ()\fC [inline]\fP"
+
+.PP
+This is to be played when the component is loaded (not necessarily from a file)\&. 
+.PP
+\fBExamples\fP
+.in +1c
+\fB/home/amour/Documents/epitech/rtype/ecs/include/Component\&.hpp\fP\&.
+.SS "template<typename T > void \fBecs::Component\fP< T >::Save (const std::string & path)\fC [inline]\fP"
+
+.PP
+This is to be played when the component is to be saved to a file\&. 
+.PP
+\fBExamples\fP
+.in +1c
+\fB/home/amour/Documents/epitech/rtype/ecs/include/Component\&.hpp\fP\&.
+.SS "template<typename T > void \fBecs::Component\fP< T >::Start ()\fC [inline]\fP"
+
+.PP
+This is played once at the start of the game\&. 
+.PP
+\fBExamples\fP
+.in +1c
+\fB/home/amour/Documents/epitech/rtype/ecs/include/Component\&.hpp\fP\&.
+.SS "template<typename T > void \fBecs::Component\fP< T >::Update (int entityID)\fC [inline]\fP"
+
+.PP
+This is played every frame\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIentityID\fP 
+.RE
+.PP
+
+.PP
+\fBExamples\fP
+.in +1c
+\fB/home/amour/Documents/epitech/rtype/ecs/include/Component\&.hpp\fP\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for My Project from the source code\&.

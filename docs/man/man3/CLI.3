@@ -1,0 +1,397 @@
+.TH "CLI" 3 "Mon Dec 18 2023" "My Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+CLI
+.SH SYNOPSIS
+.br
+.PP
+.PP
+Inherits \fBecs::Component< CLI >\fP\&.
+.SS "Public Types"
+
+.in +1c
+.ti -1c
+.RI "using \fBEntity\fP = unsigned int"
+.br
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBCLI\fP (const \fBCLI\fP &cpy)"
+.br
+.ti -1c
+.RI "void \fBUpdate\fP (int entityID)"
+.br
+.ti -1c
+.RI "void \fBOnLoad\fP ()"
+.br
+.RI "Registers the functions to be callable from buttons instead\&. "
+.ti -1c
+.RI "void \fBshowHelp\fP (std::vector< std::string > args=std::vector< std::string >())"
+.br
+.RI "Prints the help message on the console\&. "
+.ti -1c
+.RI "void \fBcreateEntity\fP (std::vector< std::string > args=std::vector< std::string >())"
+.br
+.RI "Creates a new entity and displays its ID on the console\&. "
+.ti -1c
+.RI "void \fBsetContext\fP (std::vector< std::string > args)"
+.br
+.RI "Sets the context to the given entity id\&. "
+.ti -1c
+.RI "void \fBmoveEntity\fP (std::vector< std::string > args)"
+.br
+.RI "Moves the entity to the given position\&. "
+.ti -1c
+.RI "void \fBsave\fP (std::vector< std::string > args)"
+.br
+.RI "Saves the current state of the ECS\&. "
+.ti -1c
+.RI "void \fBskipNFrames\fP (std::vector< std::string > args)"
+.br
+.RI "Skips n frames without prompting the user\&. "
+.ti -1c
+.RI "void \fBaddVanillaCptFromIndex\fP (std::vector< std::string > args)"
+.br
+.RI "Adds a vanilla component to the entity\&. "
+.ti -1c
+.RI "void \fBaddVanillaCptFromName\fP (std::vector< std::string > args)"
+.br
+.RI "Adds a vanilla component to the entity from its name\&. "
+.ti -1c
+.RI "void \fBreloadEntities\fP (std::vector< std::string > args)"
+.br
+.RI "Reloads the entities from the save file\&. "
+.ti -1c
+.RI "void \fBlistEntities\fP (std::vector< std::string > args=std::vector< std::string >())"
+.br
+.RI "Lists all the entities and their components\&. "
+.ti -1c
+.RI "void \fBhotReload\fP (std::vector< std::string > args=std::vector< std::string >())"
+.br
+.RI "Reloads the user scripts and compiles them if needed\&. "
+.ti -1c
+.RI "void \fBremoveEntity\fP (std::vector< std::string > args)"
+.br
+.RI "Removes the entity from the ECS\&. "
+.ti -1c
+.RI "void \fBsetMember\fP (std::vector< std::string > args)"
+.br
+.RI "Sets the member of the component to the given value\&. "
+.ti -1c
+.RI "void \fBlistExposedMembers\fP (std::vector< std::string > args)"
+.br
+.RI "Lists the exposed members of the component at the given index in the entitiy's components\&. "
+.ti -1c
+.RI "void \fBshowContext\fP (std::vector< std::string > args=std::vector< std::string >())"
+.br
+.RI "Show information on the entity set as the context\&. "
+.ti -1c
+.RI "void \fBsavePrefab\fP (std::vector< std::string > args=std::vector< std::string >())"
+.br
+.RI "Saves the current entity to a prefab file\&. "
+.ti -1c
+.RI "void \fBloadPrefab\fP (std::vector< std::string > args=std::vector< std::string >())"
+.br
+.RI "Loads a prefab from a file\&. "
+.ti -1c
+.RI "void \fBlistPrefabs\fP (std::vector< std::string > args=std::vector< std::string >())"
+.br
+.RI "Lists all the prefabs\&. "
+.ti -1c
+.RI "void \fBremovePrefab\fP (std::vector< std::string > args=std::vector< std::string >())"
+.br
+.RI "Removes a prefab\&. "
+.ti -1c
+.RI "void \fBRegisterCustomCommand\fP (const std::string &command, std::function< void(\fBCLI\fP &, std::vector< std::string >)> func, const std::string &help='')"
+.br
+.ti -1c
+.RI "std::string \fBGetClassName\fP () const"
+.br
+.ti -1c
+.RI "Entity \fBGetContext\fP () const"
+.br
+.in -1c
+
+Public Member Functions inherited from \fBecs::Component< CLI >\fP
+.in +1c
+.ti -1c
+.RI "void \fBUpdate\fP (int entityID)"
+.br
+.RI "This is played every frame\&. "
+.ti -1c
+.RI "void \fBStart\fP ()"
+.br
+.RI "This is played once at the start of the game\&. "
+.ti -1c
+.RI "void \fBLoad\fP (const std::string &path)"
+.br
+.RI "This is played when the components is to be loaded from a file\&. "
+.ti -1c
+.RI "void \fBSave\fP (const std::string &path)"
+.br
+.RI "This is to be played when the component is to be saved to a file\&. "
+.ti -1c
+.RI "void \fBOnLoad\fP ()"
+.br
+.RI "This is to be played when the component is loaded (not necessarily from a file)\&. "
+.ti -1c
+.RI "void \fBOnAddComponent\fP (int entityID)"
+.br
+.RI "This function is called once when the component is added to an entity\&. "
+.ti -1c
+.RI "std::map< std::string, metadata_t > \fBGetMetadata\fP ()"
+.br
+.ti -1c
+.RI "std::string \fBGetClassName\fP () const"
+.br
+.in -1c
+.SS "Static Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "static const std::map< std::string, std::function< void(\fBCLI\fP &, std::vector< std::string >)> > \fBgetM_commands\fP ()"
+.br
+.ti -1c
+.RI "static void \fBsetM_commands\fP (const std::map< std::string, std::function< void(\fBCLI\fP &, std::vector< std::string >)> > &m_commands)"
+.br
+.in -1c
+.SH "Member Function Documentation"
+.PP 
+.SS "void CLI::addVanillaCptFromIndex (std::vector< std::string > args)"
+
+.PP
+Adds a vanilla component to the entity\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIargs\fP : index 
+.RE
+.PP
+
+.SS "void CLI::addVanillaCptFromName (std::vector< std::string > args)"
+
+.PP
+Adds a vanilla component to the entity from its name\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIargs\fP : name 
+.RE
+.PP
+
+.SS "void CLI::createEntity (std::vector< std::string > args = \fCstd::vector<std::string>()\fP)"
+
+.PP
+Creates a new entity and displays its ID on the console\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIargs\fP 
+.RE
+.PP
+
+.SS "void CLI::hotReload (std::vector< std::string > args = \fCstd::vector<std::string>()\fP)"
+
+.PP
+Reloads the user scripts and compiles them if needed\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIargs\fP 
+.RE
+.PP
+
+.SS "void CLI::listEntities (std::vector< std::string > args = \fCstd::vector<std::string>()\fP)"
+
+.PP
+Lists all the entities and their components\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIargs\fP 
+.RE
+.PP
+
+.SS "void CLI::listExposedMembers (std::vector< std::string > args)"
+
+.PP
+Lists the exposed members of the component at the given index in the entitiy's components\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIargs\fP : componentIdx 
+.RE
+.PP
+
+.SS "void CLI::listPrefabs (std::vector< std::string > args = \fCstd::vector<std::string>()\fP)"
+
+.PP
+Lists all the prefabs\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIcommand\fP 
+.br
+\fIfunc\fP 
+.br
+\fIhelp\fP 
+.RE
+.PP
+
+.SS "void CLI::loadPrefab (std::vector< std::string > args = \fCstd::vector<std::string>()\fP)"
+
+.PP
+Loads a prefab from a file\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIcommand\fP 
+.br
+\fIfunc\fP 
+.br
+\fIhelp\fP 
+.RE
+.PP
+
+.SS "void CLI::moveEntity (std::vector< std::string > args)"
+
+.PP
+Moves the entity to the given position\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIargs\fP : id dx dy 
+.RE
+.PP
+
+.SS "void CLI::OnLoad ()"
+
+.PP
+Registers the functions to be callable from buttons instead\&. 
+.SS "void CLI::reloadEntities (std::vector< std::string > args)"
+
+.PP
+Reloads the entities from the save file\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIargs\fP 
+.RE
+.PP
+
+.SS "void CLI::removeEntity (std::vector< std::string > args)"
+
+.PP
+Removes the entity from the ECS\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIargs\fP 
+.RE
+.PP
+
+.SS "void CLI::removePrefab (std::vector< std::string > args = \fCstd::vector<std::string>()\fP)"
+
+.PP
+Removes a prefab\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIcommand\fP 
+.br
+\fIfunc\fP 
+.br
+\fIhelp\fP 
+.RE
+.PP
+
+.SS "void CLI::save (std::vector< std::string > args)"
+
+.PP
+Saves the current state of the ECS\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIargs\fP 
+.RE
+.PP
+
+.SS "void CLI::savePrefab (std::vector< std::string > args = \fCstd::vector<std::string>()\fP)"
+
+.PP
+Saves the current entity to a prefab file\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIcommand\fP 
+.br
+\fIfunc\fP 
+.br
+\fIhelp\fP 
+.RE
+.PP
+
+.SS "void CLI::setContext (std::vector< std::string > args)"
+
+.PP
+Sets the context to the given entity id\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIargs\fP : the entity id\&. 
+.RE
+.PP
+
+.SS "void CLI::setMember (std::vector< std::string > args)"
+
+.PP
+Sets the member of the component to the given value\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIargs\fP : componentIdx memberName value 
+.RE
+.PP
+
+.SS "void CLI::showContext (std::vector< std::string > args = \fCstd::vector<std::string>()\fP)"
+
+.PP
+Show information on the entity set as the context\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIcommand\fP 
+.br
+\fIfunc\fP 
+.RE
+.PP
+
+.SS "void CLI::showHelp (std::vector< std::string > args = \fCstd::vector<std::string>()\fP)"
+
+.PP
+Prints the help message on the console\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIargs\fP 
+.RE
+.PP
+
+.SS "void CLI::skipNFrames (std::vector< std::string > args)"
+
+.PP
+Skips n frames without prompting the user\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIargs\fP : n 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for My Project from the source code\&.

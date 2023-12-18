@@ -1,0 +1,56 @@
+.TH "Animation" 3 "Mon Dec 18 2023" "My Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Animation
+.SH SYNOPSIS
+.br
+.PP
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "struct \fBFrame\fP"
+.br
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBAnimation\fP (const std::string &name)"
+.br
+.ti -1c
+.RI "void \fBAddFrame\fP (const \fBFrame\fP &frame)"
+.br
+.ti -1c
+.RI "void \fBReplaceFrame\fP (const \fBFrame\fP &frame, int index)"
+.br
+.ti -1c
+.RI "\fBFrame\fP & \fBGetFrame\fP (int index)"
+.br
+.ti -1c
+.RI "std::vector< unsigned char > \fBSerialize\fP ()"
+.br
+.ti -1c
+.RI "void \fBDeserialize\fP (const std::vector< unsigned char > &data, std::vector< unsigned char >::iterator &it)"
+.br
+.ti -1c
+.RI "void \fBSetName\fP (const std::string &name)"
+.br
+.ti -1c
+.RI "std::string & \fBGetName\fP ()"
+.br
+.ti -1c
+.RI "void \fBSetSpritePath\fP (const std::string &path)"
+.br
+.ti -1c
+.RI "void \fBRenderFrame\fP (int entityId)"
+.br
+.ti -1c
+.RI "void \fBSetLoop\fP (bool loop)"
+.br
+.in -1c
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for My Project from the source code\&.

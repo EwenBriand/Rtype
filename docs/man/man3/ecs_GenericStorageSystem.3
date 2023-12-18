@@ -1,0 +1,161 @@
+.TH "ecs::GenericStorageSystem" 3 "Mon Dec 18 2023" "My Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ecs::GenericStorageSystem \- A Generic storage system\&. It is like a small \fBECS\fP\&. It also loosely implement the SParse Set pattern\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <GenericStorageSystem\&.hpp>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "template<typename T > size_t \fBAddComponent\fP (T *component)"
+.br
+.RI "Stores an object in the storage system\&. Returns the index of the object in the storage system\&. "
+.ti -1c
+.RI "template<typename T > void \fBRemoveComponent\fP (size_t index)"
+.br
+.RI "Removes an object from the storage system\&. "
+.ti -1c
+.RI "template<typename T > T * \fBGetComponent\fP (size_t index)"
+.br
+.RI "Returns the object at the given index\&. "
+.ti -1c
+.RI "template<typename T > void \fBRegisterComponent\fP (std::function< void(T *)> sys)"
+.br
+.RI "Registers a type in the storage system\&. This creates a destructor for the type\&. It also gives the user a way to provide a system to run on the type\&. "
+.ti -1c
+.RI "template<typename T > void \fBRunSystem\fP ()"
+.br
+.RI "Runs the system of the specified type\&. It will be applied on all the objects of the type\&. "
+.ti -1c
+.RI "template<typename T > void \fBForEach\fP (std::function< void(T *)> func)"
+.br
+.ti -1c
+.RI "template<typename T > void \fBForEach\fP (std::function< void(T *, std::size_t)> func)"
+.br
+.ti -1c
+.RI "template<auto Functor, typename\&.\&.\&. Types> void \fBMap\fP ()"
+.br
+.RI "maps a function call on several types of the generic storage system using ForEach\&. "
+.ti -1c
+.RI "template<typename\&.\&.\&. Types> void \fBRunSystems\fP ()"
+.br
+.RI "Runs the system of all specified types\&. "
+.ti -1c
+.RI "void \fBRemoveAt\fP (size_t index, const std::string &type)"
+.br
+.RI "Removes the objects at the given index from the typeid string specified\&. "
+.in -1c
+.SH "Detailed Description"
+.PP 
+A Generic storage system\&. It is like a small \fBECS\fP\&. It also loosely implement the SParse Set pattern\&. 
+
+
+.SH "Member Function Documentation"
+.PP 
+.SS "template<typename T > size_t ecs::GenericStorageSystem::AddComponent (T * component)\fC [inline]\fP"
+
+.PP
+Stores an object in the storage system\&. Returns the index of the object in the storage system\&. 
+.PP
+\fBTemplate Parameters\fP
+.RS 4
+\fIT\fP 
+.RE
+.PP
+\fBParameters\fP
+.RS 4
+\fIcomponent\fP 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+size_t 
+.RE
+.PP
+
+.SS "template<typename T > T * ecs::GenericStorageSystem::GetComponent (size_t index)\fC [inline]\fP"
+
+.PP
+Returns the object at the given index\&. 
+.PP
+\fBTemplate Parameters\fP
+.RS 4
+\fIT\fP 
+.RE
+.PP
+\fBParameters\fP
+.RS 4
+\fIindex\fP 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+T* 
+.RE
+.PP
+
+.SS "template<auto Functor, typename\&.\&.\&. Types> void ecs::GenericStorageSystem::Map ()\fC [inline]\fP"
+
+.PP
+maps a function call on several types of the generic storage system using ForEach\&. 
+.SS "template<typename T > void ecs::GenericStorageSystem::RegisterComponent (std::function< void(T *)> sys)\fC [inline]\fP"
+
+.PP
+Registers a type in the storage system\&. This creates a destructor for the type\&. It also gives the user a way to provide a system to run on the type\&. 
+.PP
+\fBTemplate Parameters\fP
+.RS 4
+\fIT\fP 
+.RE
+.PP
+\fBParameters\fP
+.RS 4
+\fIsystem\fP 
+.RE
+.PP
+
+.SS "void ecs::GenericStorageSystem::RemoveAt (size_t index, const std::string & type)"
+
+.PP
+Removes the objects at the given index from the typeid string specified\&. 
+.SS "template<typename T > void ecs::GenericStorageSystem::RemoveComponent (size_t index)\fC [inline]\fP"
+
+.PP
+Removes an object from the storage system\&. 
+.PP
+\fBTemplate Parameters\fP
+.RS 4
+\fIT\fP 
+.RE
+.PP
+\fBParameters\fP
+.RS 4
+\fIindex\fP 
+.RE
+.PP
+
+.SS "template<typename T > void ecs::GenericStorageSystem::RunSystem ()\fC [inline]\fP"
+
+.PP
+Runs the system of the specified type\&. It will be applied on all the objects of the type\&. 
+.PP
+\fBTemplate Parameters\fP
+.RS 4
+\fIT\fP 
+.RE
+.PP
+
+.SS "template<typename\&.\&.\&. Types> void ecs::GenericStorageSystem::RunSystems ()\fC [inline]\fP"
+
+.PP
+Runs the system of all specified types\&. 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for My Project from the source code\&.

@@ -1,0 +1,63 @@
+.TH "td::ThreadPool< threadCount >" 3 "Mon Dec 18 2023" "My Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+td::ThreadPool< threadCount > \- A thread pool that can be used to run tasks in parallel\&. This class is templated by the number of threads it can run\&. If the number of threads is reached, the task is not added and will be ignored\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <ThreadPool\&.hpp>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "template<typename Func , typename\&.\&.\&. Args> void \fBAddTask\fP (Func func, Args\&.\&.\&. args)"
+.br
+.RI "Runs a task asynchronously\&. If the thread pool is full, the task is not added and is lost\&. "
+.ti -1c
+.RI "void \fBClearTerminatedTasks\fP ()"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+
+.SS "template<unsigned int threadCount>
+.br
+class td::ThreadPool< threadCount >"A thread pool that can be used to run tasks in parallel\&. This class is templated by the number of threads it can run\&. If the number of threads is reached, the task is not added and will be ignored\&. 
+
+If the program is terminated while some tasks are still running, the behaviour is undefined and the program may crash if the user does not let it exit gracefully\&. As such, the use of Ctrl-C is not recommended unless the user implements the necessary logic to interrupt the tasks upon the SIGINT signal\&.
+.PP
+\fBTemplate Parameters\fP
+.RS 4
+\fIthreadCount\fP 
+.RE
+.PP
+
+.SH "Member Function Documentation"
+.PP 
+.SS "template<unsigned int threadCount> template<typename Func , typename\&.\&.\&. Args> void \fBtd::ThreadPool\fP< threadCount >::AddTask (Func func, Args\&.\&.\&. args)\fC [inline]\fP"
+
+.PP
+Runs a task asynchronously\&. If the thread pool is full, the task is not added and is lost\&. 
+.PP
+\fBTemplate Parameters\fP
+.RS 4
+\fIFunc\fP 
+.br
+\fIArgs\fP 
+.RE
+.PP
+\fBParameters\fP
+.RS 4
+\fIfunc\fP 
+.br
+\fIargs\fP 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for My Project from the source code\&.
