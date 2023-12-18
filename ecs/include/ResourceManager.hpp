@@ -27,8 +27,6 @@
 // typedef INT_PTR (__stdcall *FARPROC)()
 // #include <windows.h>
 
-
-
 namespace ecs {
     class ResourceManager {
     public:
@@ -137,15 +135,28 @@ namespace ecs {
          */
         std::shared_ptr<eng::IGame> LoadGame(const std::string& path);
 
+        /**
+         * @brief Loads a prefab from its name containing the save of an entity, from the ${assetRoot}/prefabs folder.
+         * It returns a handle to the entity instantiated, or -1 if the instantiation failed.
+         *
+         */
+        int LoadPrefab(const std::string& name);
+
+        /**
+         * @brief Saves an entity as a prefab in the ${assetRoot}/prefabs folder.
+         *
+         */
+        void SavePrefab(const std::string& name, int entity);
+
     private:
         unsigned int m_changesNbr = 0;
         std::string m_userComponentsPath = "./metabuild/";
         std::vector<std::shared_ptr<AUserComponent>> _instances;
-        std::unordered_map<std::string, void *> _handles;
+        std::unordered_map<std::string, void*> _handles;
 
         std::unordered_map<std::string, Action> _availableActions;
         std::tuple<void*, std::shared_ptr<graph::IGraphicalModule>> _graphicalModule = { nullptr, nullptr };
         std::shared_ptr<eng::IGame> _game = nullptr;
-        void *_gameHandle = nullptr;
+        void* _gameHandle = nullptr;
     };
 }

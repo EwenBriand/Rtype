@@ -61,8 +61,11 @@ namespace ecs {
             CONSOLE::warn << "Could not find tmpBuildDir in config, using default value" << std::endl;
         }
         std::string rawPath = path.substr(0, path.find_last_of('.'));
+        std::string rawFolder = path.substr(0, path.find_last_of('/'));
         std::string copyPath = rootDir + "/" + tmpCopyDirectory + "/" + rawPath.substr(rawPath.find_last_of('/') + 1);
-        std::string command = "mkdir -p " + copyPath + " && cp " + rawPath + ".cpp " + rawPath + ".hpp " + copyPath; // todo windows
+        std::string command = "mkdir -p " + copyPath + " && cp " + rawPath + ".cpp " + copyPath; // todo windows
+        system(command.c_str());
+        command = "cp " + rawFolder + "/*.hpp " + copyPath; // todo windows
         system(command.c_str());
         try {
             auto metagen = meta::MetadataGenerator();
@@ -251,5 +254,37 @@ namespace ecs {
         _gameHandle = handle;
         CONSOLE::info << "Game successfully loaded" << std::endl;
         return _game;
+    }
+
+    int ResourceManager::LoadPrefab(const std::string& name)
+    {
+        std::string assetRoot = eng::Engine::GetEngine()->GetConfigValue("assetRoot");
+        std::string path = MakePath({ assetRoot, "prefabs", name }, true);
+
+        try {
+            return SYS.LoadEntity(path);
+        } catch (std::exception& e) {
+            CONSOLE::err << "Error: " << e.what() << std::endl;
+            return -1;
+        }
+    }
+
+    void ResourceManager::SavePrefab(const std::string& name, int entity)
+    {
+        std::string assetRoot = eng::Engine::GetEngine()->GetConfigValue("assetRoot");
+        // std::string path = MakePath({ assetRoot, "prefabs", name }, false);
+        std::string path = assetRoot + "/prefabs/" + name;
+
+        try {
+            if (std::filesystem::exists(path)) {
+                throw std::runtime_error("Prefab already exists");
+            }
+            CONSOLE::info << "Saving prefab " << name << " to " << path << std::endl;
+            std::filesystem::create_directories(path);
+            SYS.SaveEntity(entity, path);
+        } catch (std::exception& e) {
+            CONSOLE::err << "Error: " << e.what() << std::endl;
+            return;
+        }
     }
 }

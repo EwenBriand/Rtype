@@ -74,6 +74,9 @@ namespace eng {
         }
         try {
             m_engine.GetECS().ReplaceScene(_scenes.at(sceneName)->GetComponents());
+            auto game = m_engine.GetGame();
+            if (game)
+                game->PreSceneInstantiationHook(&m_engine, sceneName);
         } catch (std::exception& e) {
             CONSOLE::err << "Error: " << e.what() << std::endl;
             return;

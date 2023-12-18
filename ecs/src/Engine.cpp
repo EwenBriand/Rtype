@@ -339,4 +339,9 @@ namespace eng {
     {
         m_logFile << msg << std::endl;
     }
+
+    std::shared_ptr<IGame> Engine::GetGame() const
+    {
+        return m_game;
+    }
 } // namespace eng

@@ -38,17 +38,13 @@ void Ship::Update(int entityID)
         CONSOLE::warn << "Ship: Controller not set" << std::endl;
         return;
     }
+    _rb->SetVelocity({ 0, 0 });
     applyDirectives();
 }
 
 // ===========================================================================================================
 // Public methods
 // ===========================================================================================================
-
-void Ship::SetController(std::shared_ptr<ecs::IController> controller)
-{
-    _controller = std::move(controller);
-}
 
 // ===========================================================================================================
 // Private methods

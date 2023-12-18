@@ -612,12 +612,20 @@ namespace ecs {
          * The file is named after the component's index. The save function
          * of the component is called to save the component.
          *
-         * @param func
+         * @param e : the entity to save
+         * @param path : an optional path to save the entity to. If not specified,
+         * the entity is saved to the save directory.
          */
-        void SaveEntity(Entity e)
+        void SaveEntity(Entity e, const std::string& path = "")
         {
-            std::filesystem::create_directory(m_savePath);
-            std::string thisPath = m_savePath + "/" + std::to_string(e);
+            std::string thisPath = "";
+
+            if (path == "") {
+                std::filesystem::create_directory(m_savePath);
+                thisPath = m_savePath + "/" + std::to_string(e);
+            } else {
+                thisPath = path;
+            }
             std::filesystem::create_directory(thisPath);
             std::vector<std::string> cptTypes;
 

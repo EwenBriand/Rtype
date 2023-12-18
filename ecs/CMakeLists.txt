@@ -50,6 +50,7 @@ set(ECS
     ${ECS_SRC}/UIManager.cpp
     ${ECS_SRC}/GraphicalRayLib.cpp
     ${ECS_SRC}/AController.cpp
+    ${ECS_SRC}/AActor.cpp
 )
 
 set(ENGINE
@@ -84,6 +85,7 @@ set(VANILLA
     ${VANILLA_SRC}/UIMenu.cpp
     ${VANILLA_SRC}/UIScrollableList.cpp
     ${VANILLA_SRC}/UserComponentWrapper.cpp
+    ${VANILLA_SRC}/Tag.cpp
 )
 
 set(META_VANILLA_SRC
@@ -103,6 +105,7 @@ set(META_VANILLA
     ${META_VANILLA_SRC}/RigidBody2DMeta.cpp
     ${META_VANILLA_SRC}/UIButtonMeta.cpp
     ${META_VANILLA_SRC}/UIMenuMeta.cpp
+    ${META_VANILLA_SRC}/TagMeta.cpp
 )
 
 add_library(lengine SHARED

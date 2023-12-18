@@ -12,5 +12,8 @@ namespace eng {
         bool IsOnLine(Engine*) override;
         void WaitConnect(Engine*) override;
         void LoadFirstScene(Engine*) override;
+        void PreSceneInstantiationHook(Engine*, const std::string& sceneName) override;
+
+    private:
     };
 } // namespace eng

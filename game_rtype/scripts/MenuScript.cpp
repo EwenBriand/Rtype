@@ -13,6 +13,12 @@
 
 MANAGED_RESOURCE(MenuScript)
 
+MenuScript::~MenuScript()
+{
+    if (_menuUIHandle != -1)
+        ui::UIManager::Get().RemoveGroup(_menuUIHandle);
+}
+
 void MenuScript::Start()
 {
 }
@@ -27,6 +33,7 @@ void MenuScript::OnAddComponent(int e)
                 .fontSize = 70,
                 .callback = [this]() {
                     ui::UIManager::Get().RemoveGroup(_menuUIHandle);
+                    _menuUIHandle = -1;
                     eng::Engine::GetEngine()->GetSceneManager().SwitchScene("level1");
                 } });
     } catch (const std::exception& e) {

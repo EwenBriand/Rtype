@@ -51,5 +51,12 @@ namespace eng {
          *
          */
         virtual void LoadFirstScene(Engine*) = 0;
+
+        /**
+         * @brief Pre-scene instantiation, called after each scene is loaded in
+         * the engine, but before it is displayed.
+         *
+         */
+        virtual void PreSceneInstantiationHook(Engine*, const std::string& sceneName) = 0;
     };
 }
