@@ -50,13 +50,13 @@ public:                                     \
     void Save(const std::string& filepath); \
     std::map<std::string, metadata_t> GetMetadata();
 
-#define MANAGED_RESOURCE(classname) \
-    extern "C" {                    \
-    AUserComponent* create()        \
-    {                               \
-        auto var = new classname(); \
-        return var;                 \
-    }                               \
+#define MANAGED_RESOURCE(classname)      \
+    extern "C" {                         \
+    AUserComponent* create_##classname() \
+    {                                    \
+        auto var = new classname();      \
+        return var;                      \
+    }                                    \
     }
 
 #include <iostream>

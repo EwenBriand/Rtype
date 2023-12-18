@@ -1,0 +1,128 @@
+.TH "serv::CircularBuffer" 3 "Mon Dec 18 2023" "My Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+serv::CircularBuffer \- This class implements a circular buffer\&. The user can Read the whole buffer at once or stop at a given delimiter\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <Server\&.hpp>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBCircularBuffer\fP (int size)"
+.br
+.ti -1c
+.RI "void \fBWrite\fP (const std::string &data)"
+.br
+.RI "Writes some data in the buffer\&. "
+.ti -1c
+.RI "std::string \fBReadUntil\fP (const std::string &delimiter)"
+.br
+.RI "Returns the data in the buffer until the given delimiter, or the empty string if the delimiter is not found\&. "
+.ti -1c
+.RI "std::string \fBRead\fP ()"
+.br
+.RI "Returns the whole buffer\&. "
+.ti -1c
+.RI "int \fBGetSize\fP () const"
+.br
+.RI "Returns the size of the buffer\&. "
+.ti -1c
+.RI "bool \fBIsEmpty\fP () const"
+.br
+.RI "Returns true if the buffer is empty, false otherwise\&. "
+.ti -1c
+.RI "bool \fBIsFull\fP () const"
+.br
+.RI "Returns true if the buffer is full, false otherwise\&. "
+.in -1c
+.SH "Detailed Description"
+.PP 
+This class implements a circular buffer\&. The user can Read the whole buffer at once or stop at a given delimiter\&. 
+
+
+.SH "Member Function Documentation"
+.PP 
+.SS "int serv::CircularBuffer::GetSize () const"
+
+.PP
+Returns the size of the buffer\&. 
+.PP
+\fBReturns\fP
+.RS 4
+int 
+.RE
+.PP
+
+.SS "bool serv::CircularBuffer::IsEmpty () const"
+
+.PP
+Returns true if the buffer is empty, false otherwise\&. 
+.PP
+\fBReturns\fP
+.RS 4
+true 
+.PP
+false 
+.RE
+.PP
+
+.SS "bool serv::CircularBuffer::IsFull () const"
+
+.PP
+Returns true if the buffer is full, false otherwise\&. 
+.PP
+\fBReturns\fP
+.RS 4
+true 
+.PP
+false 
+.RE
+.PP
+
+.SS "std::string serv::CircularBuffer::Read ()"
+
+.PP
+Returns the whole buffer\&. 
+.PP
+\fBReturns\fP
+.RS 4
+std::string 
+.RE
+.PP
+
+.SS "std::string serv::CircularBuffer::ReadUntil (const std::string & delimiter)"
+
+.PP
+Returns the data in the buffer until the given delimiter, or the empty string if the delimiter is not found\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIdelimiter\fP 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+std::string 
+.RE
+.PP
+
+.SS "void serv::CircularBuffer::Write (const std::string & data)"
+
+.PP
+Writes some data in the buffer\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for My Project from the source code\&.

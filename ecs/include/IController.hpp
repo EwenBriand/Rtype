@@ -55,6 +55,12 @@ namespace ecs {
          *
          */
         virtual void UpdatePipeline() = 0;
+
+        /**
+         * @brief Sets the internal reference to the entity's controller.
+         *
+         */
+        virtual void SetEntity(int entityID) = 0;
     };
 
     class AController : public IController {
@@ -64,5 +70,9 @@ namespace ecs {
         virtual void PollDirectives() = 0;
 
         void UpdatePipeline() override;
+        void SetEntity(int entityID) override;
+
+    protected:
+        int _entity;
     };
 } // namespace ecs

@@ -1,0 +1,92 @@
+.TH "CoreTransform" 3 "Mon Dec 18 2023" "My Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+CoreTransform
+.SH SYNOPSIS
+.br
+.PP
+.PP
+Inherits \fBecs::Component< CoreTransform >\fP\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBUpdate\fP (int entityID)"
+.br
+.ti -1c
+.RI "\fBgraph::vec2f\fP \fBGetScreenPosition\fP () const"
+.br
+.ti -1c
+.RI "\fBgraph::vec3f\fP \fBGetWorldPosition\fP () const"
+.br
+.in -1c
+
+Public Member Functions inherited from \fBecs::Component< CoreTransform >\fP
+.in +1c
+.ti -1c
+.RI "void \fBUpdate\fP (int entityID)"
+.br
+.RI "This is played every frame\&. "
+.ti -1c
+.RI "void \fBStart\fP ()"
+.br
+.RI "This is played once at the start of the game\&. "
+.ti -1c
+.RI "void \fBLoad\fP (const std::string &path)"
+.br
+.RI "This is played when the components is to be loaded from a file\&. "
+.ti -1c
+.RI "void \fBSave\fP (const std::string &path)"
+.br
+.RI "This is to be played when the component is to be saved to a file\&. "
+.ti -1c
+.RI "void \fBOnLoad\fP ()"
+.br
+.RI "This is to be played when the component is loaded (not necessarily from a file)\&. "
+.ti -1c
+.RI "void \fBOnAddComponent\fP (int entityID)"
+.br
+.RI "This function is called once when the component is added to an entity\&. "
+.ti -1c
+.RI "std::map< std::string, metadata_t > \fBGetMetadata\fP ()"
+.br
+.ti -1c
+.RI "std::string \fBGetClassName\fP () const"
+.br
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "serialize float \fBx\fP = 0"
+.br
+.ti -1c
+.RI "serialize float \fBy\fP = 0"
+.br
+.ti -1c
+.RI "serialize float \fBz\fP = 0"
+.br
+.ti -1c
+.RI "serialize float \fBrotationX\fP = 0"
+.br
+.ti -1c
+.RI "serialize float \fBrotationY\fP = 0"
+.br
+.ti -1c
+.RI "serialize float \fBrotationZ\fP = 0"
+.br
+.ti -1c
+.RI "serialize float \fBscaleX\fP = 1"
+.br
+.ti -1c
+.RI "serialize float \fBscaleY\fP = 1"
+.br
+.ti -1c
+.RI "serialize float \fBscaleZ\fP = 1"
+.br
+.in -1c
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for My Project from the source code\&.

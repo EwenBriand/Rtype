@@ -11,6 +11,7 @@
 #include "Components.Vanilla/Collider2D.hpp"
 #include "Components.Vanilla/RigidBody2D.hpp"
 #include "Components.Vanilla/UserComponentWrapper.hpp"
+#include "IActor.hpp"
 #include "IController.hpp"
 #include "metadata.hpp"
 
@@ -20,7 +21,7 @@
  * from the network, the local player, or the ai.
  *
  */
-serialize class Ship : public AUserComponent {
+serialize class Ship : public AUserComponent, public ecs::AActor {
 public:
     GENERATE_METADATA(Ship)
     Ship() = default;
@@ -36,14 +37,6 @@ public:
     void OnAddComponent(int entityID) override;
     void Update(int entityID) override;
 
-    /**
-     * @brief Set the controller for the ship. the ship will be unresponsive
-     * until a controller is set.
-     *
-     * @param controller
-     */
-    void SetController(std::shared_ptr<ecs::IController> controller);
-
 private:
     /**
      * @brief Applies the various directives to the ship.
@@ -51,11 +44,10 @@ private:
      */
     void applyDirectives();
 
-    serialize float _speed = 0.1f;
+    serialize float _speed = 1.0f;
     serialize int _damage = 1;
     serialize int _health = 10;
 
-    std::shared_ptr<ecs::IController> _controller;
     RigidBody2D* _rb = nullptr;
     int _entity;
 

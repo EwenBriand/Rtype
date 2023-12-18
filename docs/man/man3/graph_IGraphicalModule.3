@@ -1,0 +1,283 @@
+.TH "graph::IGraphicalModule" 3 "Mon Dec 18 2023" "My Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+graph::IGraphicalModule \- This class is the base class for all graphical modules\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <IGraphicalModule\&.hpp>\fP
+.PP
+Inherited by \fBgraph::LightGraph\fP\fC [private]\fP, and \fBraylib::GraphicalRayLib\fP\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "virtual std::string \fBGetID\fP () const =0"
+.br
+.RI "This functions returns the ID of the graphical module\&. Each implementation should have a unique ID, which will serve to identify the module and prevent compatibility issues\&. "
+.ti -1c
+.RI "virtual void \fBRun\fP (std::function< void(float deltaT)> &&callback)=0"
+.br
+.ti -1c
+.RI "virtual void \fBStart\fP ()=0"
+.br
+.ti -1c
+.RI "virtual void \fBStop\fP ()=0"
+.br
+.ti -1c
+.RI "virtual void \fBModPipeline\fP ()=0"
+.br
+.RI "This function updates the pipeline of the engine to include the graphical module's actions, such as clearing the window and drawing objects\&. "
+.ti -1c
+.RI "virtual void \fBRegisterEvent\fP (const std::string &eventKey, std::function< void()> &&callback)=0"
+.br
+.RI "This function registers an event which will be tested for every frame\&. If the event is triggered, the callback will be called\&. "
+.ti -1c
+.RI "virtual void \fBWindowDrawRectangle\fP (\fBgraphRect_t\fP rectInfo)=0"
+.br
+.RI "This function buffers a rectangle to be drawn in the window\&. "
+.ti -1c
+.RI "virtual void \fBWindowDrawCircle\fP (\fBgraphCircle_t\fP circleInfo)=0"
+.br
+.RI "This function buffers a circle to be drawn in the window\&. "
+.ti -1c
+.RI "virtual void \fBWindowDrawText\fP (\fBgraphText_t\fP textInfo)=0"
+.br
+.RI "This function buffers a text to be drawn in the window\&. "
+.ti -1c
+.RI "virtual \fBvec2f\fP \fBWindowGetMousePos\fP () const =0"
+.br
+.RI "This function returns a vector2f containing the mouse position on the screen\&. "
+.ti -1c
+.RI "virtual bool \fBWindowIsMouseRightPressed\fP () const =0"
+.br
+.RI "This function returns true if the mouse right button has been pressed during the current frame\&. "
+.ti -1c
+.RI "virtual bool \fBWindowIsMouseLeftPressed\fP () const =0"
+.br
+.RI "This function returns true if the mouse left button has been pressed during the current frame\&. "
+.ti -1c
+.RI "virtual bool \fBWindowIsMouseRightDown\fP () const =0"
+.br
+.RI "This function returns true if the mouse right button is actively being pressed down\&. "
+.ti -1c
+.RI "virtual bool \fBWindowIsMouseLeftDown\fP () const =0"
+.br
+.RI "This function returns true if the mouse left button is actively being pressed down\&. "
+.ti -1c
+.RI "virtual int \fBWindowGetMouseWheelDelta\fP () const =0"
+.br
+.RI "Returns an integer representing the mouse wheel delta, that is by how much the mouse wheel has been scrolled\&. "
+.ti -1c
+.RI "virtual int \fBGetNextCharPressed\fP ()=0"
+.br
+.RI "Generator that returns the next char in the list of the characters that have been pressed during the current frame\&. "
+.ti -1c
+.RI "virtual bool \fBisKeyPressed\fP (int key)=0"
+.br
+.RI "Returns true if the specified key is actively being pressed down\&. "
+.in -1c
+.SH "Detailed Description"
+.PP 
+This class is the base class for all graphical modules\&. 
+
+
+.SH "Member Function Documentation"
+.PP 
+.SS "virtual std::string graph::IGraphicalModule::GetID () const\fC [pure virtual]\fP"
+
+.PP
+This functions returns the ID of the graphical module\&. Each implementation should have a unique ID, which will serve to identify the module and prevent compatibility issues\&. 
+.PP
+Implemented in \fBraylib::GraphicalRayLib\fP, and \fBgraph::LightGraph\fP\&.
+.SS "virtual int graph::IGraphicalModule::GetNextCharPressed ()\fC [pure virtual]\fP"
+
+.PP
+Generator that returns the next char in the list of the characters that have been pressed during the current frame\&. 
+.PP
+\fBReturns\fP
+.RS 4
+int 
+.RE
+.PP
+
+.PP
+Implemented in \fBraylib::GraphicalRayLib\fP, and \fBgraph::LightGraph\fP\&.
+.SS "virtual bool graph::IGraphicalModule::isKeyPressed (int key)\fC [pure virtual]\fP"
+
+.PP
+Returns true if the specified key is actively being pressed down\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIkey\fP 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+true 
+.PP
+false 
+.RE
+.PP
+
+.PP
+Implemented in \fBraylib::GraphicalRayLib\fP, and \fBgraph::LightGraph\fP\&.
+.SS "virtual void graph::IGraphicalModule::ModPipeline ()\fC [pure virtual]\fP"
+
+.PP
+This function updates the pipeline of the engine to include the graphical module's actions, such as clearing the window and drawing objects\&. 
+.PP
+Implemented in \fBraylib::GraphicalRayLib\fP, and \fBgraph::LightGraph\fP\&.
+.SS "virtual void graph::IGraphicalModule::RegisterEvent (const std::string & eventKey, std::function< void()> && callback)\fC [pure virtual]\fP"
+
+.PP
+This function registers an event which will be tested for every frame\&. If the event is triggered, the callback will be called\&. 
+.PP
+\fBWarning\fP
+.RS 4
+if implementing a new graphical module, do not forget to test for events in the pipeline!
+.RE
+.PP
+\fBParameters\fP
+.RS 4
+\fIeventKey\fP 
+.br
+\fIcallback\fP 
+.RE
+.PP
+
+.PP
+Implemented in \fBraylib::GraphicalRayLib\fP, and \fBgraph::LightGraph\fP\&.
+.SS "virtual void graph::IGraphicalModule::WindowDrawCircle (\fBgraphCircle_t\fP circleInfo)\fC [pure virtual]\fP"
+
+.PP
+This function buffers a circle to be drawn in the window\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIcircleInfo\fP 
+.RE
+.PP
+
+.PP
+Implemented in \fBraylib::GraphicalRayLib\fP, and \fBgraph::LightGraph\fP\&.
+.SS "virtual void graph::IGraphicalModule::WindowDrawRectangle (\fBgraphRect_t\fP rectInfo)\fC [pure virtual]\fP"
+
+.PP
+This function buffers a rectangle to be drawn in the window\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIrectInfo\fP 
+.RE
+.PP
+
+.PP
+Implemented in \fBraylib::GraphicalRayLib\fP, and \fBgraph::LightGraph\fP\&.
+.SS "virtual void graph::IGraphicalModule::WindowDrawText (\fBgraphText_t\fP textInfo)\fC [pure virtual]\fP"
+
+.PP
+This function buffers a text to be drawn in the window\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fItextInfo\fP 
+.RE
+.PP
+
+.PP
+Implemented in \fBraylib::GraphicalRayLib\fP, and \fBgraph::LightGraph\fP\&.
+.SS "virtual \fBvec2f\fP graph::IGraphicalModule::WindowGetMousePos () const\fC [pure virtual]\fP"
+
+.PP
+This function returns a vector2f containing the mouse position on the screen\&. 
+.PP
+\fBReturns\fP
+.RS 4
+vec2f 
+.RE
+.PP
+
+.PP
+Implemented in \fBraylib::GraphicalRayLib\fP, and \fBgraph::LightGraph\fP\&.
+.SS "virtual int graph::IGraphicalModule::WindowGetMouseWheelDelta () const\fC [pure virtual]\fP"
+
+.PP
+Returns an integer representing the mouse wheel delta, that is by how much the mouse wheel has been scrolled\&. 
+.PP
+\fBReturns\fP
+.RS 4
+int 
+.RE
+.PP
+
+.PP
+Implemented in \fBraylib::GraphicalRayLib\fP, and \fBgraph::LightGraph\fP\&.
+.SS "virtual bool graph::IGraphicalModule::WindowIsMouseLeftDown () const\fC [pure virtual]\fP"
+
+.PP
+This function returns true if the mouse left button is actively being pressed down\&. 
+.PP
+\fBReturns\fP
+.RS 4
+true 
+.PP
+false 
+.RE
+.PP
+
+.PP
+Implemented in \fBraylib::GraphicalRayLib\fP, and \fBgraph::LightGraph\fP\&.
+.SS "virtual bool graph::IGraphicalModule::WindowIsMouseLeftPressed () const\fC [pure virtual]\fP"
+
+.PP
+This function returns true if the mouse left button has been pressed during the current frame\&. 
+.PP
+\fBReturns\fP
+.RS 4
+true 
+.PP
+false 
+.RE
+.PP
+
+.PP
+Implemented in \fBraylib::GraphicalRayLib\fP, and \fBgraph::LightGraph\fP\&.
+.SS "virtual bool graph::IGraphicalModule::WindowIsMouseRightDown () const\fC [pure virtual]\fP"
+
+.PP
+This function returns true if the mouse right button is actively being pressed down\&. 
+.PP
+\fBReturns\fP
+.RS 4
+true 
+.PP
+false 
+.RE
+.PP
+
+.PP
+Implemented in \fBraylib::GraphicalRayLib\fP, and \fBgraph::LightGraph\fP\&.
+.SS "virtual bool graph::IGraphicalModule::WindowIsMouseRightPressed () const\fC [pure virtual]\fP"
+
+.PP
+This function returns true if the mouse right button has been pressed during the current frame\&. 
+.PP
+\fBReturns\fP
+.RS 4
+true 
+.PP
+false 
+.RE
+.PP
+
+.PP
+Implemented in \fBraylib::GraphicalRayLib\fP, and \fBgraph::LightGraph\fP\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for My Project from the source code\&.

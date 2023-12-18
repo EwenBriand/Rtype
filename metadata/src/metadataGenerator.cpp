@@ -37,8 +37,9 @@ namespace meta {
         return p.string();
     }
 
-    void MetadataGenerator::generateMetadata(const std::string& path, const std::string& outputDirectory, const std::string& buildRoot)
+    void MetadataGenerator::generateMetadata(const std::string& path, const std::string& outputDirectory, const std::string& buildRoot, std::vector<std::string> add_includes)
     {
+        _add_include = add_includes;
         _buildRoot = buildRoot;
         _outputDirectory = outputDirectory;
         if (!std::filesystem::exists("./.metadata"))
@@ -271,7 +272,13 @@ namespace meta {
         _cmakefile += "project(autogen)\n";
         _cmakefile += "\n";
         _cmakefile += "set(CMAKE_CXX_STANDARD 20)\n";
-        _cmakefile += "include_directories(" + folder + " " + folder + " " + _buildRoot + "/metadata/include/ " + _buildRoot + "/ecs/include/ " + _buildRoot + "/ecs/raylib/src/ " + _buildRoot + "/ecs/raylib/examples/shapes/ )\n";
+        _cmakefile += "include_directories(" + folder + " " + folder + " " + _buildRoot + "/metadata/include/ " + _buildRoot + "/ecs/include/ " + _buildRoot + "/ecs/raylib/src/ " + _buildRoot + "/ecs/raylib/examples/shapes/ ";
+
+        for (auto& include : _add_include) {
+            _cmakefile += " " + include + " ";
+        }
+
+        _cmakefile += ")\n";
         _cmakefile += "set(CMAKE_RUNTIME_OUTPUT_DIRECTORY " + folder + ")\n";
         _cmakefile += "set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH}  ${CMAKE_CURRENT_SOURCE_DIR}/../build/)\n";
         _cmakefile += "link_directories(\n";

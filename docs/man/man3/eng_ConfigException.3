@@ -1,0 +1,38 @@
+.TH "eng::ConfigException" 3 "Mon Dec 18 2023" "My Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+eng::ConfigException
+.SH SYNOPSIS
+.br
+.PP
+.PP
+Inherits std::exception\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBConfigException\fP (const std::string &msg)"
+.br
+.RI "Signals the fact that the config file is missing or has an invalid format\&. "
+.ti -1c
+.RI "const char * \fBwhat\fP () const noexcept override"
+.br
+.in -1c
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "eng::ConfigException::ConfigException (const std::string & msg)\fC [inline]\fP"
+
+.PP
+Signals the fact that the config file is missing or has an invalid format\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fImsg\fP 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for My Project from the source code\&.

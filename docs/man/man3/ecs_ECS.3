@@ -1,0 +1,552 @@
+.TH "ecs::ECS< VanillaComponents >" 3 "Mon Dec 18 2023" "My Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ecs::ECS< VanillaComponents >
+.SH SYNOPSIS
+.br
+.PP
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "struct \fBErrorStream\fP"
+.br
+.ti -1c
+.RI "struct \fBInfoStream\fP"
+.br
+.ti -1c
+.RI "struct \fBPromptStream\fP"
+.br
+.ti -1c
+.RI "struct \fBWarningStream\fP"
+.br
+.in -1c
+.SS "Public Types"
+
+.in +1c
+.ti -1c
+.RI "enum \fBloglevel_t\fP { \fBLOGNOPE\fP, \fBLOGINFO\fP, \fBLOGWARNING\fP, \fBLOGERROR\fP, \fBLOGNOPE\fP, \fBLOGINFO\fP, \fBLOGWARNING\fP, \fBLOGERROR\fP }"
+.br
+.ti -1c
+.RI "using \fBAnyCpt\fP = std::variant< VanillaComponents\&.\&.\&. >"
+.br
+.ti -1c
+.RI "using \fBAnyMultiCpt\fP = std::vector< AnyCpt >"
+.br
+.ti -1c
+.RI "using \fBAllCptOfSameType\fP = std::vector< AnyMultiCpt >"
+.br
+.ti -1c
+.RI "using \fBAllCpt\fP = std::array< AllCptOfSameType, sizeof\&.\&.\&.(VanillaComponents)>"
+.br
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBInitUI\fP ()"
+.br
+.RI "Initializes the UI\&. "
+.ti -1c
+.RI "Entity \fBRegisterEntity\fP ()"
+.br
+.RI "Registers an entity in the \fBECS\fP\&. "
+.ti -1c
+.RI "void \fBUnregisterEntity\fP (Entity e)"
+.br
+.RI "Unregisters an entity from the \fBECS\fP\&. "
+.ti -1c
+.RI "template<typename T > T & \fBAddComponent\fP (Entity e)"
+.br
+.RI "Adds a component to an entity\&. Can only be used with vanilla components\&. "
+.ti -1c
+.RI "template<typename T > T & \fBSafeGet\fP (\fBCLI\fP &cli)"
+.br
+.RI "Get the component type if find else create it\&. "
+.ti -1c
+.RI "template<typename T > T & \fBSafeGet\fP (Entity e)"
+.br
+.ti -1c
+.RI "\fBUserComponentWrapper\fP & \fBAddComponent\fP (Entity e, const std::string &cptTypeName)"
+.br
+.RI "Adds a component loaded dynamically from a shared library\&. "
+.ti -1c
+.RI "\fBUserComponentWrapper\fP & \fBGetComponent\fP (Entity e, const std::string &cptTypeName)"
+.br
+.RI "Gets a dynamically loaded component from an entity\&. "
+.ti -1c
+.RI "template<typename T > T & \fBAssignComponent\fP (Entity e, T &Cpt)"
+.br
+.RI "Assigns a pre existing component to an entity\&. "
+.ti -1c
+.RI "template<typename T > T & \fBGetComponent\fP (Entity e)"
+.br
+.RI "Returns a component of the given type from an entity\&. "
+.ti -1c
+.RI "template<typename T > std::vector< T & > \fBGetComponents\fP (Entity e)"
+.br
+.RI "Returns a vector of all the components of the given type for a given entity\&. "
+.ti -1c
+.RI "std::vector< AnyCpt > \fBGetComponentsByName\fP (Entity e, std::string name)"
+.br
+.ti -1c
+.RI "void \fBAddVanillaComponentFromIndex\fP (Entity e, size_t idx)"
+.br
+.RI "Adds a component from its index in the \fBECS\fP's template definition\&. This only works for components that are defined in the \fBECS\fP's template, and not for user defined components\&. "
+.ti -1c
+.RI "void \fBAddVanillaComponentFromName\fP (Entity e, const std::string &name)"
+.br
+.RI "Adds a component from the name of its type\&. "
+.ti -1c
+.RI "void \fBSetMember\fP (Entity e, int cptIdx, const std::string &memberName, const std::string &value)"
+.br
+.RI "Sets the value of a component's member from the name of the member\&. This only works for components that provide accurate metadata\&. As the value is given as a string, only basic types are supported\&. "
+.ti -1c
+.RI "std::map< std::string, metadata_t > \fBGetMetadataFromIndex\fP (Entity e, int cptIdx)"
+.br
+.ti -1c
+.RI "void \fBCallStart\fP ()"
+.br
+.RI "CallStart calls the Start() method on all registered components\&. It is called by the \fBECS\fP when the game starts\&. "
+.ti -1c
+.RI "void \fBLoadVanilla\fP ()"
+.br
+.RI "calls the OnLoad function on all the vanilla components managed by the \fBECS\fP\&. Concretely, the instance of the component in cloneBase has its OnLoad function called\&. "
+.ti -1c
+.RI "void \fBUpdate\fP ()"
+.br
+.RI "Calls the UpdateImpl function of all the components\&. "
+.ti -1c
+.RI "template<int\&.\&.\&. N> void \fBupdateHelper\fP (\fBsequence\fP< N\&.\&.\&. >)"
+.br
+.ti -1c
+.RI "template<int Idx> void \fBudateImpl\fP ()"
+.br
+.ti -1c
+.RI "void \fBSetSavePath\fP (const std::string &path)"
+.br
+.RI "Sets the save path for the \fBECS\fP\&. "
+.ti -1c
+.RI "std::string \fBGetSavePath\fP () const"
+.br
+.RI "Returns the save path of the \fBECS\fP\&. "
+.ti -1c
+.RI "void \fBSaveEntity\fP (Entity e, const std::string &path='')"
+.br
+.RI "Saves the entity to a directory named after its ID\&. The directory has one file per component, numbered from 0 to the number of components of the entity\&. The file is named after the component's index\&. The save function of the component is called to save the component\&. "
+.ti -1c
+.RI "Entity \fBLoadEntity\fP (const std::string &path)"
+.br
+.RI "Loads an entity from the given folder\&. "
+.ti -1c
+.RI "void \fBDumpEntity\fP (const std::string &path, AllCpt &storage)"
+.br
+.RI "Performs the same as LoadEntity, but instead of registering it to the ecs, it dumps it into the given storage\&. "
+.ti -1c
+.RI "void \fBReloadEntities\fP ()"
+.br
+.RI "Clears all entities and reloads them from the save directory\&. "
+.ti -1c
+.RI "void \fBReplaceScene\fP (AllCpt &storage)"
+.br
+.RI "Replace Scene does the same as reloadEntities but it does not load the entities, rather it takes them in argument\&. "
+.ti -1c
+.RI "void \fBEngineReloadEditorMode\fP ()"
+.br
+.ti -1c
+.RI "AllCpt \fBPrepareScene\fP (const std::string &scenePath)"
+.br
+.RI "Does the same as ReloadEntities, but does not delete the current entities and return the result instead\&. Does not reload the \&.so files\&. "
+.ti -1c
+.RI "void \fBNotifyEnginePipelineErased\fP ()"
+.br
+.ti -1c
+.RI "void \fBRequestEngineClearPipeline\fP ()"
+.br
+.ti -1c
+.RI "std::vector< Entity > \fBGetEntities\fP () const"
+.br
+.ti -1c
+.RI "void \fBRun\fP (std::function< void(void)> preUpdateFunc, std::function< void(void)> postUpdateFunc)"
+.br
+.RI "Runs a loop an calls Update at each iteration\&. The loop can be exited by calling Exit()\&. Custom functions can be ran before and after the Update call\&. "
+.ti -1c
+.RI "Entity \fBGetSystemHolder\fP () const"
+.br
+.ti -1c
+.RI "void \fBExit\fP ()"
+.br
+.ti -1c
+.RI "void \fBForEachComponent\fP (Entity e, std::function< void(AnyCpt &)> func)"
+.br
+.RI "Applies a function to all the components of the given entity\&. The syntax to use is: "
+.ti -1c
+.RI "template<typename T > void \fBForEach\fP (std::function< void(T &)> func)"
+.br
+.RI "Calls a function on all the components of the given type\&. if the type is not found, throws an exception\&. "
+.ti -1c
+.RI "std::shared_ptr< \fBgraph::IGraphicalModule\fP > \fBGetGraphicalModule\fP ()"
+.br
+.ti -1c
+.RI "void \fBSetGraphicalModule\fP (std::shared_ptr< \fBgraph::IGraphicalModule\fP > module)"
+.br
+.ti -1c
+.RI "\fBResourceManager\fP & \fBGetResourceManager\fP ()"
+.br
+.ti -1c
+.RI "\fBInputManager\fP & \fBGetInputManager\fP ()"
+.br
+.ti -1c
+.RI "void \fBSetEditorEntityContext\fP (Entity e)"
+.br
+.ti -1c
+.RI "Entity \fBGetEditorEntityContext\fP () const"
+.br
+.ti -1c
+.RI "int \fBGetCptTypesNbr\fP () const"
+.br
+.ti -1c
+.RI "std::vector< std::string > \fBGetComponentsTypes\fP ()"
+.br
+.ti -1c
+.RI "bool \fBFrameIsSkipped\fP () const"
+.br
+.ti -1c
+.RI "float \fBGetDeltaTime\fP () const"
+.br
+.in -1c
+.SS "Static Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "static \fBECS\fP< VanillaComponents\&.\&.\&. > & \fBGetSystem\fP ()"
+.br
+.in -1c
+.SS "Static Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "static loglevel_t \fBLogLevel\fP = LOGINFO"
+.br
+.ti -1c
+.RI "static \fBWarningStream\fP \fBwarn\fP = \fBWarningStream\fP()"
+.br
+.ti -1c
+.RI "static \fBErrorStream\fP \fBerr\fP = \fBErrorStream\fP()"
+.br
+.ti -1c
+.RI "static \fBInfoStream\fP \fBinfo\fP = \fBInfoStream\fP()"
+.br
+.ti -1c
+.RI "static \fBPromptStream\fP \fBprompt\fP = \fBPromptStream\fP()"
+.br
+.ti -1c
+.RI "static std::unique_ptr< \fBECS\fP< VanillaComponents\&.\&.\&. > > \fBSystem\fP = nullptr"
+.br
+.in -1c
+.SH "Member Function Documentation"
+.PP 
+.SS "template<typename\&.\&.\&. VanillaComponents> template<typename T > T & \fBecs::ECS\fP< VanillaComponents >::AddComponent (Entity e)\fC [inline]\fP"
+
+.PP
+Adds a component to an entity\&. Can only be used with vanilla components\&. 
+.PP
+\fBTemplate Parameters\fP
+.RS 4
+\fIT\fP 
+.RE
+.PP
+\fBParameters\fP
+.RS 4
+\fIe\fP 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+T& 
+.RE
+.PP
+
+.SS "template<typename\&.\&.\&. VanillaComponents> \fBUserComponentWrapper\fP & \fBecs::ECS\fP< VanillaComponents >::AddComponent (Entity e, const std::string & cptTypeName)\fC [inline]\fP"
+
+.PP
+Adds a component loaded dynamically from a shared library\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIe\fP 
+.br
+\fIcptTypeName\fP 
+.RE
+.PP
+
+.SS "template<typename\&.\&.\&. VanillaComponents> void \fBecs::ECS\fP< VanillaComponents >::AddVanillaComponentFromIndex (Entity e, size_t idx)\fC [inline]\fP"
+
+.PP
+Adds a component from its index in the \fBECS\fP's template definition\&. This only works for components that are defined in the \fBECS\fP's template, and not for user defined components\&. 
+.SS "template<typename\&.\&.\&. VanillaComponents> void \fBecs::ECS\fP< VanillaComponents >::AddVanillaComponentFromName (Entity e, const std::string & name)\fC [inline]\fP"
+
+.PP
+Adds a component from the name of its type\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIe\fP 
+.br
+\fIname\fP 
+.RE
+.PP
+
+.SS "template<typename\&.\&.\&. VanillaComponents> template<typename T > T & \fBecs::ECS\fP< VanillaComponents >::AssignComponent (Entity e, T & Cpt)\fC [inline]\fP"
+
+.PP
+Assigns a pre existing component to an entity\&. 
+.PP
+\fBTemplate Parameters\fP
+.RS 4
+\fIT\fP 
+.RE
+.PP
+\fBParameters\fP
+.RS 4
+\fIe\fP 
+.br
+\fICpt\fP 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+T& 
+.RE
+.PP
+
+.SS "template<typename\&.\&.\&. VanillaComponents> void \fBecs::ECS\fP< VanillaComponents >::CallStart ()\fC [inline]\fP"
+
+.PP
+CallStart calls the Start() method on all registered components\&. It is called by the \fBECS\fP when the game starts\&. 
+.SS "template<typename\&.\&.\&. VanillaComponents> void \fBecs::ECS\fP< VanillaComponents >::DumpEntity (const std::string & path, AllCpt & storage)\fC [inline]\fP"
+
+.PP
+Performs the same as LoadEntity, but instead of registering it to the ecs, it dumps it into the given storage\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIpath\fP 
+.br
+\fIstorage\fP 
+.RE
+.PP
+
+.SS "template<typename\&.\&.\&. VanillaComponents> template<typename T > void \fBecs::ECS\fP< VanillaComponents >::ForEach (std::function< void(T &)> func)\fC [inline]\fP"
+
+.PP
+Calls a function on all the components of the given type\&. if the type is not found, throws an exception\&. 
+.PP
+\fBTemplate Parameters\fP
+.RS 4
+\fIT\fP 
+.RE
+.PP
+\fBParameters\fP
+.RS 4
+\fIe\fP 
+.br
+\fIfunc\fP 
+.RE
+.PP
+
+.SS "template<typename\&.\&.\&. VanillaComponents> void \fBecs::ECS\fP< VanillaComponents >::ForEachComponent (Entity e, std::function< void(AnyCpt &)> func)\fC [inline]\fP"
+
+.PP
+Applies a function to all the components of the given entity\&. The syntax to use is: 
+.PP
+.nf
+SYS\&.ForEachComponent(entity, [&](ecs::ECSImpl::AnyCpt &cpt) {
+    std::visit([&](auto &&arg) {
+       // do something with arg
+    }, cpt);
+});
+
+.fi
+.PP
+ 
+.PP
+\fBParameters\fP
+.RS 4
+\fIe\fP 
+.br
+\fIfunc\fP 
+.RE
+.PP
+
+.SS "template<typename\&.\&.\&. VanillaComponents> template<typename T > T & \fBecs::ECS\fP< VanillaComponents >::GetComponent (Entity e)\fC [inline]\fP"
+
+.PP
+Returns a component of the given type from an entity\&. 
+.PP
+\fBTemplate Parameters\fP
+.RS 4
+\fIT\fP 
+.RE
+.PP
+\fBParameters\fP
+.RS 4
+\fIe\fP 
+.RE
+.PP
+
+.SS "template<typename\&.\&.\&. VanillaComponents> \fBUserComponentWrapper\fP & \fBecs::ECS\fP< VanillaComponents >::GetComponent (Entity e, const std::string & cptTypeName)\fC [inline]\fP"
+
+.PP
+Gets a dynamically loaded component from an entity\&. 
+.SS "template<typename\&.\&.\&. VanillaComponents> template<typename T > std::vector< T & > \fBecs::ECS\fP< VanillaComponents >::GetComponents (Entity e)\fC [inline]\fP"
+
+.PP
+Returns a vector of all the components of the given type for a given entity\&. 
+.PP
+\fBTemplate Parameters\fP
+.RS 4
+\fIT\fP 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+std::vector<T &> 
+.RE
+.PP
+
+.SS "template<typename\&.\&.\&. VanillaComponents> std::string \fBecs::ECS\fP< VanillaComponents >::GetSavePath () const\fC [inline]\fP"
+
+.PP
+Returns the save path of the \fBECS\fP\&. 
+.SS "template<typename\&.\&.\&. VanillaComponents> void \fBecs::ECS\fP< VanillaComponents >::InitUI ()"
+
+.PP
+Initializes the UI\&. 
+.SS "template<typename\&.\&.\&. VanillaComponents> Entity \fBecs::ECS\fP< VanillaComponents >::LoadEntity (const std::string & path)\fC [inline]\fP"
+
+.PP
+Loads an entity from the given folder\&. 
+.PP
+\fBReturns\fP
+.RS 4
+Entity : the ID of the loaded entity\&. 
+.RE
+.PP
+
+.SS "template<typename\&.\&.\&. VanillaComponents> void \fBecs::ECS\fP< VanillaComponents >::LoadVanilla ()\fC [inline]\fP"
+
+.PP
+calls the OnLoad function on all the vanilla components managed by the \fBECS\fP\&. Concretely, the instance of the component in cloneBase has its OnLoad function called\&. 
+.SS "template<typename\&.\&.\&. VanillaComponents> AllCpt \fBecs::ECS\fP< VanillaComponents >::PrepareScene (const std::string & scenePath)\fC [inline]\fP"
+
+.PP
+Does the same as ReloadEntities, but does not delete the current entities and return the result instead\&. Does not reload the \&.so files\&. 
+.PP
+\fBReturns\fP
+.RS 4
+AllCpt 
+.RE
+.PP
+
+.SS "template<typename\&.\&.\&. VanillaComponents> Entity \fBecs::ECS\fP< VanillaComponents >::RegisterEntity ()\fC [inline]\fP"
+
+.PP
+Registers an entity in the \fBECS\fP\&. 
+.PP
+\fBReturns\fP
+.RS 4
+int The ID of the entity\&. 
+.RE
+.PP
+
+.SS "template<typename\&.\&.\&. VanillaComponents> void \fBecs::ECS\fP< VanillaComponents >::ReloadEntities ()\fC [inline]\fP"
+
+.PP
+Clears all entities and reloads them from the save directory\&. 
+.PP
+\fBReturns\fP
+.RS 4
+std::vector<Entity> 
+.RE
+.PP
+
+.SS "template<typename\&.\&.\&. VanillaComponents> void \fBecs::ECS\fP< VanillaComponents >::ReplaceScene (AllCpt & storage)\fC [inline]\fP"
+
+.PP
+Replace Scene does the same as reloadEntities but it does not load the entities, rather it takes them in argument\&. 
+.SS "template<typename\&.\&.\&. VanillaComponents> void \fBecs::ECS\fP< VanillaComponents >::Run (std::function< void(void)> preUpdateFunc, std::function< void(void)> postUpdateFunc)"
+
+.PP
+Runs a loop an calls Update at each iteration\&. The loop can be exited by calling Exit()\&. Custom functions can be ran before and after the Update call\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIpreUpdateFunc\fP 
+.br
+\fIpostUpdateFunc\fP 
+.RE
+.PP
+
+.SS "template<typename\&.\&.\&. VanillaComponents> template<typename T > T & \fBecs::ECS\fP< VanillaComponents >::SafeGet (\fBCLI\fP & cli)\fC [inline]\fP"
+
+.PP
+Get the component type if find else create it\&. 
+.PP
+\fBTemplate Parameters\fP
+.RS 4
+\fIT\fP 
+.RE
+.PP
+\fBParameters\fP
+.RS 4
+\fIvalue,client\fP element to catch and the client 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+T& 
+.RE
+.PP
+
+.SS "template<typename\&.\&.\&. VanillaComponents> void \fBecs::ECS\fP< VanillaComponents >::SaveEntity (Entity e, const std::string & path = \fC''\fP)\fC [inline]\fP"
+
+.PP
+Saves the entity to a directory named after its ID\&. The directory has one file per component, numbered from 0 to the number of components of the entity\&. The file is named after the component's index\&. The save function of the component is called to save the component\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIe\fP : the entity to save 
+.br
+\fIpath\fP : an optional path to save the entity to\&. If not specified, the entity is saved to the save directory\&. 
+.RE
+.PP
+
+.SS "template<typename\&.\&.\&. VanillaComponents> void \fBecs::ECS\fP< VanillaComponents >::SetMember (Entity e, int cptIdx, const std::string & memberName, const std::string & value)\fC [inline]\fP"
+
+.PP
+Sets the value of a component's member from the name of the member\&. This only works for components that provide accurate metadata\&. As the value is given as a string, only basic types are supported\&. 
+.SS "template<typename\&.\&.\&. VanillaComponents> void \fBecs::ECS\fP< VanillaComponents >::SetSavePath (const std::string & path)\fC [inline]\fP"
+
+.PP
+Sets the save path for the \fBECS\fP\&. 
+.SS "template<typename\&.\&.\&. VanillaComponents> void \fBecs::ECS\fP< VanillaComponents >::UnregisterEntity (Entity e)\fC [inline]\fP"
+
+.PP
+Unregisters an entity from the \fBECS\fP\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIe\fP The entity to unregister\&. 
+.RE
+.PP
+
+.SS "template<typename\&.\&.\&. VanillaComponents> void \fBecs::ECS\fP< VanillaComponents >::Update ()\fC [inline]\fP"
+
+.PP
+Calls the UpdateImpl function of all the components\&. 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for My Project from the source code\&.

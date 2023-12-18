@@ -33,6 +33,9 @@
 #include <variant>
 #include <vector>
 
+#define GetUComponent(e, typename) \
+    dynamic_cast<typename*>(SYS.GetComponent(e, #typename).GetInternalComponent().get())
+
 namespace ecs {
     static const std::string red = "\033[0;31m";
     static const std::string green = "\033[0;32m";
@@ -303,7 +306,7 @@ namespace ecs {
             size_t idx = _cptTypesIndexes[std::type_index(typeid(UserComponentWrapper))];
 
             if (_components[idx][e].empty()) {
-                throw std::runtime_error("Component not found");
+                throw std::runtime_error("Component not found : " + cptTypeName);
             }
             bool found = false;
             for (auto& cpt : _components[idx][e]) {
@@ -316,7 +319,7 @@ namespace ecs {
                 if (found)
                     return std::get<UserComponentWrapper>(cpt);
             }
-            throw std::runtime_error("Component not found");
+            throw std::runtime_error("Component not found : " + cptTypeName);
         }
 
         /**
@@ -351,7 +354,7 @@ namespace ecs {
         {
             size_t idx = _cptTypesIndexes[std::type_index(typeid(T))];
             if (_components[idx][e].empty()) {
-                throw std::runtime_error("Component not found");
+                throw std::runtime_error("Component not found : " + std::string(typeid(T).name()));
             }
             return std::get<T>(_components[idx][e].back());
         }
@@ -393,7 +396,7 @@ namespace ecs {
                     break;
             }
             if (idx == cloneBase.size())
-                throw std::runtime_error("Component not found");
+                throw std::runtime_error("Component not found : " + name);
             for (auto& cpt : _components[idx][e]) {
                 v.push_back(cpt);
             }
@@ -445,7 +448,7 @@ namespace ecs {
                     return;
                 ++idx;
             }
-            throw std::runtime_error("Component not found");
+            throw std::runtime_error("Component not found : " + name);
         }
 
         /**
@@ -612,12 +615,20 @@ namespace ecs {
          * The file is named after the component's index. The save function
          * of the component is called to save the component.
          *
-         * @param func
+         * @param e : the entity to save
+         * @param path : an optional path to save the entity to. If not specified,
+         * the entity is saved to the save directory.
          */
-        void SaveEntity(Entity e)
+        void SaveEntity(Entity e, const std::string& path = "")
         {
-            std::filesystem::create_directory(m_savePath);
-            std::string thisPath = m_savePath + "/" + std::to_string(e);
+            std::string thisPath = "";
+
+            if (path == "") {
+                std::filesystem::create_directory(m_savePath);
+                thisPath = m_savePath + "/" + std::to_string(e);
+            } else {
+                thisPath = path;
+            }
             std::filesystem::create_directory(thisPath);
             std::vector<std::string> cptTypes;
 
@@ -663,11 +674,14 @@ namespace ecs {
                 filesAlphabetical.push_back(p.path().string());
             }
             std::sort(filesAlphabetical.begin(), filesAlphabetical.end(), [](const std::string& a, const std::string& b) {
-                try {
-                    return std::stoi(a.substr(a.find_last_of("_") + 1, a.size())) < std::stoi(b.substr(b.find_last_of("_") + 1, b.size()));
-                } catch (std::exception& e) {
+                std::string aNumStr = a.substr(a.find_last_of("/") + 1, a.find_first_of("_") - a.find_last_of("/") - 1);
+                std::string bNumStr = b.substr(b.find_last_of("/") + 1, b.find_first_of("_") - b.find_last_of("/") - 1);
+                if (a.find("cptTypes") != std::string::npos || a.find("_internal") != std::string::npos) {
                     return false;
+                } else if (b.find("cptTypes") != std::string::npos || b.find("_internal") != std::string::npos) {
+                    return true;
                 }
+                return std::stoi(aNumStr) < std::stoi(bNumStr);
             });
 
             for (auto& p : filesAlphabetical) {
@@ -714,11 +728,14 @@ namespace ecs {
                 filesAlphabetical.push_back(p.path().string());
             }
             std::sort(filesAlphabetical.begin(), filesAlphabetical.end(), [](const std::string& a, const std::string& b) {
-                try {
-                    return std::stoi(a.substr(a.find_last_of("_") + 1, a.size())) < std::stoi(b.substr(b.find_last_of("_") + 1, b.size()));
-                } catch (std::exception& e) {
+                std::string aNumStr = a.substr(a.find_last_of("/") + 1, a.find_first_of("_") - a.find_last_of("/") - 1);
+                std::string bNumStr = b.substr(b.find_last_of("/") + 1, b.find_first_of("_") - b.find_last_of("/") - 1);
+                if (a.find("cptTypes") != std::string::npos || a.find("_internal") != std::string::npos) {
                     return false;
+                } else if (b.find("cptTypes") != std::string::npos || b.find("_internal") != std::string::npos) {
+                    return true;
                 }
+                return std::stoi(aNumStr) < std::stoi(bNumStr);
             });
             for (auto& cptCol : storage) {
                 cptCol.emplace_back();

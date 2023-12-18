@@ -135,6 +135,42 @@ public:
      */
     void showContext(std::vector<std::string> args = std::vector<std::string>());
 
+    /**
+     * @brief Saves the current entity to a prefab file.
+     *
+     * @param command
+     * @param func
+     * @param help
+     */
+    void savePrefab(std::vector<std::string> args = std::vector<std::string>());
+
+    /**
+     * @brief Loads a prefab from a file.
+     *
+     * @param command
+     * @param func
+     * @param help
+     */
+    void loadPrefab(std::vector<std::string> args = std::vector<std::string>());
+
+    /**
+     * @brief Lists all the prefabs.
+     *
+     * @param command
+     * @param func
+     * @param help
+     */
+    void listPrefabs(std::vector<std::string> args = std::vector<std::string>());
+
+    /**
+     * @brief Removes a prefab.
+     *
+     * @param command
+     * @param func
+     * @param help
+     */
+    void removePrefab(std::vector<std::string> args = std::vector<std::string>());
+
     void RegisterCustomCommand(const std::string& command, std::function<void(CLI&, std::vector<std::string>)> func, const std::string& help = "");
     std::string GetClassName() const;
     Entity GetContext() const;
@@ -178,5 +214,9 @@ private:
         { "listmbr", "Lists the exposed members of the component at the given index in the entitiy's components." },
         { "lsctxt", "Show information on the entity set as the context." },
         { "exit", "Quit the cli" },
+        { "prefab.save", "Save the current entity as a prefab" },
+        { "prefab.load", "Load a prefab" },
+        { "prefab.list", "List all the prefabs" },
+        { "prefab.remove", "Remove a prefab" }
     };
 };

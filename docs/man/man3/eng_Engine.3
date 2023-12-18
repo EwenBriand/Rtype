@@ -1,0 +1,174 @@
+.TH "eng::Engine" 3 "Mon Dec 18 2023" "My Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+eng::Engine \- The engine class provides the setup and environnement for both the game and the editor to run\&. It is the glue that holds all the parts of the code together\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <Engine\&.hpp>\fP
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "struct \fBOptions\fP"
+.br
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBRun\fP ()"
+.br
+.RI "Starts the engine, sets it up and runs the game loop\&. "
+.ti -1c
+.RI "void \fBStop\fP ()"
+.br
+.RI "Stops the engine and frees all the resources\&. "
+.ti -1c
+.RI "void \fBParseOptions\fP (int argc, char **argv)"
+.br
+.RI "Parses the options from the command line\&. "
+.ti -1c
+.RI "bool \fBIsOptionSet\fP (const std::string &option)"
+.br
+.RI "Returns true if the option has been set in the command line\&. "
+.ti -1c
+.RI "std::string \fBGetOptionValue\fP (const std::string &option)"
+.br
+.RI "Returns the value of the option if it exists, else throws an exception\&. "
+.ti -1c
+.RI "std::string \fBGetConfigValue\fP (const std::string &option)"
+.br
+.RI "Returns the value of the config field if it exists, else throws an exception\&. "
+.ti -1c
+.RI "void \fBClearPipeline\fP ()"
+.br
+.RI "Clears the default pipeline\&. "
+.ti -1c
+.RI "void \fBAddToPipeline\fP (Action action, int priority, const std::string &name='')"
+.br
+.RI "Adds an action to the pipeline\&. Negative priority means the action will be executed before the Update() call\&. "
+.ti -1c
+.RI "void \fBNotifyPipelineChange\fP ()"
+.br
+.RI "Notifies the engine that the pipeline may have changed manually and needs to be updated\&. "
+.ti -1c
+.RI "std::shared_ptr< \fBgraph::IGraphicalModule\fP > \fBGetGraphicalModule\fP () const"
+.br
+.RI "Returns a shared pointer to the graphical module\&. "
+.ti -1c
+.RI "\fBSceneManager\fP & \fBGetSceneManager\fP ()"
+.br
+.RI "Returns a reference to the scene manager\&. "
+.ti -1c
+.RI "\fBecs::ECSImpl\fP & \fBGetECS\fP ()"
+.br
+.RI "Returns a reference to the ecs\&. "
+.ti -1c
+.RI "void \fBSetupEditor\fP ()"
+.br
+.RI "Sets the engine up in the case of being ran as the editor\&. "
+.ti -1c
+.RI "std::shared_ptr< \fBIGame\fP > \fBGetGame\fP () const"
+.br
+.RI "Retuns a pointer to the game\&. "
+.in -1c
+.SS "Static Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "static \fBEngine\fP * \fBGetEngine\fP ()"
+.br
+.RI "Get method to implement the singleton pattern\&. "
+.ti -1c
+.RI "static void \fBLog\fP (const std::string &msg)"
+.br
+.in -1c
+.SS "Static Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "static std::ofstream \fBm_logFile\fP = std::ofstream('\&.engine/log\&.txt', std::ios::out | std::ios::trunc)"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+The engine class provides the setup and environnement for both the game and the editor to run\&. It is the glue that holds all the parts of the code together\&. 
+
+It also holds the frame pipeline, which is a list of actions that will be executed every frame\&. The actions are sorted by priority, and the lower the priority, the sooner the action will be executed\&. Priority can be negative\&. By default, polling events is set to 0, and updating the ECS is set to 500\&. 
+.SH "Member Function Documentation"
+.PP 
+.SS "void eng::Engine::AddToPipeline (Action action, int priority, const std::string & name = \fC''\fP)"
+
+.PP
+Adds an action to the pipeline\&. Negative priority means the action will be executed before the Update() call\&. 
+.SS "void eng::Engine::ClearPipeline ()"
+
+.PP
+Clears the default pipeline\&. 
+.SS "std::string eng::Engine::GetConfigValue (const std::string & option)"
+
+.PP
+Returns the value of the config field if it exists, else throws an exception\&. 
+.SS "\fBecs::ECSImpl\fP & eng::Engine::GetECS ()"
+
+.PP
+Returns a reference to the ecs\&. 
+.SS "\fBEngine\fP * eng::Engine::GetEngine ()\fC [static]\fP"
+
+.PP
+Get method to implement the singleton pattern\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fImsg\fP 
+.RE
+.PP
+
+.SS "std::shared_ptr< \fBIGame\fP > eng::Engine::GetGame () const"
+
+.PP
+Retuns a pointer to the game\&. 
+.SS "std::shared_ptr< \fBgraph::IGraphicalModule\fP > eng::Engine::GetGraphicalModule () const"
+
+.PP
+Returns a shared pointer to the graphical module\&. 
+.SS "std::string eng::Engine::GetOptionValue (const std::string & option)"
+
+.PP
+Returns the value of the option if it exists, else throws an exception\&. 
+.SS "\fBSceneManager\fP & eng::Engine::GetSceneManager ()"
+
+.PP
+Returns a reference to the scene manager\&. 
+.SS "bool eng::Engine::IsOptionSet (const std::string & option)"
+
+.PP
+Returns true if the option has been set in the command line\&. 
+.SS "void eng::Engine::NotifyPipelineChange ()"
+
+.PP
+Notifies the engine that the pipeline may have changed manually and needs to be updated\&. 
+.SS "void eng::Engine::ParseOptions (int argc, char ** argv)"
+
+.PP
+Parses the options from the command line\&. 
+.SS "void eng::Engine::Run ()"
+
+.PP
+Starts the engine, sets it up and runs the game loop\&. 
+.SS "void eng::Engine::SetupEditor ()"
+
+.PP
+Sets the engine up in the case of being ran as the editor\&. 
+.SS "void eng::Engine::Stop ()"
+
+.PP
+Stops the engine and frees all the resources\&. 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for My Project from the source code\&.

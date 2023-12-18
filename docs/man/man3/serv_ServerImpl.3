@@ -1,0 +1,109 @@
+.TH "serv::ServerImpl" 3 "Mon Dec 18 2023" "My Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+serv::ServerImpl \- This class implements a server capable of handling mutliple clients at once\&. Each client is represented by a \fBClientBucket\fP object, which can contain a different implementation of the \fBIClient\fP interface\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <Server\&.hpp>\fP
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "class \fBClientBucket\fP"
+.br
+.RI "Encapsulates a client and its associated data\&. It provides handles to send and receive data from the client, as well as an instance of an \fBIClient\fP which will handle the reveived requests\&. "
+.ti -1c
+.RI "class \fBHandleRequestException\fP"
+.br
+.RI "Signals that an error occured during the handling of a request\&. "
+.ti -1c
+.RI "class \fBIClient\fP"
+.br
+.RI "This \fBIClient\fP interface is used to represent a distant client and store its associated data\&. "
+.ti -1c
+.RI "class \fBMessage\fP"
+.br
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBServerImpl\fP (const \fBServerImpl\fP &cpy)=delete"
+.br
+.ti -1c
+.RI "\fBServerImpl\fP & \fBoperator=\fP (const \fBServerImpl\fP &src)=delete"
+.br
+.ti -1c
+.RI "void \fBSetPort\fP (int port)"
+.br
+.ti -1c
+.RI "void \fBSetMaxClients\fP (int maxClients)"
+.br
+.ti -1c
+.RI "void \fBBufferMessage\fP (const std::string &data, int socket)"
+.br
+.ti -1c
+.RI "void \fBPoll\fP ()"
+.br
+.RI "This method should be called in a loop to poll the server\&. "
+.ti -1c
+.RI "void \fBAcceptNewClient\fP ()"
+.br
+.RI "This method creates a new client bucket and adds it to the list of clients\&. It also sends the handshake message to the client\&. "
+.ti -1c
+.RI "template<typename T > void \fBRegisterHandshake\fP (const std::string &name)"
+.br
+.ti -1c
+.RI "void \fBStart\fP ()"
+.br
+.RI "This method initializes the server\&. It has to be called before being able to receive clients\&. "
+.in -1c
+.SS "Static Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "static \fBServerImpl\fP * \fBGet\fP ()"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+This class implements a server capable of handling mutliple clients at once\&. Each client is represented by a \fBClientBucket\fP object, which can contain a different implementation of the \fBIClient\fP interface\&. 
+
+Every message received by the server from a socket will be transmitted to the corresponding \fBClientBucket\fP object\&.
+.PP
+A \fBClientBucket\fP is automatically created when a client connects to the server\&. It will remain empty until the client performs the handshake with the server\&.
+.PP
+The handshake should go as follows:
+.IP "1." 4
+Client connects to the server\&.
+.IP "2." 4
+\fBServer\fP sends message: 'Connection OK, waiting for handshake\&.'
+.IP "3." 4
+Client sends message: 'Handshake: <client_type>'
+.IP "4." 4
+\fBServer\fP sends message: 'Handshake OK\&.'
+.PP
+.PP
+In case of an error, the server will send the message 'Error: <error_message>' 
+.SH "Member Function Documentation"
+.PP 
+.SS "void serv::ServerImpl::AcceptNewClient ()"
+
+.PP
+This method creates a new client bucket and adds it to the list of clients\&. It also sends the handshake message to the client\&. 
+.SS "void serv::ServerImpl::Poll ()"
+
+.PP
+This method should be called in a loop to poll the server\&. 
+.SS "void serv::ServerImpl::Start ()"
+
+.PP
+This method initializes the server\&. It has to be called before being able to receive clients\&. 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for My Project from the source code\&.

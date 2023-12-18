@@ -20,6 +20,7 @@
 #include "Components.Vanilla/NodePrintStr.hpp"
 #include "Components.Vanilla/NodeStr.hpp"
 #include "Components.Vanilla/RigidBody2D.hpp"
+#include "Components.Vanilla/Tag.hpp"
 #include "Components.Vanilla/TextField.hpp"
 #include "Components.Vanilla/UIButton.hpp"
 #include "Components.Vanilla/UIDiv.hpp"
@@ -45,7 +46,8 @@ namespace ecs {
         Animator,
         Collider2D,
         AudioSource,
-        RigidBody2D>;
+        RigidBody2D,
+        Tag>;
 
 }
 

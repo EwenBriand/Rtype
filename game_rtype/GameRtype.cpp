@@ -1,6 +1,9 @@
 #include "GameRtype.hpp"
+#include "ECSImpl.hpp"
 #include "Engine.hpp"
+#include "LocalPlayerController.hpp"
 #include "SceneManager.hpp"
+#include "Ship.hpp"
 #include <iostream>
 #include <memory>
 
@@ -13,8 +16,14 @@ std::shared_ptr<eng::IGame> create()
 }
 
 namespace eng {
+
+    // =========================================================================================================== //
+    // =============================================== PUBLIC ==================================================== //
+    // =========================================================================================================== //
+
     void RType::Init(eng::Engine* e)
     {
+        loadDependencies(e);
     }
 
     void RType::Cleanup(eng::Engine* e)
@@ -34,4 +43,24 @@ namespace eng {
     {
         e->GetSceneManager().SwitchScene("menu");
     }
+
+    void RType::PreSceneInstantiationHook(eng::Engine* e, const std::string& sceneName)
+    {
+        if (sceneName == "menu")
+            return;
+
+        // update this to account for networking, other players, etc
+        int player = SYS.GetResourceManager().LoadPrefab("ship");
+        Ship* ship = GetUComponent(player, Ship);
+        ship->Possess(player, std::make_shared<LocalPlayerController>());
+    }
+
+    // =========================================================================================================== //
+    // ============================================== PRIVATE ==================================================== //
+    // =========================================================================================================== //
+
+    void RType::loadDependencies(Engine*)
+    {
+    }
+
 } // namespace eng

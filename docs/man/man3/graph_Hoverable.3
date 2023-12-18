@@ -1,0 +1,144 @@
+.TH "graph::Hoverable" 3 "Mon Dec 18 2023" "My Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+graph::Hoverable \- Base class for objects that can be hovered\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <Hoverable\&.hpp>\fP
+.PP
+Inherited by \fBgraph::Clickable\fP\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBTestHover\fP ()"
+.br
+.ti -1c
+.RI "void \fBSetHoverable\fP (bool hoverable)"
+.br
+.RI "Enables the hoverable feature\&. "
+.ti -1c
+.RI "bool \fBIsHoverable\fP () const"
+.br
+.RI "Returns whether the object is hoverable or not\&. "
+.ti -1c
+.RI "void \fBSetDiv\fP (\fBUIDiv\fP *div)"
+.br
+.RI "Sets the div to which the hoverable feature is attached\&. "
+.ti -1c
+.RI "void \fBSetHoverCallback\fP (std::function< void()> callback)"
+.br
+.RI "Sets the callback to be played when the object is hovered\&. "
+.ti -1c
+.RI "void \fBSetOnUnhoverCallback\fP (std::function< void()> callback)"
+.br
+.RI "Sets the callback to be played when the object is unhovered\&. "
+.ti -1c
+.RI "bool \fBIsHovered\fP ()"
+.br
+.RI "Returns whether the object is hovered or not\&. "
+.in -1c
+.SS "Protected Attributes"
+
+.in +1c
+.ti -1c
+.RI "bool \fBm_hoverable\fP = true"
+.br
+.ti -1c
+.RI "bool \fBm_isHovered\fP = false"
+.br
+.ti -1c
+.RI "std::function< void()> \fBm_callback\fP = nullptr"
+.br
+.ti -1c
+.RI "std::function< void()> \fBm_onUnhoverCallback\fP = nullptr"
+.br
+.ti -1c
+.RI "\fBUIDiv\fP * \fBm_hoverDiv\fP = nullptr"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Base class for objects that can be hovered\&. 
+
+
+.SH "Member Function Documentation"
+.PP 
+.SS "bool graph::Hoverable::IsHoverable () const"
+
+.PP
+Returns whether the object is hoverable or not\&. 
+.PP
+\fBReturns\fP
+.RS 4
+true 
+.PP
+false 
+.RE
+.PP
+
+.SS "bool graph::Hoverable::IsHovered ()"
+
+.PP
+Returns whether the object is hovered or not\&. 
+.PP
+\fBReturns\fP
+.RS 4
+true 
+.PP
+false 
+.RE
+.PP
+
+.SS "void graph::Hoverable::SetDiv (\fBUIDiv\fP * div)"
+
+.PP
+Sets the div to which the hoverable feature is attached\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIdiv\fP 
+.RE
+.PP
+
+.SS "void graph::Hoverable::SetHoverable (bool hoverable)"
+
+.PP
+Enables the hoverable feature\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIhoverable\fP 
+.RE
+.PP
+
+.SS "void graph::Hoverable::SetHoverCallback (std::function< void()> callback)"
+
+.PP
+Sets the callback to be played when the object is hovered\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIdiv\fP 
+.RE
+.PP
+
+.SS "void graph::Hoverable::SetOnUnhoverCallback (std::function< void()> callback)"
+
+.PP
+Sets the callback to be played when the object is unhovered\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIdiv\fP 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for My Project from the source code\&.

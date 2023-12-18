@@ -35,20 +35,15 @@ void Ship::Start()
 void Ship::Update(int entityID)
 {
     if (!_controller) {
-        CONSOLE::warn << "Ship: Controller not set" << std::endl;
         return;
     }
+    _rb->SetVelocity({ 0, 0 });
     applyDirectives();
 }
 
 // ===========================================================================================================
 // Public methods
 // ===========================================================================================================
-
-void Ship::SetController(std::shared_ptr<ecs::IController> controller)
-{
-    _controller = std::move(controller);
-}
 
 // ===========================================================================================================
 // Private methods
@@ -57,6 +52,7 @@ void Ship::SetController(std::shared_ptr<ecs::IController> controller)
 void Ship::applyDirectives()
 {
     std::vector<std::string>& directives = _controller->GetDirectives();
+    _rb->SetVelocity({ 0, 0 });
     for (auto& directive : directives) {
         if (_actions.find(directive) != _actions.end()) {
             (this->*_actions[directive])();

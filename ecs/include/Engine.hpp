@@ -137,6 +137,12 @@ namespace eng {
          */
         void SetupEditor();
 
+        /**
+         * @brief Retuns a pointer to the game.
+         *
+         */
+        std::shared_ptr<IGame> GetGame() const;
+
     private:
         /**
          * @brief Discovers the configuration in the .engine folder and

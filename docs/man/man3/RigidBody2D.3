@@ -1,0 +1,312 @@
+.TH "RigidBody2D" 3 "Mon Dec 18 2023" "My Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+RigidBody2D \- A class to handle the physics of an object according the laws of Newtonian physics\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <RigidBody2D\&.hpp>\fP
+.PP
+Inherits \fBecs::Component< RigidBody2D >\fP\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBOnLoad\fP ()"
+.br
+.ti -1c
+.RI "void \fBOnAddComponent\fP (int entityID)"
+.br
+.ti -1c
+.RI "void \fBUpdate\fP (int entityID)"
+.br
+.ti -1c
+.RI "void \fBAddForce\fP (\fBgraph::vec2f\fP direction)"
+.br
+.ti -1c
+.RI "\fBgraph::vec2f\fP \fBGetVelocity\fP () const"
+.br
+.RI "Get the Velocity of the object\&. "
+.ti -1c
+.RI "\fBgraph::vec2f\fP & \fBGetVelocity\fP ()"
+.br
+.RI "Get the Velocity of the object as a reference\&. "
+.ti -1c
+.RI "void \fBSetVelocity\fP (\fBgraph::vec2f\fP)"
+.br
+.RI "Set the Velocity of the object\&. "
+.ti -1c
+.RI "\fBgraph::vec2f\fP \fBGetAcceleration\fP () const"
+.br
+.RI "Get the Acceleration of the object\&. "
+.ti -1c
+.RI "\fBgraph::vec2f\fP & \fBGetAcceleration\fP ()"
+.br
+.RI "Get the Acceleration as a reference\&. "
+.ti -1c
+.RI "void \fBSetAcceleration\fP (\fBgraph::vec2f\fP)"
+.br
+.RI "Set the Acceleration\&. "
+.ti -1c
+.RI "bool \fBIsKinematic\fP () const"
+.br
+.RI "returns true if the object's velocity updates the object's position "
+.ti -1c
+.RI "void \fBSetKinematic\fP (bool)"
+.br
+.RI "Set the _isKinematic property\&. "
+.ti -1c
+.RI "bool \fBSimulateGravity\fP () const"
+.br
+.RI "returns true if gravity impacts the object's velocity "
+.ti -1c
+.RI "void \fBSetSimulateGravity\fP (bool)"
+.br
+.RI "Set the _simulateGravity property\&. "
+.ti -1c
+.RI "\fBgraph::vec2f\fP \fBGetPrevPosition\fP () const"
+.br
+.RI "Returns the position of the object at the previous frame\&. "
+.ti -1c
+.RI "void \fBOverridePrevPosition\fP (\fBgraph::vec2f\fP)"
+.br
+.RI "Sets the Prev Position object for the current frame\&. do no use unless you know what you are doing\&. "
+.ti -1c
+.RI "void \fBCollideWith\fP (int entityID)"
+.br
+.RI "Collides with an object\&. If the object has a Rigidbody2D, it will be affected by the collision according the laws of Newtonian physics\&. "
+.ti -1c
+.RI "void \fBSetMass\fP (float)"
+.br
+.RI "Sets the mass of the object\&. "
+.ti -1c
+.RI "float \fBGetMass\fP () const"
+.br
+.RI "Returns the mass of the object\&. "
+.ti -1c
+.RI "void \fBSetElasticity\fP (float)"
+.br
+.RI "Sets the elasticity of the object\&. "
+.ti -1c
+.RI "float \fBGetElasticity\fP () const"
+.br
+.RI "Returns the elasticity of the object\&. "
+.in -1c
+
+Public Member Functions inherited from \fBecs::Component< RigidBody2D >\fP
+.in +1c
+.ti -1c
+.RI "void \fBUpdate\fP (int entityID)"
+.br
+.RI "This is played every frame\&. "
+.ti -1c
+.RI "void \fBStart\fP ()"
+.br
+.RI "This is played once at the start of the game\&. "
+.ti -1c
+.RI "void \fBLoad\fP (const std::string &path)"
+.br
+.RI "This is played when the components is to be loaded from a file\&. "
+.ti -1c
+.RI "void \fBSave\fP (const std::string &path)"
+.br
+.RI "This is to be played when the component is to be saved to a file\&. "
+.ti -1c
+.RI "void \fBOnLoad\fP ()"
+.br
+.RI "This is to be played when the component is loaded (not necessarily from a file)\&. "
+.ti -1c
+.RI "void \fBOnAddComponent\fP (int entityID)"
+.br
+.RI "This function is called once when the component is added to an entity\&. "
+.ti -1c
+.RI "std::map< std::string, metadata_t > \fBGetMetadata\fP ()"
+.br
+.ti -1c
+.RI "std::string \fBGetClassName\fP () const"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+A class to handle the physics of an object according the laws of Newtonian physics\&. 
+
+
+.SH "Member Function Documentation"
+.PP 
+.SS "void RigidBody2D::CollideWith (int entityID)"
+
+.PP
+Collides with an object\&. If the object has a Rigidbody2D, it will be affected by the collision according the laws of Newtonian physics\&. 
+.PP
+\fBReturns\fP
+.RS 4
+float 
+.RE
+.PP
+
+.SS "\fBgraph::vec2f\fP & RigidBody2D::GetAcceleration ()"
+
+.PP
+Get the Acceleration as a reference\&. 
+.PP
+\fBReturns\fP
+.RS 4
+graph::vec2f& 
+.RE
+.PP
+
+.SS "\fBgraph::vec2f\fP RigidBody2D::GetAcceleration () const"
+
+.PP
+Get the Acceleration of the object\&. 
+.PP
+\fBReturns\fP
+.RS 4
+graph::vec2f 
+.RE
+.PP
+
+.SS "float RigidBody2D::GetElasticity () const"
+
+.PP
+Returns the elasticity of the object\&. 
+.PP
+\fBReturns\fP
+.RS 4
+float 
+.RE
+.PP
+
+.SS "float RigidBody2D::GetMass () const"
+
+.PP
+Returns the mass of the object\&. 
+.PP
+\fBReturns\fP
+.RS 4
+float 
+.RE
+.PP
+
+.SS "\fBgraph::vec2f\fP RigidBody2D::GetPrevPosition () const"
+
+.PP
+Returns the position of the object at the previous frame\&. 
+.PP
+\fBReturns\fP
+.RS 4
+graph::vec2f 
+.RE
+.PP
+
+.SS "\fBgraph::vec2f\fP & RigidBody2D::GetVelocity ()"
+
+.PP
+Get the Velocity of the object as a reference\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIvelocity\fP 
+.RE
+.PP
+
+.SS "\fBgraph::vec2f\fP RigidBody2D::GetVelocity () const"
+
+.PP
+Get the Velocity of the object\&. 
+.PP
+\fBReturns\fP
+.RS 4
+graph::vec2f 
+.RE
+.PP
+
+.SS "bool RigidBody2D::IsKinematic () const"
+
+.PP
+returns true if the object's velocity updates the object's position 
+.PP
+\fBReturns\fP
+.RS 4
+true 
+.PP
+false 
+.RE
+.PP
+
+.SS "void RigidBody2D::OverridePrevPosition (\fBgraph::vec2f\fP prevPosition)"
+
+.PP
+Sets the Prev Position object for the current frame\&. do no use unless you know what you are doing\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIprevPosition\fP 
+.RE
+.PP
+
+.SS "void RigidBody2D::SetAcceleration (\fBgraph::vec2f\fP acceleration)"
+
+.PP
+Set the Acceleration\&. 
+.SS "void RigidBody2D::SetElasticity (float elasticity)"
+
+.PP
+Sets the elasticity of the object\&. 
+.SS "void RigidBody2D::SetKinematic (bool isKinematic)"
+
+.PP
+Set the _isKinematic property\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIisKinematic\fP 
+.RE
+.PP
+
+.SS "void RigidBody2D::SetMass (float mass)"
+
+.PP
+Sets the mass of the object\&. 
+.SS "void RigidBody2D::SetSimulateGravity (bool simulateGravity)"
+
+.PP
+Set the _simulateGravity property\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsimulateGravity\fP 
+.RE
+.PP
+
+.SS "void RigidBody2D::SetVelocity (\fBgraph::vec2f\fP velocity)"
+
+.PP
+Set the Velocity of the object\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIvelocity\fP 
+.RE
+.PP
+
+.SS "bool RigidBody2D::SimulateGravity () const"
+
+.PP
+returns true if gravity impacts the object's velocity 
+.PP
+\fBReturns\fP
+.RS 4
+true 
+.PP
+false 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for My Project from the source code\&.

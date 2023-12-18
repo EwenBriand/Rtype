@@ -140,7 +140,6 @@ namespace eng {
             Stop();
         }
         SYS.SetGraphicalModule(m_graphicalModule);
-        SYS.GetInputManager().SetupDefaults();
         SetupEditor();
         try {
             m_game = SYS.GetResourceManager().LoadGame(GetConfigValue(eng::Engine::Options::GAME));
@@ -338,5 +337,10 @@ namespace eng {
     void Engine::Log(const std::string& msg)
     {
         m_logFile << msg << std::endl;
+    }
+
+    std::shared_ptr<IGame> Engine::GetGame() const
+    {
+        return m_game;
     }
 } // namespace eng

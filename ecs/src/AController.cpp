@@ -21,4 +21,9 @@ namespace ecs {
         },
             -600);
     }
+
+    void AController::SetEntity(int entityID)
+    {
+        _entity = entityID;
+    }
 } // namespace ecs

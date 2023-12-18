@@ -1,0 +1,213 @@
+.TH "UserComponentWrapper" 3 "Mon Dec 18 2023" "My Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+UserComponentWrapper
+.SH SYNOPSIS
+.br
+.PP
+.PP
+Inherits \fBecs::Component< UserComponentWrapper >\fP\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBUpdate\fP (int entityID)"
+.br
+.RI "Calls the update method of the internal component if it exists\&. "
+.ti -1c
+.RI "void \fBStart\fP ()"
+.br
+.RI "Calls the start method of the internal component if it exists\&. "
+.ti -1c
+.RI "void \fBOnAddComponent\fP (int entityID)"
+.br
+.RI "Calls the OnAddComponent method of the internal component if it exists\&. "
+.ti -1c
+.RI "void \fBLoad\fP (const std::string &path)"
+.br
+.RI "Calls the load method of the internal component if it exists\&. "
+.ti -1c
+.RI "void \fBSave\fP (const std::string &path)"
+.br
+.RI "This function does not save the object if the resource ID is empty\&. This prevents unwanted saving of uninitialized objects\&. "
+.ti -1c
+.RI "void \fBOnLoad\fP ()"
+.br
+.RI "Calls the OnLoad method of the internal component if it exists\&. "
+.ti -1c
+.RI "std::map< std::string, metadata_t > \fBGetMetadata\fP ()"
+.br
+.RI "Returns the metadata of the internal component if it exists\&. "
+.ti -1c
+.RI "std::string \fBGetClassName\fP () const"
+.br
+.RI "Returns the name of the class instanciated by the internal component\&. "
+.ti -1c
+.RI "void \fBSetInternalComponent\fP (std::shared_ptr< \fBAUserComponent\fP >)"
+.br
+.RI "Sets the Internal Component object\&. "
+.ti -1c
+.RI "std::shared_ptr< \fBAUserComponent\fP > \fBGetInternalComponent\fP () const"
+.br
+.RI "Gets the Internal Component object\&. "
+.ti -1c
+.RI "void \fBSetResourceID\fP (const std::string &resourceID)"
+.br
+.RI "Sets the Resource ID object\&. "
+.ti -1c
+.RI "std::string \fBGetResourceID\fP () const"
+.br
+.RI "Gets the Resource ID object\&. "
+.in -1c
+
+Public Member Functions inherited from \fBecs::Component< UserComponentWrapper >\fP
+.in +1c
+.ti -1c
+.RI "void \fBUpdate\fP (int entityID)"
+.br
+.RI "This is played every frame\&. "
+.ti -1c
+.RI "void \fBStart\fP ()"
+.br
+.RI "This is played once at the start of the game\&. "
+.ti -1c
+.RI "void \fBLoad\fP (const std::string &path)"
+.br
+.RI "This is played when the components is to be loaded from a file\&. "
+.ti -1c
+.RI "void \fBSave\fP (const std::string &path)"
+.br
+.RI "This is to be played when the component is to be saved to a file\&. "
+.ti -1c
+.RI "void \fBOnLoad\fP ()"
+.br
+.RI "This is to be played when the component is loaded (not necessarily from a file)\&. "
+.ti -1c
+.RI "void \fBOnAddComponent\fP (int entityID)"
+.br
+.RI "This function is called once when the component is added to an entity\&. "
+.ti -1c
+.RI "std::map< std::string, metadata_t > \fBGetMetadata\fP ()"
+.br
+.ti -1c
+.RI "std::string \fBGetClassName\fP () const"
+.br
+.in -1c
+.SH "Member Function Documentation"
+.PP 
+.SS "std::string UserComponentWrapper::GetClassName () const"
+
+.PP
+Returns the name of the class instanciated by the internal component\&. 
+.PP
+\fBReturns\fP
+.RS 4
+std::string 
+.RE
+.PP
+
+.SS "std::shared_ptr< \fBAUserComponent\fP > UserComponentWrapper::GetInternalComponent () const"
+
+.PP
+Gets the Internal Component object\&. 
+.PP
+\fBReturns\fP
+.RS 4
+AUserComponent* 
+.RE
+.PP
+
+.SS "std::map< std::string, metadata_t > UserComponentWrapper::GetMetadata ()"
+
+.PP
+Returns the metadata of the internal component if it exists\&. 
+.PP
+\fBReturns\fP
+.RS 4
+std::map<std::string, metadata_t> 
+.RE
+.PP
+
+.SS "std::string UserComponentWrapper::GetResourceID () const"
+
+.PP
+Gets the Resource ID object\&. 
+.PP
+\fBReturns\fP
+.RS 4
+std::string 
+.RE
+.PP
+
+.SS "void UserComponentWrapper::Load (const std::string & path)"
+
+.PP
+Calls the load method of the internal component if it exists\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIpath\fP 
+.RE
+.PP
+
+.SS "void UserComponentWrapper::OnAddComponent (int entityID)"
+
+.PP
+Calls the OnAddComponent method of the internal component if it exists\&. 
+.SS "void UserComponentWrapper::OnLoad ()"
+
+.PP
+Calls the OnLoad method of the internal component if it exists\&. 
+.SS "void UserComponentWrapper::Save (const std::string & path)"
+
+.PP
+This function does not save the object if the resource ID is empty\&. This prevents unwanted saving of uninitialized objects\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIpath\fP 
+.RE
+.PP
+
+.SS "void UserComponentWrapper::SetInternalComponent (std::shared_ptr< \fBAUserComponent\fP > component)"
+
+.PP
+Sets the Internal Component object\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIcomponent\fP 
+.RE
+.PP
+
+.SS "void UserComponentWrapper::SetResourceID (const std::string & resourceID)"
+
+.PP
+Sets the Resource ID object\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIresourceID\fP 
+.RE
+.PP
+
+.SS "void UserComponentWrapper::Start ()"
+
+.PP
+Calls the start method of the internal component if it exists\&. 
+.SS "void UserComponentWrapper::Update (int entityID)"
+
+.PP
+Calls the update method of the internal component if it exists\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIentityID\fP 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for My Project from the source code\&.

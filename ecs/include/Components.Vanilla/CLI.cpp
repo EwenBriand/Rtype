@@ -36,6 +36,10 @@ std::map<std::string, std::function<void(CLI&, std::vector<std::string>)>> CLI::
     { "setmbr", [](CLI& cli, std::vector<std::string> args) { cli.setMember(args); } },
     { "listmbr", [](CLI& cli, std::vector<std::string> args) { cli.listExposedMembers(args); } },
     { "lsctxt", [](CLI& cli, std::vector<std::string> args) { cli.showContext(); } },
+    { "prefab.save", [](CLI& cli, std::vector<std::string> args) { cli.savePrefab(args); } },
+    { "prefab.load", [](CLI& cli, std::vector<std::string> args) { cli.loadPrefab(args); } },
+    { "prefab.list", [](CLI& cli, std::vector<std::string> args) { cli.listPrefabs(args); } },
+    { "prefab.remove", [](CLI& cli, std::vector<std::string> args) { cli.removePrefab(args); } },
 };
 
 const std::map<std::string, std::function<void(CLI&, std::vector<std::string>)>> CLI::getM_commands()
@@ -426,4 +430,70 @@ void CLI::showContext(__attribute__((unused)) std::vector<std::string> args)
         },
             cpt);
     });
+}
+
+void CLI::savePrefab(std::vector<std::string> args)
+{
+    if (args.size() - 1 != 1) {
+        CONSOLE::err << "Invalid number of arguments" << std::endl;
+        return;
+    }
+    if (SYS.GetEditorEntityContext() == SYS.GetSystemHolder()) {
+        CONSOLE::err << "Cannot save system" << std::endl;
+        return;
+    }
+
+    SYS.GetResourceManager().SavePrefab(args[0], SYS.GetEditorEntityContext());
+}
+
+void CLI::loadPrefab(std::vector<std::string> args)
+{
+    if (args.size() - 1 != 1) {
+        CONSOLE::err << "Invalid number of arguments" << std::endl;
+        return;
+    }
+
+    int entity = SYS.GetResourceManager().LoadPrefab(args[0]);
+    if (entity == -1) {
+        CONSOLE::err << "Failed to load prefab" << std::endl;
+        return;
+    }
+    SYS.SetEditorEntityContext(entity);
+}
+
+void CLI::listPrefabs(std::vector<std::string> args)
+{
+    std::string assetRoot = eng::Engine::GetEngine()->GetConfigValue("assetRoot");
+    std::string prefabRoot = ecs::ResourceManager::MakePath({ assetRoot, "prefabs" });
+    std::vector<std::string> prefabs;
+
+    CONSOLE::info << "Prefabs root: " << prefabRoot << std::endl;
+    for (const auto& entry : std::filesystem::directory_iterator(prefabRoot)) {
+        if (std::filesystem::is_directory(entry)) {
+            std::filesystem::path relative_path = std::filesystem::relative(entry.path(), prefabRoot);
+            prefabs.push_back(relative_path.string());
+        }
+    }
+    CONSOLE::info << "Prefabs (" << prefabs.size() << " in total)" << std::endl;
+    for (auto& prefab : prefabs) {
+        CONSOLE::info << "\t" << prefab << std::endl;
+    }
+}
+
+void CLI::removePrefab(std::vector<std::string> args)
+{
+    if (args.size() - 1 != 1) {
+        CONSOLE::err << "Invalid number of arguments" << std::endl;
+        return;
+    }
+
+    std::string assetRoot = eng::Engine::GetEngine()->GetConfigValue("assetRoot");
+    std::string prefabRoot = ecs::ResourceManager::MakePath({ assetRoot, "prefabs" });
+    std::string prefabPath = ecs::ResourceManager::MakePath({ prefabRoot, args[0] });
+
+    if (!std::filesystem::exists(prefabPath)) {
+        CONSOLE::err << "Prefab does not exist" << std::endl;
+        return;
+    }
+    std::filesystem::remove(prefabPath);
 }

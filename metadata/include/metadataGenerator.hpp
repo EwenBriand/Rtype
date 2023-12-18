@@ -16,7 +16,7 @@ namespace meta {
     public:
         MetadataGenerator();
         ~MetadataGenerator();
-        void generateMetadata(const std::string& path, const std::string& outputDirectory = "./metabuild", const std::string& buildRoot = ".");
+        void generateMetadata(const std::string& path, const std::string& outputDirectory = "./metabuild", const std::string& buildRoot = ".", std::vector<std::string> add_include = {});
         void buildCMake();
 
     private:
@@ -47,5 +47,6 @@ namespace meta {
         std::string _cmakefile = "";
         std::string _outputDirectory = "./metabuild";
         std::string _buildRoot = ".";
+        std::vector<std::string> _add_include;
     };
 }

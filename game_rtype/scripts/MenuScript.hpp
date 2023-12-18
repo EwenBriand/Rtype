@@ -15,7 +15,7 @@ serialize class MenuScript : public AUserComponent {
 public:
     GENERATE_METADATA(MenuScript)
     MenuScript() = default;
-    ~MenuScript() = default;
+    ~MenuScript();
 
     void Start() override;
     void Update(int entityID) override;

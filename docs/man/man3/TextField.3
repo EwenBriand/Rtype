@@ -1,0 +1,270 @@
+.TH "TextField" 3 "Mon Dec 18 2023" "My Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+TextField \- A Text Field that will execute a function when Enter is pressed while it is focused\&. Upon being focused (clicked on) it will register itself as the focused menu in the UIMenu class and unfocus all other menus\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <TextField\&.hpp>\fP
+.PP
+Inherits \fBecs::Component< TextField >\fP, and \fBgraph::Clickable\fP\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBUpdate\fP (int entityID)"
+.br
+.RI "Draws the input field and, if focused, reads the inputs from the input manager in order to update its text\&. "
+.ti -1c
+.RI "void \fBOnAddComponent\fP (int entityID)"
+.br
+.RI "If no div is present on the Entity, adds one\&. Then, registers the div as its parent\&. Sets the callback to enable focus on click\&. "
+.ti -1c
+.RI "void \fBDraw\fP ()"
+.br
+.RI "Draws the input field on the screen\&. "
+.ti -1c
+.RI "void \fBSetPosition\fP (\fBgraph::vec2f\fP pos)"
+.br
+.RI "Sets the xy position of the input field on screen\&. The position is relative to the parent div\&. "
+.ti -1c
+.RI "void \fBRegisterOnEnterCallback\fP (std::function< void()>)"
+.br
+.RI "Sets the callback to execute when enter is pressed / the field gets unfocused\&. "
+.ti -1c
+.RI "void \fBSetParent\fP (\fBUIDiv\fP &div)"
+.br
+.RI "Sets the div that will be the parent of the input field\&. "
+.ti -1c
+.RI "void \fBSetLabel\fP (std::string label)"
+.br
+.RI "Sets the label of the input field\&. "
+.ti -1c
+.RI "void \fBSetPlaceholder\fP (std::string placeholder)"
+.br
+.RI "Sets the placeholder of the input field\&. "
+.ti -1c
+.RI "void \fBSetText\fP (std::string text)"
+.br
+.RI "Sets the text of the input field\&. "
+.ti -1c
+.RI "void \fBSetupCallbacks\fP ()"
+.br
+.RI "This function sets up the callbacks for the click and backspace in order to focus the input field and delete the last character\&. This function is public so that components that use a textfield without adding it as a component can still use it\&. It is otherwise called in OnAddComponent\&. "
+.ti -1c
+.RI "std::string \fBGetText\fP () const"
+.br
+.RI "Returns the text of the input field\&. "
+.ti -1c
+.RI "bool \fBIsFocused\fP () const"
+.br
+.RI "Returns true if the text field is actively focused by the user\&. "
+.ti -1c
+.RI "void \fBFocus\fP ()"
+.br
+.RI "Focus the input field\&. "
+.ti -1c
+.RI "void \fBUnFocus\fP ()"
+.br
+.RI "Unfocus the input field\&. "
+.in -1c
+
+Public Member Functions inherited from \fBecs::Component< TextField >\fP
+.in +1c
+.ti -1c
+.RI "void \fBUpdate\fP (int entityID)"
+.br
+.RI "This is played every frame\&. "
+.ti -1c
+.RI "void \fBStart\fP ()"
+.br
+.RI "This is played once at the start of the game\&. "
+.ti -1c
+.RI "void \fBLoad\fP (const std::string &path)"
+.br
+.RI "This is played when the components is to be loaded from a file\&. "
+.ti -1c
+.RI "void \fBSave\fP (const std::string &path)"
+.br
+.RI "This is to be played when the component is to be saved to a file\&. "
+.ti -1c
+.RI "void \fBOnLoad\fP ()"
+.br
+.RI "This is to be played when the component is loaded (not necessarily from a file)\&. "
+.ti -1c
+.RI "void \fBOnAddComponent\fP (int entityID)"
+.br
+.RI "This function is called once when the component is added to an entity\&. "
+.ti -1c
+.RI "std::map< std::string, metadata_t > \fBGetMetadata\fP ()"
+.br
+.ti -1c
+.RI "std::string \fBGetClassName\fP () const"
+.br
+.in -1c
+
+Public Member Functions inherited from \fBgraph::Clickable\fP
+.in +1c
+.ti -1c
+.RI "void \fBTestClick\fP ()"
+.br
+.RI "Tests if the object has been clicked onto, and if so, plays the callback attached to the object\&. "
+.ti -1c
+.RI "void \fBSetClickable\fP (bool clickable)"
+.br
+.RI "Enables the clickable feature\&. "
+.ti -1c
+.RI "bool \fBIsClickable\fP () const"
+.br
+.RI "Returns whether the object is clickable or not\&. "
+.ti -1c
+.RI "void \fBSetClickCallback\fP (std::function< void()> callback)"
+.br
+.RI "Sets the callback to be played when the object is clicked\&. "
+.in -1c
+
+Public Member Functions inherited from \fBgraph::Hoverable\fP
+.in +1c
+.ti -1c
+.RI "void \fBTestHover\fP ()"
+.br
+.ti -1c
+.RI "void \fBSetHoverable\fP (bool hoverable)"
+.br
+.RI "Enables the hoverable feature\&. "
+.ti -1c
+.RI "bool \fBIsHoverable\fP () const"
+.br
+.RI "Returns whether the object is hoverable or not\&. "
+.ti -1c
+.RI "void \fBSetDiv\fP (\fBUIDiv\fP *div)"
+.br
+.RI "Sets the div to which the hoverable feature is attached\&. "
+.ti -1c
+.RI "void \fBSetHoverCallback\fP (std::function< void()> callback)"
+.br
+.RI "Sets the callback to be played when the object is hovered\&. "
+.ti -1c
+.RI "void \fBSetOnUnhoverCallback\fP (std::function< void()> callback)"
+.br
+.RI "Sets the callback to be played when the object is unhovered\&. "
+.ti -1c
+.RI "bool \fBIsHovered\fP ()"
+.br
+.RI "Returns whether the object is hovered or not\&. "
+.in -1c
+.SS "Additional Inherited Members"
+
+
+Protected Attributes inherited from \fBgraph::Clickable\fP
+.in +1c
+.ti -1c
+.RI "bool \fBm_clickable\fP = true"
+.br
+.ti -1c
+.RI "std::function< void()> \fBm_clickCallback\fP = nullptr"
+.br
+.in -1c
+
+Protected Attributes inherited from \fBgraph::Hoverable\fP
+.in +1c
+.ti -1c
+.RI "bool \fBm_hoverable\fP = true"
+.br
+.ti -1c
+.RI "bool \fBm_isHovered\fP = false"
+.br
+.ti -1c
+.RI "std::function< void()> \fBm_callback\fP = nullptr"
+.br
+.ti -1c
+.RI "std::function< void()> \fBm_onUnhoverCallback\fP = nullptr"
+.br
+.ti -1c
+.RI "\fBUIDiv\fP * \fBm_hoverDiv\fP = nullptr"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+A Text Field that will execute a function when Enter is pressed while it is focused\&. Upon being focused (clicked on) it will register itself as the focused menu in the UIMenu class and unfocus all other menus\&. 
+
+
+.SH "Member Function Documentation"
+.PP 
+.SS "void TextField::Draw ()"
+
+.PP
+Draws the input field on the screen\&. 
+.SS "void TextField::Focus ()"
+
+.PP
+Focus the input field\&. 
+.SS "std::string TextField::GetText () const"
+
+.PP
+Returns the text of the input field\&. 
+.SS "bool TextField::IsFocused () const"
+
+.PP
+Returns true if the text field is actively focused by the user\&. 
+.SS "void TextField::OnAddComponent (int entityID)"
+
+.PP
+If no div is present on the Entity, adds one\&. Then, registers the div as its parent\&. Sets the callback to enable focus on click\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIentityID\fP 
+.RE
+.PP
+
+.SS "void TextField::RegisterOnEnterCallback (std::function< void()> callback)"
+
+.PP
+Sets the callback to execute when enter is pressed / the field gets unfocused\&. 
+.SS "void TextField::SetLabel (std::string label)"
+
+.PP
+Sets the label of the input field\&. 
+.SS "void TextField::SetParent (\fBUIDiv\fP & div)"
+
+.PP
+Sets the div that will be the parent of the input field\&. 
+.SS "void TextField::SetPlaceholder (std::string placeholder)"
+
+.PP
+Sets the placeholder of the input field\&. 
+.SS "void TextField::SetPosition (\fBgraph::vec2f\fP pos)"
+
+.PP
+Sets the xy position of the input field on screen\&. The position is relative to the parent div\&. 
+.SS "void TextField::SetText (std::string text)"
+
+.PP
+Sets the text of the input field\&. 
+.SS "void TextField::SetupCallbacks ()"
+
+.PP
+This function sets up the callbacks for the click and backspace in order to focus the input field and delete the last character\&. This function is public so that components that use a textfield without adding it as a component can still use it\&. It is otherwise called in OnAddComponent\&. 
+.SS "void TextField::UnFocus ()"
+
+.PP
+Unfocus the input field\&. 
+.SS "void TextField::Update (int entityID)"
+
+.PP
+Draws the input field and, if focused, reads the inputs from the input manager in order to update its text\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIentityID\fP 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for My Project from the source code\&.
