@@ -144,7 +144,8 @@ std::vector<float> Collider2D::GetVerticesWithPosition() const noexcept
 
 void Collider2D::DebugDraw() const
 {
-    if (eng::Engine::GetEngine()->IsOptionSet(eng::Engine::Options::EDITOR)) {
+    auto engine = eng::Engine::GetEngine();
+    if (engine->IsOptionSet(eng::Engine::Options::EDITOR) && !engine->IsOptionSet(eng::Engine::Options::NO_GRAPHICS)) {
         auto vertices = _vertices;
         try {
             auto transform = SYS.GetComponent<CoreTransform>(_entityID);

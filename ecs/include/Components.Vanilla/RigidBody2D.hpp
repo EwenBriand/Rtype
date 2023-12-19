@@ -156,14 +156,15 @@ public:
 private:
     /**
      * @brief If enabled, gravity will impact the object's velocity
-     *
+     *  True by default.
      */
 
-    serialize int _simulateGravity = true;
+    serialize int _simulateGravity = false;
 
     /**
      * @brief If enabled, the object's velocity will update the object's
      * position
+     * True by default
      *
      */
 

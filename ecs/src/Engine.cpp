@@ -22,6 +22,7 @@ namespace eng {
     const std::string Engine::Options::GAME = "game";
     const std::string Engine::Options::CONFIG_DIR = "--config-dir";
     const std::string Engine::Options::VERBOSE = "--verbose";
+    const std::string Engine::Options::NO_GRAPHICS = "--no-graphics";
 
     ecs::ECSImpl& Engine::GetECS()
     {
@@ -39,7 +40,7 @@ namespace eng {
     }
 
     Engine::Engine()
-        : m_graphicalModule(SYS.GetResourceManager().LoadGraphicalModule())
+        : m_graphicalModule(nullptr)
         , m_ecs(SYS)
     {
         m_preUpdatePipeline = std::make_shared<std::vector<Action>>();
@@ -138,6 +139,13 @@ namespace eng {
             CONSOLE::err << "\nWhile discovering config: \n"
                          << e.what() << std::endl;
             Stop();
+        }
+        try {
+            m_graphicalModule = SYS.GetResourceManager().LoadGraphicalModule("");
+        } catch (ConfigException& e) {
+            CONSOLE::err << "\nWhile loading graphical module: \n"
+                         << e.what() << std::endl;
+            return;
         }
         SYS.SetGraphicalModule(m_graphicalModule);
         SetupEditor();

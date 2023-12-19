@@ -11,6 +11,7 @@
 #include "GraphicalRayLib/GraphicalRayLib.hpp"
 #include "IGraphicalModule.hpp"
 #include "LibUtils.hpp"
+#include "NoGraphics.hpp"
 #include "metadataGenerator.hpp"
 #include <cstdio>
 #include <cstring>
@@ -195,21 +196,19 @@ namespace ecs {
         if (std::get<1>(_graphicalModule) != nullptr) {
             throw eng::EngineException("Graphical module already loaded", __FILE__, __FUNCTION__, __LINE__);
         }
-
-        if (path == "") {
+        std::cout << "one" << std::endl;
+        if (!eng::Engine::GetEngine()->IsOptionSet(eng::Engine::Options::NO_GRAPHICS)) {
+            std::cout << "two" << std::endl;
             auto tmp = std::shared_ptr<graph::IGraphicalModule>(new raylib::GraphicalRayLib());
             _graphicalModule = std::make_tuple(nullptr, tmp);
             return std::get<1>(_graphicalModule);
+        } else {
+            std::cout << "three" << std::endl;
+            auto tmp = std::shared_ptr<graph::IGraphicalModule>(new eng::NoGraphics());
+            _graphicalModule = std::make_tuple(nullptr, tmp);
+            return std::get<1>(_graphicalModule);
         }
-
-        void* handle = lib::LibUtils::getLibHandle(path.c_str());
-        graph::IGraphicalModule* (*create)() = reinterpret_cast<graph::IGraphicalModule* (*)()>(lib::LibUtils::getSymHandle(handle, "create"));
-        auto tmp = std::shared_ptr<graph::IGraphicalModule>(create());
-        if (!std::get<1>(_graphicalModule)) {
-            throw eng::EngineException("Graphical module creation failed", __FILE__, __FUNCTION__, __LINE__);
-        }
-        _graphicalModule = std::make_tuple(handle, tmp);
-        return std::get<1>(_graphicalModule);
+        std::cout << "four" << std::endl;
     }
 
     std::string ResourceManager::LoadFileText(const std::string& path)

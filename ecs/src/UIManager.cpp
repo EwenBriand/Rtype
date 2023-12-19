@@ -101,6 +101,10 @@ namespace ui {
 
     void UIManager::Draw()
     {
+        if (eng::Engine::GetEngine()->IsOptionSet(eng::Engine::Options::NO_GRAPHICS)) {
+            _drawBuffer.clear();
+            return;
+        }
         _storage.RunSystems<
             Text,
             TextField,

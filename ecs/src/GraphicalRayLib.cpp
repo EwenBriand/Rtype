@@ -20,6 +20,9 @@ namespace raylib {
     void GraphicalRayLib::ModPipeline()
     {
         auto engine = eng::Engine::GetEngine();
+
+        if (engine->IsOptionSet(eng::Engine::Options::NO_GRAPHICS))
+            return;
         engine->pushPipeline([&]() {
             if (WindowShouldClose()) {
                 CONSOLE::info << "Window closed" << std::endl;
@@ -37,6 +40,7 @@ namespace raylib {
             EndDrawing();
         },
             500);
+        CONSOLE::info << "GraphicalRayLib module loaded" << std::endl;
     }
 
     void GraphicalRayLib::Run(std::function<void(float deltaT)>&& func)
@@ -46,6 +50,10 @@ namespace raylib {
 
     void GraphicalRayLib::Start()
     {
+        if (eng::Engine::GetEngine()->IsOptionSet(eng::Engine::Options::NO_GRAPHICS)) {
+            CONSOLE::warn << "No graphics option set, skipping graphical module" << std::endl;
+            return;
+        }
         if (!eng::Engine::GetEngine()->IsOptionSet(eng::Engine::Options::VERBOSE))
             SetTraceLogLevel(LOG_NONE);
         InitWindow(1920, 1080, "ECS");
@@ -60,6 +68,8 @@ namespace raylib {
 
     void GraphicalRayLib::Stop()
     {
+        if (eng::Engine::GetEngine()->IsOptionSet(eng::Engine::Options::NO_GRAPHICS))
+            return;
         if (IsAudioDeviceReady()) {
             CloseAudioDevice();
         }
@@ -127,5 +137,10 @@ namespace raylib {
     bool GraphicalRayLib::WindowIsMouseLeftDown() const
     {
         return IsMouseButtonDown(MOUSE_LEFT_BUTTON);
+    }
+
+    bool GraphicalRayLib::CheckCollisionWithRectangle(graph::vec2f pos, Rectangle dimensions)
+    {
+        return CheckCollisionPointRec({ pos.x, pos.y }, dimensions);
     }
 }
