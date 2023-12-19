@@ -23,6 +23,7 @@ namespace eng {
     const std::string Engine::Options::CONFIG_DIR = "--config-dir";
     const std::string Engine::Options::VERBOSE = "--verbose";
     const std::string Engine::Options::NO_GRAPHICS = "--no-graphics";
+    const std::string Engine::Options::SERVER_IP = "--server-ip";
 
     ecs::ECSImpl& Engine::GetECS()
     {

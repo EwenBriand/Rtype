@@ -35,11 +35,21 @@ namespace eng {
     class Engine {
     public:
         struct Options {
+            /**
+             * @brief Starts the engine in editor mode, enabling the CLI
+             *
+             */
             static const std::string EDITOR;
+
+            /**
+             * @brief Specifies the path to the
+             *
+             */
             static const std::string GAME;
             static const std::string CONFIG_DIR;
             static const std::string VERBOSE;
             static const std::string NO_GRAPHICS;
+            static const std::string SERVER_IP;
         };
 
         Engine();
