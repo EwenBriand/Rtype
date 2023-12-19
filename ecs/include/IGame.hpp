@@ -58,5 +58,11 @@ namespace eng {
          *
          */
         virtual void PreSceneInstantiationHook(Engine*, const std::string& sceneName) = 0;
+
+        /**
+         * @brief Any changes to the engine's pipeline must be done here.
+         *
+         */
+        virtual void ModPipeline(Engine*) = 0;
     };
 }

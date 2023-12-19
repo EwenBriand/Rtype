@@ -5,6 +5,7 @@ include_directories(
 
 set(SRC
     LocalPlayerController.cpp
+    DistantPlayer.cpp
     scripts/Ship.cpp
 )
 

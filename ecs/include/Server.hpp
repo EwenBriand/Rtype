@@ -269,6 +269,12 @@ namespace serv {
          */
         void Start();
 
+        /**
+         * @brief Broadcasts a message too all clients
+         *
+         */
+        void Broadcast(const std::string& message);
+
     private:
         void SendBufferedMessages();
 

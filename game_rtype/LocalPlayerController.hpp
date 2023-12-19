@@ -8,6 +8,7 @@
 #pragma once
 #include "./Ship.hpp"
 #include "IController.hpp"
+#include "Server.hpp"
 
 class LocalPlayerController : public ecs::AController {
 public:
