@@ -420,6 +420,8 @@ namespace graph {
          * @return false
          */
         virtual bool isKeyPressed(int key) = 0;
+
+        virtual bool CheckCollisionWithRectangle(vec2f pos, Rectangle dimensions) = 0;
     };
 } // namespace graph
 

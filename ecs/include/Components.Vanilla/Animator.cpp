@@ -36,11 +36,15 @@ Sprite::Sprite(const std::string& path)
 
 Sprite::~Sprite()
 {
+    if (eng::Engine::GetEngine()->IsOptionSet(eng::Engine::Options::NO_GRAPHICS))
+        return;
     UnloadTexture(_texture);
 }
 
 void Sprite::Draw()
 {
+    if (eng::Engine::GetEngine()->IsOptionSet(eng::Engine::Options::NO_GRAPHICS))
+        return;
     if (!_visible)
         return;
     Rectangle source = { _rect.x, _rect.y, _rect.width, _rect.height };
@@ -188,6 +192,8 @@ void Animation::SetName(const std::string& name)
 
 void Animation::SetSpritePath(const std::string& path)
 {
+    if (eng::Engine::GetEngine()->IsOptionSet(eng::Engine::Options::NO_GRAPHICS))
+        return;
     std::string assetRoot = eng::Engine::GetEngine()->GetConfigValue("assetRoot");
     std::string spritePath = ecs::ResourceManager::MakePath({ assetRoot, path }, true);
     _sprite = std::make_shared<Sprite>(spritePath);
@@ -197,21 +203,26 @@ void Animation::RenderFrame(int entityId)
 {
     if (_frames.empty())
         return;
-    _sprite->SetRect(_frames[_currentFrame].rect);
+    if (_sprite)
+        _sprite->SetRect(_frames[_currentFrame].rect);
     try {
         auto transform = SYS.GetComponent<CoreTransform>(entityId);
         auto x = transform.x;
         auto y = transform.y;
-        _sprite->SetOrigin({ x, y });
+        if (_sprite)
+            _sprite->SetOrigin({ x, y });
     } catch (std::exception& e) {
-        _sprite->SetOrigin(_frames[_currentFrame].origin);
+        if (_sprite)
+            _sprite->SetOrigin(_frames[_currentFrame].origin);
     }
-    _sprite->SetScale(_frames[_currentFrame].scale);
-    _sprite->SetRotation(_frames[_currentFrame].rotation);
-    _sprite->SetColor(_frames[_currentFrame].color);
-    _sprite->SetFlipX(_frames[_currentFrame].flipX);
-    _sprite->SetFlipY(_frames[_currentFrame].flipY);
-    _sprite->Draw();
+    if (_sprite) {
+        _sprite->SetScale(_frames[_currentFrame].scale);
+        _sprite->SetRotation(_frames[_currentFrame].rotation);
+        _sprite->SetColor(_frames[_currentFrame].color);
+        _sprite->SetFlipX(_frames[_currentFrame].flipX);
+        _sprite->SetFlipY(_frames[_currentFrame].flipY);
+        _sprite->Draw();
+    }
     _frameStartTime += SYS.GetDeltaTime();
     if (_frameStartTime >= _frames[_currentFrame].duration) { // todo fix for skipping frames in case of lag
         _frameStartTime = 0;
@@ -367,6 +378,7 @@ void Animator::AddAnimation(const std::string& path)
 
 std::vector<std::string> Animator::loadRawAnimFile(const std::string& path, std::string& name)
 {
+
     std::vector<std::string> lines;
     const std::string assetRoot = eng::Engine::GetEngine()->GetConfigValue("assetRoot");
     std::string animPath = ecs::ResourceManager::MakePath({ assetRoot, path }, true);
@@ -502,6 +514,10 @@ void Animator::handleAnimationProperties(Animation& anim, const std::string& key
         defaultFrame.duration = 1.0 / std::stof(value);
     else if (key == "scale")
         defaultFrame.scale = Vector2 { std::stof(value), std::stof(value) };
+    else if (key == "flipX")
+        defaultFrame.flipX = value == "true";
+    else if (key == "flipY")
+        defaultFrame.flipY = value == "true";
     else
         throw std::runtime_error("Unknown animation property: " + key);
 }

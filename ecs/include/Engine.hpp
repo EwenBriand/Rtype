@@ -6,7 +6,9 @@
 */
 
 #pragma once
+#include "ClientImpl.hpp"
 #include "ECSImpl.hpp"
+#include "Engine.hpp"
 #include "IGame.hpp"
 #include "IGraphicalModule.hpp"
 #include "SceneManager.hpp"
@@ -35,10 +37,55 @@ namespace eng {
     class Engine {
     public:
         struct Options {
+            /**
+             * @brief Starts the engine in editor mode, enabling the CLI
+             *
+             */
             static const std::string EDITOR;
+
+            /**
+             * @brief Specifies the path to the game binary. If not specified,
+             * the engine will look for a game binary in the base.cfg file.
+             *
+             */
             static const std::string GAME;
+
+            /**
+             * @brief Specifies the path to the config directory.
+             *
+             */
             static const std::string CONFIG_DIR;
+
+            /**
+             * @brief Should raylib display logs in the console?
+             *
+             */
             static const std::string VERBOSE;
+
+            /**
+             * @brief If set, the engine will replace raylib graphics with dummy calls
+             * and not render any window
+             *
+             */
+            static const std::string NO_GRAPHICS;
+
+            /**
+             * @brief If set and the game uses networking, the engine will try to connect to
+             * the server at the given IP address.
+             *             */
+            static const std::string SERVER_IP;
+
+            /**
+             * @brief If set, the engine will start a server at the port given in value.
+             *
+             */
+            static const std::string SERVER_MODE;
+
+            /**
+             * @brief If set, the engine will start a server at the port given in value.
+             *
+             */
+            static const std::string SERVER_PORT;
         };
 
         Engine();
@@ -143,6 +190,18 @@ namespace eng {
          */
         std::shared_ptr<IGame> GetGame() const;
 
+        /**
+         * @brief Returns the server if the engine is running in server mode, else throws an exception
+         *
+         */
+        serv::ServerImpl& GetServer() const;
+
+        /**
+         * @brief Returns the client if the engine is running in client mode, else throws an exception
+         *
+         */
+        serv::ClientImpl& GetClient() const;
+
     private:
         /**
          * @brief Discovers the configuration in the .engine folder and
@@ -173,6 +232,12 @@ namespace eng {
          */
         void configUpdateRelativePath();
 
+        /**
+         * @brief loads the network modules (server or client endpoints)
+         *
+         */
+        void loadNetworkModules();
+
         std::map<std::string, std::string> m_config;
         std::map<std::string, std::string> m_options = {
             { eng::Engine::Options::CONFIG_DIR, "../.engine/config" }
@@ -188,6 +253,8 @@ namespace eng {
         std::shared_ptr<std::vector<std::tuple<int, std::tuple<std::string, Action>>>> m_unsortedPipeline;
         std::shared_ptr<IGame> m_game = nullptr;
         ecs::ECSImpl& m_ecs;
+        serv::ServerImpl* m_server = nullptr;
+        std::shared_ptr<serv::ClientImpl> m_client = nullptr;
     };
 
     class EngineException : public std::exception {

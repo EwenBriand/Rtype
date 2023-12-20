@@ -49,6 +49,7 @@ set(ECS
     ${ECS_SRC}/GenericStorageSystem.cpp
     ${ECS_SRC}/UIManager.cpp
     ${ECS_SRC}/GraphicalRayLib.cpp
+    ${ECS_SRC}/NoGraphics.cpp
     ${ECS_SRC}/AController.cpp
     ${ECS_SRC}/AActor.cpp
 )
@@ -65,6 +66,7 @@ set(SERVER
     ${ECS_SRC}/ClientBucket.cpp
     ${ECS_SRC}/Message.cpp
     ${ECS_SRC}/Poll.cpp
+    ${ECS_SRC}/ClientImpl.cpp
 )
 
 set(VANILLA_SRC

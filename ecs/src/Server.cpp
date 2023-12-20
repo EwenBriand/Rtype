@@ -6,6 +6,7 @@
 */
 
 #include "../include/Server.hpp"
+#include "Engine.hpp"
 
 namespace serv {
     void Server::Update(int entityID)
@@ -15,6 +16,7 @@ namespace serv {
 
     void Server::OnLoad()
     {
+
         ServerImpl::Get()->SetPort(8080);
     }
 
@@ -23,11 +25,11 @@ namespace serv {
         ServerImpl::Get()->Start();
     }
 
-    void Server::Load(const std::string &path)
+    void Server::Load(const std::string& path)
     {
     }
 
-    void Server::Save(const std::string &path)
+    void Server::Save(const std::string& path)
     {
     }
 
