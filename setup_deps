@@ -1,0 +1,85 @@
+#!/usr/bin/python3
+
+import os
+import platform
+
+
+def linux_check_installed():
+    return os.system("lidconfig -p | grep libconfig++") == 0
+
+def run_and_capture_stdout(command):
+    return os.popen(command).read()
+
+def macos_check_installed():
+    print("checking if libconfig is installed for mac ")
+    print(os.system("pkg-config --exists libconfig++"))
+    return os.system("pkg-config --exists libconfig++" ) == 1
+
+def check_installed():
+    plateform = get_platform()
+    if plateform == "linux":
+        return linux_check_installed()
+    elif plateform == "macos":
+        return macos_check_installed()
+    else:
+        raise "Unsupported platform: " + platform.system()
+
+def linux_install():
+    package_manager = "dnf"
+    if os.system("which dnf") != 0:
+        package_manager = "apt"
+    os.system("sudo " + package_manager + " -y install libconfig-dev")
+
+
+def macos_install():
+    repo = "git@github.com:hyperrealm/libconfig.git"
+    os.system("git clone " + repo + " && cd libconfig && cmake . && make")
+
+def get_platform():
+    system = platform.system()
+    if system == "Linux":
+        return "linux"
+    elif system == "Darwin":
+        return "macos"
+    else:
+        raise Exception("Unsupported platform: " + system)
+
+def install():
+    platform_name = get_platform()
+    if platform_name == "linux":
+        linux_install()
+    elif platform_name == "macos":
+        macos_install()
+    else:
+        raise Exception("Unsupported platform: " + platform_name)
+
+def cd_gitroot():
+    git_root = subprocess.check_output(["git", "rev-parse", "--show-toplevel"]).strip().decode('utf-8')
+    os.chdir(git_root)
+
+def export_path():
+    if get_platform() == "macos":
+        # cd_gitroot()
+        print("CAUTION: Please export the follwing variables before trying to run again: ")
+        print("export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:" + os.getcwd() + "/libconfig/lib")
+        print("export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:" + os.getcwd() + "/libconfig/out")
+
+
+def clean():
+    if os.path.exists("./libconfig"):
+        os.system("rm -rf ./libconfig")
+
+def main():
+    if not check_installed():
+        print("libconfig is not installed")
+        install()
+    export_path()
+    # #     print("installing libconfig")
+    #     install()
+    # # else:
+    # #     print("libconfig is installed")
+
+
+
+if __name__ == "__main__":
+    main()
