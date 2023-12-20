@@ -59,6 +59,8 @@ void EditorMouseManager::setCtxtClosestEntity()
 
 void EditorMouseManager::checkForDrag()
 {
+    std::cout << "dragging" << std::endl;
+
     graph::vec2f mousePos = SYS.GetGraphicalModule()->WindowGetMousePos();
     graph::vec2f delta = {
         mousePos.x - m_mousePrevPos.x,
@@ -90,14 +92,21 @@ void EditorMouseManager::Update(int entityID)
     try {
         auto& transform = SYS.GetComponent<CoreTransform>(ctxt);
         SYS.GetGraphicalModule()->WindowDrawCircle({ .pos = transform.GetScreenPosition(),
-            .radius = 5,
-            .borderColor = { 255, 255, 255, 255 },
-            .borderSize = 1 });
+                                                       .radius = 5,
+                                                       .borderColor = { 255, 255, 255, 255 },
+                                                       .borderSize = 1 },
+            6);
     } catch (std::exception& e) {
         return;
     }
-    if (m_isPressed)
+    if (SYS.GetGraphicalModule()->WindowIsMouseLeftDown() && !m_isPressed) {
+        m_mousePrevPos = SYS.GetGraphicalModule()->WindowGetMousePos();
+        m_isPressed = true;
+    } else if (SYS.GetGraphicalModule()->WindowIsMouseLeftDown()) {
         checkForDrag();
+    } else if (!SYS.GetGraphicalModule()->WindowIsMouseLeftDown()) {
+        m_isPressed = false;
+    }
 }
 
 std::string EditorMouseManager::GetClassName() const

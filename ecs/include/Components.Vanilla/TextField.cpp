@@ -32,14 +32,16 @@ void TextField::Draw()
     graph::vec2f divPos = m_hoverDiv->GetPosition();
 
     graphics->WindowDrawRectangle({ .pos = { divPos.x + m_x + 11.0f * m_label.size(), divPos.y + m_y },
-        .dimensions = { 100, 20 },
-        .bgColor = { 255, 255, 255, 255 },
-        .borderColor = { 255, 255, 255, 255 },
-        .borderSize = 0 });
+                                      .dimensions = { 100, 20 },
+                                      .bgColor = { 255, 255, 255, 255 },
+                                      .borderColor = { 255, 255, 255, 255 },
+                                      .borderSize = 0 },
+        0);
     graphics->WindowDrawText({ .pos = { divPos.x + m_x, divPos.y + m_y },
-        .text = m_label,
-        .color = { 255, 255, 255, 255 },
-        .fontSize = 11 });
+                                 .text = m_label,
+                                 .color = { 255, 255, 255, 255 },
+                                 .fontSize = 11 },
+        1);
 
     size_t start = 0;
     if (m_text.size() - 20 > 0)
@@ -50,10 +52,11 @@ void TextField::Draw()
     else
         text = m_text.substr((m_text.size() > 20) ? (m_text.size() - 20) : 0, m_text.size());
     graphics->WindowDrawText((graph::graphText_t) {
-        .pos = { divPos.x + m_x + 11.0f * m_label.size() + 5, divPos.y + m_y },
-        .text = text,
-        .color = (m_text == "") ? (graph::vec4uc) { 100, 100, 100, 255 } : (graph::vec4uc) { 0, 0, 0, 255 },
-        .fontSize = 11 });
+                                 .pos = { divPos.x + m_x + 11.0f * m_label.size() + 5, divPos.y + m_y },
+                                 .text = text,
+                                 .color = (m_text == "") ? (graph::vec4uc) { 100, 100, 100, 255 } : (graph::vec4uc) { 0, 0, 0, 255 },
+                                 .fontSize = 11 },
+        2);
 }
 
 void TextField::SetupCallbacks()

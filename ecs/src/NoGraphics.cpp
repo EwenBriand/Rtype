@@ -35,15 +35,15 @@ namespace eng {
     {
     }
 
-    void NoGraphics::WindowDrawRectangle(graph::graphRect_t rectInfo)
+    void NoGraphics::WindowDrawRectangle(graph::graphRect_t rectInfo, int prio)
     {
     }
 
-    void NoGraphics::WindowDrawCircle(graph::graphCircle_t circleInfo)
+    void NoGraphics::WindowDrawCircle(graph::graphCircle_t circleInfo, int prio)
     {
     }
 
-    void NoGraphics::WindowDrawText(graph::graphText_t textInfo)
+    void NoGraphics::WindowDrawText(graph::graphText_t textInfo, int prio)
     {
     }
 
@@ -90,6 +90,14 @@ namespace eng {
     bool NoGraphics::CheckCollisionWithRectangle(graph::vec2f pos, Rectangle dimensions)
     {
         return false;
+    }
+
+    void NoGraphics::ClearBuffer()
+    {
+    }
+
+    void NoGraphics::DisplayBuffer()
+    {
     }
 
 } // namespace eng

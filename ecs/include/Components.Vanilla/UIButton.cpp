@@ -5,8 +5,8 @@
 ** UIButton.cpp
 */
 
-#include "../ECSImpl.hpp"
 #include "UIButton.hpp"
+#include "../ECSImpl.hpp"
 #include "CLI.hpp"
 
 decltype(UIButton::AvailableActionsClick) UIButton::AvailableActionsClick;
@@ -22,40 +22,37 @@ void UIButton::Update(int entityID)
     }
     TestClick();
     SYS.GetGraphicalModule()->WindowDrawText(
-        {
-            .pos = {m_uiDiv->GetPosition().x + 5, m_uiDiv->GetPosition().y + 2},
+        { .pos = { m_uiDiv->GetPosition().x + 5, m_uiDiv->GetPosition().y + 2 },
             .text = m_text,
-            .color = {255, 255, 255, 255},
-            .fontSize = 12
-        }
-    );
+            .color = { 255, 255, 255, 255 },
+            .fontSize = 12 },
+        3);
 }
 
 void UIButton::OnAddComponent(int entityID)
 {
-    UIDiv *uiDiv = nullptr;
+    UIDiv* uiDiv = nullptr;
 
     try {
         uiDiv = &(SYS.GetComponent<UIDiv>(entityID));
-    } catch (std::exception &e) {
+    } catch (std::exception& e) {
         SYS.AddComponent<UIDiv>(entityID);
         uiDiv = &(SYS.GetComponent<UIDiv>(entityID));
     }
     m_uiDiv = uiDiv;
     m_hoverDiv = uiDiv;
     m_clickable = true;
-    SetHoverCallback([&]{
+    SetHoverCallback([&] {
         graph::vec2f mousePos = SYS.GetGraphicalModule()->WindowGetMousePos();
-        SYS.GetGraphicalModule()->WindowDrawText({
-            .pos = {mousePos.x + 10, mousePos.y + 10},
-            .text = m_description,
-            .color = {255, 255, 255, 255},
-            .fontSize = 12
-        });
+        SYS.GetGraphicalModule()->WindowDrawText({ .pos = { mousePos.x + 10, mousePos.y + 10 },
+                                                     .text = m_description,
+                                                     .color = { 255, 255, 255, 255 },
+                                                     .fontSize = 12 },
+            4);
     });
 }
 
-void UIButton::RegisterCallback(const std::string &name, std::function<void()> &&callback)
+void UIButton::RegisterCallback(const std::string& name, std::function<void()>&& callback)
 {
     AvailableActionsClick[name] = callback;
 }
@@ -64,22 +61,22 @@ void UIButton::OnLoad()
 {
     Entity systemHolder = SYS.GetSystemHolder();
     try {
-        auto &cli = SYS.GetComponent<CLI>(systemHolder);
-        cli.RegisterCustomCommand("bt-listcb", [&](CLI &c, std::vector<std::string> args) {
+        auto& cli = SYS.GetComponent<CLI>(systemHolder);
+        cli.RegisterCustomCommand("bt-listcb", [&](CLI& c, std::vector<std::string> args) {
             CONSOLE::info << "Available callbacks:" << std::endl;
-            for (auto &cb : AvailableActionsClick)
+            for (auto& cb : AvailableActionsClick)
                 CONSOLE::info << "\t - " << cb.first << std::endl;
         });
-        cli.RegisterCustomCommand("bt-setcb", [&](CLI &c, std::vector<std::string> args) {
+        cli.RegisterCustomCommand("bt-setcb", [&](CLI& c, std::vector<std::string> args) {
             Entity ctxt = c.GetContext();
             try {
-                auto &bt = SYS.GetComponent<UIButton>(ctxt);
+                auto& bt = SYS.GetComponent<UIButton>(ctxt);
                 bt.m_clickCallbackName = args[0];
-            } catch (std::exception &e) {
+            } catch (std::exception& e) {
                 CONSOLE::warn << "No UIButton component on entity " << ctxt << std::endl;
             }
         });
-    } catch (std::exception &e) {
+    } catch (std::exception& e) {
         CONSOLE::warn << "No Cli, cannot change commands for UIButton" << std::endl;
     }
 }

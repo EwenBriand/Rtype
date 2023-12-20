@@ -5,8 +5,8 @@
 ** UIScrollableList.cpp
 */
 
-#include "ECSImpl.hpp"
 #include "UIScrollableList.hpp"
+#include "ECSImpl.hpp"
 
 void UIScrollableList::OnAddComponent(int entityID)
 {
@@ -56,7 +56,7 @@ void UIScrollableList::Draw()
     //             .text = option.first,
     //             .color = {255, 255, 255, 255},
     //             .fontSize = 12
-    //         });
+    //         },5);
     //     }
     //     ++i;
     // }
@@ -64,7 +64,7 @@ void UIScrollableList::Draw()
 
 void UIScrollableList::AddOptions(std::map<std::string, Action> options)
 {
-    for (auto &option : options) {
+    for (auto& option : options) {
         if (m_options.find(option.first) != m_options.end()) {
             CONSOLE::warn << "UIScrollableList::AddOptions: option " << option.first << " already exists" << std::endl;
             continue;
@@ -77,4 +77,3 @@ std::map<std::string, Action> UIScrollableList::GetOptions() const
 {
     return m_options;
 }
-

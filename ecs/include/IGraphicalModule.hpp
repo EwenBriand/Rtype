@@ -337,21 +337,21 @@ namespace graph {
          *
          * @param rectInfo
          */
-        virtual void WindowDrawRectangle(graphRect_t rectInfo) = 0;
+        virtual void WindowDrawRectangle(graphRect_t rectInfo, int prio) = 0;
 
         /**
          * @brief This function buffers a circle to be drawn in the window.
          *
          * @param circleInfo
          */
-        virtual void WindowDrawCircle(graphCircle_t circleInfo) = 0;
+        virtual void WindowDrawCircle(graphCircle_t circleInfo, int prio) = 0;
 
         /**
          * @brief This function buffers a text to be drawn in the window.
          *
          * @param textInfo
          */
-        virtual void WindowDrawText(graphText_t textInfo) = 0;
+        virtual void WindowDrawText(graphText_t textInfo, int prio) = 0;
 
         /**
          * @brief This function returns a vector2f containing the mouse position on the screen
@@ -421,6 +421,25 @@ namespace graph {
          */
         virtual bool isKeyPressed(int key) = 0;
 
+        /**
+         * @brief This function clears the buffer of the graphical module.
+         *
+         */
+        virtual void ClearBuffer() = 0;
+
+        /**
+         * @brief This function displays the buffer of the graphical module.
+         *
+         */
+        virtual void DisplayBuffer() = 0;
+
+        /**
+         * @brief This function returns true if the graphical module is
+         * currently running.
+         *
+         * @return true
+         * @return false
+         */
         virtual bool CheckCollisionWithRectangle(vec2f pos, Rectangle dimensions) = 0;
     };
 } // namespace graph
