@@ -12,17 +12,16 @@ env:
 jobs:
   build_fedora:
     runs-on: ubuntu-latest
-    container: fedora:37
+    container: epitechcontent/epitest-docker:latest
     steps:
+      - uses: actions/checkout@v2
       - run: ./fast build
-      - name: Checkout
-        uses: actions/checkout@v2
 
 
   build_windows:
     runs-on: windows-latest
     steps:
-      - name: Checkout
+      - name: windows checkout
         uses: actions/checkout@v2
 
   build_and_mirror:
