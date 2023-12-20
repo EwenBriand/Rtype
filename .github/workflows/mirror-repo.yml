@@ -1,10 +1,10 @@
 name: Repository Mirroring
 
-# on: pull request to master
-on:
-  push:
-    branches:
-      - master
+on: [push]
+# on:
+#   push:
+#     branches:
+#       - master
 
 env:
   TARGET_REPOSITORY: git@github.com:EpitechPromo2026/B-CPP-500-BAR-5-2-rtype-eliot.janvier.git
