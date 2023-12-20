@@ -24,6 +24,8 @@ namespace eng {
     const std::string Engine::Options::VERBOSE = "--verbose";
     const std::string Engine::Options::NO_GRAPHICS = "--no-graphics";
     const std::string Engine::Options::SERVER_IP = "--server-ip";
+    const std::string Engine::Options::SERVER_PORT = "--server-port";
+    const std::string Engine::Options::SERVER_MODE = "--server-mode";
 
     ecs::ECSImpl& Engine::GetECS()
     {
@@ -62,6 +64,8 @@ namespace eng {
         },
             -1000);
         m_graphicalModule->ModPipeline();
+        if (m_game)
+            m_game->ModPipeline(this);
     }
 
     void Engine::sortPipeline()
@@ -148,6 +152,13 @@ namespace eng {
                          << e.what() << std::endl;
             return;
         }
+        try {
+            loadNetworkModules();
+        } catch (EngineException& e) {
+            CONSOLE::err << "\nWhile loading server module: \n"
+                         << e.what() << std::endl;
+            return;
+        }
         SYS.SetGraphicalModule(m_graphicalModule);
         SetupEditor();
         try {
@@ -177,10 +188,11 @@ namespace eng {
             });
         }
 
-        if (m_game && m_game->IsOnLine(this))
-            m_game->WaitConnect(this);
-
         m_graphicalModule->Start();
+        if (m_game && m_game->IsOnLine(this)) {
+            m_game->WaitConnect(this);
+        }
+
         setupPipeline();
         sortPipeline();
 
@@ -351,5 +363,30 @@ namespace eng {
     std::shared_ptr<IGame> Engine::GetGame() const
     {
         return m_game;
+    }
+
+    void Engine::loadNetworkModules()
+    {
+        if (IsOptionSet(eng::Engine::Options::SERVER_MODE)) {
+            m_server = serv::ServerImpl::Get();
+        } else if (IsOptionSet(eng::Engine::Options::SERVER_IP)) {
+            m_client = std::make_shared<serv::ClientImpl>();
+        } else {
+            std::cout << "Starting in single player mode" << std::endl;
+        }
+    }
+
+    serv::ServerImpl& Engine::GetServer() const
+    {
+        if (!m_server)
+            throw EngineException("Server not initialized", __FILE__, __FUNCTION__, __LINE__);
+        return *m_server;
+    }
+
+    serv::ClientImpl& Engine::GetClient() const
+    {
+        if (!m_client)
+            throw EngineException("Client not initialized", __FILE__, __FUNCTION__, __LINE__);
+        return *m_client;
     }
 } // namespace eng

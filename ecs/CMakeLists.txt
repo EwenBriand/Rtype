@@ -66,6 +66,7 @@ set(SERVER
     ${ECS_SRC}/ClientBucket.cpp
     ${ECS_SRC}/Message.cpp
     ${ECS_SRC}/Poll.cpp
+    ${ECS_SRC}/ClientImpl.cpp
 )
 
 set(VANILLA_SRC
