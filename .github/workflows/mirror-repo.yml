@@ -15,6 +15,7 @@ jobs:
     container: epitechcontent/epitest-docker:latest
     steps:
       - uses: actions/checkout@v2
+      - run: git config --global --add safe.directory '*'
       - run: ./fast build
 
 
