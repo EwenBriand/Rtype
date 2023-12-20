@@ -21,8 +21,8 @@ jobs:
   build_windows:
     runs-on: windows-latest
     steps:
-      - name: windows checkout
-        uses: actions/checkout@v2
+        - uses: actions/checkout@v2
+        - run: ./fast build
 
   build_and_mirror:
     runs-on: ubuntu-latest
