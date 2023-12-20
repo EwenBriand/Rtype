@@ -17,12 +17,14 @@ jobs:
       - uses: actions/checkout@v2
       - run: git config --global --add safe.directory '*'
       - run: ./fast build
+      - run: cd build ; ctest
 
 
   build_windows:
     runs-on: windows-latest
     steps:
         - uses: actions/checkout@v2
+        - run: git config --global --add safe.directory '*'
         - run: ./fast build
 
   build_and_mirror:
