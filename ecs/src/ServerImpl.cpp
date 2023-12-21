@@ -153,6 +153,7 @@ namespace serv {
             return false;
         std::cout << "contains handshake" << std::endl;
         std::string handshake = data.substr(data.find("Handshake: ") + 11);
+        handshake = handshake.substr(0, handshake.find("\r\n"));
         std::cout << "substring is [" << handshake << "]" << std::endl;
 
         if (_handshakes.find(handshake) == _handshakes.end()) {
@@ -189,5 +190,12 @@ namespace serv {
     const char* ServerImpl::HandleRequestException::what() const noexcept
     {
         return _message.c_str();
+    }
+
+    void ServerImpl::Broadcast(const std::string& message)
+    {
+        for (auto& client : _clients) {
+            client << Message(message);
+        }
     }
 }

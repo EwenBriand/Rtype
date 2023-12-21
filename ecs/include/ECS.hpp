@@ -14,6 +14,7 @@
 #include "IGraphicalModule.hpp"
 #include "InputManager.hpp"
 #include "ResourceManager.hpp"
+#include "Tag.hpp"
 #include <algorithm>
 #include <array>
 #include <chrono>
@@ -621,6 +622,11 @@ namespace ecs {
          */
         void SaveEntity(Entity e, const std::string& path = "")
         {
+            try {
+                if (GetComponent<Tag>(e).Get() == "no save")
+                    return;
+            } catch (std::exception& e) {
+            }
             std::string thisPath = "";
 
             if (path == "") {

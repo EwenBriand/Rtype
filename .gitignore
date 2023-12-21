@@ -21,3 +21,6 @@ build/
 **/tests/
 **/Testing/
 
+core.*
+*.checksum
+

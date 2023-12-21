@@ -7,36 +7,33 @@
 
 #pragma once
 
-
-#include <memory>
-#include <map>
-#include <string>
-#include <optional>
 #include <ctime>
+#include <functional>
+#include <map>
+#include <memory>
+#include <optional>
 #include <queue>
+#include <string>
 #include <tuple>
 #include <vector>
-#include <functional>
 
-#include <thread>
-#include <mutex>
 #include "Component.hpp"
-#include "ThreadPool.hpp"
 #include "Poll.hpp"
+#include "ThreadPool.hpp"
+#include <mutex>
+#include <thread>
 
 #ifdef _WIN32
-    #include <winsock2.h>
-    #include <ws2tcpip.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
 #else
-    #include <sys/socket.h>
-    #include <netinet/in.h>
-    #include <arpa/inet.h>
-    #include <unistd.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <unistd.h>
 #endif
 
-
 #define registerHandshake(type) RegisterHandshake<type>(#type)
-
 
 namespace serv {
     /**
@@ -45,62 +42,62 @@ namespace serv {
      *
      */
     class CircularBuffer {
-        public:
-            CircularBuffer(int size);
-            ~CircularBuffer();
+    public:
+        CircularBuffer(int size);
+        ~CircularBuffer();
 
-            /**
-             * @brief Writes some data in the buffer.
-             *
-             * @param data
-             */
-            void Write(const std::string &data);
+        /**
+         * @brief Writes some data in the buffer.
+         *
+         * @param data
+         */
+        void Write(const std::string& data);
 
-            /**
-             * @brief Returns the data in the buffer until the given delimiter,
-             * or the empty string if the delimiter is not found.
-             *
-             * @param delimiter
-             * @return std::string
-             */
-            std::string ReadUntil(const std::string &delimiter);
+        /**
+         * @brief Returns the data in the buffer until the given delimiter,
+         * or the empty string if the delimiter is not found.
+         *
+         * @param delimiter
+         * @return std::string
+         */
+        std::string ReadUntil(const std::string& delimiter);
 
-            /**
-             * @brief Returns the whole buffer.
-             *
-             * @return std::string
-             */
-            std::string Read();
+        /**
+         * @brief Returns the whole buffer.
+         *
+         * @return std::string
+         */
+        std::string Read();
 
-            /**
-             * @brief Returns the size of the buffer.
-             *
-             * @return int
-             */
-            int GetSize() const;
+        /**
+         * @brief Returns the size of the buffer.
+         *
+         * @return int
+         */
+        int GetSize() const;
 
-            /**
-             * @brief Returns true if the buffer is empty, false otherwise.
-             *
-             * @return true
-             * @return false
-             */
-            bool IsEmpty() const;
+        /**
+         * @brief Returns true if the buffer is empty, false otherwise.
+         *
+         * @return true
+         * @return false
+         */
+        bool IsEmpty() const;
 
-            /**
-             * @brief Returns true if the buffer is full, false otherwise.
-             *
-             * @return true
-             * @return false
-             */
-            bool IsFull() const;
-        private:
-            int _size;
-            int _read;
-            int _write;
-            char *_buffer;
+        /**
+         * @brief Returns true if the buffer is full, false otherwise.
+         *
+         * @return true
+         * @return false
+         */
+        bool IsFull() const;
+
+    private:
+        int _size;
+        int _read;
+        int _write;
+        char* _buffer;
     };
-
 
     /**
      * @brief This class implements a server capable of
@@ -126,187 +123,193 @@ namespace serv {
      *
      */
     class ServerImpl {
+    public:
+        class Message {
         public:
+            static const Message WaitingForHandshake;
+            static const Message HandshakeOK;
 
-            class Message {
-                public:
-                    static const Message WaitingForHandshake;
-                    static const Message HandshakeOK;
-
-                    Message(const std::string &data, int code = 200);
-                    ~Message() = default;
-
-                    /**
-                     * @brief Returns the string of the message.
-                     *
-                     * @return std::string
-                     */
-                    std::string GetData() const;
-
-                    /**
-                     * @brief Returns the time at which the message was created.
-                     *
-                     * @return std::time_t
-                     */
-                    std::time_t GetTime() const;
-
-                    /**
-                     * @brief Get the status of the message. (for exemple if a request is ok,
-                     * the status will be 200)
-                     *
-                     * @return int
-                     */
-                    int GetCode() const;
-
-                private:
-                    std::string _data;
-                    std::time_t _time;
-                    int _code;
-            };
+            Message(const std::string& data, int code = 200);
+            ~Message() = default;
 
             /**
-             * @brief This IClient interface is used to represent a distant client
-             * and store its associated data.
+             * @brief Returns the string of the message.
              *
+             * @return std::string
              */
-            class IClient {
-                public:
-                    virtual ~IClient() = default;
-                    virtual Message HandleRequest(const std::string &data) = 0;
-            };
+            std::string GetData() const;
 
             /**
-             * @brief Signals that an error occured during the handling of
-             * a request.
+             * @brief Returns the time at which the message was created.
              *
+             * @return std::time_t
              */
-            class HandleRequestException : public std::exception {
-                public:
-                    HandleRequestException(const std::string &message, int code);
-                    ~HandleRequestException() = default;
-
-                    const char *what() const noexcept override;
-                    const Message GetMessage() const;
-
-                private:
-                    int _code;
-                    std::string _message;
-            };
+            std::time_t GetTime() const;
 
             /**
-             * @brief Encapsulates a client and its associated data.
-             * It provides handles to send and receive data from the client,
-             * as well as an instance of an IClient which will handle the
-             * reveived requests.
+             * @brief Get the status of the message. (for exemple if a request is ok,
+             * the status will be 200)
              *
+             * @return int
              */
-            class ClientBucket {
-                public:
-                    ClientBucket(int port);
-                    ~ClientBucket();
-
-                    void SetClient(std::shared_ptr<IClient> client);
-                    void Send(const std::string &data);
-                    void Receive(const std::string &data);
-                    std::shared_ptr<IClient> GetClient() const;
-                    #ifdef _WIN32
-                        long long GetSocket() const;
-                    #else
-                        int GetSocket() const;
-                    #endif
-
-                    ClientBucket &operator<<(const Message &message);
-
-                template <typename T>
-                static std::shared_ptr<IClient> GenerateClient() {
-                    return std::static_pointer_cast<IClient>(std::make_shared<T>());
-                }
-
-                private:
-                    CircularBuffer _buffer;
-                    std::shared_ptr<IClient> _client;
-                    std::shared_ptr<td::ThreadedQueue<50>> _tasks;
-                    #ifdef _WIN32
-                        long long _socket;
-                    #else
-                        int _socket;
-                    #endif
-            };
-
-            static ServerImpl *Get();
-            ServerImpl(const ServerImpl &cpy) = delete;
-            ServerImpl &operator=(const ServerImpl &src) = delete;
-            ServerImpl();
-            ~ServerImpl();
-
-            void SetPort(int port);
-            void SetMaxClients(int maxClients);
-
-            void BufferMessage(const std::string &data, int socket);
-
-            /**
-             * @brief This method should be called in a loop to poll the server.
-             *
-             */
-            void Poll();
-
-            /**
-             * @brief This method creates a new client bucket and adds it to the
-             * list of clients.
-             * It also sends the handshake message to the client.
-             *
-             */
-            void AcceptNewClient();
-
-            template <typename T>
-            void RegisterHandshake(const std::string &name) {
-                std::cout << "registered handshake [" << name << "]" << std::endl;
-                _handshakes[name] = ClientBucket::GenerateClient<T>;
-            }
-
-            /**
-             * @brief This method initializes the server. It has to be called before
-             * being able to receive clients.
-             *
-             */
-            void Start();
+            int GetCode() const;
 
         private:
-            void SendBufferedMessages();
+            std::string _data;
+            std::time_t _time;
+            int _code;
+        };
 
-            /**
-             * @brief This method checks if the given client has performed the handshake.
-             * If it has, it will return true, otherwise it will return false.
-             * If the handshake is performed, it will also set the client's type.
-             *
-             * @param client
-             * @param buffer
-             * @return true
-             * @return false
-             */
-            bool checkForHandshake(ClientBucket &client, const std::string &buffer);
+        /**
+         * @brief This IClient interface is used to represent a distant client
+         * and store its associated data.
+         *
+         */
+        class IClient {
+        public:
+            virtual ~IClient() = default;
+            virtual Message HandleRequest(const std::string& data) = 0;
+        };
 
+        /**
+         * @brief Signals that an error occured during the handling of
+         * a request.
+         *
+         */
+        class HandleRequestException : public std::exception {
+        public:
+            HandleRequestException(const std::string& message, int code);
+            ~HandleRequestException() = default;
 
-            static std::unique_ptr<ServerImpl> _instance;
-            std::vector<ClientBucket> _clients;
+            const char* what() const noexcept override;
+            const Message GetMessage() const;
 
-            int _port;
-            int _maxClients = -1;
-            #ifdef _WIN32
-                long long _socket;
-            #else
-                int _socket;
-            #endif
-            struct sockaddr_in _address;
-            socklen_t _addrlen;
+        private:
+            int _code;
+            std::string _message;
+        };
 
-            fd_set _readfds;
-            fd_set _writefds;
-            fd_set _exceptfds;
+        /**
+         * @brief Encapsulates a client and its associated data.
+         * It provides handles to send and receive data from the client,
+         * as well as an instance of an IClient which will handle the
+         * reveived requests.
+         *
+         */
+        class ClientBucket {
+        public:
+            ClientBucket(int port);
+            ~ClientBucket();
 
-            std::map<std::string, std::function<std::shared_ptr<IClient>()>> _handshakes;
-            std::vector<myposix::Poll::aPollfd> _pollfds;
-            std::map<int, std::queue<std::string>> _bufferedMessages;
+            void SetClient(std::shared_ptr<IClient> client);
+            void Send(const std::string& data);
+            void Receive(const std::string& data);
+            std::shared_ptr<IClient> GetClient() const;
+#ifdef _WIN32
+            long long GetSocket() const;
+#else
+            int GetSocket() const;
+#endif
+
+            ClientBucket& operator<<(const Message& message);
+
+            template <typename T>
+            static std::shared_ptr<IClient> GenerateClient()
+            {
+                return std::static_pointer_cast<IClient>(std::make_shared<T>());
+            }
+
+        private:
+            CircularBuffer _buffer;
+            std::shared_ptr<IClient> _client;
+            std::shared_ptr<td::ThreadedQueue<50>> _tasks;
+#ifdef _WIN32
+            long long _socket;
+#else
+            int _socket;
+#endif
+        };
+
+        static ServerImpl* Get();
+        ServerImpl(const ServerImpl& cpy) = delete;
+        ServerImpl& operator=(const ServerImpl& src) = delete;
+        ServerImpl();
+        ~ServerImpl();
+
+        void SetPort(int port);
+        void SetMaxClients(int maxClients);
+
+        void BufferMessage(const std::string& data, int socket);
+
+        /**
+         * @brief This method should be called in a loop to poll the server.
+         *
+         */
+        void Poll();
+
+        /**
+         * @brief This method creates a new client bucket and adds it to the
+         * list of clients.
+         * It also sends the handshake message to the client.
+         *
+         */
+        void AcceptNewClient();
+
+        template <typename T>
+        void RegisterHandshake(const std::string& name)
+        {
+            std::cout << "registered handshake [" << name << "]" << std::endl;
+            _handshakes[name] = ClientBucket::GenerateClient<T>;
+        }
+
+        /**
+         * @brief This method initializes the server. It has to be called before
+         * being able to receive clients.
+         *
+         */
+        void Start();
+
+        /**
+         * @brief Broadcasts a message too all clients
+         *
+         */
+        void Broadcast(const std::string& message);
+
+    private:
+        void SendBufferedMessages();
+
+        /**
+         * @brief This method checks if the given client has performed the handshake.
+         * If it has, it will return true, otherwise it will return false.
+         * If the handshake is performed, it will also set the client's type.
+         *
+         * @param client
+         * @param buffer
+         * @return true
+         * @return false
+         */
+        bool checkForHandshake(ClientBucket& client, const std::string& buffer);
+
+        static std::unique_ptr<ServerImpl> _instance;
+        std::vector<ClientBucket> _clients;
+
+        int _port;
+        int _maxClients = -1;
+#ifdef _WIN32
+        long long _socket;
+#else
+        int _socket;
+#endif
+        struct sockaddr_in _address;
+        socklen_t _addrlen;
+
+        fd_set _readfds;
+        fd_set _writefds;
+        fd_set _exceptfds;
+
+        std::map<std::string, std::function<std::shared_ptr<IClient>()>> _handshakes;
+        std::vector<myposix::Poll::aPollfd> _pollfds;
+        std::map<int, std::queue<std::string>> _bufferedMessages;
     };
 
     /**
@@ -319,12 +322,12 @@ namespace serv {
         void Update(int entityID);
         void OnLoad();
         void Start();
-        void Load(const std::string &path);
-        void Save(const std::string &path);
+        void Load(const std::string& path);
+        void Save(const std::string& path);
         void OnAddComponent(int entityID);
         std::map<std::string, metadata_t> GetMetadata();
         std::string GetClassName() const;
 
-        private:
+    private:
     };
 }

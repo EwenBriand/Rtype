@@ -36,17 +36,29 @@ Sprite::Sprite(const std::string& path)
 
 Sprite::~Sprite()
 {
+    if (eng::Engine::GetEngine()->IsOptionSet(eng::Engine::Options::NO_GRAPHICS))
+        return;
     UnloadTexture(_texture);
 }
 
 void Sprite::Draw()
 {
+    if (eng::Engine::GetEngine()->IsOptionSet(eng::Engine::Options::NO_GRAPHICS))
+        return;
     if (!_visible)
         return;
     Rectangle source = { _rect.x, _rect.y, _rect.width, _rect.height };
     Rectangle dest = { _origin.x, _origin.y, _rect.width * _scale.x, _rect.height * _scale.y };
     Vector2 origin = { 0.0f, 0.0f };
-    DrawTexturePro(_texture, source, dest, origin, _rotation, _color);
+    graph::graphTexture_t spriteInfo = { .source = source,
+        .dest = dest,
+        .origin = origin,
+        .texture = _texture,
+        .rotation = _rotation,
+        .color = _color };
+    SYS.GetGraphicalModule()->AddRectToBuffer(_priority, [spriteInfo]() {
+        DrawTexturePro(spriteInfo.texture, spriteInfo.source, spriteInfo.dest, spriteInfo.origin, spriteInfo.rotation, spriteInfo.color);
+    });
 }
 
 std::string& Sprite::GetPath()
@@ -124,6 +136,11 @@ void Sprite::SetFlipY(bool flipY)
     _flipY = flipY;
 }
 
+void Sprite::SetPriority(int priority)
+{
+    _priority = priority;
+}
+
 //-----------------------------------------------------------------------------
 // FRAME
 //-----------------------------------------------------------------------------
@@ -188,30 +205,53 @@ void Animation::SetName(const std::string& name)
 
 void Animation::SetSpritePath(const std::string& path)
 {
+    if (eng::Engine::GetEngine()->IsOptionSet(eng::Engine::Options::NO_GRAPHICS))
+        return;
     std::string assetRoot = eng::Engine::GetEngine()->GetConfigValue("assetRoot");
     std::string spritePath = ecs::ResourceManager::MakePath({ assetRoot, path }, true);
     _sprite = std::make_shared<Sprite>(spritePath);
+}
+
+void Animation::SetParalax(bool paralax)
+{
+    this->paralax = paralax;
+}
+
+void Animation::SetParalaxSpeed(int paralaxSpeed)
+{
+    this->paralaxSpeed = paralaxSpeed;
+}
+
+void Animation::SetPriority(int priority)
+{
+    this->priority = priority;
 }
 
 void Animation::RenderFrame(int entityId)
 {
     if (_frames.empty())
         return;
-    _sprite->SetRect(_frames[_currentFrame].rect);
+    if (_sprite)
+        _sprite->SetRect(_frames[_currentFrame].rect);
     try {
         auto transform = SYS.GetComponent<CoreTransform>(entityId);
         auto x = transform.x;
         auto y = transform.y;
-        _sprite->SetOrigin({ x, y });
+        if (_sprite)
+            _sprite->SetOrigin({ x, y });
     } catch (std::exception& e) {
-        _sprite->SetOrigin(_frames[_currentFrame].origin);
+        if (_sprite)
+            _sprite->SetOrigin(_frames[_currentFrame].origin);
     }
-    _sprite->SetScale(_frames[_currentFrame].scale);
-    _sprite->SetRotation(_frames[_currentFrame].rotation);
-    _sprite->SetColor(_frames[_currentFrame].color);
-    _sprite->SetFlipX(_frames[_currentFrame].flipX);
-    _sprite->SetFlipY(_frames[_currentFrame].flipY);
-    _sprite->Draw();
+    if (_sprite) {
+        _sprite->SetScale(_frames[_currentFrame].scale);
+        _sprite->SetRotation(_frames[_currentFrame].rotation);
+        _sprite->SetColor(_frames[_currentFrame].color);
+        _sprite->SetFlipX(_frames[_currentFrame].flipX);
+        _sprite->SetFlipY(_frames[_currentFrame].flipY);
+        _sprite->SetPriority(priority);
+        _sprite->Draw();
+    }
     _frameStartTime += SYS.GetDeltaTime();
     if (_frameStartTime >= _frames[_currentFrame].duration) { // todo fix for skipping frames in case of lag
         _frameStartTime = 0;
@@ -307,7 +347,7 @@ void Animator::OnLoad()
                 CONSOLE::err << "Failed to load animation: " << e.what() << std::endl;
                 return;
             }
-            animator->AddAnimation(name, anim);
+            animator->AddAnimation(anim.GetName(), anim);
         },
         "Add an animation to the current entity");
 
@@ -367,6 +407,7 @@ void Animator::AddAnimation(const std::string& path)
 
 std::vector<std::string> Animator::loadRawAnimFile(const std::string& path, std::string& name)
 {
+
     std::vector<std::string> lines;
     const std::string assetRoot = eng::Engine::GetEngine()->GetConfigValue("assetRoot");
     std::string animPath = ecs::ResourceManager::MakePath({ assetRoot, path }, true);
@@ -391,6 +432,9 @@ void Animator::AddAnimation(const std::string& name, Animation& anim)
 {
     std::cout << "Setting animation with name " << name << std::endl;
     _animations[name] = anim;
+    for (auto& it : _animations) {
+        std::cout << "Animation: " << it.first << std::endl;
+    }
 }
 
 Animation Animator::loadAnimationFromFile(const std::string& path, std::string& name)
@@ -498,10 +542,20 @@ void Animator::handleAnimationProperties(Animation& anim, const std::string& key
         anim.SetSpritePath(value);
     else if (key == "loop")
         anim.SetLoop(value == "true");
+    else if (key == "paralax")
+        anim.SetParalax(value == "true");
+    else if (key == "paralax speed")
+        anim.SetParalaxSpeed(std::stoi(value));
+    else if (key == "priority")
+        anim.SetPriority(std::stoi(value));
     else if (key == "fps")
         defaultFrame.duration = 1.0 / std::stof(value);
     else if (key == "scale")
         defaultFrame.scale = Vector2 { std::stof(value), std::stof(value) };
+    else if (key == "flipX")
+        defaultFrame.flipX = value == "true";
+    else if (key == "flipY")
+        defaultFrame.flipY = value == "true";
     else
         throw std::runtime_error("Unknown animation property: " + key);
 }

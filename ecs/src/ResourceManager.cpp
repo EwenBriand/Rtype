@@ -11,6 +11,7 @@
 #include "GraphicalRayLib/GraphicalRayLib.hpp"
 #include "IGraphicalModule.hpp"
 #include "LibUtils.hpp"
+#include "NoGraphics.hpp"
 #include "metadataGenerator.hpp"
 #include <cstdio>
 #include <cstring>
@@ -33,17 +34,13 @@ namespace ecs {
     std::shared_ptr<AUserComponent> ResourceManager::LoadUserComponent(
         const std::string& resourceID)
     {
-        std::cout << "Loading user component " << resourceID << std::endl;
         if (_handles.find(resourceID) != _handles.end()) {
             AUserComponent* (*create)() = reinterpret_cast<AUserComponent* (*)()>(lib::LibUtils::getSymHandle(_handles[resourceID], "create_" + resourceID));
             _instances.emplace_back(create());
             return _instances.back();
         }
-        std::cout << "resource id is [" << resourceID << "]" << std::endl;
         std::string libName = m_userComponentsPath + "lib" + resourceID + ".so";
-        std::cout << "Loading " << libName << " with libutils " << std::endl;
         void* handle = lib::LibUtils::getLibHandle(libName.c_str());
-        std::cout << "done" << std::endl;
         _handles[resourceID] = handle;
         AUserComponent* (*create)() = reinterpret_cast<AUserComponent* (*)()>(lib::LibUtils::getSymHandle(handle, "create_" + resourceID));
         _handles[resourceID] = handle;
@@ -195,21 +192,15 @@ namespace ecs {
         if (std::get<1>(_graphicalModule) != nullptr) {
             throw eng::EngineException("Graphical module already loaded", __FILE__, __FUNCTION__, __LINE__);
         }
-
-        if (path == "") {
+        if (!eng::Engine::GetEngine()->IsOptionSet(eng::Engine::Options::NO_GRAPHICS)) {
             auto tmp = std::shared_ptr<graph::IGraphicalModule>(new raylib::GraphicalRayLib());
             _graphicalModule = std::make_tuple(nullptr, tmp);
             return std::get<1>(_graphicalModule);
+        } else {
+            auto tmp = std::shared_ptr<graph::IGraphicalModule>(new eng::NoGraphics());
+            _graphicalModule = std::make_tuple(nullptr, tmp);
+            return std::get<1>(_graphicalModule);
         }
-
-        void* handle = lib::LibUtils::getLibHandle(path.c_str());
-        graph::IGraphicalModule* (*create)() = reinterpret_cast<graph::IGraphicalModule* (*)()>(lib::LibUtils::getSymHandle(handle, "create"));
-        auto tmp = std::shared_ptr<graph::IGraphicalModule>(create());
-        if (!std::get<1>(_graphicalModule)) {
-            throw eng::EngineException("Graphical module creation failed", __FILE__, __FUNCTION__, __LINE__);
-        }
-        _graphicalModule = std::make_tuple(handle, tmp);
-        return std::get<1>(_graphicalModule);
     }
 
     std::string ResourceManager::LoadFileText(const std::string& path)

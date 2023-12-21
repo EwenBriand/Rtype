@@ -61,16 +61,16 @@ graph::vec2f UIDiv::GetPosition() const
         auto transform = SYS.GetComponent<CoreTransform>(m_parentID);
         dx = transform.x;
         dy = transform.y;
-    } catch (std::exception &e) {
+    } catch (std::exception& e) {
         dx = 0;
         dy = 0;
     }
-    return {dx + m_x, dy + m_y};
+    return { dx + m_x, dy + m_y };
 }
 
 graph::vec2f UIDiv::GetSize() const
 {
-    return {m_width, m_height};
+    return { m_width, m_height };
 }
 
 void UIDiv::Draw() const
@@ -80,25 +80,18 @@ void UIDiv::Draw() const
         auto transform = SYS.GetComponent<CoreTransform>(m_parentID);
         dx = transform.x;
         dy = transform.y;
-    } catch (std::exception &e) {
+    } catch (std::exception& e) {
         dx = 0;
         dy = 0;
     }
-    SYS.GetGraphicalModule()->WindowDrawRectangle({
-        .pos = {dx + m_x, dy + m_y},
-        .dimensions = {m_width, m_height},
-        .bgColor = {
-            static_cast<unsigned char>(m_r),
-            static_cast<unsigned char>(m_g),
-            static_cast<unsigned char>(m_b),
-            static_cast<unsigned char>(m_a)},
-        .borderColor = {
-            static_cast<unsigned char>(m_border_r),
-            static_cast<unsigned char>(m_border_g),
-            static_cast<unsigned char>(m_border_b),
-            static_cast<unsigned char>(m_border_a)},
-        .borderSize = m_border_thickness
-    });
+
+    graph::graphRect_t rectInfo = { .pos = { dx + m_x, dy + m_y }, .dimensions = { m_width, m_height }, .bgColor = { static_cast<unsigned char>(m_r), static_cast<unsigned char>(m_g), static_cast<unsigned char>(m_b), static_cast<unsigned char>(m_a) }, .borderColor = { static_cast<unsigned char>(m_border_r), static_cast<unsigned char>(m_border_g), static_cast<unsigned char>(m_border_b), static_cast<unsigned char>(m_border_a) }, .borderSize = m_border_thickness };
+
+    SYS.GetGraphicalModule()
+        ->AddRectToBuffer(1, [rectInfo]() {
+            DrawRectangle(rectInfo.pos.x, rectInfo.pos.y, rectInfo.dimensions.x, rectInfo.dimensions.y, { rectInfo.bgColor.x, rectInfo.bgColor.y, rectInfo.bgColor.z, rectInfo.bgColor.w });
+            DrawRectangleLinesEx({ rectInfo.pos.x, rectInfo.pos.y, rectInfo.dimensions.x, rectInfo.dimensions.y }, rectInfo.borderSize, { rectInfo.borderColor.x, rectInfo.borderColor.y, rectInfo.borderColor.z, 255 });
+        });
 }
 
 void UIDiv::setVisible(bool visible)

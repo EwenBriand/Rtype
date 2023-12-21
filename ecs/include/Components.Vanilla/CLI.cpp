@@ -40,6 +40,8 @@ std::map<std::string, std::function<void(CLI&, std::vector<std::string>)>> CLI::
     { "prefab.load", [](CLI& cli, std::vector<std::string> args) { cli.loadPrefab(args); } },
     { "prefab.list", [](CLI& cli, std::vector<std::string> args) { cli.listPrefabs(args); } },
     { "prefab.remove", [](CLI& cli, std::vector<std::string> args) { cli.removePrefab(args); } },
+    { "ssend", [](CLI& cli, std::vector<std::string> args) { cli.sendMessageToServer(args); } },
+    { "csend", [](CLI& cli, std::vector<std::string> args) { cli.sendMessageToClients(args); } },
 };
 
 const std::map<std::string, std::function<void(CLI&, std::vector<std::string>)>> CLI::getM_commands()
@@ -496,4 +498,50 @@ void CLI::removePrefab(std::vector<std::string> args)
         return;
     }
     std::filesystem::remove(prefabPath);
+}
+
+void CLI::sendMessageToServer(std::vector<std::string> args)
+{
+    if (args.size() - 1 < 1) {
+        CONSOLE::err << "Invalid number of arguments" << std::endl;
+        return;
+    }
+    auto engine = eng::Engine::GetEngine();
+    if (engine->IsOptionSet(eng::Engine::Options::SERVER_MODE)) {
+        CONSOLE::err << "Cannot send message to server in server mode" << std::endl;
+        return;
+    }
+    try {
+        auto& clientEndpoint = engine->GetClient();
+        std::string message = "";
+        for (auto& arg : args)
+            message += arg + " ";
+        clientEndpoint.Send(serv::bytes(message) + serv::SEPARATOR);
+    } catch (std::exception& e) {
+        CONSOLE::err << "Not connected to server" << std::endl;
+        return;
+    }
+}
+
+void CLI::sendMessageToClients(std::vector<std::string> args)
+{
+    if (args.size() - 1 < 1) {
+        CONSOLE::err << "Invalid number of arguments" << std::endl;
+        return;
+    }
+    auto engine = eng::Engine::GetEngine();
+    if (!engine->IsOptionSet(eng::Engine::Options::SERVER_MODE)) {
+        CONSOLE::err << "Cannot send message to clients in client mode" << std::endl;
+        return;
+    }
+    try {
+        auto& serverEndpoint = engine->GetServer();
+        std::string message = "";
+        for (auto& arg : args)
+            message += arg + " ";
+        serverEndpoint.Broadcast(serv::bytes(message) + serv::SEPARATOR);
+    } catch (std::exception& e) {
+        CONSOLE::err << "Not connected to server" << std::endl;
+        return;
+    }
 }

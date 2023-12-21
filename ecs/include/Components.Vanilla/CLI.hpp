@@ -171,6 +171,25 @@ public:
      */
     void removePrefab(std::vector<std::string> args = std::vector<std::string>());
 
+    /**
+     * @brief Sends a message to the server if the engine is in client mode and
+     * is connected to a server.
+     *
+     * @param command
+     * @param func
+     * @param help
+     */
+    void sendMessageToServer(std::vector<std::string> args = std::vector<std::string>());
+
+    /**
+     * @brief Sends a message to all clients if the engine is in server mode.
+     *
+     * @param command
+     * @param func
+     * @param help
+     */
+    void sendMessageToClients(std::vector<std::string> args = std::vector<std::string>());
+
     void RegisterCustomCommand(const std::string& command, std::function<void(CLI&, std::vector<std::string>)> func, const std::string& help = "");
     std::string GetClassName() const;
     Entity GetContext() const;
@@ -217,6 +236,8 @@ private:
         { "prefab.save", "Save the current entity as a prefab" },
         { "prefab.load", "Load a prefab" },
         { "prefab.list", "List all the prefabs" },
-        { "prefab.remove", "Remove a prefab" }
+        { "prefab.remove", "Remove a prefab" },
+        { "ssend", "Send a message to the server if the engine is in client mode and is connected to a server" },
+        { "csend", "Send a message to all clients if the engine is in server mode" }
     };
 };

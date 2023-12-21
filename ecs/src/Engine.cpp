@@ -22,6 +22,10 @@ namespace eng {
     const std::string Engine::Options::GAME = "game";
     const std::string Engine::Options::CONFIG_DIR = "--config-dir";
     const std::string Engine::Options::VERBOSE = "--verbose";
+    const std::string Engine::Options::NO_GRAPHICS = "--no-graphics";
+    const std::string Engine::Options::SERVER_IP = "--server-ip";
+    const std::string Engine::Options::SERVER_PORT = "--server-port";
+    const std::string Engine::Options::SERVER_MODE = "--server-mode";
 
     ecs::ECSImpl& Engine::GetECS()
     {
@@ -39,7 +43,7 @@ namespace eng {
     }
 
     Engine::Engine()
-        : m_graphicalModule(SYS.GetResourceManager().LoadGraphicalModule())
+        : m_graphicalModule(nullptr)
         , m_ecs(SYS)
     {
         m_preUpdatePipeline = std::make_shared<std::vector<Action>>();
@@ -60,6 +64,8 @@ namespace eng {
         },
             -1000);
         m_graphicalModule->ModPipeline();
+        if (m_game)
+            m_game->ModPipeline(this);
     }
 
     void Engine::sortPipeline()
@@ -139,6 +145,20 @@ namespace eng {
                          << e.what() << std::endl;
             Stop();
         }
+        try {
+            m_graphicalModule = SYS.GetResourceManager().LoadGraphicalModule("");
+        } catch (ConfigException& e) {
+            CONSOLE::err << "\nWhile loading graphical module: \n"
+                         << e.what() << std::endl;
+            return;
+        }
+        try {
+            loadNetworkModules();
+        } catch (EngineException& e) {
+            CONSOLE::err << "\nWhile loading server module: \n"
+                         << e.what() << std::endl;
+            return;
+        }
         SYS.SetGraphicalModule(m_graphicalModule);
         SetupEditor();
         try {
@@ -168,10 +188,11 @@ namespace eng {
             });
         }
 
-        if (m_game && m_game->IsOnLine(this))
-            m_game->WaitConnect(this);
-
         m_graphicalModule->Start();
+        if (m_game && m_game->IsOnLine(this)) {
+            m_game->WaitConnect(this);
+        }
+
         setupPipeline();
         sortPipeline();
 
@@ -342,5 +363,35 @@ namespace eng {
     std::shared_ptr<IGame> Engine::GetGame() const
     {
         return m_game;
+    }
+
+    void Engine::loadNetworkModules()
+    {
+        if (IsOptionSet(eng::Engine::Options::SERVER_MODE) && IsOptionSet(eng::Engine::Options::SERVER_PORT)) {
+            std::string port = GetOptionValue(eng::Engine::Options::SERVER_PORT);
+            if (port.find_first_not_of("0123456789") != std::string::npos) {
+                throw EngineException("Invalid port number", __FILE__, __FUNCTION__, __LINE__);
+            }
+            m_server = std::make_shared<serv::ServerUDP>(std::stoi(port));
+            CONSOLE::warn << "Server listening on port " << port << std::endl;
+        } else if (IsOptionSet(eng::Engine::Options::SERVER_IP)) {
+            m_client = std::make_shared<serv::ClientUDP>();
+        } else {
+            CONSOLE::warn << "Starting in single player mode" << std::endl;
+        }
+    }
+
+    serv::ServerUDP& Engine::GetServer() const
+    {
+        if (!m_server)
+            throw EngineException("Server not initialized", __FILE__, __FUNCTION__, __LINE__);
+        return *m_server;
+    }
+
+    serv::ClientUDP& Engine::GetClient() const
+    {
+        if (!m_client)
+            throw EngineException("Client not initialized", __FILE__, __FUNCTION__, __LINE__);
+        return *m_client;
     }
 } // namespace eng

@@ -3,8 +3,12 @@ include_directories(
     ./scripts/
 )
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcoroutines")
+
 set(SRC
     LocalPlayerController.cpp
+    DistantPlayer.cpp
+    LobbyCoroutine.cpp
     scripts/Ship.cpp
 )
 

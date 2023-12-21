@@ -89,15 +89,25 @@ void EditorMouseManager::Update(int entityID)
         return;
     try {
         auto& transform = SYS.GetComponent<CoreTransform>(ctxt);
-        SYS.GetGraphicalModule()->WindowDrawCircle({ .pos = transform.GetScreenPosition(),
+        graph::graphCircle_t circleInfo = { .pos = transform.GetScreenPosition(),
             .radius = 5,
             .borderColor = { 255, 255, 255, 255 },
-            .borderSize = 1 });
+            .borderSize = 1 };
+        SYS.GetGraphicalModule()->AddRectToBuffer(1, [circleInfo]() {
+            DrawCircle(circleInfo.pos.x, circleInfo.pos.y, circleInfo.radius, { circleInfo.color.x, circleInfo.color.y, circleInfo.color.z, circleInfo.color.w });
+            DrawCircleLines(circleInfo.pos.x, circleInfo.pos.y, circleInfo.radius, { circleInfo.borderColor.x, circleInfo.borderColor.y, circleInfo.borderColor.z, circleInfo.borderColor.w });
+        });
     } catch (std::exception& e) {
         return;
     }
-    if (m_isPressed)
+    if (SYS.GetGraphicalModule()->WindowIsMouseLeftDown() && !m_isPressed) {
+        m_mousePrevPos = SYS.GetGraphicalModule()->WindowGetMousePos();
+        m_isPressed = true;
+    } else if (SYS.GetGraphicalModule()->WindowIsMouseLeftDown()) {
         checkForDrag();
+    } else if (!SYS.GetGraphicalModule()->WindowIsMouseLeftDown()) {
+        m_isPressed = false;
+    }
 }
 
 std::string EditorMouseManager::GetClassName() const

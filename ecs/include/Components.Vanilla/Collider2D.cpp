@@ -72,7 +72,6 @@ void Collider2D::OnLoad()
             },
             "Removes the last vertices (x, y) from the collider of the selected entity.");
     }
-    std::cout << "DEBUG done loading collider" << std::endl;
 }
 
 void Collider2D::Update(int entityID)
@@ -144,7 +143,8 @@ std::vector<float> Collider2D::GetVerticesWithPosition() const noexcept
 
 void Collider2D::DebugDraw() const
 {
-    if (eng::Engine::GetEngine()->IsOptionSet(eng::Engine::Options::EDITOR)) {
+    auto engine = eng::Engine::GetEngine();
+    if (engine->IsOptionSet(eng::Engine::Options::EDITOR) && !engine->IsOptionSet(eng::Engine::Options::NO_GRAPHICS)) {
         auto vertices = _vertices;
         try {
             auto transform = SYS.GetComponent<CoreTransform>(_entityID);

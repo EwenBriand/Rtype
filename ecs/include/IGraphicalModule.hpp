@@ -272,6 +272,15 @@ namespace graph {
         int borderSize = 0;
     } graphRect_t;
 
+    typedef struct graphTexture_t {
+        Rectangle source = { 0.0f, 0.0f, 0.0f, 0.0f };
+        Rectangle dest = { 0.0f, 0.0f, 0.0f, 0.0f };
+        Vector2 origin = { 0.0f, 0.0f };
+        Texture2D texture;
+        float rotation = 0.0f;
+        Color color = { 255, 255, 255, 255 };
+    } graphTexture_t;
+
     /**
      * @brief Describes a circle to be drawn on the window.
      *
@@ -333,25 +342,13 @@ namespace graph {
         virtual void RegisterEvent(const std::string& eventKey, std::function<void()>&& callback) = 0;
 
         /**
-         * @brief This function buffers a rectangle to be drawn in the window.
+         * @brief This function returns true if the event is triggered.
          *
-         * @param rectInfo
+         * @param eventKey
+         * @return true
+         * @return false
          */
-        virtual void WindowDrawRectangle(graphRect_t rectInfo) = 0;
-
-        /**
-         * @brief This function buffers a circle to be drawn in the window.
-         *
-         * @param circleInfo
-         */
-        virtual void WindowDrawCircle(graphCircle_t circleInfo) = 0;
-
-        /**
-         * @brief This function buffers a text to be drawn in the window.
-         *
-         * @param textInfo
-         */
-        virtual void WindowDrawText(graphText_t textInfo) = 0;
+        virtual void AddRectToBuffer(int priority, std::function<void()>&& func) = 0;
 
         /**
          * @brief This function returns a vector2f containing the mouse position on the screen
@@ -420,6 +417,27 @@ namespace graph {
          * @return false
          */
         virtual bool isKeyPressed(int key) = 0;
+
+        /**
+         * @brief This function clears the buffer of the graphical module.
+         *
+         */
+        virtual void ClearBuffer() = 0;
+
+        /**
+         * @brief This function displays the buffer of the graphical module.
+         *
+         */
+        virtual void DisplayBuffer() = 0;
+
+        /**
+         * @brief This function returns true if the graphical module is
+         * currently running.
+         *
+         * @return true
+         * @return false
+         */
+        virtual bool CheckCollisionWithRectangle(vec2f pos, Rectangle dimensions) = 0;
     };
 } // namespace graph
 
