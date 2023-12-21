@@ -6,9 +6,10 @@
 */
 
 #pragma once
-#include "Server.hpp"
+#include "ServerUdp.hpp"
 
-class DistantPlayer : public serv::ServerImpl::IClient {
+class DistantPlayer : public serv::IClient {
 public:
-    serv::ServerImpl::Message HandleRequest(const std::string& data) override;
+    serv::bytes HandleRequest(const serv::bytes& data) override;
+    std::shared_ptr<serv::IClient> Clone() override;
 };

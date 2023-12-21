@@ -1,6 +1,7 @@
-#include "ClientImpl.hpp"
+#include "ClientUDP.hpp"
 #include "IGame.hpp"
-#include "Server.hpp"
+#include "ServerUdp.hpp"
+#include "States.hpp"
 
 namespace eng {
     class Engine;
@@ -35,7 +36,9 @@ namespace eng {
         void connectToServer(Engine* e);
 
         bool m_isServer = false;
-        std::shared_ptr<serv::Server> m_server = nullptr;
-        std::shared_ptr<serv::ClientImpl> m_client = nullptr;
+        std::shared_ptr<serv::ServerUDP> m_server = nullptr;
+        std::shared_ptr<serv::ClientUDP> m_client = nullptr;
+
+        ecs::States _stateMachine;
     };
 } // namespace eng

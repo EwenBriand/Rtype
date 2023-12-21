@@ -1,35 +1,31 @@
 #include "Animation.hpp"
 #include "Animator.hpp"
-#include "ResourceManager.hpp"
+#include <ToBytes.hpp>
+#include <gtest/gtest.h>
 #include <string>
 #include <vector>
 
-void TestSaveAnimator()
+TEST(serialization, most_types)
 {
-    Animator animator;
-    animator.AddAnimation("tests/testanim.anim");
-    auto registered = animator.GetRegisteredAnimations();
+    int a = 1;
+    int b = 2;
+    int c = 3;
 
-    if (registered.size() != 1)
-        throw std::runtime_error("Animator::GetRegisteredAnimations() failed, zero");
-    if (registered[0] != "tests/testanim.anim")
-        throw std::runtime_error("Animator::GetRegisteredAnimations() failed, bad path");
+    std::vector<int*> vec;
+    vec.push_back(&a);
+    vec.push_back(&b);
+    vec.push_back(&c);
 
-    animator.Save("testsaveanim.bin");
-    Animator animator2;
-    animator2.Load("testsaveanim.bin");
-    registered = animator2.GetRegisteredAnimations();
+    bytes::ToBytes bs;
+    bs.Save("deleteme.bin", vec);
 
-    if (registered.size() != 1)
-        throw std::runtime_error("Animator::GetRegisteredAnimations() failed, loaded: zero");
-    if (registered[0] != "tests/testanim.anim")
-        throw std::runtime_error("Animator::GetRegisteredAnimations() failed, loaded: bad path");
-}
+    std::vector<int*> vec2;
+    bs.Load("deleteme.bin", vec2);
 
-int main()
-{
-    TestSaveAnimator();
-
-    std::cout << "All tests passed!" << std::endl;
-    return 0;
+    for (int i = 0; i < vec2.size(); ++i) {
+        ASSERT_EQ(*vec[i], *vec2[i]);
+    }
+    for (int i = 0; i < vec2.size(); ++i) {
+        delete vec2[i];
+    }
 }

@@ -104,7 +104,6 @@ namespace ui {
             std::size_t handle = 0;
             while (_groups.find(handle) != _groups.end())
                 handle++;
-            std::cout << "keeping handle: " << handle << std::endl;
             _groups.emplace(handle, handles);
             return handle;
         }

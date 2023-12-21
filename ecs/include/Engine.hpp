@@ -6,12 +6,13 @@
 */
 
 #pragma once
-#include "ClientImpl.hpp"
+#include "ClientUDP.hpp"
 #include "ECSImpl.hpp"
 #include "Engine.hpp"
 #include "IGame.hpp"
 #include "IGraphicalModule.hpp"
 #include "SceneManager.hpp"
+#include "ServerUdp.hpp"
 #include "Types.hpp"
 #include <exception>
 #include <fstream>
@@ -194,13 +195,13 @@ namespace eng {
          * @brief Returns the server if the engine is running in server mode, else throws an exception
          *
          */
-        serv::ServerImpl& GetServer() const;
+        serv::ServerUDP& GetServer() const;
 
         /**
          * @brief Returns the client if the engine is running in client mode, else throws an exception
          *
          */
-        serv::ClientImpl& GetClient() const;
+        serv::ClientUDP& GetClient() const;
 
     private:
         /**
@@ -253,8 +254,8 @@ namespace eng {
         std::shared_ptr<std::vector<std::tuple<int, std::tuple<std::string, Action>>>> m_unsortedPipeline;
         std::shared_ptr<IGame> m_game = nullptr;
         ecs::ECSImpl& m_ecs;
-        serv::ServerImpl* m_server = nullptr;
-        std::shared_ptr<serv::ClientImpl> m_client = nullptr;
+        std::shared_ptr<serv::ServerUDP> m_server = nullptr;
+        std::shared_ptr<serv::ClientUDP> m_client = nullptr;
     };
 
     class EngineException : public std::exception {

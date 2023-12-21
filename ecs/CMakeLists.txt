@@ -52,21 +52,12 @@ set(ECS
     ${ECS_SRC}/NoGraphics.cpp
     ${ECS_SRC}/AController.cpp
     ${ECS_SRC}/AActor.cpp
+    ${ECS_SRC}/States.cpp
 )
 
 set(ENGINE
     ${ECS_SRC}/Engine.cpp
     ${ECS_SRC}/ScopeLocation.cpp
-)
-
-set(SERVER
-    ${ECS_SRC}/Server.cpp
-    ${ECS_SRC}/ServerImpl.cpp
-    ${ECS_SRC}/CircularBuffer.cpp
-    ${ECS_SRC}/ClientBucket.cpp
-    ${ECS_SRC}/Message.cpp
-    ${ECS_SRC}/Poll.cpp
-    ${ECS_SRC}/ClientImpl.cpp
 )
 
 set(VANILLA_SRC
@@ -113,7 +104,6 @@ set(META_VANILLA
 add_library(lengine SHARED
     ${ECS}
     ${ENGINE}
-    ${SERVER}
     ${VANILLA}
     ${META_VANILLA}
 )
@@ -121,6 +111,7 @@ add_library(lengine SHARED
 target_link_libraries(lengine
     metadatagen
     raylib
+    server_udp
 )
 
 add_dependencies(lengine
@@ -138,5 +129,5 @@ add_executable(run_engine
 
 target_link_libraries(run_engine
     lengine
-
+    server_udp
 )

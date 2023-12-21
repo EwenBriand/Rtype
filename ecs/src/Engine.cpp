@@ -367,23 +367,28 @@ namespace eng {
 
     void Engine::loadNetworkModules()
     {
-        if (IsOptionSet(eng::Engine::Options::SERVER_MODE)) {
-            m_server = serv::ServerImpl::Get();
+        if (IsOptionSet(eng::Engine::Options::SERVER_MODE) && IsOptionSet(eng::Engine::Options::SERVER_PORT)) {
+            std::string port = GetOptionValue(eng::Engine::Options::SERVER_PORT);
+            if (port.find_first_not_of("0123456789") != std::string::npos) {
+                throw EngineException("Invalid port number", __FILE__, __FUNCTION__, __LINE__);
+            }
+            m_server = std::make_shared<serv::ServerUDP>(std::stoi(port));
+            CONSOLE::warn << "Server listening on port " << port << std::endl;
         } else if (IsOptionSet(eng::Engine::Options::SERVER_IP)) {
-            m_client = std::make_shared<serv::ClientImpl>();
+            m_client = std::make_shared<serv::ClientUDP>();
         } else {
-            std::cout << "Starting in single player mode" << std::endl;
+            CONSOLE::warn << "Starting in single player mode" << std::endl;
         }
     }
 
-    serv::ServerImpl& Engine::GetServer() const
+    serv::ServerUDP& Engine::GetServer() const
     {
         if (!m_server)
             throw EngineException("Server not initialized", __FILE__, __FUNCTION__, __LINE__);
         return *m_server;
     }
 
-    serv::ClientImpl& Engine::GetClient() const
+    serv::ClientUDP& Engine::GetClient() const
     {
         if (!m_client)
             throw EngineException("Client not initialized", __FILE__, __FUNCTION__, __LINE__);

@@ -6,9 +6,16 @@
 */
 
 #include "DistantPlayer.hpp"
+#include "ServerUdp.hpp"
+#include <iostream>
 
-serv::ServerImpl::Message DistantPlayer::HandleRequest(const std::string& data)
+serv::bytes DistantPlayer::HandleRequest(const serv::bytes& data)
 {
-    std::cout << "[LOG] from server [" << data << "]" << std::endl;
-    return serv::ServerImpl::Message("OK");
+    std::cout << "DistantPlayer::HandleRequest: " << data.toString() << std::endl;
+    return serv::bytes("OK") + serv::SEPARATOR;
+}
+
+std::shared_ptr<serv::IClient> DistantPlayer::Clone()
+{
+    return std::make_shared<DistantPlayer>();
 }

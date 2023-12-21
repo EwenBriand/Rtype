@@ -34,17 +34,13 @@ namespace ecs {
     std::shared_ptr<AUserComponent> ResourceManager::LoadUserComponent(
         const std::string& resourceID)
     {
-        std::cout << "Loading user component " << resourceID << std::endl;
         if (_handles.find(resourceID) != _handles.end()) {
             AUserComponent* (*create)() = reinterpret_cast<AUserComponent* (*)()>(lib::LibUtils::getSymHandle(_handles[resourceID], "create_" + resourceID));
             _instances.emplace_back(create());
             return _instances.back();
         }
-        std::cout << "resource id is [" << resourceID << "]" << std::endl;
         std::string libName = m_userComponentsPath + "lib" + resourceID + ".so";
-        std::cout << "Loading " << libName << " with libutils " << std::endl;
         void* handle = lib::LibUtils::getLibHandle(libName.c_str());
-        std::cout << "done" << std::endl;
         _handles[resourceID] = handle;
         AUserComponent* (*create)() = reinterpret_cast<AUserComponent* (*)()>(lib::LibUtils::getSymHandle(handle, "create_" + resourceID));
         _handles[resourceID] = handle;
@@ -196,19 +192,15 @@ namespace ecs {
         if (std::get<1>(_graphicalModule) != nullptr) {
             throw eng::EngineException("Graphical module already loaded", __FILE__, __FUNCTION__, __LINE__);
         }
-        std::cout << "one" << std::endl;
         if (!eng::Engine::GetEngine()->IsOptionSet(eng::Engine::Options::NO_GRAPHICS)) {
-            std::cout << "two" << std::endl;
             auto tmp = std::shared_ptr<graph::IGraphicalModule>(new raylib::GraphicalRayLib());
             _graphicalModule = std::make_tuple(nullptr, tmp);
             return std::get<1>(_graphicalModule);
         } else {
-            std::cout << "three" << std::endl;
             auto tmp = std::shared_ptr<graph::IGraphicalModule>(new eng::NoGraphics());
             _graphicalModule = std::make_tuple(nullptr, tmp);
             return std::get<1>(_graphicalModule);
         }
-        std::cout << "four" << std::endl;
     }
 
     std::string ResourceManager::LoadFileText(const std::string& path)
