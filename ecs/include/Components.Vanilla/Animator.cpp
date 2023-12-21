@@ -50,13 +50,15 @@ void Sprite::Draw()
     Rectangle source = { _rect.x, _rect.y, _rect.width, _rect.height };
     Rectangle dest = { _origin.x, _origin.y, _rect.width * _scale.x, _rect.height * _scale.y };
     Vector2 origin = { 0.0f, 0.0f };
-    SYS.GetGraphicalModule()->WindowDrawTexture({ .source = source,
-                                                    .dest = dest,
-                                                    .origin = origin,
-                                                    .texture = _texture,
-                                                    .rotation = _rotation,
-                                                    .color = _color },
-        _priority);
+    graph::graphTexture_t spriteInfo = { .source = source,
+        .dest = dest,
+        .origin = origin,
+        .texture = _texture,
+        .rotation = _rotation,
+        .color = _color };
+    SYS.GetGraphicalModule()->AddRectToBuffer(_priority, [spriteInfo]() {
+        DrawTexturePro(spriteInfo.texture, spriteInfo.source, spriteInfo.dest, spriteInfo.origin, spriteInfo.rotation, spriteInfo.color);
+    });
 }
 
 std::string& Sprite::GetPath()

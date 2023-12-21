@@ -35,19 +35,7 @@ namespace eng {
     {
     }
 
-    void NoGraphics::WindowDrawRectangle(graph::graphRect_t rectInfo, int prio)
-    {
-    }
-
-    void NoGraphics::WindowDrawCircle(graph::graphCircle_t circleInfo, int prio)
-    {
-    }
-
-    void NoGraphics::WindowDrawText(graph::graphText_t textInfo, int prio)
-    {
-    }
-
-    void NoGraphics::WindowDrawTexture(graph::graphTexture_t spriteInfo, int prio)
+    void NoGraphics::AddRectToBuffer(int priority, std::function<void()>&& func)
     {
     }
 

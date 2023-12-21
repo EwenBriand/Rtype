@@ -342,32 +342,13 @@ namespace graph {
         virtual void RegisterEvent(const std::string& eventKey, std::function<void()>&& callback) = 0;
 
         /**
-         * @brief This function buffers a rectangle to be drawn in the window.
+         * @brief This function returns true if the event is triggered.
          *
-         * @param rectInfo
+         * @param eventKey
+         * @return true
+         * @return false
          */
-        virtual void WindowDrawRectangle(graphRect_t rectInfo, int prio) = 0;
-
-        /**
-         * @brief This function buffers a texture to be drawn in the window.
-         *
-         * @param textureInfo
-         */
-        virtual void WindowDrawTexture(graphTexture_t textureInfo, int prio) = 0;
-
-        /**
-         * @brief This function buffers a circle to be drawn in the window.
-         *
-         * @param circleInfo
-         */
-        virtual void WindowDrawCircle(graphCircle_t circleInfo, int prio) = 0;
-
-        /**
-         * @brief This function buffers a text to be drawn in the window.
-         *
-         * @param textInfo
-         */
-        virtual void WindowDrawText(graphText_t textInfo, int prio) = 0;
+        virtual void AddRectToBuffer(int priority, std::function<void()>&& func) = 0;
 
         /**
          * @brief This function returns a vector2f containing the mouse position on the screen

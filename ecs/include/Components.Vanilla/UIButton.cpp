@@ -21,12 +21,13 @@ void UIButton::Update(int entityID)
         m_prevClickCallbackName = m_clickCallbackName;
     }
     TestClick();
-    SYS.GetGraphicalModule()->WindowDrawText(
-        { .pos = { m_uiDiv->GetPosition().x + 5, m_uiDiv->GetPosition().y + 2 },
-            .text = m_text,
-            .color = { 255, 255, 255, 255 },
-            .fontSize = 12 },
-        3);
+    graph::graphText_t textInfo = { .pos = { m_uiDiv->GetPosition().x + 5, m_uiDiv->GetPosition().y + 2 },
+        .text = m_text,
+        .color = { 255, 255, 255, 255 },
+        .fontSize = 12 };
+    SYS.GetGraphicalModule()->AddRectToBuffer(1, [textInfo]() {
+        DrawText(textInfo.text.c_str(), textInfo.pos.x, textInfo.pos.y, textInfo.fontSize, { textInfo.color.x, textInfo.color.y, textInfo.color.z, textInfo.color.w });
+    });
 }
 
 void UIButton::OnAddComponent(int entityID)
@@ -44,11 +45,13 @@ void UIButton::OnAddComponent(int entityID)
     m_clickable = true;
     SetHoverCallback([&] {
         graph::vec2f mousePos = SYS.GetGraphicalModule()->WindowGetMousePos();
-        SYS.GetGraphicalModule()->WindowDrawText({ .pos = { mousePos.x + 10, mousePos.y + 10 },
-                                                     .text = m_description,
-                                                     .color = { 255, 255, 255, 255 },
-                                                     .fontSize = 12 },
-            4);
+        graph::graphText_t textInfo = { .pos = { mousePos.x + 10, mousePos.y + 10 },
+            .text = m_description,
+            .color = { 255, 255, 255, 255 },
+            .fontSize = 12 };
+        SYS.GetGraphicalModule()->AddRectToBuffer(1, [textInfo]() {
+            DrawText(textInfo.text.c_str(), textInfo.pos.x, textInfo.pos.y, textInfo.fontSize, { textInfo.color.x, textInfo.color.y, textInfo.color.z, textInfo.color.w });
+        });
     });
 }
 
