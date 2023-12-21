@@ -36,7 +36,7 @@ void TextField::Draw()
                                       .bgColor = { 255, 255, 255, 255 },
                                       .borderColor = { 255, 255, 255, 255 },
                                       .borderSize = 0 },
-        0);
+        1);
     graphics->WindowDrawText({ .pos = { divPos.x + m_x, divPos.y + m_y },
                                  .text = m_label,
                                  .color = { 255, 255, 255, 255 },
@@ -56,7 +56,7 @@ void TextField::Draw()
                                  .text = text,
                                  .color = (m_text == "") ? (graph::vec4uc) { 100, 100, 100, 255 } : (graph::vec4uc) { 0, 0, 0, 255 },
                                  .fontSize = 11 },
-        2);
+        1);
 }
 
 void TextField::SetupCallbacks()

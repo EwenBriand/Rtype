@@ -272,6 +272,15 @@ namespace graph {
         int borderSize = 0;
     } graphRect_t;
 
+    typedef struct graphTexture_t {
+        Rectangle source = { 0.0f, 0.0f, 0.0f, 0.0f };
+        Rectangle dest = { 0.0f, 0.0f, 0.0f, 0.0f };
+        Vector2 origin = { 0.0f, 0.0f };
+        Texture2D texture;
+        float rotation = 0.0f;
+        Color color = { 255, 255, 255, 255 };
+    } graphTexture_t;
+
     /**
      * @brief Describes a circle to be drawn on the window.
      *
@@ -338,6 +347,13 @@ namespace graph {
          * @param rectInfo
          */
         virtual void WindowDrawRectangle(graphRect_t rectInfo, int prio) = 0;
+
+        /**
+         * @brief This function buffers a texture to be drawn in the window.
+         *
+         * @param textureInfo
+         */
+        virtual void WindowDrawTexture(graphTexture_t textureInfo, int prio) = 0;
 
         /**
          * @brief This function buffers a circle to be drawn in the window.

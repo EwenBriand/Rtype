@@ -39,7 +39,7 @@ namespace raylib {
         engine->pushPipeline([&]() {
             DisplayBuffer();
         },
-            1);
+            -10);
 
         engine->pushPipeline([&]() {
             EndDrawing();
@@ -88,23 +88,30 @@ namespace raylib {
 
     void GraphicalRayLib::WindowDrawRectangle(graph::graphRect_t rectInfo, int prio)
     {
-        _buffer[prio] = [rectInfo]() {
-            DrawRectangle(rectInfo.pos.x, rectInfo.pos.y, rectInfo.dimensions.x, rectInfo.dimensions.y, { rectInfo.bgColor.x, rectInfo.bgColor.y, rectInfo.bgColor.z, rectInfo.bgColor.w });
-            DrawRectangleLinesEx({ rectInfo.pos.x, rectInfo.pos.y, rectInfo.dimensions.x, rectInfo.dimensions.y }, rectInfo.borderSize, { rectInfo.borderColor.x, rectInfo.borderColor.y, rectInfo.borderColor.z, 255 });
-        };
+        _buffer.insert({ prio, [rectInfo]() {
+                            DrawRectangle(rectInfo.pos.x, rectInfo.pos.y, rectInfo.dimensions.x, rectInfo.dimensions.y, { rectInfo.bgColor.x, rectInfo.bgColor.y, rectInfo.bgColor.z, rectInfo.bgColor.w });
+                            DrawRectangleLinesEx({ rectInfo.pos.x, rectInfo.pos.y, rectInfo.dimensions.x, rectInfo.dimensions.y }, rectInfo.borderSize, { rectInfo.borderColor.x, rectInfo.borderColor.y, rectInfo.borderColor.z, 255 });
+                        } });
     }
 
     void GraphicalRayLib::WindowDrawCircle(graph::graphCircle_t circleInfo, int prio)
     {
-        _buffer[prio] = [circleInfo]() {
-            DrawCircle(circleInfo.pos.x, circleInfo.pos.y, circleInfo.radius, { circleInfo.color.x, circleInfo.color.y, circleInfo.color.z, circleInfo.color.w });
-            DrawCircleLines(circleInfo.pos.x, circleInfo.pos.y, circleInfo.radius, { circleInfo.borderColor.x, circleInfo.borderColor.y, circleInfo.borderColor.z, circleInfo.borderColor.w });
-        };
+        _buffer.insert({ prio, [circleInfo]() {
+                            DrawCircle(circleInfo.pos.x, circleInfo.pos.y, circleInfo.radius, { circleInfo.color.x, circleInfo.color.y, circleInfo.color.z, circleInfo.color.w });
+                            DrawCircleLines(circleInfo.pos.x, circleInfo.pos.y, circleInfo.radius, { circleInfo.borderColor.x, circleInfo.borderColor.y, circleInfo.borderColor.z, circleInfo.borderColor.w });
+                        } });
     }
 
     void GraphicalRayLib::WindowDrawText(graph::graphText_t textInfo, int prio)
     {
-        _buffer[prio] = [textInfo]() { DrawText(textInfo.text.c_str(), textInfo.pos.x, textInfo.pos.y, textInfo.fontSize, { textInfo.color.x, textInfo.color.y, textInfo.color.z, textInfo.color.w }); };
+        _buffer.insert({ prio, [textInfo]() { DrawText(textInfo.text.c_str(), textInfo.pos.x, textInfo.pos.y, textInfo.fontSize, { textInfo.color.x, textInfo.color.y, textInfo.color.z, textInfo.color.w }); } });
+    }
+
+    void GraphicalRayLib::WindowDrawTexture(graph::graphTexture_t spriteInfo, int prio)
+    {
+        _buffer.insert({ prio, [spriteInfo]() {
+                            DrawTexturePro(spriteInfo.texture, spriteInfo.source, spriteInfo.dest, spriteInfo.origin, spriteInfo.rotation, spriteInfo.color);
+                        } });
     }
 
     graph::vec2f GraphicalRayLib::WindowGetMousePos() const
@@ -163,24 +170,25 @@ namespace raylib {
         for (auto& [priority, obj] : _buffer) {
             obj();
         }
+        ClearBuffer();
     }
 
     template <typename T>
     void GraphicalRayLib::AddRectToBuffer(T obj, int priority)
     {
         if (std::is_same<decltype(obj), graph::graphText_t>::value)
-            _buffer[priority] = [obj]() {
-                DrawText(obj.text.c_str(), obj.pos.x, obj.pos.y, obj.fontSize, { obj.color.x, obj.color.y, obj.color.z, obj.color.w });
-            };
+            _buffer.insert({ priority, [obj]() {
+                                DrawText(obj.text.c_str(), obj.pos.x, obj.pos.y, obj.fontSize, { obj.color.x, obj.color.y, obj.color.z, obj.color.w });
+                            } });
         else if (std::is_same<decltype(obj), graph::graphCircle_t>::value)
-            _buffer[priority] = [obj]() {
-                DrawCircle(obj.pos.x, obj.pos.y, obj.radius, { obj.color.x, obj.color.y, obj.color.z, obj.color.w });
-                DrawCircleLines(obj.pos.x, obj.pos.y, obj.radius, { obj.borderColor.x, obj.borderColor.y, obj.borderColor.z, obj.borderColor.w });
-            };
+            _buffer.insert({ priority, [obj]() {
+                                DrawCircle(obj.pos.x, obj.pos.y, obj.radius, { obj.color.x, obj.color.y, obj.color.z, obj.color.w });
+                                DrawCircleLines(obj.pos.x, obj.pos.y, obj.radius, { obj.borderColor.x, obj.borderColor.y, obj.borderColor.z, obj.borderColor.w });
+                            } });
         else if (std::is_same<decltype(obj), graph::graphRect_t>::value)
-            _buffer[priority] = [obj]() {
-                DrawRectangle(obj.pos.x, obj.pos.y, obj.dimensions.x, obj.dimensions.y, { obj.bgColor.x, obj.bgColor.y, obj.bgColor.z, obj.bgColor.w });
-                DrawRectangleLinesEx({ obj.pos.x, obj.pos.y, obj.dimensions.x, obj.dimensions.y }, obj.borderSize, { obj.borderColor.x, obj.borderColor.y, obj.borderColor.z, 255 });
-            };
+            _buffer.insert({ priority, [obj]() {
+                                DrawRectangle(obj.pos.x, obj.pos.y, obj.dimensions.x, obj.dimensions.y, { obj.bgColor.x, obj.bgColor.y, obj.bgColor.z, obj.bgColor.w });
+                                DrawRectangleLinesEx({ obj.pos.x, obj.pos.y, obj.dimensions.x, obj.dimensions.y }, obj.borderSize, { obj.borderColor.x, obj.borderColor.y, obj.borderColor.z, 255 });
+                            } });
     }
 }

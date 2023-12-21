@@ -59,8 +59,6 @@ void EditorMouseManager::setCtxtClosestEntity()
 
 void EditorMouseManager::checkForDrag()
 {
-    std::cout << "dragging" << std::endl;
-
     graph::vec2f mousePos = SYS.GetGraphicalModule()->WindowGetMousePos();
     graph::vec2f delta = {
         mousePos.x - m_mousePrevPos.x,
@@ -95,7 +93,7 @@ void EditorMouseManager::Update(int entityID)
                                                        .radius = 5,
                                                        .borderColor = { 255, 255, 255, 255 },
                                                        .borderSize = 1 },
-            6);
+            1);
     } catch (std::exception& e) {
         return;
     }

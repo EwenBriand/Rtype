@@ -24,6 +24,7 @@ namespace raylib {
         void WindowDrawRectangle(graph::graphRect_t rectInfo, int prio) override;
         void WindowDrawCircle(graph::graphCircle_t circleInfo, int prio) override;
         void WindowDrawText(graph::graphText_t textInfo, int prio) override;
+        void WindowDrawTexture(graph::graphTexture_t spriteInfo, int prio) override;
 
         graph::vec2f WindowGetMousePos() const override;
         bool WindowIsMouseRightPressed() const override;
@@ -44,7 +45,7 @@ namespace raylib {
 
     private:
         std::map<std::string, std::function<void()>> _events;
-        std::map<int, std::function<void()>, std::greater<int>> _buffer;
+        std::multimap<int, std::function<void()>, std::less<int>> _buffer;
     };
 }
 

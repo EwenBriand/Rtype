@@ -47,6 +47,10 @@ namespace eng {
     {
     }
 
+    void NoGraphics::WindowDrawTexture(graph::graphTexture_t spriteInfo, int prio)
+    {
+    }
+
     graph::vec2f NoGraphics::WindowGetMousePos() const
     {
         return { 0, 0 };
