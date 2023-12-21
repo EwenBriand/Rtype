@@ -86,6 +86,11 @@ private:
      * [auto]: int, int, int            // wether the rect of the sprite should be automatically calculated or not. This works only if all the sprites are the same size and are aligned on a line. The parameters are: width, height, number of sprites
      * [flipX]: bool                     // whether the sprite should be flipped or not
      * [flipY]: bool                     // whether the sprite should be flipped or not
+
+     * [origin]: float, float           // position in the screen                                           -- to do
+     * [paralaxe]: bool                 // whether the animation should be paralaxed or not                 -- to do
+     * [priority]: int                  // priority of the animation                                        -- to do
+
      * ===FRAMES===                     // keyword to indicate the start of the frames specification
      * [frame id] {                     // frames, each scope is one frame
      *      [origin]: float, float      // (optional) origin of the sprite, overrides the default origin

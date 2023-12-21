@@ -41,6 +41,7 @@ public:
     void SetColor(const Color& color);
     void SetFlipX(bool flipX);
     void SetFlipY(bool flipY);
+    void SetPriority(int priority);
 
 private:
     std::string _path;
@@ -53,6 +54,7 @@ private:
     bool _flipX;
     bool _flipY;
     bool _visible;
+    int _priority;
 };
 
 class Animation {
@@ -87,6 +89,12 @@ public:
 
     void SetLoop(bool loop);
 
+    void SetParalax(bool paralax);
+
+    void SetParalaxSpeed(int paralaxSpeed);
+
+    void SetPriority(int priority);
+
 private:
     std::string _name;
     std::size_t _currentFrame = 0;
@@ -94,4 +102,7 @@ private:
     bool _loop = true;
     std::shared_ptr<Sprite> _sprite;
     float _frameStartTime = 0;
+    bool paralax;
+    int paralaxSpeed;
+    int priority;
 };

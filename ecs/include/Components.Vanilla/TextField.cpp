@@ -31,15 +31,24 @@ void TextField::Draw()
     std::shared_ptr<graph::IGraphicalModule> graphics = SYS.GetGraphicalModule();
     graph::vec2f divPos = m_hoverDiv->GetPosition();
 
-    graphics->WindowDrawRectangle({ .pos = { divPos.x + m_x + 11.0f * m_label.size(), divPos.y + m_y },
+    graph::graphRect_t rectInfo = { .pos = { divPos.x + m_x + 11.0f * m_label.size(), divPos.y + m_y },
         .dimensions = { 100, 20 },
         .bgColor = { 255, 255, 255, 255 },
         .borderColor = { 255, 255, 255, 255 },
-        .borderSize = 0 });
-    graphics->WindowDrawText({ .pos = { divPos.x + m_x, divPos.y + m_y },
+        .borderSize = 0 };
+
+    graph::graphText_t textInfo = { .pos = { divPos.x + m_x, divPos.y + m_y },
         .text = m_label,
         .color = { 255, 255, 255, 255 },
-        .fontSize = 11 });
+        .fontSize = 11 };
+
+    graphics->AddRectToBuffer(1, [rectInfo]() {
+        DrawRectangle(rectInfo.pos.x, rectInfo.pos.y, rectInfo.dimensions.x, rectInfo.dimensions.y, { rectInfo.bgColor.x, rectInfo.bgColor.y, rectInfo.bgColor.z, rectInfo.bgColor.w });
+        DrawRectangleLinesEx({ rectInfo.pos.x, rectInfo.pos.y, rectInfo.dimensions.x, rectInfo.dimensions.y }, rectInfo.borderSize, { rectInfo.borderColor.x, rectInfo.borderColor.y, rectInfo.borderColor.z, 255 });
+    });
+    graphics->AddRectToBuffer(1, [textInfo]() {
+        DrawText(textInfo.text.c_str(), textInfo.pos.x, textInfo.pos.y, textInfo.fontSize, { textInfo.color.x, textInfo.color.y, textInfo.color.z, textInfo.color.w });
+    });
 
     size_t start = 0;
     if (m_text.size() - 20 > 0)
@@ -49,11 +58,16 @@ void TextField::Draw()
         text = m_placeholder;
     else
         text = m_text.substr((m_text.size() > 20) ? (m_text.size() - 20) : 0, m_text.size());
-    graphics->WindowDrawText((graph::graphText_t) {
+
+    graph::graphText_t textInfo2 = {
         .pos = { divPos.x + m_x + 11.0f * m_label.size() + 5, divPos.y + m_y },
         .text = text,
         .color = (m_text == "") ? (graph::vec4uc) { 100, 100, 100, 255 } : (graph::vec4uc) { 0, 0, 0, 255 },
-        .fontSize = 11 });
+        .fontSize = 11
+    };
+    graphics->AddRectToBuffer(1, [textInfo2]() {
+        DrawText(textInfo2.text.c_str(), textInfo2.pos.x, textInfo2.pos.y, textInfo2.fontSize, { textInfo2.color.x, textInfo2.color.y, textInfo2.color.z, textInfo2.color.w });
+    });
 }
 
 void TextField::SetupCallbacks()

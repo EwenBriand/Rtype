@@ -35,15 +35,7 @@ namespace eng {
     {
     }
 
-    void NoGraphics::WindowDrawRectangle(graph::graphRect_t rectInfo)
-    {
-    }
-
-    void NoGraphics::WindowDrawCircle(graph::graphCircle_t circleInfo)
-    {
-    }
-
-    void NoGraphics::WindowDrawText(graph::graphText_t textInfo)
+    void NoGraphics::AddRectToBuffer(int priority, std::function<void()>&& func)
     {
     }
 
@@ -90,6 +82,14 @@ namespace eng {
     bool NoGraphics::CheckCollisionWithRectangle(graph::vec2f pos, Rectangle dimensions)
     {
         return false;
+    }
+
+    void NoGraphics::ClearBuffer()
+    {
+    }
+
+    void NoGraphics::DisplayBuffer()
+    {
     }
 
 } // namespace eng

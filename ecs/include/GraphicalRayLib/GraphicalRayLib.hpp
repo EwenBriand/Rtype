@@ -21,9 +21,6 @@ namespace raylib {
         void Stop() override;
         void ModPipeline() override;
         void RegisterEvent(const std::string& eventKey, std::function<void()>&& callback) override;
-        void WindowDrawRectangle(graph::graphRect_t rectInfo) override;
-        void WindowDrawCircle(graph::graphCircle_t circleInfo) override;
-        void WindowDrawText(graph::graphText_t textInfo) override;
 
         graph::vec2f WindowGetMousePos() const override;
         bool WindowIsMouseRightPressed() const override;
@@ -36,8 +33,14 @@ namespace raylib {
         bool isKeyPressed(int key) override;
         bool CheckCollisionWithRectangle(graph::vec2f pos, Rectangle dimensions) override;
 
+        void AddRectToBuffer(int priority, std::function<void()>&& func) override;
+
+        void ClearBuffer() override;
+        void DisplayBuffer() override;
+
     private:
         std::map<std::string, std::function<void()>> _events;
+        std::multimap<int, std::function<void()>, std::less<int>> _buffer;
     };
 }
 
