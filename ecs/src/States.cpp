@@ -6,6 +6,7 @@
 */
 
 #include "States.hpp"
+#include <iostream>
 
 namespace ecs {
     States::States()
@@ -32,8 +33,10 @@ namespace ecs {
         if (!_currentState)
             return;
         _currentState->Enter();
-        auto nextState = _currentState->Exit();
-        if (nextState)
+        bool changed = false;
+        auto nextState = _currentState->Exit(changed);
+        if (changed && nextState) {
             _currentState = nextState;
+        }
     }
 } // namespace ecs

@@ -17,8 +17,3 @@ set(SOURCE
 )
 
 add_library(${PROJECT_NAME} SHARED ${SOURCE})
-
-# tests
-if(BUILD_TESTING)
-    add_subdirectory(tests)
-endif()

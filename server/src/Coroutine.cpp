@@ -65,7 +65,6 @@ namespace serv {
         if (!_handle)
             return false;
         if (_handle.done()) {
-            std::cout << "handle is done" << std::endl;
             _handle.destroy();
             _handle = nullptr;
             return false;

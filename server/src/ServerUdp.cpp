@@ -6,11 +6,37 @@
 */
 
 #include "ServerUdp.hpp"
+#include "Engine.hpp"
+#include <chrono>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
 
 namespace serv {
+
+    // ============================================================================
+    // ACLIENT
+    // ============================================================================
+
+    AClient::AClient()
+        : _server(eng::Engine::GetEngine()->GetServer())
+    {
+    }
+
+    void AClient::SetEndpoint(boost::asio::ip::udp::endpoint endpoint)
+    {
+        _endpoint = endpoint;
+    }
+
+    void AClient::ResetAnswerFlag()
+    {
+        _answerFlag = false;
+    }
+
+    bool AClient::GetAnswerFlag()
+    {
+        return _answerFlag;
+    }
 
     // ============================================================================
     // CLIENT BUCKET
@@ -65,6 +91,7 @@ namespace serv {
     void ClientBucketUDP::SetHandleRequest(std::shared_ptr<IClient> clientHandler)
     {
         _clientHandler = clientHandler;
+        _clientHandler->SetEndpoint(_endpoint);
     }
 
     // ============================================================================
@@ -85,6 +112,19 @@ namespace serv {
         _socket.bind(_endpoint, error);
         if (error)
             throw std::runtime_error("Failed to open socket (2)");
+
+        try {
+            if (std::filesystem::exists(".server.log"))
+                std::filesystem::remove(".server.log");
+            _logFile = std::ofstream(".server.log");
+            if (!_logFile.is_open())
+                std::cerr << "Failed to open log file" << std::endl;
+            else {
+                std::cout << "Server log in .server.log" << std::endl;
+            }
+        } catch (const std::exception& e) {
+            std::cerr << e.what() << std::endl;
+        }
     }
 
     ServerUDP::~ServerUDP()
@@ -132,12 +172,17 @@ namespace serv {
             return;
         bytes data(_buffer.data(), bytesTransferred);
 
-        std::string clientKey = endpointToString(_remoteEndpoint);
-        if (_clients.find(clientKey) == _clients.end()) {
-            _clients.insert({ clientKey, std::make_shared<ClientBucketUDP>(_remoteEndpoint) });
-            _clients.at(clientKey)->SetHandleRequest(_clientHandlerCopyBase->Clone());
+        try {
+            std::string clientKey = endpointToString(_remoteEndpoint);
+            if (_clients.find(clientKey) == _clients.end()) {
+                _clients.insert({ clientKey, std::make_shared<ClientBucketUDP>(_remoteEndpoint) });
+                _clients.at(clientKey)->SetHandleRequest(_clientHandlerCopyBase->Clone());
+                Log("New client connected: " + clientKey);
+            }
+            _clients.at(clientKey)->Write(data);
+        } catch (const std::exception& e) {
+            Log(e.what());
         }
-        _clients.at(clientKey)->Write(data);
     }
 
     void ServerUDP::sendWorker()
@@ -147,6 +192,7 @@ namespace serv {
                 try {
                     Message message = _sendQueue.Pop();
                     _socket.send_to(boost::asio::buffer(message.data._data), message.endpoint);
+                    Log("Sent " + std::to_string(message.data._data.size()) + " bytes to " + endpointToString(message.endpoint));
                 } catch (std::exception& e) {
                     std::cerr << e.what() << std::endl;
                 }
@@ -160,9 +206,10 @@ namespace serv {
         _sendQueue.Push(message);
     }
 
-    void ServerUDP::Send(const Instruction& instruction)
+    void ServerUDP::Send(const Instruction& instruction, const boost::asio::ip::udp::endpoint& endpoint)
     {
-        _sendQueue.Push(instruction.ToMessage());
+        _sendQueue.Push(instruction.ToMessage(endpoint));
+        Log("Buffered to send opcode " + std::to_string(instruction.opcode) + " to " + endpointToString(endpoint));
     }
 
     std::string ServerUDP::endpointToString(boost::asio::ip::udp::endpoint endpoint)
@@ -207,5 +254,19 @@ namespace serv {
         for (auto& c : str)
             bytes.push_back(c);
         return bytes;
+    }
+
+    void ServerUDP::Log(const std::string& entry)
+    {
+        if (_logFile.is_open()) {
+            auto now = std::chrono::system_clock::now();
+            auto in_time_t = std::chrono::system_clock::to_time_t(now);
+            auto fractional_seconds = now - std::chrono::system_clock::from_time_t(in_time_t);
+
+            _logFile << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d - %X")
+                     << '.' << std::setfill('0') << std::setw(3)
+                     << std::chrono::duration_cast<std::chrono::milliseconds>(fractional_seconds).count()
+                     << " " << entry << std::endl;
+        }
     }
 }

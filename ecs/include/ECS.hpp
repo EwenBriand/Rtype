@@ -9,12 +9,12 @@
 
 #include "Component.hpp"
 #include "Components.Vanilla/CLI.hpp"
+#include "Components.Vanilla/Tag.hpp"
 #include "ECSImpl.hpp"
 #include "Entity.hpp"
 #include "IGraphicalModule.hpp"
 #include "InputManager.hpp"
 #include "ResourceManager.hpp"
-#include "Tag.hpp"
 #include <algorithm>
 #include <array>
 #include <chrono>

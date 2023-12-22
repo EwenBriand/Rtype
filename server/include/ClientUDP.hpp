@@ -18,6 +18,7 @@
 #include <thread>
 
 namespace serv {
+
     class ClientUDP {
     public:
         ClientUDP();

@@ -44,7 +44,7 @@ namespace eng {
 
     void RType::LoadFirstScene(eng::Engine* e)
     {
-        e->GetSceneManager().SwitchScene("menu");
+        // e->GetSceneManager().SwitchScene("menu");
     }
 
     void RType::PreSceneInstantiationHook(eng::Engine* e, const std::string& sceneName)
@@ -69,7 +69,6 @@ namespace eng {
     void RType::initServerConnection(Engine* e)
     {
         if (!e->IsOptionSet(eng::Engine::Options::SERVER_MODE) && e->IsOptionSet(eng::Engine::Options::SERVER_IP) && e->IsOptionSet(eng::Engine::Options::SERVER_PORT)) {
-            std::cout << "Connecting to server at " << e->GetOptionValue(eng::Engine::Options::SERVER_IP) << std::endl;
             connectToServer(e);
         } else if (e->IsOptionSet(eng::Engine::Options::SERVER_MODE) && e->IsOptionSet(eng::Engine::Options::SERVER_PORT)) {
             startServer(e);
@@ -106,7 +105,7 @@ namespace eng {
         try {
             e->GetClient().SetServerAddress(rawIP, std::stoi(rawPort));
             e->GetClient().SetRequestHandler([](const serv::bytes& data) {
-                std::cout << "received: " << serv::ServerUDP::bytesToString(data) << std::endl;
+
             });
             e->GetClient().Start();
             _stateMachine = ecs::States(std::make_shared<rtype::LobbyRoutineClient>(*e));

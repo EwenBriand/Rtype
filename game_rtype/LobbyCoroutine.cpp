@@ -6,6 +6,8 @@
 */
 
 #include "LobbyCoroutine.hpp"
+#include "DistantPlayer.hpp"
+#include "GameRoutine.hpp"
 
 namespace rtype {
 
@@ -25,20 +27,51 @@ namespace rtype {
 
     void LobbyRoutineServer::Enter()
     {
-        _routine.Resume();
+        if (!_routine.Done()) {
+            _routine.Resume();
+        }
     }
 
-    std::shared_ptr<ecs::IState> LobbyRoutineServer::Exit()
+    std::shared_ptr<ecs::IState> LobbyRoutineServer::Exit(bool& changed)
     {
-        return std::shared_ptr<ecs::IState>(this);
+        if (_routine.Done()) {
+            return std::shared_ptr<ecs::IState>(new GameRoutineServer(_engine));
+        }
+        changed = false;
+        return nullptr;
     }
 
     serv::Coroutine LobbyRoutineServer::run()
     {
-        while (true) {
-            // @laurent logic goes here
-            co_await std::suspend_never {};
+        while (!lobbyIsFull()) {
+            co_await std::suspend_always {};
         }
+        std::cout << "Lobby is full, starting game..." << std::endl;
+        for (auto& player : DistantPlayer::Instances) {
+            player->SendClientLoadScene("level1");
+        }
+
+        int playerReady = 0;
+        while (playerReady != RTYPE_NB_PLAYERS) {
+            playerReady = 0;
+            for (auto& player : DistantPlayer::Instances) {
+                if (player->GetAnswerFlag()) {
+                    playerReady++;
+                }
+            }
+            co_await std::suspend_always {};
+        }
+        for (auto& player : DistantPlayer::Instances) {
+            player->ResetAnswerFlag();
+        }
+    }
+
+    bool LobbyRoutineServer::lobbyIsFull()
+    {
+        if (DistantPlayer::Instances.size() != _nbPlayers) {
+            _nbPlayers = DistantPlayer::Instances.size();
+        }
+        return _nbPlayers == RTYPE_NB_PLAYERS;
     }
 
     // ================================================================================
@@ -59,16 +92,17 @@ namespace rtype {
     {
     }
 
-    std::shared_ptr<ecs::IState> LobbyRoutineClient::Exit()
+    std::shared_ptr<ecs::IState> LobbyRoutineClient::Exit(bool& changed)
     {
-        return std::shared_ptr<ecs::IState>(this);
+        changed = false;
+        return nullptr;
     }
 
     serv::Coroutine LobbyRoutineClient::run()
     {
         while (true) {
-            // @l aurent logic goes here
-            co_await std::suspend_never {};
+            // @laurent logic goes here
+            co_await std::suspend_always {};
         }
     }
 

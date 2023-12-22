@@ -13,16 +13,27 @@
 #include <memory>
 
 namespace rtype {
+    static constexpr unsigned int RTYPE_NB_PLAYERS = 4;
+
     class LobbyRoutineServer : public ecs::IState, public std::enable_shared_from_this<LobbyRoutineServer> {
     public:
         LobbyRoutineServer(eng::Engine& engine);
         ~LobbyRoutineServer();
 
         void Enter() override;
-        std::shared_ptr<ecs::IState> Exit() override;
+        std::shared_ptr<ecs::IState> Exit(bool& changed) override;
 
     private:
         serv::Coroutine run();
+
+        /**
+         * @brief waits for new players to connect and
+         * returns true when the lobby is full.
+         *
+         */
+        bool lobbyIsFull();
+
+        unsigned int _nbPlayers;
 
         serv::Coroutine _routine;
         eng::Engine& _engine;
@@ -34,7 +45,7 @@ namespace rtype {
         ~LobbyRoutineClient();
 
         void Enter() override;
-        std::shared_ptr<ecs::IState> Exit() override;
+        std::shared_ptr<ecs::IState> Exit(bool& changed) override;
 
     private:
         serv::Coroutine run();

@@ -11,6 +11,7 @@
 #include "ThreadSafeQueue.hpp"
 #include <atomic>
 #include <boost/asio.hpp>
+#include <fstream>
 #include <functional>
 #include <map>
 #include <mutex>
@@ -21,11 +22,29 @@
 #pragma once
 
 namespace serv {
+    class ServerUDP;
     class IClient {
     public:
         virtual ~IClient() = default;
         virtual bytes HandleRequest(const bytes& data) = 0;
         virtual std::shared_ptr<IClient> Clone() = 0;
+        virtual void SetEndpoint(boost::asio::ip::udp::endpoint endpoint) = 0;
+        virtual bool GetAnswerFlag() = 0;
+        virtual void ResetAnswerFlag() = 0;
+    };
+
+    class AClient : public IClient {
+    public:
+        AClient();
+
+        void SetEndpoint(boost::asio::ip::udp::endpoint endpoint) override;
+        void ResetAnswerFlag() override;
+        bool GetAnswerFlag() override;
+
+    protected:
+        ServerUDP& _server;
+        boost::asio::ip::udp::endpoint _endpoint;
+        std::atomic_bool _answerFlag;
     };
 
     static const bytes SEPARATOR = { 't', 'h', 'e', 'e', 'n', 'd' };
@@ -99,7 +118,7 @@ namespace serv {
         template <typename T>
         void SetHandleRequest()
         {
-            _clientHandlerCopyBase = std::make_unique<T>();
+            _clientHandlerCopyBase = std::make_shared<T>();
         }
         /**
          * @brief Receives requests from clients and adds them to the
@@ -119,7 +138,7 @@ namespace serv {
          * @brief Sends an instruction.
          *
          */
-        void Send(const Instruction& instruction);
+        void Send(const Instruction& instruction, const boost::asio::ip::udp::endpoint& endpoint);
 
         /**
          * @brief Start the server.
@@ -152,6 +171,12 @@ namespace serv {
          */
         static bytes stringToBytes(const std::string& string);
 
+        /**
+         * @brief Logs an entry in the log file.
+         *
+         */
+        void Log(const std::string& entry);
+
     private:
         /**
          * @brief Receives strings and tries assigns them to client buckets asynchronously.
@@ -182,6 +207,8 @@ namespace serv {
 
         std::atomic_bool _running = false;
 
-        std::unique_ptr<IClient> _clientHandlerCopyBase;
+        std::shared_ptr<IClient> _clientHandlerCopyBase;
+
+        std::ofstream _logFile;
     };
 }

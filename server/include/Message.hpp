@@ -79,10 +79,11 @@ namespace serv {
             return bytes;
         }
 
-        Message ToMessage() const
+        Message ToMessage(boost::asio::ip::udp::endpoint endpoint) const
         {
             Message message;
             message.data = ToBytes();
+            message.endpoint = endpoint;
             return message;
         }
 
