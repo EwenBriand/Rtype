@@ -4,6 +4,7 @@
 #include "Engine.hpp"
 #include "LobbyCoroutine.hpp"
 #include "LocalPlayerController.hpp"
+#include "RTypeDistantServer.hpp"
 #include "SceneManager.hpp"
 #include "Ship.hpp"
 #include <iostream>
@@ -104,9 +105,9 @@ namespace eng {
         }
         try {
             e->GetClient().SetServerAddress(rawIP, std::stoi(rawPort));
-            e->GetClient().SetRequestHandler([](const serv::bytes& data) {
-
-            });
+            std::shared_ptr<rtype::RTypeDistantServer> serverHandle = std::make_shared<rtype::RTypeDistantServer>(e->GetClient());
+            serverHandle->SetAsInstance();
+            e->GetClient().SetRequestHandler(serverHandle);
             e->GetClient().Start();
             _stateMachine = ecs::States(std::make_shared<rtype::LobbyRoutineClient>(*e));
         } catch (const std::exception& e) {

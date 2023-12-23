@@ -18,8 +18,8 @@ namespace serv {
     // ACLIENT
     // ============================================================================
 
-    AClient::AClient()
-        : _server(eng::Engine::GetEngine()->GetServer())
+    AClient::AClient(ServerUDP& server)
+        : _server(server)
     {
     }
 
@@ -176,12 +176,14 @@ namespace serv {
             std::string clientKey = endpointToString(_remoteEndpoint);
             if (_clients.find(clientKey) == _clients.end()) {
                 _clients.insert({ clientKey, std::make_shared<ClientBucketUDP>(_remoteEndpoint) });
-                _clients.at(clientKey)->SetHandleRequest(_clientHandlerCopyBase->Clone());
+                _clients.at(clientKey)->SetHandleRequest(_clientHandlerCopyBase->Clone(_remoteEndpoint));
                 Log("New client connected: " + clientKey);
             }
             _clients.at(clientKey)->Write(data);
         } catch (const std::exception& e) {
             Log(e.what());
+            if (_clients.find(endpointToString(_remoteEndpoint)) != _clients.end())
+                _clients.erase(endpointToString(_remoteEndpoint));
         }
     }
 

@@ -8,6 +8,9 @@
 #include "LobbyCoroutine.hpp"
 #include "DistantPlayer.hpp"
 #include "GameRoutine.hpp"
+#include "RTypeDistantServer.hpp"
+#include "Timer.hpp"
+#include <chrono>
 
 namespace rtype {
 
@@ -90,6 +93,9 @@ namespace rtype {
 
     void LobbyRoutineClient::Enter()
     {
+        if (!_routine.Done()) {
+            _routine.Resume();
+        }
     }
 
     std::shared_ptr<ecs::IState> LobbyRoutineClient::Exit(bool& changed)
@@ -100,10 +106,18 @@ namespace rtype {
 
     serv::Coroutine LobbyRoutineClient::run()
     {
-        while (true) {
-            // @laurent logic goes here
+        auto serverHandle = RTypeDistantServer::GetInstance();
+        eng::Timer timer;
+        timer.Start();
+
+        serverHandle.TryConnect();
+        while (not serverHandle.IsConnected()) {
+            if (timer.GetElapsedTime() > 1) {
+                timer.Restart();
+                serverHandle.TryConnect();
+            }
             co_await std::suspend_always {};
         }
+        std::cout << "Connected to server" << std::endl;
     }
-
 }

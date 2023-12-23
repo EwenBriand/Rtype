@@ -18,6 +18,23 @@
 #include <thread>
 
 namespace serv {
+    class ClientUDP;
+    class IClientRequestHandler {
+    public:
+        virtual ~IClientRequestHandler() = default;
+        virtual void HandleRequest(const bytes& data) = 0;
+    };
+
+    class AClientRequestHandler : public IClientRequestHandler {
+    public:
+        AClientRequestHandler(ClientUDP& client)
+            : _client(client)
+        {
+        }
+
+    protected:
+        ClientUDP& _client;
+    };
 
     class ClientUDP {
     public:
@@ -26,8 +43,14 @@ namespace serv {
 
         void Send(const bytes& data);
         void Send(const Instruction& instruction);
-        void SetRequestHandler(std::function<void(const bytes&)> handler);
         void SetServerAddress(const std::string& ip, int port);
+        template <typename T>
+        void SetRequestHandler()
+        {
+            _requestHandler = std::make_shared<T>(*this);
+        }
+
+        void SetRequestHandler(std::shared_ptr<IClientRequestHandler> handler);
 
         void Start();
         void Stop();
@@ -55,6 +78,6 @@ namespace serv {
         std::string _serverIp;
         int _serverPort;
 
-        std::function<void(const bytes&)> _requestHandler = nullptr;
+        std::shared_ptr<IClientRequestHandler> _requestHandler;
     };
 }

@@ -7,14 +7,19 @@
 
 #include "DistantPlayer.hpp"
 #include "LobbyCoroutine.hpp"
+#include "NetworkExceptions.hpp"
 #include "ServerUdp.hpp"
 #include <iostream>
 
 std::vector<std::shared_ptr<DistantPlayer>> DistantPlayer::Instances;
 const std::map<int, DistantPlayer::requestHandler> DistantPlayer::RequestHandlers = {};
 
-DistantPlayer::DistantPlayer()
+DistantPlayer::DistantPlayer(serv::ServerUDP& server, bool send)
+    : serv::AClient(server)
 {
+    if (Instances.size() >= rtype::RTYPE_NB_PLAYERS) {
+        throw serv::NetworkException(_server, serv::E_SERVER_FULL, "Server is full", _endpoint);
+    }
 }
 
 DistantPlayer::~DistantPlayer()
@@ -26,17 +31,19 @@ serv::bytes DistantPlayer::HandleRequest(const serv::bytes& data)
     return serv::bytes("OK") + serv::SEPARATOR;
 }
 
-std::shared_ptr<serv::IClient> DistantPlayer::Clone()
+std::shared_ptr<serv::IClient> DistantPlayer::Clone(boost::asio::ip::udp::endpoint endpoint)
 {
     if (Instances.size() >= rtype::RTYPE_NB_PLAYERS) {
-        throw std::runtime_error("Too many players");
+        throw serv::NetworkException(_server, serv::E_SERVER_FULL, "Server is full", _endpoint);
     }
 
-    auto copy = std::make_shared<DistantPlayer>();
+    auto copy = std::make_shared<DistantPlayer>(_server);
 
     if (copy == nullptr) {
-        throw std::runtime_error("Could not create new player");
+        throw serv::NetworkException(_server, serv::E_SERVER_INTERNAL_ERROR, "Could not create new player", _endpoint);
     }
+    copy->SetEndpoint(_endpoint);
+    _server.Send(serv::Instruction(serv::I_CONNECT_OK, 0, serv::bytes()), endpoint);
     Instances.push_back(copy);
     return copy;
 }

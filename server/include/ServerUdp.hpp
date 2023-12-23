@@ -27,7 +27,7 @@ namespace serv {
     public:
         virtual ~IClient() = default;
         virtual bytes HandleRequest(const bytes& data) = 0;
-        virtual std::shared_ptr<IClient> Clone() = 0;
+        virtual std::shared_ptr<IClient> Clone(boost::asio::ip::udp::endpoint endpoint) = 0;
         virtual void SetEndpoint(boost::asio::ip::udp::endpoint endpoint) = 0;
         virtual bool GetAnswerFlag() = 0;
         virtual void ResetAnswerFlag() = 0;
@@ -35,7 +35,7 @@ namespace serv {
 
     class AClient : public IClient {
     public:
-        AClient();
+        AClient(ServerUDP& server);
 
         void SetEndpoint(boost::asio::ip::udp::endpoint endpoint) override;
         void ResetAnswerFlag() override;
@@ -118,7 +118,7 @@ namespace serv {
         template <typename T>
         void SetHandleRequest()
         {
-            _clientHandlerCopyBase = std::make_shared<T>();
+            _clientHandlerCopyBase = std::make_shared<T>(*this, false);
         }
         /**
          * @brief Receives requests from clients and adds them to the

@@ -23,7 +23,7 @@ public:
     static constexpr int I_LOAD_SCENE = 1002;
     static constexpr int I_START_GAME = 1003;
 
-    DistantPlayer();
+    DistantPlayer(serv::ServerUDP& server, bool send = true);
     ~DistantPlayer() override;
 
     /**
@@ -40,24 +40,8 @@ public:
      */
     void SendClientStartGame();
 
-    /**
-     * @brief Resets the answer flag.
-     *
-     * @param data
-     * @return serv::bytes
-     */
-    void
-    ResetAnswerFlag();
-
-    /**
-     * @brief Gets the answer flag.
-     *
-     * @return bool
-     */
-    bool GetAnswerFlag();
-
     serv::bytes HandleRequest(const serv::bytes& data) override;
-    std::shared_ptr<serv::IClient> Clone() override;
+    std::shared_ptr<serv::IClient> Clone(boost::asio::ip::udp::endpoint endpoint) override;
 
     std::atomic_bool _answerFlag = false;
 };
