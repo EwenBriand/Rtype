@@ -33,11 +33,13 @@ namespace serv {
     };
 
     static int I_OK = 0;
+    static int I_AM_ALIVE = 1;
     static int I_CONNECT = 1001;
     static int I_CONNECT_OK = 1002;
     static int I_LOAD_SCENE = 1003;
     static int I_SCENE_LOADED = 1004;
     static int I_START_GAME = 1005;
+    static int I_MESSAGE = 1006;
 
     static int E_SERVER_FULL = 300;
     static int E_INVALID_OPCODE = 301;

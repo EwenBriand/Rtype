@@ -16,6 +16,13 @@ namespace rtype {
     {
     }
 
+    RTypeDistantServer::~RTypeDistantServer()
+    {
+        _isConnected = false;
+        if (_pingThread.joinable())
+            _pingThread.join();
+    }
+
     void RTypeDistantServer::HandleRequest(const serv::bytes& data)
     {
         try {
@@ -73,7 +80,6 @@ namespace rtype {
     bool RTypeDistantServer::SceneIsReady()
     {
         if (_currSceneName == "") {
-            std::cout << "no scene name" << std::endl; // TODO: remove
             return false;
         }
         return _engine->GetSceneManager().IsSceneReady(_currSceneName);
@@ -94,6 +100,7 @@ namespace rtype {
     void RTypeDistantServer::handleConnectOk(serv::Instruction& instruction)
     {
         _isConnected = true;
+        _pingThread = std::thread(&RTypeDistantServer::pingServerForAlive, this);
     }
 
     void RTypeDistantServer::handleServerFull(serv::Instruction& instruction)
@@ -113,5 +120,24 @@ namespace rtype {
     void RTypeDistantServer::handleStartGame(serv::Instruction& instruction)
     {
         _startGame = true;
+    }
+
+    void RTypeDistantServer::handleMessage(serv::Instruction& instruction)
+    {
+        std::cout << "\rMessage from server: " << instruction.data.toString() << std::endl;
+    }
+
+    void RTypeDistantServer::pingServerForAlive()
+    {
+        std::this_thread::sleep_for(std::chrono::seconds(2));
+
+        while (_isConnected) {
+            try {
+                _client.Send(serv::Instruction(serv::I_AM_ALIVE, 0, serv::bytes()));
+            } catch (const std::exception& e) {
+                std::cerr << e.what() << std::endl;
+            }
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
     }
 } // namespace rtype

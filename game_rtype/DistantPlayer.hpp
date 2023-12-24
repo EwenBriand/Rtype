@@ -24,6 +24,8 @@ public:
     DistantPlayer(serv::ServerUDP& server, bool send = true);
     ~DistantPlayer() override;
 
+    void OnDisconnect() override;
+
     /**
      * @brief Sends a request to the client to load the scene specified.
      *

@@ -11,6 +11,7 @@
 #include "ThreadSafeQueue.hpp"
 #include <atomic>
 #include <boost/asio.hpp>
+#include <chrono>
 #include <fstream>
 #include <functional>
 #include <map>
@@ -31,6 +32,7 @@ namespace serv {
         virtual void SetEndpoint(boost::asio::ip::udp::endpoint endpoint) = 0;
         virtual bool GetAnswerFlag() = 0;
         virtual void ResetAnswerFlag() = 0;
+        virtual void OnDisconnect() = 0;
     };
 
     class AClient : public IClient {
@@ -101,12 +103,33 @@ namespace serv {
          */
         void HandleRequest(ServerUDP& server);
 
+        /**
+         * @brief Sets the last time the client sent a request to now.
+         *
+         */
+        void UpdateLastRequestTime();
+
+        /**
+         * @brief Returns how long ago in seconds was the last request time (see UpdateLastRequestTime)
+         *
+         * @return std::chrono::time_point<std::chrono::system_clock>
+         */
+        float GetLastRequestTime();
+
+        /**
+         * @brief Calls the OnDisconnect method of the client handler.
+         *
+         */
+        void OnDisconnect();
+
     private:
         boost::asio::ip::udp::endpoint _endpoint;
         std::function<void()> _requestHook;
         std::shared_ptr<IClient> _clientHandler;
         std::shared_ptr<std::mutex> _mutex;
         CircularBuffer _buffer;
+        std::chrono::time_point<std::chrono::system_clock> _lastRequestTime;
+        std::shared_ptr<std::mutex> _lastRequestTimeMutex;
     };
 
     class ServerUDP {
@@ -189,6 +212,13 @@ namespace serv {
          *
          */
         void sendWorker();
+
+        /**
+         * @brief checks if any client has disconnected, and if so, removes it from the list of clients.
+         *
+         */
+        void checkForDisconnections();
+
         boost::asio::io_service _ioService;
         boost::asio::ip::udp::socket _socket;
         boost::asio::ip::udp::endpoint _endpoint;
@@ -199,11 +229,14 @@ namespace serv {
         std::array<char, BUFF_SIZE> _buffer;
 
         std::map<std::string, std::shared_ptr<ClientBucketUDP>> _clients;
+        std::shared_ptr<std::mutex> _clientsMutex;
 
         std::thread _receiveThread;
 
         std::thread _sendThread;
         ThreadSafeQueue<Message> _sendQueue;
+
+        std::thread _checkForDisconnectionsThread;
 
         std::atomic_bool _running = false;
 

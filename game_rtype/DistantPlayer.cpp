@@ -50,6 +50,12 @@ std::shared_ptr<serv::IClient> DistantPlayer::Clone(boost::asio::ip::udp::endpoi
     return copy;
 }
 
+void DistantPlayer::OnDisconnect()
+{
+    std::cout << "\rClient disconnected" << std::endl;
+    // todo possess player with ai instead of distant player
+}
+
 void DistantPlayer::SendClientLoadScene(const std::string& sceneName)
 {
     auto instruction = serv::Instruction(

@@ -23,7 +23,7 @@ namespace rtype {
         static RTypeDistantServer* GetInstance();
 
         RTypeDistantServer(serv::ClientUDP& client);
-        ~RTypeDistantServer() override = default;
+        ~RTypeDistantServer() override;
 
         void SetAsInstance();
         void SetEngine(eng::Engine* eng);
@@ -68,6 +68,14 @@ namespace rtype {
         void handleServerFull(serv::Instruction& instruction);
         void handleLoadScene(serv::Instruction& instruction);
         void handleStartGame(serv::Instruction& instruction);
+        void handleMessage(serv::Instruction& instruction);
+
+        /**
+         * @brief Sends the I_AM_ALIVE instruction to the server.
+         *
+         */
+        void pingServerForAlive();
+        std::thread _pingThread;
 
         bool _isConnected = false;
         bool _startGame = false;
@@ -79,7 +87,8 @@ namespace rtype {
             { serv::I_CONNECT_OK, &RTypeDistantServer::handleConnectOk },
             { serv::E_SERVER_FULL, &RTypeDistantServer::handleServerFull },
             { serv::I_LOAD_SCENE, &RTypeDistantServer::handleLoadScene },
-            { serv::I_START_GAME, &RTypeDistantServer::handleStartGame }
+            { serv::I_START_GAME, &RTypeDistantServer::handleStartGame },
+            { serv::I_MESSAGE, &RTypeDistantServer::handleMessage }
         };
     };
 } // namespace rtype

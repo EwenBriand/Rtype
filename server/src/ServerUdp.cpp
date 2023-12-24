@@ -7,6 +7,7 @@
 
 #include "ServerUdp.hpp"
 #include "Engine.hpp"
+#include "NetworkExceptions.hpp"
 #include <chrono>
 #include <iomanip>
 #include <iostream>
@@ -47,11 +48,25 @@ namespace serv {
         , _clientHandler(nullptr)
         , _buffer(2 * BUFF_SIZE)
         , _mutex(std::make_shared<std::mutex>())
+        , _lastRequestTimeMutex(std::make_shared<std::mutex>())
+        , _lastRequestTime(std::chrono::high_resolution_clock::now())
     {
     }
 
     ClientBucketUDP::~ClientBucketUDP()
     {
+    }
+
+    void ClientBucketUDP::UpdateLastRequestTime()
+    {
+        std::scoped_lock lock(*_lastRequestTimeMutex);
+        _lastRequestTime = std::chrono::high_resolution_clock::now();
+    }
+
+    float ClientBucketUDP::GetLastRequestTime()
+    {
+        std::scoped_lock lock(*_lastRequestTimeMutex);
+        return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - _lastRequestTime).count();
     }
 
     void ClientBucketUDP::Write(const bytes& data)
@@ -94,6 +109,12 @@ namespace serv {
         _clientHandler->SetEndpoint(_endpoint);
     }
 
+    void ClientBucketUDP::OnDisconnect()
+    {
+        if (_clientHandler != nullptr)
+            _clientHandler->OnDisconnect();
+    }
+
     // ============================================================================
     // SERVER UDP
     // ============================================================================i
@@ -104,6 +125,7 @@ namespace serv {
         , _clientHandlerCopyBase(nullptr)
         , _running(false)
         , _logMutex(std::make_shared<std::mutex>())
+        , _clientsMutex(std::make_shared<std::mutex>())
     {
         boost::system::error_code error;
         _socket.open(_endpoint.protocol(), error);
@@ -136,6 +158,8 @@ namespace serv {
             _receiveThread.join();
         if (_sendThread.joinable())
             _sendThread.join();
+        if (_checkForDisconnectionsThread.joinable())
+            _checkForDisconnectionsThread.join();
 
         _ioService.stop();
     }
@@ -149,10 +173,12 @@ namespace serv {
         _receiveThread
             = std::thread(&ServerUDP::receiveWorker, this);
         _sendThread = std::thread(&ServerUDP::sendWorker, this);
+        _checkForDisconnectionsThread = std::thread(&ServerUDP::checkForDisconnections, this);
     }
 
     void ServerUDP::receiveWorker()
     {
+
         while (_running) {
             _socket.receive_from(
                 boost::asio::buffer(_buffer), _remoteEndpoint);
@@ -176,11 +202,13 @@ namespace serv {
 
         try {
             std::string clientKey = endpointToString(_remoteEndpoint);
+            std::scoped_lock lock(*_clientsMutex);
             if (_clients.find(clientKey) == _clients.end()) {
                 _clients.insert({ clientKey, std::make_shared<ClientBucketUDP>(_remoteEndpoint) });
                 _clients.at(clientKey)->SetHandleRequest(_clientHandlerCopyBase->Clone(_remoteEndpoint));
                 Log("New client connected: " + clientKey);
             }
+            _clients.at(clientKey)->UpdateLastRequestTime();
             _clients.at(clientKey)->Write(data);
         } catch (const std::exception& e) {
             Log(e.what());
@@ -189,8 +217,33 @@ namespace serv {
         }
     }
 
+    void ServerUDP::checkForDisconnections()
+    {
+        std::vector<std::string> disconnectedClients;
+        while (_running) {
+            for (auto& client : _clients) {
+                if (client.second->GetLastRequestTime() > 3000) {
+                    std::string clientKey = endpointToString(client.second->GetEndpoint());
+                    Log("Client " + clientKey + " disconnected");
+                    _clients.at(clientKey)->OnDisconnect();
+                    disconnectedClients.push_back(clientKey);
+                    Broadcast(Instruction(I_MESSAGE, 0, bytes("Client disconnected")).ToBytes() + SEPARATOR);
+                }
+            }
+            {
+                std::scoped_lock lock(*_clientsMutex);
+                for (auto& clientKey : disconnectedClients) {
+                    _clients.erase(clientKey);
+                }
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        }
+    }
+
     void ServerUDP::sendWorker()
     {
+        std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+
         while (_running) {
             if (!_sendQueue.IsEmpty()) {
                 try {
@@ -224,12 +277,13 @@ namespace serv {
     void ServerUDP::Broadcast(const bytes& data)
     {
         for (auto& client : _clients) {
-            client.second->Write(data);
+            Send({ data, client.second->GetEndpoint() });
         }
     }
 
     void ServerUDP::CallHooks()
     {
+        std::scoped_lock lock(*_clientsMutex);
         for (auto& client : _clients) {
             client.second->HandleRequest(*this);
         }
