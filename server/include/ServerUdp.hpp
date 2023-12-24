@@ -210,5 +210,6 @@ namespace serv {
         std::shared_ptr<IClient> _clientHandlerCopyBase;
 
         std::ofstream _logFile;
+        std::shared_ptr<std::mutex> _logMutex;
     };
 }

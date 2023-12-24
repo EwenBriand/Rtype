@@ -42,7 +42,6 @@ namespace rtype {
 
     serv::Coroutine GameRoutineServer::run()
     {
-        std::cout << "All players are ready, starting game..." << std::endl;
         for (auto& player : DistantPlayer::Instances)
             player->SendClientStartGame();
         while (true) {

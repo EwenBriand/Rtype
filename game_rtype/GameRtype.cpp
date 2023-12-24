@@ -107,6 +107,7 @@ namespace eng {
             e->GetClient().SetServerAddress(rawIP, std::stoi(rawPort));
             std::shared_ptr<rtype::RTypeDistantServer> serverHandle = std::make_shared<rtype::RTypeDistantServer>(e->GetClient());
             serverHandle->SetAsInstance();
+            serverHandle->SetEngine(e);
             e->GetClient().SetRequestHandler(serverHandle);
             e->GetClient().Start();
             _stateMachine = ecs::States(std::make_shared<rtype::LobbyRoutineClient>(*e));

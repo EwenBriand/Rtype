@@ -13,7 +13,7 @@
 #include <memory>
 
 namespace rtype {
-    static constexpr unsigned int RTYPE_NB_PLAYERS = 4;
+    static constexpr unsigned int RTYPE_NB_PLAYERS = 1;
 
     class LobbyRoutineServer : public ecs::IState, public std::enable_shared_from_this<LobbyRoutineServer> {
     public:

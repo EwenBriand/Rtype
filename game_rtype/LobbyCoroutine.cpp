@@ -38,6 +38,7 @@ namespace rtype {
     std::shared_ptr<ecs::IState> LobbyRoutineServer::Exit(bool& changed)
     {
         if (_routine.Done()) {
+            changed = true;
             return std::shared_ptr<ecs::IState>(new GameRoutineServer(_engine));
         }
         changed = false;
@@ -46,6 +47,7 @@ namespace rtype {
 
     serv::Coroutine LobbyRoutineServer::run()
     {
+
         while (!lobbyIsFull()) {
             co_await std::suspend_always {};
         }
@@ -100,6 +102,10 @@ namespace rtype {
 
     std::shared_ptr<ecs::IState> LobbyRoutineClient::Exit(bool& changed)
     {
+        if (_routine.Done()) {
+            changed = true;
+            return std::make_shared<rtype::GameRoutineClient>(_engine);
+        }
         changed = false;
         return nullptr;
     }
@@ -109,15 +115,25 @@ namespace rtype {
         auto serverHandle = RTypeDistantServer::GetInstance();
         eng::Timer timer;
         timer.Start();
-
-        serverHandle.TryConnect();
-        while (not serverHandle.IsConnected()) {
+        serverHandle->TryConnect();
+        while (not serverHandle->IsConnected()) {
             if (timer.GetElapsedTime() > 1) {
                 timer.Restart();
-                serverHandle.TryConnect();
+                serverHandle->TryConnect();
+                if (serverHandle->IsConnected()) {
+                    std::cout << "Connected to server" << std::endl;
+                    break;
+                }
             }
             co_await std::suspend_always {};
         }
-        std::cout << "Connected to server" << std::endl;
+        std::cout << "\rLoading game scene..." << std::endl;
+        while (not serverHandle->SceneIsReady())
+            co_await std::suspend_always {};
+        _engine.GetClient().Send(serv::Instruction(serv::I_OK, 0, serv::bytes()));
+        std::cout << "\rScene is ready, waiting for server..." << std::endl;
+        while (not serverHandle->ShouldStartGame())
+            co_await std::suspend_always {};
+        serverHandle->InstantiateScene();
     }
 }

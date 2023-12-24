@@ -26,7 +26,7 @@ namespace rtype {
 
     class GameRoutineClient : public ecs::IState {
     public:
-        GameRoutineClient();
+        GameRoutineClient(eng::Engine& engine);
         ~GameRoutineClient();
 
         void Enter() override;

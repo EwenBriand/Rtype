@@ -1,3 +1,4 @@
+
 /*
 ** EPITECH PROJECT, 2023
 ** rtype
@@ -34,36 +35,45 @@ serv::bytes DistantPlayer::HandleRequest(const serv::bytes& data)
 std::shared_ptr<serv::IClient> DistantPlayer::Clone(boost::asio::ip::udp::endpoint endpoint)
 {
     if (Instances.size() >= rtype::RTYPE_NB_PLAYERS) {
-        throw serv::NetworkException(_server, serv::E_SERVER_FULL, "Server is full", _endpoint);
+        throw serv::NetworkException(_server, serv::E_SERVER_FULL, "Server is full", endpoint);
     }
 
     auto copy = std::make_shared<DistantPlayer>(_server);
 
     if (copy == nullptr) {
-        throw serv::NetworkException(_server, serv::E_SERVER_INTERNAL_ERROR, "Could not create new player", _endpoint);
+        throw serv::NetworkException(_server, serv::E_SERVER_INTERNAL_ERROR, "Could not create new player", endpoint);
     }
+
+    Instances.push_back(copy);
     copy->SetEndpoint(_endpoint);
     _server.Send(serv::Instruction(serv::I_CONNECT_OK, 0, serv::bytes()), endpoint);
-    Instances.push_back(copy);
     return copy;
 }
 
 void DistantPlayer::SendClientLoadScene(const std::string& sceneName)
 {
-    std::cout << "DistantPlayer::SendClientLoadScene: " << sceneName << std::endl;
     auto instruction = serv::Instruction(
-        I_LOAD_SCENE,
-        I_LOAD_SCENE % 255,
+        serv::I_LOAD_SCENE,
+        serv::I_LOAD_SCENE % 255,
         serv::bytes(sceneName));
     _server.Send(instruction, _endpoint);
 }
 
 void DistantPlayer::SendClientStartGame()
 {
-    std::cout << "DistantPlayer::SendClientStartGame" << std::endl;
     auto instruction = serv::Instruction(
-        I_START_GAME,
+        serv::I_START_GAME,
         0,
         serv::bytes());
     _server.Send(instruction, _endpoint);
+}
+
+// =======================================================================
+// REQUEST HANDLING METHODS
+// =======================================================================
+
+void DistantPlayer::handleOK(serv::Instruction&)
+{
+    std::cout << "DistantPlayer::handleOK" << std::endl;
+    _answerFlag = true;
 }

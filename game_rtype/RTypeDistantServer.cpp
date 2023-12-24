@@ -37,11 +37,11 @@ namespace rtype {
         Instance = this;
     }
 
-    RTypeDistantServer& RTypeDistantServer::GetInstance()
+    RTypeDistantServer* RTypeDistantServer::GetInstance()
     {
         if (Instance == nullptr)
             throw std::runtime_error("RTypeDistantServer instance is null");
-        return *Instance;
+        return Instance;
     }
 
     void RTypeDistantServer::TryConnect()
@@ -60,13 +60,39 @@ namespace rtype {
         return _isConnected;
     }
 
+    void RTypeDistantServer::SetEngine(eng::Engine* eng)
+    {
+        _engine = eng;
+    }
+
+    bool RTypeDistantServer::ShouldStartGame()
+    {
+        return _startGame;
+    }
+
+    bool RTypeDistantServer::SceneIsReady()
+    {
+        if (_currSceneName == "") {
+            std::cout << "no scene name" << std::endl; // TODO: remove
+            return false;
+        }
+        return _engine->GetSceneManager().IsSceneReady(_currSceneName);
+    }
+
+    void RTypeDistantServer::InstantiateScene()
+    {
+        if (_currSceneName == "")
+            throw std::runtime_error("Cannot instantiate scene with no name.");
+        _engine->GetSceneManager()
+            .SwitchScene(_currSceneName);
+    }
+
     // ========================================================================
     // REQUEST HANDLING METHODS
     // ========================================================================
 
     void RTypeDistantServer::handleConnectOk(serv::Instruction& instruction)
     {
-        std::cout << "Connected to server" << std::endl;
         _isConnected = true;
     }
 
@@ -74,5 +100,18 @@ namespace rtype {
     {
         std::cerr << "Server is full. Try looking for another server. Now shutting the client down." << std::endl;
         exit(0);
+    }
+
+    void RTypeDistantServer::handleLoadScene(serv::Instruction& instruction)
+    {
+        std::string sceneName = instruction.data.toString();
+        _engine->GetSceneManager().LoadSceneAsync(sceneName);
+        _currSceneName = sceneName;
+        _startGame = false;
+    }
+
+    void RTypeDistantServer::handleStartGame(serv::Instruction& instruction)
+    {
+        _startGame = true;
     }
 } // namespace rtype

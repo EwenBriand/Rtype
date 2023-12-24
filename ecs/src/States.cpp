@@ -34,8 +34,8 @@ namespace ecs {
             return;
         _currentState->Enter();
         bool changed = false;
-        auto nextState = _currentState->Exit(changed);
-        if (changed && nextState) {
+        std::shared_ptr<IState> nextState = _currentState->Exit(changed);
+        if (changed) {
             _currentState = nextState;
         }
     }

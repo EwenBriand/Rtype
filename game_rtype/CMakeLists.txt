@@ -11,6 +11,7 @@ set(SRC
     LobbyCoroutine.cpp
     RTypeDistantServer.cpp
     scripts/Ship.cpp
+    GameRoutine.cpp
 )
 
 set(META_SRC

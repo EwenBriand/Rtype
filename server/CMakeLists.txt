@@ -14,6 +14,7 @@ set(SOURCE
     src/ClientUDP.cpp
     src/CircularBuffer.cpp
     src/Coroutine.cpp
+    src/Instruction.cpp
 )
 
 add_library(${PROJECT_NAME} SHARED ${SOURCE})

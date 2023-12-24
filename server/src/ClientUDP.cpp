@@ -72,7 +72,7 @@ namespace serv {
                 data.resize(bytesTransferred);
                 {
                     std::lock_guard<std::mutex> lock(*_mutex);
-                    _inBuffer.Write(bytes(data));
+                    _inBuffer.Write(data);
                 }
 
             } catch (std::exception& e) {
@@ -103,7 +103,7 @@ namespace serv {
             bytes data;
             {
                 std::lock_guard<std::mutex> lock(*_mutex);
-                data = _inBuffer.Read();
+                data = _inBuffer.ReadUntil(SEPARATOR);
             }
             if (_requestHandler != nullptr and !data.empty())
                 _requestHandler->HandleRequest(data);

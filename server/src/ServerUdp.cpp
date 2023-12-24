@@ -103,6 +103,7 @@ namespace serv {
         , _endpoint(boost::asio::ip::udp::v4(), port)
         , _clientHandlerCopyBase(nullptr)
         , _running(false)
+        , _logMutex(std::make_shared<std::mutex>())
     {
         boost::system::error_code error;
         _socket.open(_endpoint.protocol(), error);
@@ -160,6 +161,7 @@ namespace serv {
                 return c != 0;
             });
             bytesTransferred += 1;
+            Log("Received " + std::to_string(bytesTransferred) + " bytes from " + endpointToString(_remoteEndpoint));
             HandleRequest(boost::system::error_code(), bytesTransferred);
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
@@ -265,6 +267,7 @@ namespace serv {
             auto in_time_t = std::chrono::system_clock::to_time_t(now);
             auto fractional_seconds = now - std::chrono::system_clock::from_time_t(in_time_t);
 
+            std::scoped_lock lock(*_logMutex);
             _logFile << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d - %X")
                      << '.' << std::setfill('0') << std::setw(3)
                      << std::chrono::duration_cast<std::chrono::milliseconds>(fractional_seconds).count()

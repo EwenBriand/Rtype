@@ -6,6 +6,7 @@
 */
 
 #pragma once
+#include "NetworkExceptions.hpp"
 #include "ServerUdp.hpp"
 #include <atomic>
 #include <functional>
@@ -19,9 +20,6 @@ public:
 
     using requestHandler = void (DistantPlayer::*)(int expectedReturnCode, const serv::bytes& data);
     static const std::map<int, requestHandler> RequestHandlers;
-
-    static constexpr int I_LOAD_SCENE = 1002;
-    static constexpr int I_START_GAME = 1003;
 
     DistantPlayer(serv::ServerUDP& server, bool send = true);
     ~DistantPlayer() override;
@@ -43,5 +41,10 @@ public:
     serv::bytes HandleRequest(const serv::bytes& data) override;
     std::shared_ptr<serv::IClient> Clone(boost::asio::ip::udp::endpoint endpoint) override;
 
-    std::atomic_bool _answerFlag = false;
+private:
+    void handleOK(serv::Instruction&);
+
+    std::map<int, void (DistantPlayer::*)(serv::Instruction&)> _requestCallbacks = {
+        { serv::I_OK, &DistantPlayer::handleOK }
+    };
 };

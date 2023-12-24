@@ -79,4 +79,16 @@ namespace serv {
         return _handle.done();
     }
 
+    ACoroutineExecutor::ACoroutineExecutor(std::function<Coroutine()> callback)
+        : _routine(callback())
+    {
+    }
+
+    bool ACoroutineExecutor::Execute()
+    {
+        if (!_routine.Done())
+            _routine.Resume();
+        return _routine.Done();
+    }
+
 }
