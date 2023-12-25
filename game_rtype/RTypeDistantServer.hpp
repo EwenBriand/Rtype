@@ -9,6 +9,7 @@
 
 #include "ClientUDP.hpp"
 #include "Engine.hpp"
+#include "GameRtype.hpp"
 #include "NetworkExceptions.hpp"
 #include <atomic>
 #include <map>
@@ -69,6 +70,8 @@ namespace rtype {
         void handleLoadScene(serv::Instruction& instruction);
         void handleStartGame(serv::Instruction& instruction);
         void handleMessage(serv::Instruction& instruction);
+        void handleAssignPlayerID(serv::Instruction& instruction);
+        void handlePlayerSpawn(serv::Instruction& instruction);
 
         /**
          * @brief Sends the I_AM_ALIVE instruction to the server.
@@ -83,12 +86,18 @@ namespace rtype {
 
         eng::Engine* _engine = nullptr;
 
-        std::map<int, void (RTypeDistantServer::*)(serv::Instruction&)> _requestHandlers = {
-            { serv::I_CONNECT_OK, &RTypeDistantServer::handleConnectOk },
-            { serv::E_SERVER_FULL, &RTypeDistantServer::handleServerFull },
-            { serv::I_LOAD_SCENE, &RTypeDistantServer::handleLoadScene },
-            { serv::I_START_GAME, &RTypeDistantServer::handleStartGame },
-            { serv::I_MESSAGE, &RTypeDistantServer::handleMessage }
-        };
+        int _playerId;
+
+        std::map<int, void (RTypeDistantServer::*)(serv::Instruction&)>
+            _requestHandlers = {
+                { serv::I_CONNECT_OK, &RTypeDistantServer::handleConnectOk },
+                { serv::E_SERVER_FULL, &RTypeDistantServer::handleServerFull },
+                { serv::I_LOAD_SCENE, &RTypeDistantServer::handleLoadScene },
+                { serv::I_START_GAME, &RTypeDistantServer::handleStartGame },
+                { serv::I_MESSAGE, &RTypeDistantServer::handleMessage },
+
+                { eng::RType::I_PLAYER_ID, &RTypeDistantServer::handleAssignPlayerID },
+                { eng::RType::I_PLAYER_SPAWN, &RTypeDistantServer::handlePlayerSpawn },
+            };
     };
 } // namespace rtype

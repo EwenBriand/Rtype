@@ -195,13 +195,32 @@ namespace eng {
          * @brief Returns the server if the engine is running in server mode, else throws an exception
          *
          */
-        serv::ServerUDP& GetServer() const;
+        inline serv::ServerUDP& GetServer() const
+        {
+            if (m_server == nullptr)
+                throw std::logic_error("The engine is not running in server mode");
+            return *m_server;
+        }
 
         /**
          * @brief Returns the client if the engine is running in client mode, else throws an exception
          *
          */
-        serv::ClientUDP& GetClient() const;
+        inline serv::ClientUDP& GetClient() const
+        {
+            if (m_client == nullptr)
+                throw std::logic_error("The engine is not running in client mode");
+            return *m_client;
+        }
+
+        /**
+         * @brief Retuns a reference to the system
+         *
+         */
+        inline ecs::ECSImpl& GetECS() const
+        {
+            return SYS;
+        }
 
     private:
         /**

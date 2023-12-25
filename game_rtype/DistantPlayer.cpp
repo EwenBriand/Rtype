@@ -13,7 +13,6 @@
 #include <iostream>
 
 std::vector<std::shared_ptr<DistantPlayer>> DistantPlayer::Instances;
-const std::map<int, DistantPlayer::requestHandler> DistantPlayer::RequestHandlers = {};
 
 DistantPlayer::DistantPlayer(serv::ServerUDP& server, bool send)
     : serv::AClient(server)
@@ -27,9 +26,23 @@ DistantPlayer::~DistantPlayer()
 {
 }
 
-serv::bytes DistantPlayer::HandleRequest(const serv::bytes& data)
+void DistantPlayer::HandleRequest(const serv::bytes& data)
 {
-    return serv::bytes("OK") + serv::SEPARATOR;
+    try {
+        auto instruction = serv::Instruction(data);
+
+        if (_requestCallbacks.find(instruction.opcode) == _requestCallbacks.end()) {
+            throw serv::MalformedInstructionException("Unknown instruction received from client: " + std::to_string(instruction.opcode));
+        }
+        auto handler = _requestCallbacks.at(instruction.opcode);
+        if (handler == nullptr) {
+            return;
+        }
+        (this->*_requestCallbacks.at(instruction.opcode))(instruction);
+    } catch (const serv::MalformedInstructionException& e) {
+        std::cerr << e.what() << std::endl;
+        _server.Send(serv::Instruction(serv::E_INVALID_OPCODE, 0, serv::bytes()), _endpoint);
+    }
 }
 
 std::shared_ptr<serv::IClient> DistantPlayer::Clone(boost::asio::ip::udp::endpoint endpoint)
@@ -74,6 +87,16 @@ void DistantPlayer::SendClientStartGame()
     _server.Send(instruction, _endpoint);
 }
 
+void DistantPlayer::SetID(int id)
+{
+    _playerId = id;
+}
+
+int DistantPlayer::GetID() const
+{
+    return _playerId;
+}
+
 // =======================================================================
 // REQUEST HANDLING METHODS
 // =======================================================================
@@ -82,4 +105,27 @@ void DistantPlayer::handleOK(serv::Instruction&)
 {
     std::cout << "DistantPlayer::handleOK" << std::endl;
     _answerFlag = true;
+}
+
+// =======================================================================
+// ICONTROLLER METHODS
+// =======================================================================
+
+std::vector<std::string>& DistantPlayer::GetDirectives()
+{
+    return _directives;
+}
+
+void DistantPlayer::PollDirectives()
+{
+    _directives.clear();
+}
+
+void DistantPlayer::UpdatePipeline()
+{
+}
+
+void DistantPlayer::SetEntity(int entityID)
+{
+    _entityID = entityID;
 }

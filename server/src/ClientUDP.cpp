@@ -39,7 +39,7 @@ namespace serv {
 
     void ClientUDP::Send(const Instruction& instruction)
     {
-        _sendQueue.Push(instruction.ToBytes());
+        _sendQueue.Push(instruction.ToBytes() + SEPARATOR);
     }
 
     void ClientUDP::SetServerAddress(const std::string& ip, int port)

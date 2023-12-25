@@ -384,17 +384,22 @@ namespace eng {
         }
     }
 
-    serv::ServerUDP& Engine::GetServer() const
-    {
-        if (!m_server)
-            throw EngineException("Server not initialized", __FILE__, __FUNCTION__, __LINE__);
-        return *m_server;
-    }
+    // serv::ServerUDP& Engine::GetServer() const
+    // {
+    //     if (!m_server)
+    //         throw EngineException("Server not initialized", __FILE__, __FUNCTION__, __LINE__);
+    //     return *m_server;
+    // }
 
-    serv::ClientUDP& Engine::GetClient() const
-    {
-        if (!m_client)
-            throw EngineException("Client not initialized", __FILE__, __FUNCTION__, __LINE__);
-        return *m_client;
-    }
+    // serv::ClientUDP& Engine::GetClient() const
+    // {
+    //     if (!m_client)
+    //         throw EngineException("Client not initialized", __FILE__, __FUNCTION__, __LINE__);
+    //     return *m_client;
+    // }
+
+    // ecs::ECSImpl& Engine::GetECS() const
+    // {
+    //     return SYS;
+    // }
 } // namespace eng

@@ -27,7 +27,7 @@ namespace serv {
     class IClient {
     public:
         virtual ~IClient() = default;
-        virtual bytes HandleRequest(const bytes& data) = 0;
+        virtual void HandleRequest(const bytes& data) = 0;
         virtual std::shared_ptr<IClient> Clone(boost::asio::ip::udp::endpoint endpoint) = 0;
         virtual void SetEndpoint(boost::asio::ip::udp::endpoint endpoint) = 0;
         virtual bool GetAnswerFlag() = 0;

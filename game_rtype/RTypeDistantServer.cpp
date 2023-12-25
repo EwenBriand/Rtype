@@ -6,7 +6,10 @@
 */
 
 #include "RTypeDistantServer.hpp"
+#include "CoreTransform.hpp"
+#include "LocalPlayerController.hpp"
 #include "NetworkExceptions.hpp"
+#include "Ship.hpp"
 
 namespace rtype {
     RTypeDistantServer* RTypeDistantServer::Instance = nullptr;
@@ -138,6 +141,37 @@ namespace rtype {
                 std::cerr << e.what() << std::endl;
             }
             std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
+    }
+
+    void RTypeDistantServer::handleAssignPlayerID(serv::Instruction& instruction)
+    {
+        _playerId = instruction.data.ToInt();
+    }
+
+    void RTypeDistantServer::handlePlayerSpawn(serv::Instruction& instruction)
+    {
+        int id = 0;
+        std::cout << "Spawning player" << std::endl;
+        if (instruction.data.size() != 3 * sizeof(int)) {
+            throw std::runtime_error("Player spawn instruction has wrong data size.");
+        }
+        std::memcpy(&id, instruction.data.data(), sizeof(int));
+
+        try {
+            int e = _engine->GetECS().GetResourceManager().LoadPrefab("ship");
+            Ship& ship = _engine->GetECS().GetComponent<Ship>(e, "Ship");
+
+            if (id == _playerId)
+                ship.Possess(e, std::make_shared<LocalPlayerController>());
+            else
+                throw std::runtime_error("Possessing other players is not implemented yet."); // todo
+
+            auto& transform = _engine->GetECS().GetComponent<CoreTransform>(e);
+            std::memcpy(&transform.x, instruction.data.data() + sizeof(int), sizeof(int));
+            std::memcpy(&transform.y, instruction.data.data() + 2 * sizeof(int), sizeof(int));
+        } catch (std::exception& e) {
+            std::cerr << "\r" << e.what() << std::endl;
         }
     }
 } // namespace rtype

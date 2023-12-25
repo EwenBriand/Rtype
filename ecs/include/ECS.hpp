@@ -298,17 +298,18 @@ namespace ecs {
             }
         }
 
-        /**
-         * @brief Gets a dynamically loaded component from an entity.
-         *
-         */
-        UserComponentWrapper& GetComponent(Entity e, const std::string& cptTypeName)
+        template <typename T>
+        T& GetComponent(Entity e, const std::string& cptTypeName)
         {
-            size_t idx = _cptTypesIndexes[std::type_index(typeid(UserComponentWrapper))];
+            std::type_index type = std::type_index(typeid(T));
+            size_t idx = 0;
 
-            if (_components[idx][e].empty()) {
-                throw std::runtime_error("Component not found : " + cptTypeName);
+            try {
+                idx = _cptTypesIndexes.at(type);
+            } catch (std::exception& e) {
+                idx = _cptTypesIndexes.at(std::type_index(typeid(UserComponentWrapper)));
             }
+
             bool found = false;
             for (auto& cpt : _components[idx][e]) {
                 std::visit([&](auto&& arg) {
@@ -317,8 +318,12 @@ namespace ecs {
                     }
                 },
                     cpt);
-                if (found)
-                    return std::get<UserComponentWrapper>(cpt);
+                if (found) {
+                    T* tmp = dynamic_cast<T*>(std::get<UserComponentWrapper>(cpt).GetInternalComponent().get());
+                    if (tmp == nullptr)
+                        throw std::runtime_error("Component found uninitialized : " + cptTypeName);
+                    return *tmp;
+                }
             }
             throw std::runtime_error("Component not found : " + cptTypeName);
         }

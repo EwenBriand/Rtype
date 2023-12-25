@@ -97,8 +97,7 @@ namespace serv {
         bytes data = Read();
 
         while (not data.empty()) {
-            bytes response = _clientHandler->HandleRequest(data);
-            server.Send({ response, _endpoint });
+            _clientHandler->HandleRequest(data);
             data = Read();
         }
     }
