@@ -6,6 +6,7 @@
 */
 
 #pragma once
+#include "GameRtype.hpp"
 #include "IController.hpp"
 #include "Message.hpp"
 #include "NetworkExceptions.hpp"
@@ -76,6 +77,7 @@ public:
 
 private:
     void handleOK(serv::Instruction&);
+    void handlePlayerMoves(serv::Instruction&);
 
     int _playerId;
     int _entityID;
@@ -85,5 +87,6 @@ private:
         { serv::I_OK, &DistantPlayer::handleOK },
         { serv::I_CONNECT, nullptr },
         { serv::I_AM_ALIVE, nullptr },
+        { eng::RType::I_PLAYER_MOVES, &DistantPlayer::handlePlayerMoves },
     };
 };

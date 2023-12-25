@@ -9,6 +9,7 @@
 #include "CoreTransform.hpp"
 #include "LocalPlayerController.hpp"
 #include "NetworkExceptions.hpp"
+#include "PlayerFromServerController.hpp"
 #include "Ship.hpp"
 
 namespace rtype {
@@ -164,8 +165,13 @@ namespace rtype {
 
             if (id == _playerId)
                 ship.Possess(e, std::make_shared<LocalPlayerController>());
-            else
-                throw std::runtime_error("Possessing other players is not implemented yet."); // todo
+            else {
+                std::cout << "Spawning player from server" << std::endl;
+                auto pfsc = std::make_shared<PlayerFromServerController>();
+                pfsc->SetPlayerId(id);
+                _players[id] = pfsc;
+                ship.Possess(e, pfsc);
+            }
 
             auto& transform = _engine->GetECS().GetComponent<CoreTransform>(e);
             std::memcpy(&transform.x, instruction.data.data() + sizeof(int), sizeof(int));

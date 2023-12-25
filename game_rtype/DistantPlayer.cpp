@@ -103,7 +103,6 @@ int DistantPlayer::GetID() const
 
 void DistantPlayer::handleOK(serv::Instruction&)
 {
-    std::cout << "DistantPlayer::handleOK" << std::endl;
     _answerFlag = true;
 }
 
@@ -128,4 +127,25 @@ void DistantPlayer::UpdatePipeline()
 void DistantPlayer::SetEntity(int entityID)
 {
     _entityID = entityID;
+}
+
+void DistantPlayer::handlePlayerMoves(serv::Instruction& instruction)
+{
+    if (instruction.data.size() != 3 * sizeof(int)) {
+        throw serv::MalformedInstructionException("Player moves instruction malformed");
+    }
+    int id = 0;
+    int x = 0;
+    int y = 0;
+    std::memcpy(&id, instruction.data.data(), sizeof(int));
+    std::memcpy(&x, instruction.data.data() + sizeof(int), sizeof(int));
+    std::memcpy(&y, instruction.data.data() + 2 * sizeof(int), sizeof(int));
+    if (id != _playerId) {
+        throw serv::MalformedInstructionException("Player moves instruction malformed");
+    }
+
+    auto& transform = SYS.GetComponent<CoreTransform>(_entityID);
+    // todo anticheat goes here
+    transform.x = x;
+    transform.y = y;
 }

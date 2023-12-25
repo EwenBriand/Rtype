@@ -672,10 +672,8 @@ namespace ecs {
          */
         Entity LoadEntity(const std::string& path)
         {
-            std::cout << "loading entity from " << path << std::endl;
             if (path.substr(path.find_last_of("/"), path.size()) == std::to_string(_systemHolder))
                 return -1;
-            std::cout << "path is not system holder" << std::endl;
             Entity e = RegisterEntity();
             std::ifstream cptTypes(path + "/cptTypes");
             std::string type = "";

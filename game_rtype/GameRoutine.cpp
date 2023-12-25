@@ -85,7 +85,9 @@ namespace rtype {
             auto& transform = sys.GetComponent<CoreTransform>(e);
             transform.x = 10;
             transform.y = 10 * id;
-            player->Send(serv::Instruction(eng::RType::I_PLAYER_SPAWN, 0, serv::bytes(std::vector<int> { id, 10, 10 * id })));
+            for (auto& p : DistantPlayer::Instances)
+                p->Send(serv::Instruction(eng::RType::I_PLAYER_SPAWN, 0, serv::bytes(std::vector<int> { id, 10, 10 * id })));
+            player->SetEntity(e);
         } catch (std::exception& e) {
             std::cerr << "\r" << e.what() << std::endl;
         }

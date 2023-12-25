@@ -11,6 +11,7 @@
 #include "Engine.hpp"
 #include "GameRtype.hpp"
 #include "NetworkExceptions.hpp"
+#include "PlayerFromServerController.hpp"
 #include <atomic>
 #include <map>
 #include <memory>
@@ -87,6 +88,8 @@ namespace rtype {
         eng::Engine* _engine = nullptr;
 
         int _playerId;
+
+        std::map<int, std::shared_ptr<PlayerFromServerController>> _players;
 
         std::map<int, void (RTypeDistantServer::*)(serv::Instruction&)>
             _requestHandlers = {

@@ -54,9 +54,9 @@ namespace eng {
             return;
 
         // update this to account for networking, other players, etc
-        int player = SYS.GetResourceManager().LoadPrefab("ship");
-        Ship& ship = SYS.GetComponent<Ship>(player, "Ship");
-        ship.Possess(player, std::make_shared<LocalPlayerController>());
+        // int player = SYS.GetResourceManager().LoadPrefab("ship");
+        // Ship& ship = SYS.GetComponent<Ship>(player, "Ship");
+        // ship.Possess(player, std::make_shared<LocalPlayerController>());
     }
 
     // =========================================================================================================== //

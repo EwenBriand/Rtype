@@ -12,6 +12,7 @@ set(SRC
     RTypeDistantServer.cpp
     scripts/Ship.cpp
     GameRoutine.cpp
+    PlayerFromServerController.cpp
 )
 
 set(META_SRC
