@@ -9,7 +9,10 @@ set(SRC
     LocalPlayerController.cpp
     DistantPlayer.cpp
     LobbyCoroutine.cpp
+    RTypeDistantServer.cpp
     scripts/Ship.cpp
+    GameRoutine.cpp
+    PlayerFromServerController.cpp
 )
 
 set(META_SRC

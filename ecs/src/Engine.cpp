@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <filesystem>
 #include <memory>
+#include <stdexcept>
 #include <variant>
 
 namespace eng {
@@ -61,6 +62,9 @@ namespace eng {
     {
         pushPipeline([&]() {
             SYS.GetInputManager().PollEvents();
+            for (auto& observer : m_observers) {
+                observer->Poll();
+            }
         },
             -1000);
         m_graphicalModule->ModPipeline();
@@ -94,9 +98,9 @@ namespace eng {
             std::ofstream pipinfo(".pipinfo.txt", std::ios::out | std::ios::trunc);
             pipinfo << pipelineAsStr;
             pipinfo.close();
-            CONSOLE::info << "More information about the pipeline in .pipinfo.txt" << std::endl;
+            CONSOLE::info << "\rMore information about the pipeline in .pipinfo.txt" << std::endl;
         } catch (std::exception& e) {
-            CONSOLE::warn << "Could not save pipeline information" << std::endl;
+            CONSOLE::warn << "\rCould not save pipeline information" << std::endl;
         }
         m_pipelineChanged = false;
     }
@@ -210,7 +214,7 @@ namespace eng {
             },
             [&]() {
                 if (m_pipelineChanged) {
-                    CONSOLE::info << "Updating pipeline" << std::endl;
+                    CONSOLE::info << "\rUpdating pipeline" << std::endl;
                     sortPipeline();
                 }
                 for (auto action : *m_postUpdatePipeline) {
@@ -227,6 +231,8 @@ namespace eng {
 
     SceneManager& Engine::GetSceneManager()
     {
+        if (!m_sceneManager)
+            throw std::runtime_error("Scene manager is null.");
         return *m_sceneManager;
     }
 
@@ -381,17 +387,22 @@ namespace eng {
         }
     }
 
-    serv::ServerUDP& Engine::GetServer() const
-    {
-        if (!m_server)
-            throw EngineException("Server not initialized", __FILE__, __FUNCTION__, __LINE__);
-        return *m_server;
-    }
+    // serv::ServerUDP& Engine::GetServer() const
+    // {
+    //     if (!m_server)
+    //         throw EngineException("Server not initialized", __FILE__, __FUNCTION__, __LINE__);
+    //     return *m_server;
+    // }
 
-    serv::ClientUDP& Engine::GetClient() const
-    {
-        if (!m_client)
-            throw EngineException("Client not initialized", __FILE__, __FUNCTION__, __LINE__);
-        return *m_client;
-    }
+    // serv::ClientUDP& Engine::GetClient() const
+    // {
+    //     if (!m_client)
+    //         throw EngineException("Client not initialized", __FILE__, __FUNCTION__, __LINE__);
+    //     return *m_client;
+    // }
+
+    // ecs::ECSImpl& Engine::GetECS() const
+    // {
+    //     return SYS;
+    // }
 } // namespace eng

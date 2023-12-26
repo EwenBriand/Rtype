@@ -26,11 +26,12 @@ namespace ecs {
 
         /**
          * @brief the exit function returns the next state of the state machine,
-         * or nullptr if the state does not change.
+         * or nullptr if the state does not change. If the state changes, the
+         * boolean passed as parameter is set to true.
          *
          * @return std::shared_ptr<IState>
          */
-        virtual std::shared_ptr<IState> Exit() = 0;
+        virtual std::shared_ptr<IState> Exit(bool&) = 0;
     };
 
     /**

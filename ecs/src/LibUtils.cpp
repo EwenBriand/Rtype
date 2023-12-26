@@ -33,7 +33,6 @@ namespace lib {
 
     void* LibUtils::getLibHandle(const std::string& path)
     {
-        std::cout << "path library : " << path << std::endl;
         std::string path_copy = path;
         if (path.size() > 2 and path.substr(0, 2) == "./")
             path_copy = std::filesystem::current_path().string() + path.substr(1);

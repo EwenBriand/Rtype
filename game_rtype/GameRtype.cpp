@@ -4,6 +4,7 @@
 #include "Engine.hpp"
 #include "LobbyCoroutine.hpp"
 #include "LocalPlayerController.hpp"
+#include "RTypeDistantServer.hpp"
 #include "SceneManager.hpp"
 #include "Ship.hpp"
 #include <iostream>
@@ -44,7 +45,7 @@ namespace eng {
 
     void RType::LoadFirstScene(eng::Engine* e)
     {
-        e->GetSceneManager().SwitchScene("menu");
+        // e->GetSceneManager().SwitchScene("menu");
     }
 
     void RType::PreSceneInstantiationHook(eng::Engine* e, const std::string& sceneName)
@@ -53,9 +54,9 @@ namespace eng {
             return;
 
         // update this to account for networking, other players, etc
-        int player = SYS.GetResourceManager().LoadPrefab("ship");
-        Ship* ship = GetUComponent(player, Ship);
-        ship->Possess(player, std::make_shared<LocalPlayerController>());
+        // int player = SYS.GetResourceManager().LoadPrefab("ship");
+        // Ship& ship = SYS.GetComponent<Ship>(player, "Ship");
+        // ship.Possess(player, std::make_shared<LocalPlayerController>());
     }
 
     // =========================================================================================================== //
@@ -69,7 +70,6 @@ namespace eng {
     void RType::initServerConnection(Engine* e)
     {
         if (!e->IsOptionSet(eng::Engine::Options::SERVER_MODE) && e->IsOptionSet(eng::Engine::Options::SERVER_IP) && e->IsOptionSet(eng::Engine::Options::SERVER_PORT)) {
-            std::cout << "Connecting to server at " << e->GetOptionValue(eng::Engine::Options::SERVER_IP) << std::endl;
             connectToServer(e);
         } else if (e->IsOptionSet(eng::Engine::Options::SERVER_MODE) && e->IsOptionSet(eng::Engine::Options::SERVER_PORT)) {
             startServer(e);
@@ -105,9 +105,10 @@ namespace eng {
         }
         try {
             e->GetClient().SetServerAddress(rawIP, std::stoi(rawPort));
-            e->GetClient().SetRequestHandler([](const serv::bytes& data) {
-                std::cout << "received: " << serv::ServerUDP::bytesToString(data) << std::endl;
-            });
+            std::shared_ptr<rtype::RTypeDistantServer> serverHandle = std::make_shared<rtype::RTypeDistantServer>(e->GetClient());
+            serverHandle->SetAsInstance();
+            serverHandle->SetEngine(e);
+            e->GetClient().SetRequestHandler(serverHandle);
             e->GetClient().Start();
             _stateMachine = ecs::States(std::make_shared<rtype::LobbyRoutineClient>(*e));
         } catch (const std::exception& e) {

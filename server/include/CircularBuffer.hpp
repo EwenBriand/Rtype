@@ -18,6 +18,8 @@
 namespace serv {
 
     struct bytes {
+        std::vector<unsigned char> _data;
+
         bytes() = default;
 
         bytes(char* s, int size)
@@ -39,7 +41,15 @@ namespace serv {
         {
             _data = v;
         }
-        std::vector<unsigned char> _data;
+
+        bytes(std::vector<int> v)
+        {
+            _data.reserve(v.size() * sizeof(int));
+            for (auto& i : v) {
+                char* c = reinterpret_cast<char*>(&i);
+                _data.insert(_data.end(), c, c + sizeof(int));
+            }
+        }
 
         inline std::vector<unsigned char> operator=(std::vector<unsigned char> v)
         {
@@ -258,6 +268,17 @@ namespace serv {
                 return false;
 
             return std::equal(_data.end() - other._data.size(), _data.end(), other._data.begin());
+        }
+
+        int ToInt() const
+        {
+            if (_data.size() < 4)
+                throw std::runtime_error("bytes::ToInt: bytes size is less than 4");
+            int result = 0;
+            for (int i = 0; i < _data.size(); ++i) {
+                result += _data[i] << (8 * i);
+            }
+            return result;
         }
     };
 

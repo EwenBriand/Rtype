@@ -53,6 +53,8 @@ set(ECS
     ${ECS_SRC}/AController.cpp
     ${ECS_SRC}/AActor.cpp
     ${ECS_SRC}/States.cpp
+    ${ECS_SRC}/Timer.cpp
+    ${ECS_SRC}/Observer.cpp
 )
 
 set(ENGINE

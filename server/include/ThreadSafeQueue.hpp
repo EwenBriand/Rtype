@@ -34,7 +34,6 @@ namespace serv {
         {
             std::lock_guard<std::mutex> lock(_mutex);
             _queue.push(element);
-            std::cout << "pushed" << std::endl;
         }
 
         /**

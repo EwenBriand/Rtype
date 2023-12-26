@@ -27,20 +27,19 @@ namespace serv {
             _receiveThread.join();
     }
 
+    void ClientUDP::SetRequestHandler(std::shared_ptr<IClientRequestHandler> requestHandler)
+    {
+        _requestHandler = requestHandler;
+    }
+
     void ClientUDP::Send(const bytes& data)
     {
-        std::cout << "sending " << data.toString() << std::endl;
         _sendQueue.Push(data);
     }
 
     void ClientUDP::Send(const Instruction& instruction)
     {
-        _sendQueue.Push(instruction.ToBytes());
-    }
-
-    void ClientUDP::SetRequestHandler(std::function<void(const bytes&)> handler)
-    {
-        _requestHandler = handler;
+        _sendQueue.Push(instruction.ToBytes() + SEPARATOR);
     }
 
     void ClientUDP::SetServerAddress(const std::string& ip, int port)
@@ -54,7 +53,6 @@ namespace serv {
         while (_running) {
             try {
                 bytes data = _sendQueue.Pop();
-                std::cout << "sending " << data.toString() << std::endl;
                 _socket.send_to(boost::asio::buffer(data._data), boost::asio::ip::udp::endpoint(boost::asio::ip::address::from_string(_serverIp), _serverPort));
             } catch (std::exception& e) {
                 // empty queue
@@ -74,7 +72,7 @@ namespace serv {
                 data.resize(bytesTransferred);
                 {
                     std::lock_guard<std::mutex> lock(*_mutex);
-                    _inBuffer.Write(bytes(data));
+                    _inBuffer.Write(data);
                 }
 
             } catch (std::exception& e) {
@@ -105,10 +103,10 @@ namespace serv {
             bytes data;
             {
                 std::lock_guard<std::mutex> lock(*_mutex);
-                data = _inBuffer.Read();
+                data = _inBuffer.ReadUntil(SEPARATOR);
             }
             if (_requestHandler != nullptr and !data.empty())
-                _requestHandler(data);
+                _requestHandler->HandleRequest(data);
         }
     }
 }

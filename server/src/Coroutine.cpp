@@ -65,7 +65,6 @@ namespace serv {
         if (!_handle)
             return false;
         if (_handle.done()) {
-            std::cout << "handle is done" << std::endl;
             _handle.destroy();
             _handle = nullptr;
             return false;
@@ -78,6 +77,18 @@ namespace serv {
     bool Coroutine::Done() const
     {
         return _handle.done();
+    }
+
+    ACoroutineExecutor::ACoroutineExecutor(std::function<Coroutine()> callback)
+        : _routine(callback())
+    {
+    }
+
+    bool ACoroutineExecutor::Execute()
+    {
+        if (!_routine.Done())
+            _routine.Resume();
+        return _routine.Done();
     }
 
 }

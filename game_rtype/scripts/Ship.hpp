@@ -13,6 +13,7 @@
 #include "Components.Vanilla/UserComponentWrapper.hpp"
 #include "IActor.hpp"
 #include "IController.hpp"
+#include "Observer.hpp"
 #include "metadata.hpp"
 
 /**
@@ -50,6 +51,7 @@ private:
 
     RigidBody2D* _rb = nullptr;
     int _entity;
+    eng::Observer _observer;
 
     void moveUp();
     void moveDown();

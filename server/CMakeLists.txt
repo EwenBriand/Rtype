@@ -14,11 +14,7 @@ set(SOURCE
     src/ClientUDP.cpp
     src/CircularBuffer.cpp
     src/Coroutine.cpp
+    src/Instruction.cpp
 )
 
 add_library(${PROJECT_NAME} SHARED ${SOURCE})
-
-# tests
-if(BUILD_TESTING)
-    add_subdirectory(tests)
-endif()

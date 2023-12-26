@@ -270,13 +270,10 @@ void Animation::SetLoop(bool loop)
 
 void Animator::OnAddComponent(int entityId)
 {
-    std::cout << "Animator added to entity " << entityId << std::endl;
-
     for (auto name : _registeredAnimations) {
         std::string out = "";
         Animation anim = loadAnimationFromFile(name, out);
         _animations[out] = anim;
-        std::cout << "Loaded animation " << out << std::endl;
     }
 }
 
@@ -439,7 +436,6 @@ void Animator::AddAnimation(const std::string& name, Animation& anim)
 
 Animation Animator::loadAnimationFromFile(const std::string& path, std::string& name)
 {
-    std::cout << "loading animation from file: " << path << std::endl; // todo remove
     std::vector<std::string> lines = loadRawAnimFile(path, name);
     decltype(lines)::iterator it = lines.begin();
     Animation anim;

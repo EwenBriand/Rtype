@@ -26,4 +26,9 @@ namespace ecs {
     {
         _entity = entityID;
     }
+
+    int AController::GetEntity() const
+    {
+        return _entity;
+    }
 } // namespace ecs

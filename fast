@@ -328,6 +328,10 @@ def run_client(args):
     cd_gitroot()
     os.system(".shortcuts/client")
 
+def run_gclient(args):
+    cd_gitroot()
+    os.system(".shortcuts/gclient")
+
 def run_server(args):
     cd_gitroot()
     os.system(".shortcuts/server")
@@ -344,6 +348,7 @@ commands = {
     "doc": ("generates the documentation and opens it using the browser given in argument, or firefox.", lambda args: fast_doc(args)),
     "setcfg": ("creates and sets up the default configuration directory for a project", lambda args: create_cfg(args)),
     "client": ("runs a client connecting to 127.0.0.1:8080", lambda args: run_client(args)),
+    "gclient": ("just like client but with a graphical interface", lambda args: run_gclient(args)),
     "server": ("runs a server on port 8080", lambda args: run_server(args)),
 }
 
