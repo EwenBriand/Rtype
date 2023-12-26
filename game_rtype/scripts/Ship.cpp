@@ -86,4 +86,16 @@ void Ship::moveRight()
 
 void Ship::shoot()
 {
+    int laser = SYS.GetResourceManager().LoadPrefab("laser");
+    try {
+        auto& transform = SYS.GetComponent<CoreTransform>(_entity);
+        auto& laserTransform = SYS.GetComponent<CoreTransform>(laser);
+        laserTransform.x = transform.x + 50;
+        laserTransform.y = transform.y + 20;
+    } catch (std::exception& e) {
+        return;
+    }
+    // Laser* laserScript = GetUComponent(laser, Laser);
+    // laserScript->setDamage(_damage);
+    // laserScript->setSpeed(10);
 }

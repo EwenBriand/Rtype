@@ -45,7 +45,7 @@ namespace lib {
         if (!handle) {
             std::cout << "execution path is : " << std::filesystem::current_path() << std::endl;
             std::cout << "nm result : " << std::endl;
-            std::string nm_command = "nm " + path_copy + " | grep _ZN10MenuScript6UpdateEi";
+            std::string nm_command = "nm " + path_copy + " | grep _ZTI5Laser";
             std::system(nm_command.c_str());
 
             throw std::runtime_error("Cannot load library: [" + path_copy + "] : " + std::string(ERRORLIB()));

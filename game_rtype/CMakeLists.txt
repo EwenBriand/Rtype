@@ -7,10 +7,13 @@ set(SRC
     LocalPlayerController.cpp
     DistantPlayer.cpp
     scripts/Ship.cpp
+    scripts/Laser.cpp
 )
 
 set(META_SRC
-    ../.metadata/ShipMeta.cpp)
+    ../.metadata/LaserMeta.cpp
+    ../.metadata/ShipMeta.cpp
+)
 
 
 

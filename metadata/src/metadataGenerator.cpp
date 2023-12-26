@@ -37,7 +37,7 @@ namespace meta {
         return p.string();
     }
 
-    void MetadataGenerator::generateMetadata(const std::string& path, const std::string& outputDirectory, const std::string& buildRoot, std::vector<std::string> add_includes)
+    void MetadataGenerator::generateMetadata(const std::string& path, const std::string& outputDirectory, const std::string& buildRoot, std::vector<std::string> add_includes, const std::string& scriptPath)
     {
         _add_include = add_includes;
         _buildRoot = buildRoot;
@@ -57,7 +57,7 @@ namespace meta {
             else {
                 _filename = entry.path().filename().string();
                 if (entry.path().extension() == ".hpp")
-                    generateMetadataForFile(entry.path().string(), entry.path().filename().string());
+                    generateMetadataForFile(entry.path().string(), entry.path().filename().string(), scriptPath);
             }
         }
         saveCMake();
@@ -89,7 +89,7 @@ namespace meta {
     }
 
     void MetadataGenerator::generateMetadataForFile(const std::string& filepath,
-        const std::string& filename)
+        const std::string& filename, const std::string& scriptPath)
     {
         std::ifstream file(filepath);
         std::vector<std::string> words = tokenize(file);
@@ -97,6 +97,12 @@ namespace meta {
         std::cout << "-- Generating metadata for " << filename << std::endl;
 
         for (size_t i = 0; i < words.size(); ++i) {
+            // if (words[i].rfind(".hpp\"") == words[i].length() - 5 && i > 0 && words[i] == "#include"
+            //     && std::filesystem::exists(std::filesystem::path(filepath).parent_path() / words[i])) {
+            //     std::cout << "-- HELOOOOOOOOOOOOOOO Generating metadata for " << words[i] << std::endl;
+            //     generateMetadataForFile((std::filesystem::path(filepath).parent_path() / words[i]).c_str(), words[i]);
+            // }
+            check_depends(words, i, scriptPath, filepath);
             if (words[i] == "class" && i > 0 && words[i - 1] == "serialize") {
                 serializeed = true;
                 std::string filenameNoExtension = filename.substr(0, filename.find_last_of("."));
@@ -338,6 +344,42 @@ namespace meta {
         }
         if (dependencies != "") {
             _cmakefile += "target_link_libraries(" + targetName + " " + dependencies + ")\n";
+        }
+    }
+
+    void MetadataGenerator::check_depends(std::vector<std::string>& words, size_t& i, const std::string& path, const std::string& filepath)
+    {
+        std::cout << "words[i] = " << words[i] << std::endl;
+        if (words[i].substr(0, 9) == "dependsOn") {
+            std::string libname = words[i].substr(11, words[i].size() - 13);
+            auto libpath = path + '/' + libname;
+
+            std::cout << "IM IN DEPENDS ON" << std::endl;
+            std::cout << "libname = " << libname << std::endl;
+            std::cout << "libpath = " << libpath << " path " << path << std::endl;
+
+            if (std::filesystem::exists(libpath)) {
+                std::cout << "libpath exists" << std::endl;
+                auto tmp = filepath.substr(0, filepath.rfind('/'));
+                tmp = tmp.substr(0, tmp.rfind('/') + 1);
+                auto copyPath = tmp + libname.substr(0, libname.rfind('.'));
+                auto rootDir = tmp.substr(0, tmp.rfind('/'));
+                try {
+                    auto metagen = meta::MetadataGenerator();
+                    metagen.generateMetadata(copyPath, "./metabuild", rootDir, { path }, path);
+                    metagen.buildCMake();
+                } catch (std::exception& e) {
+                    std::cerr << "Build failed: " << copyPath << std::endl;
+                    std::cerr << "Build failed: " << rootDir << std::endl;
+                    std::ofstream checksumPath(libpath.substr(0, libpath.rfind('.') - 1) + ".checksum", std::ios::trunc | std::ios::out);
+                    checksumPath << "build failed, retry";
+                    checksumPath.close();
+                    return;
+                }
+                // _filename = libname;
+                // generateMetadataForFile(filepath.substr(0, filepath.rfind('/')) + libname, libname, path);
+                _filename = filepath.substr(filepath.rfind('/') + 1, filepath.size() - filepath.rfind('/'));
+            }
         }
     }
 }

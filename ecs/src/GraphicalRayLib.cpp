@@ -86,34 +86,6 @@ namespace raylib {
         _events[eventKey] = callback;
     }
 
-    // void GraphicalRayLib::WindowDrawRectangle(graph::graphRect_t rectInfo, int prio)
-    // {
-    //     _buffer.insert({ prio, [rectInfo]() {
-    //                         DrawRectangle(rectInfo.pos.x, rectInfo.pos.y, rectInfo.dimensions.x, rectInfo.dimensions.y, { rectInfo.bgColor.x, rectInfo.bgColor.y, rectInfo.bgColor.z, rectInfo.bgColor.w });
-    //                         DrawRectangleLinesEx({ rectInfo.pos.x, rectInfo.pos.y, rectInfo.dimensions.x, rectInfo.dimensions.y }, rectInfo.borderSize, { rectInfo.borderColor.x, rectInfo.borderColor.y, rectInfo.borderColor.z, 255 });
-    //                     } });
-    // }
-
-    // void GraphicalRayLib::WindowDrawCircle(graph::graphCircle_t circleInfo, int prio)
-    // {
-    //     _buffer.insert({ prio, [circleInfo]() {
-    //                         DrawCircle(circleInfo.pos.x, circleInfo.pos.y, circleInfo.radius, { circleInfo.color.x, circleInfo.color.y, circleInfo.color.z, circleInfo.color.w });
-    //                         DrawCircleLines(circleInfo.pos.x, circleInfo.pos.y, circleInfo.radius, { circleInfo.borderColor.x, circleInfo.borderColor.y, circleInfo.borderColor.z, circleInfo.borderColor.w });
-    //                     } });
-    // }
-
-    // void GraphicalRayLib::WindowDrawText(graph::graphText_t textInfo, int prio)
-    // {
-    //     _buffer.insert({ prio, [textInfo]() { DrawText(textInfo.text.c_str(), textInfo.pos.x, textInfo.pos.y, textInfo.fontSize, { textInfo.color.x, textInfo.color.y, textInfo.color.z, textInfo.color.w }); } });
-    // }
-
-    // void GraphicalRayLib::WindowDrawTexture(graph::graphTexture_t spriteInfo, int prio)
-    // {
-    //     _buffer.insert({ prio, [spriteInfo]() {
-    //                         DrawTexturePro(spriteInfo.texture, spriteInfo.source, spriteInfo.dest, spriteInfo.origin, spriteInfo.rotation, spriteInfo.color);
-    //                     } });
-    // }
-
     graph::vec2f GraphicalRayLib::WindowGetMousePos() const
     {
         auto pos = SYS.GetInputManager().MousePosition();
