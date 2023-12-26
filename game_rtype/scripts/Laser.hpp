@@ -22,7 +22,7 @@
  * from the network, the local player, or the ai.
  *
  */
-serialize class Laser : public AUserComponent, public ecs::AActor {
+serialize class Laser : public AUserComponent {
 public:
     GENERATE_METADATA(Laser)
     Laser() = default;

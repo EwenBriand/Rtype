@@ -87,12 +87,12 @@ void Ship::moveRight()
 
 void Ship::shoot()
 {
-    int laser = SYS.GetResourceManager().LoadPrefab("laser");
+    int laser = SYS.GetResourceManager().LoadPrefab("Laser");
     try {
         auto& transform = SYS.GetComponent<CoreTransform>(_entity);
         auto& laserTransform = SYS.GetComponent<CoreTransform>(laser);
-        laserTransform.x = transform.x + 50;
-        laserTransform.y = transform.y + 20;
+        laserTransform.x = transform.x + 230;
+        laserTransform.y = transform.y + 110;
     } catch (std::exception& e) {
         return;
     }

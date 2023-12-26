@@ -22,18 +22,16 @@ void Laser::OnAddComponent(int entityID)
 
 void Laser::Start()
 {
+    std::cout << "Laser start" << std::endl;
     _rb = &SYS.GetComponent<RigidBody2D>(_entity);
     auto& collider = SYS.SafeGet<Collider2D>(_entity);
-    _speed = 10.0f;
+    _speed = 100.0f;
     _rb->SetVelocity({ _speed, _rb->GetVelocity().y });
 }
 
 void Laser::Update(int entityID)
 {
-    if (!_controller) {
-        return;
-    }
-    std::cout << "Laser update" << std::endl;
+    // std::cout << "Laser update" << std::endl;
 }
 
 // ===========================================================================================================
