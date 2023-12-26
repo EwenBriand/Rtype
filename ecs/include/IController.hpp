@@ -69,8 +69,9 @@ namespace ecs {
         virtual std::vector<std::string>& GetDirectives() = 0;
         virtual void PollDirectives() = 0;
 
-        void UpdatePipeline() override;
-        void SetEntity(int entityID) override;
+        virtual void UpdatePipeline() override;
+        virtual void SetEntity(int entityID) override;
+        virtual int GetEntity() const;
 
     protected:
         int _entity;

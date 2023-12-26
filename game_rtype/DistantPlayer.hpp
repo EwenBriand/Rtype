@@ -85,8 +85,8 @@ private:
 
     std::map<int, void (DistantPlayer::*)(serv::Instruction&)> _requestCallbacks = {
         { serv::I_OK, &DistantPlayer::handleOK },
+        { eng::RType::I_PLAYER_MOVES, &DistantPlayer::handlePlayerMoves },
         { serv::I_CONNECT, nullptr },
         { serv::I_AM_ALIVE, nullptr },
-        { eng::RType::I_PLAYER_MOVES, &DistantPlayer::handlePlayerMoves },
     };
 };

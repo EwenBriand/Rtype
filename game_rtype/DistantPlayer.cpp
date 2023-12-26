@@ -30,9 +30,8 @@ void DistantPlayer::HandleRequest(const serv::bytes& data)
 {
     try {
         auto instruction = serv::Instruction(data);
-
         if (_requestCallbacks.find(instruction.opcode) == _requestCallbacks.end()) {
-            throw serv::MalformedInstructionException("Unknown instruction received from client: " + std::to_string(instruction.opcode));
+            throw serv::MalformedInstructionException("\rUnknown instruction received from client: " + std::to_string(instruction.opcode));
         }
         auto handler = _requestCallbacks.at(instruction.opcode);
         if (handler == nullptr) {
@@ -131,7 +130,8 @@ void DistantPlayer::SetEntity(int entityID)
 
 void DistantPlayer::handlePlayerMoves(serv::Instruction& instruction)
 {
-    if (instruction.data.size() != 3 * sizeof(int)) {
+    if (instruction.data.size() < 3 * sizeof(int)) {
+        std::cout << "\rinstruction size: " << instruction.data.size() << std::endl;
         throw serv::MalformedInstructionException("Player moves instruction malformed");
     }
     int id = 0;
@@ -141,6 +141,7 @@ void DistantPlayer::handlePlayerMoves(serv::Instruction& instruction)
     std::memcpy(&x, instruction.data.data() + sizeof(int), sizeof(int));
     std::memcpy(&y, instruction.data.data() + 2 * sizeof(int), sizeof(int));
     if (id != _playerId) {
+        std::cerr << "\rplayer id: " << id << std::endl;
         throw serv::MalformedInstructionException("Player moves instruction malformed");
     }
 
@@ -148,4 +149,11 @@ void DistantPlayer::handlePlayerMoves(serv::Instruction& instruction)
     // todo anticheat goes here
     transform.x = x;
     transform.y = y;
+    std::cout << "\rplayer " << id << " moved to " << x << ", " << y << std::endl;
+    for (auto& player : Instances) {
+        if (player->GetID() == _playerId) {
+            continue;
+        }
+        player->Send(serv::Instruction(eng::RType::I_PLAYER_MOVES, 0, instruction.data));
+    }
 }

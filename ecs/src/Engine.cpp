@@ -62,6 +62,9 @@ namespace eng {
     {
         pushPipeline([&]() {
             SYS.GetInputManager().PollEvents();
+            for (auto& observer : m_observers) {
+                observer->Poll();
+            }
         },
             -1000);
         m_graphicalModule->ModPipeline();

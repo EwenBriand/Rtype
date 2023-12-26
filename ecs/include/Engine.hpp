@@ -11,12 +11,14 @@
 #include "Engine.hpp"
 #include "IGame.hpp"
 #include "IGraphicalModule.hpp"
+#include "Observer.hpp"
 #include "SceneManager.hpp"
 #include "ServerUdp.hpp"
 #include "Types.hpp"
 #include <exception>
 #include <fstream>
 #include <memory>
+#include <mutex>
 #include <vector>
 
 #define pushPipeline(action, priority) \
@@ -222,6 +224,40 @@ namespace eng {
             return SYS;
         }
 
+        /**
+         * @brief Creates a new observer and returns a shared_ptr to it.
+         *
+         */
+        inline std::shared_ptr<Observer> RegisterObserver()
+        {
+            auto observer = std::make_shared<Observer>();
+            m_observers.push_back(observer);
+            return observer;
+        }
+
+        /**
+         * @brief Creates a mutex under the given name
+         *
+         */
+        inline void CreateMutex(const std::string& name)
+        {
+            m_mutexes[name] = std::make_shared<std::mutex>();
+        }
+
+        /**
+         * @brief Returns a mutex under the given name.
+         *
+         */
+        inline std::mutex& GetMutex(const std::string& name)
+        {
+            try {
+                return *m_mutexes.at(name);
+            } catch (const std::out_of_range& e) {
+                CreateMutex(name);
+                return *m_mutexes.at(name);
+            }
+        }
+
     private:
         /**
          * @brief Discovers the configuration in the .engine folder and
@@ -272,9 +308,13 @@ namespace eng {
         bool m_pipelineChanged = false;
         std::shared_ptr<std::vector<std::tuple<int, std::tuple<std::string, Action>>>> m_unsortedPipeline;
         std::shared_ptr<IGame> m_game = nullptr;
+
         ecs::ECSImpl& m_ecs;
         std::shared_ptr<serv::ServerUDP> m_server = nullptr;
         std::shared_ptr<serv::ClientUDP> m_client = nullptr;
+
+        std::vector<std::shared_ptr<Observer>> m_observers;
+        std::map<std::string, std::shared_ptr<std::mutex>> m_mutexes;
     };
 
     class EngineException : public std::exception {

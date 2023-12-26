@@ -49,7 +49,7 @@ namespace serv {
         std::atomic_bool _answerFlag;
     };
 
-    static const bytes SEPARATOR = { 't', 'h', 'e', 'e', 'n', 'd' };
+    static const bytes SEPARATOR = { 't', 'h', 'e', 'e', 'n', 'd', 'o', 'f', 't', 'h', 'e', 'm', 'e', 's', 's', 'a', 'g', 'e' };
     static const std::size_t BUFF_SIZE = 1024;
     class ServerUDP;
     /**

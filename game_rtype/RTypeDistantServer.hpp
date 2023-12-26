@@ -73,6 +73,13 @@ namespace rtype {
         void handleMessage(serv::Instruction& instruction);
         void handleAssignPlayerID(serv::Instruction& instruction);
         void handlePlayerSpawn(serv::Instruction& instruction);
+        void handlePlayerMoves(serv::Instruction& instruction);
+
+        /**
+         * @brief Sens the I_PLAYER_MOVES instruction to the server
+         *
+         */
+        void sendPlayerMoves(int id);
 
         /**
          * @brief Sends the I_AM_ALIVE instruction to the server.
@@ -88,8 +95,10 @@ namespace rtype {
         eng::Engine* _engine = nullptr;
 
         int _playerId;
+        int _entityID;
 
-        std::map<int, std::shared_ptr<PlayerFromServerController>> _players;
+        std::map<int, std::shared_ptr<PlayerFromServerController>>
+            _players;
 
         std::map<int, void (RTypeDistantServer::*)(serv::Instruction&)>
             _requestHandlers = {
@@ -98,9 +107,11 @@ namespace rtype {
                 { serv::I_LOAD_SCENE, &RTypeDistantServer::handleLoadScene },
                 { serv::I_START_GAME, &RTypeDistantServer::handleStartGame },
                 { serv::I_MESSAGE, &RTypeDistantServer::handleMessage },
+                { serv::E_INVALID_OPCODE, nullptr },
 
                 { eng::RType::I_PLAYER_ID, &RTypeDistantServer::handleAssignPlayerID },
                 { eng::RType::I_PLAYER_SPAWN, &RTypeDistantServer::handlePlayerSpawn },
+                { eng::RType::I_PLAYER_MOVES, &RTypeDistantServer::handlePlayerMoves }
             };
     };
 } // namespace rtype
