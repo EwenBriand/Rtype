@@ -516,8 +516,7 @@ void CLI::sendMessageToServer(std::vector<std::string> args)
         std::string message = "";
         for (auto& arg : args)
             message += arg + " ";
-        message += "\r\n";
-        clientEndpoint.Send(message);
+        clientEndpoint.Send(serv::bytes(message) + serv::SEPARATOR);
     } catch (std::exception& e) {
         CONSOLE::err << "Not connected to server" << std::endl;
         return;
@@ -540,8 +539,7 @@ void CLI::sendMessageToClients(std::vector<std::string> args)
         std::string message = "";
         for (auto& arg : args)
             message += arg + " ";
-        message += "\r\n";
-        serverEndpoint.Broadcast(message);
+        serverEndpoint.Broadcast(serv::bytes(message) + serv::SEPARATOR);
     } catch (std::exception& e) {
         CONSOLE::err << "Not connected to server" << std::endl;
         return;

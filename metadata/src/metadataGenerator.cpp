@@ -278,7 +278,7 @@ namespace meta {
         _cmakefile += "project(autogen)\n";
         _cmakefile += "\n";
         _cmakefile += "set(CMAKE_CXX_STANDARD 20)\n";
-        _cmakefile += "include_directories(" + folder + " " + folder + " " + _buildRoot + "/metadata/include/ " + _buildRoot + "/ecs/include/ " + _buildRoot + "/ecs/raylib/src/ " + _buildRoot + "/ecs/raylib/examples/shapes/ ";
+        _cmakefile += "include_directories(" + folder + " " + folder + " " + _buildRoot + "/metadata/include/ " + _buildRoot + "/ecs/include/ " + _buildRoot + "/ecs/raylib/src/ " + _buildRoot + "/ecs/raylib/examples/shapes/ " + _buildRoot + "/server/include/";
 
         for (auto& include : _add_include) {
             _cmakefile += " " + include + " ";

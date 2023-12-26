@@ -9,6 +9,15 @@ if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
 message(FATAL_ERROR "In-source builds are not allowed. Please run cmake from the 'build' directory.")
 endif()
 
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
+)
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+
 find_program(CCACHE_PROGRAM ccache)
 if(CCACHE_PROGRAM)
     message(STATUS "Using ccache")
@@ -29,6 +38,7 @@ set(BUILD_SHARED_LIBS ON)
 endif()
 add_compile_options(-O3)
 
+include_directories(server/include)
 include_directories(ecs/include)
 include_directories(ecs/include/Components.Vanilla)
 include_directories(ecs/raylib/src)
@@ -37,6 +47,7 @@ include_directories(metadata/include)
 
 add_subdirectory(metadata)
 add_subdirectory(ecs/raylib/)
+add_subdirectory(server)
 
 add_custom_target(call_metagen ALL
     DEPENDS MetaData generate_metadata

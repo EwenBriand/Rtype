@@ -1,11 +1,69 @@
-#include "ClientImpl.hpp"
+#include "ClientUDP.hpp"
 #include "IGame.hpp"
-#include "Server.hpp"
+#include "ServerUdp.hpp"
+#include "States.hpp"
 
+#pragma once
 namespace eng {
     class Engine;
     class RType : public eng::IGame {
     public:
+        /**
+         * @brief Assigns an id to a player.
+         * args: {int id}
+         *
+         */
+        static constexpr int I_PLAYER_ID = 5000;
+
+        /**
+         * @brief args: {int nameLen, string prefabName, int id, int x, int y}
+         *
+         */
+        static constexpr int I_ENEMY_SPAWN = 5001;
+
+        /**
+         * @brief args: {int id, int x, int y}
+         *
+         */
+        static constexpr int I_ENEMY_MOVES = 5002;
+
+        /**
+         * @brief args: {int id}
+         *
+         */
+        static constexpr int I_ENEMY_DIES = 5003;
+
+        /**
+         * @brief args: {int id, int x, int y}
+         *
+         */
+        static constexpr int I_ENEMY_SHOOTS = 5004;
+
+        /**
+         * @brief Indicates that a player has spawned.
+         *
+         * args: {int id, int x, int y}
+         */
+        static constexpr int I_PLAYER_SPAWN = 5005;
+
+        /**
+         * @brief args: {int id, int x, int y}
+         *
+         */
+        static constexpr int I_PLAYER_SHOOTS = 5005;
+
+        /**
+         * @brief args: {int id, int x, int y}
+         *
+         */
+        static constexpr int I_PLAYER_MOVES = 5006;
+
+        /**
+         * @brief args: {int id}
+         *
+         */
+        static constexpr int I_PLAYER_DIES = 5007;
+
         RType() = default;
         ~RType() = default;
 
@@ -35,7 +93,9 @@ namespace eng {
         void connectToServer(Engine* e);
 
         bool m_isServer = false;
-        std::shared_ptr<serv::Server> m_server = nullptr;
-        std::shared_ptr<serv::ClientImpl> m_client = nullptr;
+        std::shared_ptr<serv::ServerUDP> m_server = nullptr;
+        std::shared_ptr<serv::ClientUDP> m_client = nullptr;
+
+        ecs::States _stateMachine;
     };
 } // namespace eng

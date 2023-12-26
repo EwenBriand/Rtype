@@ -65,7 +65,6 @@ namespace eng {
 
     void SceneManager::SwitchScene(const std::string& sceneName)
     {
-        std::cout << "loading scene" << std::endl;
         if (_scenes.find(sceneName) == _scenes.end()) {
             LoadSceneAsync(sceneName);
         }
@@ -97,7 +96,6 @@ namespace eng {
         _isReady = false;
         _future = std::async(std::launch::async, [this, sceneName, &engine]() {
             load(sceneName, engine);
-            _isReady = true;
         });
     }
 
@@ -114,7 +112,8 @@ namespace eng {
                 + "/" + sceneName;
             _components = engine.GetECS().PrepareScene(path);
             int entityNumber = _components[0].size();
-            CONSOLE::info << "Scene [" << sceneName << "] OK\nLoaded " << ecs::yellow << entityNumber << ecs::green << " entities" << std::endl;
+            _isReady = true;
+            CONSOLE::info << "Scene [" << sceneName << "] : loaded " << ecs::yellow << entityNumber << ecs::green << " entities" << std::endl;
 
         } catch (std::exception& e) {
             CONSOLE::err << "Error: " << e.what() << std::endl;

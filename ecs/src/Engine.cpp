@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <filesystem>
 #include <memory>
+#include <stdexcept>
 #include <variant>
 
 namespace eng {
@@ -61,6 +62,9 @@ namespace eng {
     {
         pushPipeline([&]() {
             SYS.GetInputManager().PollEvents();
+            for (auto& observer : m_observers) {
+                observer->Poll();
+            }
         },
             -1000);
         m_graphicalModule->ModPipeline();
@@ -94,9 +98,9 @@ namespace eng {
             std::ofstream pipinfo(".pipinfo.txt", std::ios::out | std::ios::trunc);
             pipinfo << pipelineAsStr;
             pipinfo.close();
-            CONSOLE::info << "More information about the pipeline in .pipinfo.txt" << std::endl;
+            CONSOLE::info << "\rMore information about the pipeline in .pipinfo.txt" << std::endl;
         } catch (std::exception& e) {
-            CONSOLE::warn << "Could not save pipeline information" << std::endl;
+            CONSOLE::warn << "\rCould not save pipeline information" << std::endl;
         }
         m_pipelineChanged = false;
     }
@@ -210,7 +214,7 @@ namespace eng {
             },
             [&]() {
                 if (m_pipelineChanged) {
-                    CONSOLE::info << "Updating pipeline" << std::endl;
+                    CONSOLE::info << "\rUpdating pipeline" << std::endl;
                     sortPipeline();
                 }
                 for (auto action : *m_postUpdatePipeline) {
@@ -227,6 +231,8 @@ namespace eng {
 
     SceneManager& Engine::GetSceneManager()
     {
+        if (!m_sceneManager)
+            throw std::runtime_error("Scene manager is null.");
         return *m_sceneManager;
     }
 
@@ -367,26 +373,36 @@ namespace eng {
 
     void Engine::loadNetworkModules()
     {
-        if (IsOptionSet(eng::Engine::Options::SERVER_MODE)) {
-            m_server = serv::ServerImpl::Get();
+        if (IsOptionSet(eng::Engine::Options::SERVER_MODE) && IsOptionSet(eng::Engine::Options::SERVER_PORT)) {
+            std::string port = GetOptionValue(eng::Engine::Options::SERVER_PORT);
+            if (port.find_first_not_of("0123456789") != std::string::npos) {
+                throw EngineException("Invalid port number", __FILE__, __FUNCTION__, __LINE__);
+            }
+            m_server = std::make_shared<serv::ServerUDP>(std::stoi(port));
+            CONSOLE::warn << "Server listening on port " << port << std::endl;
         } else if (IsOptionSet(eng::Engine::Options::SERVER_IP)) {
-            m_client = std::make_shared<serv::ClientImpl>();
+            m_client = std::make_shared<serv::ClientUDP>();
         } else {
-            std::cout << "Starting in single player mode" << std::endl;
+            CONSOLE::warn << "Starting in single player mode" << std::endl;
         }
     }
 
-    serv::ServerImpl& Engine::GetServer() const
-    {
-        if (!m_server)
-            throw EngineException("Server not initialized", __FILE__, __FUNCTION__, __LINE__);
-        return *m_server;
-    }
+    // serv::ServerUDP& Engine::GetServer() const
+    // {
+    //     if (!m_server)
+    //         throw EngineException("Server not initialized", __FILE__, __FUNCTION__, __LINE__);
+    //     return *m_server;
+    // }
 
-    serv::ClientImpl& Engine::GetClient() const
-    {
-        if (!m_client)
-            throw EngineException("Client not initialized", __FILE__, __FUNCTION__, __LINE__);
-        return *m_client;
-    }
+    // serv::ClientUDP& Engine::GetClient() const
+    // {
+    //     if (!m_client)
+    //         throw EngineException("Client not initialized", __FILE__, __FUNCTION__, __LINE__);
+    //     return *m_client;
+    // }
+
+    // ecs::ECSImpl& Engine::GetECS() const
+    // {
+    //     return SYS;
+    // }
 } // namespace eng

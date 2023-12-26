@@ -8,7 +8,6 @@
 #pragma once
 #include "./Ship.hpp"
 #include "IController.hpp"
-#include "Server.hpp"
 
 class LocalPlayerController : public ecs::AController {
 public:
@@ -42,7 +41,6 @@ private:
     // properties
     // ====================================================================
     std::vector<std::string> _directives;
-
     std::map<std::string, bool (LocalPlayerController::*)()> _directivesTests = {
         { Ship::COMMAND_UP, &LocalPlayerController::testUp },
         { Ship::COMMAND_DOWN, &LocalPlayerController::testDown },

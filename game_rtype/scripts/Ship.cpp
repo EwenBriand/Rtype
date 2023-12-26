@@ -7,6 +7,7 @@
 */
 
 #include "Ship.hpp"
+#include "Components.Vanilla/CoreTransform.hpp"
 #include "ECSImpl.hpp"
 
 MANAGED_RESOURCE(Ship)
