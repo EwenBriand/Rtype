@@ -52,5 +52,6 @@ namespace meta {
         std::string _outputDirectory = "./metabuild";
         std::string _buildRoot = ".";
         std::vector<std::string> _add_include;
+        bool noCMake = false;
     };
 }

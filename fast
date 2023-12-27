@@ -78,6 +78,10 @@ def deep_clean_impl(args):
 def build_root(args):
     cd_gitroot()
     j_option = "-j" if "-j" in args else ""
+    targets = ""
+    for arg in args:
+        if arg != "-j":
+            targets += arg + " "
     if os.name == "nt":
         fail = os.system('mkdir build && cd build && cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release .. && make')
         if fail:
@@ -95,7 +99,7 @@ def build_root(args):
             print_color("red", "Metadata generation failed")
             exit(1)
         print_color("yellow", "Building engine")
-        fail = os.system("mkdir -p build && cd build && cmake -DWITH_PIC=on -DBUILD_SHARED_LIBS=on -DCMAKE_BUILD_TYPE=Release .. && make " + j_option)
+        fail = os.system("mkdir -p build && cd build && cmake -DWITH_PIC=on -DBUILD_SHARED_LIBS=on -DCMAKE_BUILD_TYPE=Release .. && make " + targets + j_option)
         if fail:
             print_color("red", "Build failed")
             exit(1)

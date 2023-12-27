@@ -42,6 +42,8 @@ std::map<std::string, std::function<void(CLI&, std::vector<std::string>)>> CLI::
     { "prefab.remove", [](CLI& cli, std::vector<std::string> args) { cli.removePrefab(args); } },
     { "ssend", [](CLI& cli, std::vector<std::string> args) { cli.sendMessageToServer(args); } },
     { "csend", [](CLI& cli, std::vector<std::string> args) { cli.sendMessageToClients(args); } },
+    { "play", [](CLI& cli, std::vector<std::string> args) { cli.play(args); } },
+    { "pause", [](CLI& cli, std::vector<std::string> args) { cli.pause(args); } },
 };
 
 const std::map<std::string, std::function<void(CLI&, std::vector<std::string>)>> CLI::getM_commands()
@@ -544,4 +546,14 @@ void CLI::sendMessageToClients(std::vector<std::string> args)
         CONSOLE::err << "Not connected to server" << std::endl;
         return;
     }
+}
+
+void CLI::play(std::vector<std::string> args)
+{
+    eng::Engine::GetEngine()->SetPlayMode(true);
+}
+
+void CLI::pause(std::vector<std::string> args)
+{
+    eng::Engine::GetEngine()->SetPlayMode(false);
 }

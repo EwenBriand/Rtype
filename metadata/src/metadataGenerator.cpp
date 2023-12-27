@@ -102,6 +102,8 @@ namespace meta {
             //     std::cout << "-- HELOOOOOOOOOOOOOOO Generating metadata for " << words[i] << std::endl;
             //     generateMetadataForFile((std::filesystem::path(filepath).parent_path() / words[i]).c_str(), words[i]);
             // }
+            if (words[i] == "BUILD_MANUAL")
+                noCMake = true;
             check_depends(words, i, scriptPath, filepath);
             if (words[i] == "class" && i > 0 && words[i - 1] == "serialize") {
                 serializeed = true;
@@ -307,6 +309,8 @@ namespace meta {
 
     void MetadataGenerator::saveCMake()
     {
+        if (noCMake)
+            return;
         remove(_outputDirectory.c_str());
         std::filesystem::create_directory(_outputDirectory);
 
@@ -323,6 +327,8 @@ namespace meta {
 
     void MetadataGenerator::buildCMake()
     {
+        if (noCMake)
+            return;
         std::string command = "cd " + _outputDirectory + " && cmake . && make -j 8";
         int out = system(command.c_str());
         if (out != 0) {

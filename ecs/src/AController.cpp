@@ -16,10 +16,10 @@ namespace ecs {
 
     void AController::UpdatePipeline()
     {
-        eng::Engine::GetEngine()->pushPipeline([this]() {
-            PollDirectives();
-        },
-            -600);
+        // eng::Engine::GetEngine()->pushPipeline([this]() {
+        //     PollDirectives();
+        // },
+        //     -600);
     }
 
     void AController::SetEntity(int entityID)

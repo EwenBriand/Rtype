@@ -176,6 +176,12 @@ namespace serv {
         void Broadcast(const bytes& message);
 
         /**
+         * @brief Broadcasts an instruction
+         *
+         */
+        void Broadcast(const Instruction& instruction);
+
+        /**
          * @brief Calls the HandleRequest function of all clients. Until there are no more
          * requests in the queue.
          *

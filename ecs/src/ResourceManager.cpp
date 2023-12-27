@@ -67,7 +67,7 @@ namespace ecs {
         system(command.c_str());
         try {
             auto metagen = meta::MetadataGenerator();
-            metagen.generateMetadata(copyPath, "./metabuild", rootDir, { userScriptDir }, userScriptDir);
+            metagen.generateMetadata(copyPath, "./metabuild", rootDir, { userScriptDir, MakePath({ userScriptDir, ".." }) }, userScriptDir);
             metagen.buildCMake();
         } catch (std::exception& e) {
             CONSOLE::err << "Build failed: " << path << std::endl;

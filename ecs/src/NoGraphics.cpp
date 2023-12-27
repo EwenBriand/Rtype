@@ -92,4 +92,9 @@ namespace eng {
     {
     }
 
+    graph::vec2i NoGraphics::GetScreenSize() const
+    {
+        return { 1920, 1080 };
+    }
+
 } // namespace eng

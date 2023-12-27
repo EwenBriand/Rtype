@@ -17,11 +17,10 @@
 #include <raylib.h>
 #include <string>
 
-needs(libraylib.so)
-    /**
-     * A class to encapsulate raylib meshes. Loads a .obj file.
-     */
-    serialize class RLMesh : public AUserComponent {
+/**
+ * A class to encapsulate raylib meshes. Loads a .obj file.
+ */
+serialize class RLMesh : public AUserComponent {
 public:
     GENERATE_METADATA(RLMesh)
 

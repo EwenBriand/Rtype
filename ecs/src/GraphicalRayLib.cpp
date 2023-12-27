@@ -149,4 +149,9 @@ namespace raylib {
     {
         _buffer.insert({ priority, func });
     }
+
+    graph::vec2i GraphicalRayLib::GetScreenSize() const
+    {
+        return { GetScreenWidth(), GetScreenHeight() };
+    }
 }

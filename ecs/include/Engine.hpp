@@ -258,6 +258,39 @@ namespace eng {
             }
         }
 
+        /**
+         * @brief Returns true if the engine is in play mode, else false.
+         *
+         */
+        bool PlayMode() const;
+
+        /**
+         * @brief Sets the mode of the engine to play mode. (or unsets the play mode if called with false)
+         *
+         */
+        void SetPlayMode(bool playMode);
+
+        /**
+         * @brief returns true if the engine is running as the client of a distant server
+         *
+         * @return true
+         * @return false
+         */
+        bool IsClient() const;
+        /**
+         * @brief returns true if the engine is running as the server
+         *
+         * @return true
+         * @return false
+         */
+        bool IsServer() const;
+
+        /**
+         * @brief Removes an observer from the list of active observers
+         *
+         */
+        void UnregisterObserver(std::shared_ptr<Observer> observer);
+
     private:
         /**
          * @brief Discovers the configuration in the .engine folder and
@@ -315,6 +348,8 @@ namespace eng {
 
         std::vector<std::shared_ptr<Observer>> m_observers;
         std::map<std::string, std::shared_ptr<std::mutex>> m_mutexes;
+
+        bool m_playMode = true;
     };
 
     class EngineException : public std::exception {

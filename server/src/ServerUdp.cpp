@@ -327,4 +327,11 @@ namespace serv {
                      << " " << entry << std::endl;
         }
     }
+
+    void ServerUDP::Broadcast(const Instruction& instruction)
+    {
+        for (auto& client : _clients) {
+            Send(instruction, client.second->GetEndpoint());
+        }
+    }
 }

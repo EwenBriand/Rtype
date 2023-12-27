@@ -9,6 +9,7 @@
 #include "Ship.hpp"
 #include "Components.Vanilla/CoreTransform.hpp"
 #include "ECSImpl.hpp"
+#include "Engine.hpp"
 
 MANAGED_RESOURCE(Ship)
 
@@ -38,6 +39,7 @@ void Ship::Update(int entityID)
     if (!_controller) {
         return;
     }
+    _controller->PollDirectives();
     _rb->SetVelocity({ 0, 0 });
     applyDirectives();
 }
@@ -52,6 +54,9 @@ void Ship::Update(int entityID)
 
 void Ship::applyDirectives()
 {
+    if (not eng::Engine::GetEngine()->PlayMode()) {
+        return;
+    }
     std::vector<std::string>& directives = _controller->GetDirectives();
     _rb->SetVelocity({ 0, 0 });
     for (auto& directive : directives) {
@@ -96,7 +101,4 @@ void Ship::shoot()
     } catch (std::exception& e) {
         return;
     }
-    // Laser* laserScript = GetUComponent(laser, Laser);
-    // laserScript->setDamage(_damage);
-    // laserScript->setSpeed(10);
 }

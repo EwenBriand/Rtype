@@ -157,7 +157,6 @@ namespace rtype {
     void RTypeDistantServer::handlePlayerSpawn(serv::Instruction& instruction)
     {
         int id = 0;
-        std::cout << "Spawning player" << std::endl;
         if (instruction.data.size() != 3 * sizeof(int)) {
             throw std::runtime_error("Player spawn instruction has wrong data size.");
         }
@@ -165,7 +164,6 @@ namespace rtype {
 
         try {
             auto entityID = _engine->GetECS().GetResourceManager().LoadPrefab("ship");
-            std::cout << "entity id is " << entityID << std::endl;
             Ship& ship = _engine->GetECS().GetComponent<Ship>(entityID, "Ship");
 
             auto& transform = _engine->GetECS().GetComponent<CoreTransform>(entityID);
@@ -179,12 +177,10 @@ namespace rtype {
             if (id == _playerId) {
                 auto lpc = std::make_shared<LocalPlayerController>();
                 _entityID = entityID;
-                std::cout << "now controlling entity " << _entityID << std::endl;
                 lpc->SetEntity(_entityID);
                 ship.Possess(_entityID, lpc);
                 _engine->RegisterObserver()->RegisterTarget([this]() { sendPlayerMoves(_entityID); }, transform.x, transform.y);
             } else {
-                std::cout << "Spawning player from server" << std::endl;
                 auto pfsc = std::make_shared<PlayerFromServerController>();
                 pfsc->SetPlayerId(id);
                 _players[id] = pfsc;
@@ -207,7 +203,6 @@ namespace rtype {
     void RTypeDistantServer::handlePlayerMoves(serv::Instruction& instruction)
     {
         if (instruction.data.size() < 3 * sizeof(int)) {
-            std::cout << "\rinstruction size: " << instruction.data.size() << std::endl;
             throw serv::MalformedInstructionException("Player moves instruction malformed");
         }
         int id = 0;
@@ -221,6 +216,67 @@ namespace rtype {
             throw serv::MalformedInstructionException("Unknown player id: " + std::to_string(id));
         }
         int entityID = _players[id]->GetEntity();
+        try {
+            auto& transform = _engine->GetECS().GetComponent<CoreTransform>(entityID);
+            transform.x = x;
+            transform.y = y;
+        } catch (std::exception& e) {
+            std::cerr << "\r" << e.what() << std::endl;
+        }
+    }
+
+    void RTypeDistantServer::handleEnemySpawn(serv::Instruction& instruction)
+    {
+        if (instruction.data.size() < 3 * sizeof(int)) {
+            throw std::runtime_error("Enemy spawn instruction has wrong data size.");
+        }
+        int id = 0;
+        int x = 0;
+        int y = 0;
+        std::string prefabName = "";
+
+        std::memcpy(&id, instruction.data.data(), sizeof(int));
+        std::memcpy(&x, instruction.data.data() + sizeof(int), sizeof(int));
+        std::memcpy(&y, instruction.data.data() + 2 * sizeof(int), sizeof(int));
+        serv::bytes prefabNameBytes(instruction.data.data() + 3 * sizeof(int), instruction.data.size() - 3 * sizeof(int));
+        prefabName.reserve(prefabNameBytes.size());
+        for (auto& byte : prefabNameBytes) {
+            prefabName += byte;
+        }
+
+        try {
+            auto eid = _engine->GetECS().GetResourceManager().LoadPrefab(prefabName);
+            auto& transform = _engine->GetECS().GetComponent<CoreTransform>(eid);
+            transform.x = x;
+            transform.y = y;
+
+            auto& ship = _engine->GetECS().GetComponent<Ship>(eid, "Ship");
+            auto pfsc = std::make_shared<PlayerFromServerController>();
+            pfsc->SetPlayerId(id);
+            ship.Possess(eid, pfsc);
+            _enemies[id] = eid;
+        } catch (std::exception& e) {
+            std::cerr << "\r" << e.what() << std::endl;
+        }
+    }
+
+    void RTypeDistantServer::handleEnemyMoves(serv::Instruction& instruction)
+    {
+        int id = 0;
+        int x = 0;
+        int y = 0;
+
+        if (instruction.data.size() < 3 * sizeof(int)) {
+            throw std::runtime_error("Enemy moves instruction has wrong data size.");
+        }
+        std::memcpy(&id, instruction.data.data(), sizeof(int));
+        std::memcpy(&x, instruction.data.data() + sizeof(int), sizeof(int));
+        std::memcpy(&y, instruction.data.data() + 2 * sizeof(int), sizeof(int));
+
+        if (_enemies.find(id) == _enemies.end()) {
+            return;
+        }
+        int entityID = _enemies[id];
         try {
             auto& transform = _engine->GetECS().GetComponent<CoreTransform>(entityID);
             transform.x = x;

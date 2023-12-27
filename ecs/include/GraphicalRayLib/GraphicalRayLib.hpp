@@ -38,6 +38,8 @@ namespace raylib {
         void ClearBuffer() override;
         void DisplayBuffer() override;
 
+        graph::vec2i GetScreenSize() const override;
+
     private:
         std::map<std::string, std::function<void()>> _events;
         std::multimap<int, std::function<void()>, std::less<int>> _buffer;

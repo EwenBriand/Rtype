@@ -49,7 +49,9 @@ void Sprite::Draw()
         return;
     if (!_visible or _texture.id == 0)
         return;
-    Rectangle source = { _rect.x, _rect.y, _rect.width, _rect.height };
+    int flipX = _flipX ? -1 : 1;
+    int flipY = _flipY ? -1 : 1;
+    Rectangle source = { _rect.x, _rect.y, flipX * _rect.width, flipY * _rect.height };
     Rectangle dest = { _origin.x, _origin.y, _rect.width * _scale.x, _rect.height * _scale.y };
     Vector2 origin = { _rect.width * _scale.x / 2, _rect.height * _scale.y / 2 };
     graph::graphTexture_t spriteInfo = { .source = source,

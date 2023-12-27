@@ -17,7 +17,6 @@
 void RigidBody2D::OnLoad()
 {
     auto engine = eng::Engine::GetEngine();
-
     engine->pushPipeline([]() { // resets the acceleration of all the RigidBody2D
         SYS.ForEach<RigidBody2D>([](RigidBody2D& r) {
             r._acceleration = { 0, 0 };

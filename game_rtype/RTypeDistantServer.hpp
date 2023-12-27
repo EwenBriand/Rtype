@@ -75,6 +75,9 @@ namespace rtype {
         void handlePlayerSpawn(serv::Instruction& instruction);
         void handlePlayerMoves(serv::Instruction& instruction);
 
+        void handleEnemySpawn(serv::Instruction& instruction);
+        void handleEnemyMoves(serv::Instruction& instruction);
+
         /**
          * @brief Sens the I_PLAYER_MOVES instruction to the server
          *
@@ -99,6 +102,7 @@ namespace rtype {
 
         std::map<int, std::shared_ptr<PlayerFromServerController>>
             _players;
+        std::map<int, int> _enemies;
 
         std::map<int, void (RTypeDistantServer::*)(serv::Instruction&)>
             _requestHandlers = {
@@ -111,7 +115,12 @@ namespace rtype {
 
                 { eng::RType::I_PLAYER_ID, &RTypeDistantServer::handleAssignPlayerID },
                 { eng::RType::I_PLAYER_SPAWN, &RTypeDistantServer::handlePlayerSpawn },
-                { eng::RType::I_PLAYER_MOVES, &RTypeDistantServer::handlePlayerMoves }
+                { eng::RType::I_PLAYER_MOVES, &RTypeDistantServer::handlePlayerMoves },
+
+                { eng::RType::I_ENEMY_SPAWN, &RTypeDistantServer::handleEnemySpawn },
+                { eng::RType::I_ENEMY_MOVES, &RTypeDistantServer::handleEnemyMoves },
+                { eng::RType::I_ENEMY_DIES, nullptr },
+                { eng::RType::I_ENEMY_SHOOTS, nullptr },
             };
     };
 } // namespace rtype
