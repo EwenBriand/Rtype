@@ -1,0 +1,6 @@
+name: ship
+sprite path: sprites/ship.png
+fps: 10
+scale: 1.0
+loop: true
+auto: 2000 200 10
