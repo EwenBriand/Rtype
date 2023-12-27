@@ -1,0 +1,10 @@
+name: blue-laser
+sprite path: sprites/laser.png
+fps: 1
+scale: 0.05
+priority: 3
+paralax: false
+loop: true
+flipX: true
+flipY: true
+auto: 1130 560 1
