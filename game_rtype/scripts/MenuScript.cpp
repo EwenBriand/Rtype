@@ -38,7 +38,7 @@ void MenuScript::OnAddComponent(int e)
                 .callback = [this]() {
                     ui::UIManager::Get().RemoveGroup(_menuUIHandle);
                     _menuUIHandle = -1;
-                    eng::Engine::GetEngine()->GetSceneManager().SwitchScene("level1");
+                    eng::Engine::GetEngine()->GetSceneManager().SwitchScene("lobby");
                 } });
     } catch (const std::exception& e) {
         std::cerr << e.what() << std::endl;

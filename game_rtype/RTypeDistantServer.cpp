@@ -200,8 +200,6 @@ namespace rtype {
         auto& transform = _engine->GetECS().GetComponent<CoreTransform>(id);
         int x = transform.x;
         int y = transform.y;
-        std::cout << "\rtransform real values are " << x << ", " << y << std::endl;
-        std::cout << "\rsending move to position " << x << ", " << y << " for player id " << _playerId << " and entity " << id << std::endl;
         serv::bytes data(std::vector<int> { _playerId, x, y });
         _client.Send(serv::Instruction(eng::RType::I_PLAYER_MOVES, 0, data));
     }
@@ -225,7 +223,6 @@ namespace rtype {
         int entityID = _players[id]->GetEntity();
         try {
             auto& transform = _engine->GetECS().GetComponent<CoreTransform>(entityID);
-            std::cout << "\rplayer " << id << " moved to " << x << ", " << y << " (in entity " << entityID << ")" << std::endl;
             transform.x = x;
             transform.y = y;
         } catch (std::exception& e) {

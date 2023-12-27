@@ -4,7 +4,6 @@ include(CTest)
 
 set(CMAKE_CXX_STANDARD 20)
 
-# set compile options:
 add_compile_options(
     -fmodules-ts
 )
@@ -81,6 +80,7 @@ set(VANILLA
     ${VANILLA_SRC}/UIScrollableList.cpp
     ${VANILLA_SRC}/UserComponentWrapper.cpp
     ${VANILLA_SRC}/Tag.cpp
+    ${VANILLA_SRC}/SplashIcon.cpp
 )
 
 set(META_VANILLA_SRC
@@ -101,6 +101,7 @@ set(META_VANILLA
     ${META_VANILLA_SRC}/UIButtonMeta.cpp
     ${META_VANILLA_SRC}/UIMenuMeta.cpp
     ${META_VANILLA_SRC}/TagMeta.cpp
+    ${META_VANILLA_SRC}/SplashIconMeta.cpp
 )
 
 add_library(lengine SHARED

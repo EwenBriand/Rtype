@@ -83,8 +83,8 @@ namespace rtype {
             ship.Possess(e, player);
 
             auto& transform = sys.GetComponent<CoreTransform>(e);
-            transform.x = 10;
-            transform.y = 100 * id;
+            transform.x = 50;
+            transform.y = 100 * id + 1;
             for (auto& p : DistantPlayer::Instances)
                 p->Send(serv::Instruction(eng::RType::I_PLAYER_SPAWN, 0, serv::bytes(std::vector<int> { id, 10, 100 * id })));
             player->SetEntity(e);
