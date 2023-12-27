@@ -17,14 +17,18 @@
 void RigidBody2D::OnLoad()
 {
     auto engine = eng::Engine::GetEngine();
-    engine->pushPipeline([]() { // resets the acceleration of all the RigidBody2D
+    engine->pushPipeline([engine]() { // resets the acceleration of all the RigidBody2D
+        if (not engine->PlayMode())
+            return;
         SYS.ForEach<RigidBody2D>([](RigidBody2D& r) {
             r._acceleration = { 0, 0 };
         });
     },
         -500);
 
-    engine->pushPipeline([]() { // applies gravity to all the RigidBody2D with a mass
+    engine->pushPipeline([engine]() { // applies gravity to all the RigidBody2D with a mass
+        if (not engine->PlayMode())
+            return;
         SYS.ForEach<RigidBody2D>([](RigidBody2D& r) {
             if (r.SimulateGravity())
                 r._acceleration.y += 9.81;
@@ -32,7 +36,9 @@ void RigidBody2D::OnLoad()
     },
         -499);
 
-    engine->pushPipeline([]() { // updates the velocity of all the RigidBody2D
+    engine->pushPipeline([engine]() { // updates the velocity of all the RigidBody2D
+        if (not engine->PlayMode())
+            return;
         auto deltaTime = SYS.GetDeltaTime();
         SYS.ForEach<RigidBody2D>([deltaTime](RigidBody2D& r) {
             r._velocity.x += r._acceleration.x * deltaTime;
@@ -41,7 +47,9 @@ void RigidBody2D::OnLoad()
     },
         100);
 
-    engine->pushPipeline([]() { // updates the position of all the RigidBody2D
+    engine->pushPipeline([engine]() { // updates the position of all the RigidBody2D
+        if (not engine->PlayMode())
+            return;
         auto deltaTime = SYS.GetDeltaTime();
         SYS.ForEach<RigidBody2D>([deltaTime](RigidBody2D& r) {
             try {
