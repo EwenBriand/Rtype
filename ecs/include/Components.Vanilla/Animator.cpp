@@ -32,6 +32,8 @@ Sprite::Sprite(const std::string& path)
     , _flipY(false)
     , _visible(true)
 {
+    if (_texture.id == 0)
+        CONSOLE::warn << "Failed to load texture: " << path << std::endl;
 }
 
 Sprite::~Sprite()
@@ -45,11 +47,11 @@ void Sprite::Draw()
 {
     if (eng::Engine::GetEngine()->IsOptionSet(eng::Engine::Options::NO_GRAPHICS))
         return;
-    if (!_visible)
+    if (!_visible or _texture.id == 0)
         return;
     Rectangle source = { _rect.x, _rect.y, _rect.width, _rect.height };
     Rectangle dest = { _origin.x, _origin.y, _rect.width * _scale.x, _rect.height * _scale.y };
-    Vector2 origin = { 0.0f, 0.0f };
+    Vector2 origin = { _rect.width * _scale.x / 2, _rect.height * _scale.y / 2 };
     graph::graphTexture_t spriteInfo = { .source = source,
         .dest = dest,
         .origin = origin,

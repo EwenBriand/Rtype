@@ -53,6 +53,7 @@ namespace rtype {
         for (auto& player : DistantPlayer::Instances) {
             player->SendClientLoadScene("level1");
         }
+        _engine.GetSceneManager().SwitchScene("level1");
         int playerReady = 0;
         while (playerReady != RTYPE_NB_PLAYERS) {
             playerReady = 0;
@@ -124,7 +125,6 @@ namespace rtype {
             }
             co_await std::suspend_always {};
         }
-        std::cout << "\rLoading game scene..." << std::endl;
         while (not serverHandle->SceneIsReady()) {
             std::cout << ".";
             co_await std::suspend_always {};

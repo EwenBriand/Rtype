@@ -29,7 +29,7 @@ void Ship::OnAddComponent(int entityID)
 
 void Ship::Start()
 {
-    _rb = &SYS.GetComponent<RigidBody2D>(_entity);
+    _rb = &SYS.SafeGet<RigidBody2D>(_entity);
     auto& collider = SYS.SafeGet<Collider2D>(_entity);
 }
 

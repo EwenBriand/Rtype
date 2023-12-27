@@ -20,6 +20,7 @@
 #include "Components.Vanilla/NodePrintStr.hpp"
 #include "Components.Vanilla/NodeStr.hpp"
 #include "Components.Vanilla/RigidBody2D.hpp"
+#include "Components.Vanilla/SplashIcon.hpp"
 #include "Components.Vanilla/Tag.hpp"
 #include "Components.Vanilla/TextField.hpp"
 #include "Components.Vanilla/UIButton.hpp"
@@ -47,7 +48,8 @@ namespace ecs {
         Collider2D,
         AudioSource,
         RigidBody2D,
-        Tag>;
+        Tag,
+        SplashIcon>;
 
 }
 

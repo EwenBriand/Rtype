@@ -45,18 +45,15 @@ namespace eng {
 
     void RType::LoadFirstScene(eng::Engine* e)
     {
-        // e->GetSceneManager().SwitchScene("menu");
+        if (not e->IsOptionSet(eng::Engine::Options::NO_GRAPHICS))
+            e->GetSceneManager().SwitchScene("menu");
     }
 
     void RType::PreSceneInstantiationHook(eng::Engine* e, const std::string& sceneName)
     {
-        if (sceneName == "menu")
-            return;
-
-        // update this to account for networking, other players, etc
-        int player = SYS.GetResourceManager().LoadPrefab("ship");
-        Ship& ship = SYS.GetComponent<Ship>(player, "Ship");
-        ship.Possess(player, std::make_shared<LocalPlayerController>());
+        if (sceneName == "lobby" and not e->IsOptionSet(eng::Engine::Options::SERVER_MODE)) {
+            _stateMachine.SetState(std::make_shared<rtype::LobbyRoutineClient>(*e));
+        }
     }
 
     // =========================================================================================================== //
@@ -110,7 +107,7 @@ namespace eng {
             serverHandle->SetEngine(e);
             e->GetClient().SetRequestHandler(serverHandle);
             e->GetClient().Start();
-            _stateMachine = ecs::States(std::make_shared<rtype::LobbyRoutineClient>(*e));
+            _stateMachine = ecs::States(nullptr);
         } catch (const std::exception& e) {
             std::cerr << e.what() << std::endl;
             exit(84);
