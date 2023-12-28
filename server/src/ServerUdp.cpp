@@ -186,7 +186,9 @@ namespace serv {
                 return c != 0;
             });
             bytesTransferred += 1;
-            Log("Received " + std::to_string(bytesTransferred) + " bytes from " + endpointToString(_remoteEndpoint));
+            int opcode = Instruction(bytes(_buffer.data(), bytesTransferred)).opcode;
+            if (opcode != I_AM_ALIVE)
+                Log("Received opcode " + std::to_string(opcode) + " from " + endpointToString(_remoteEndpoint) + " (" + std::to_string(bytesTransferred) + " bytes)");
             HandleRequest(boost::system::error_code(), bytesTransferred);
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
@@ -248,7 +250,7 @@ namespace serv {
                 try {
                     Message message = _sendQueue.Pop();
                     _socket.send_to(boost::asio::buffer(message.data._data), message.endpoint);
-                    Log("Sent " + std::to_string(message.data._data.size()) + " bytes to " + endpointToString(message.endpoint));
+                    Log("Sent opcode " + std::to_string(Instruction(message.data).opcode) + " to " + endpointToString(message.endpoint));
                 } catch (std::exception& e) {
                     std::cerr << e.what() << std::endl;
                 }
@@ -265,7 +267,6 @@ namespace serv {
     void ServerUDP::Send(const Instruction& instruction, const boost::asio::ip::udp::endpoint& endpoint)
     {
         _sendQueue.Push(instruction.ToMessage(endpoint));
-        Log("Buffered to send opcode " + std::to_string(instruction.opcode) + " to " + endpointToString(endpoint));
     }
 
     std::string ServerUDP::endpointToString(boost::asio::ip::udp::endpoint endpoint)
@@ -282,6 +283,7 @@ namespace serv {
 
     void ServerUDP::CallHooks()
     {
+        Log("Calling hooks");
         std::scoped_lock lock(*_clientsMutex);
         for (auto& client : _clients) {
             client.second->HandleRequest(*this);

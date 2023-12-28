@@ -140,7 +140,7 @@ namespace rtype {
 
         while (_isConnected) {
             try {
-                _client.Send(serv::Instruction(serv::I_AM_ALIVE, 0, serv::bytes()));
+                _client.Send(serv::Instruction(serv::I_AM_ALIVE, 0, serv::bytes()).ToBytes() + serv::SEPARATOR);
             } catch (const std::exception& e) {
                 std::cerr << e.what() << std::endl;
             }

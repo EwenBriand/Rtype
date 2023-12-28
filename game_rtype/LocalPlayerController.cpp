@@ -75,8 +75,8 @@ bool LocalPlayerController::testShoot()
                 static_cast<int>(transform.x),
                 static_cast<int>(transform.y)
             };
-            engine->GetClient().Send(serv::Instruction(eng::RType::I_PLAYER_SHOOTS, 0, data));
-            std::cout << "\rsent opcode " << eng::RType::I_PLAYER_SHOOTS << std::endl;
+            engine->GetClient().Send(serv::Instruction(eng::RType::I_PLAYER_SHOOTS, 0, serv::bytes(data)));
+            std::cout << "\rsent opcode " << eng::RType::I_PLAYER_SHOOTS << " with data of size " << serv::bytes(data).size() << std::endl;
         } catch (const std::exception& e) {
             CONSOLE::err << "\rFailed to send shoot instruction to server." << std::endl;
         };

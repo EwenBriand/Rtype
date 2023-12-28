@@ -53,6 +53,7 @@ namespace serv {
         while (_running) {
             try {
                 bytes data = _sendQueue.Pop();
+                Instruction instruction(data);
                 _socket.send_to(boost::asio::buffer(data._data), boost::asio::ip::udp::endpoint(boost::asio::ip::address::from_string(_serverIp), _serverPort));
             } catch (std::exception& e) {
                 // empty queue

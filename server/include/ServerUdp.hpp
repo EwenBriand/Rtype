@@ -49,8 +49,8 @@ namespace serv {
         std::atomic_bool _answerFlag;
     };
 
-    static const bytes SEPARATOR = { 't', 'h', 'e', 'e', 'n', 'd', 'o', 'f', 't', 'h', 'e', 'm', 'e', 's', 's', 'a', 'g', 'e' };
-    static const std::size_t BUFF_SIZE = 1024;
+    static const bytes SEPARATOR = { '@', 't', 'h', 'e', 'e', 'n', 'd' };
+    static const std::size_t BUFF_SIZE = 2048;
     class ServerUDP;
     /**
      * @brief Each client has a bucket, which contains all the information

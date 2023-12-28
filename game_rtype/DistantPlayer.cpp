@@ -28,8 +28,9 @@ DistantPlayer::~DistantPlayer()
 
 void DistantPlayer::HandleRequest(const serv::bytes& data)
 {
+    serv::Instruction instruction;
     try {
-        auto instruction = serv::Instruction(data);
+        instruction = serv::Instruction(data);
         if (_requestCallbacks.find(instruction.opcode) == _requestCallbacks.end()) {
             return;
         }
@@ -40,6 +41,12 @@ void DistantPlayer::HandleRequest(const serv::bytes& data)
         (this->*_requestCallbacks.at(instruction.opcode))(instruction);
     } catch (const serv::MalformedInstructionException& e) {
         std::cerr << e.what() << std::endl;
+        std::cerr << "\rMore informations: \n";
+        std::cerr << "\r\traw size: " << data.size() << std::endl;
+        std::cerr << "\r\tOpcode: " << instruction.opcode << std::endl;
+        std::cerr << "\r\tExpects answer: " << instruction.expectsAnswer << std::endl;
+        std::cerr << "\r\tData size: " << instruction.data.size() << std::endl;
+        std::cerr << "\r\tData: " << instruction.data.toString() << std::endl;
         _server.Send(serv::Instruction(serv::E_INVALID_OPCODE, 0, serv::bytes()), _endpoint);
     }
 }
@@ -167,8 +174,9 @@ void DistantPlayer::handlePlayerMoves(serv::Instruction& instruction)
 
 void DistantPlayer::handlePlayerShoots(serv::Instruction& instruction)
 {
+    eng::Engine::GetEngine()->GetServer().Log("Player shoots handler for player " + std::to_string(_playerId) + " called");
     if (instruction.data.size() != 3 * sizeof(int)) {
-        throw serv::MalformedInstructionException("Player shoots instruction malformed");
+        throw serv::MalformedInstructionException("\rPlayer shoots instruction malformed: got " + std::to_string(instruction.data.size()) + " bytes, expected " + std::to_string(3 * sizeof(int)) + " bytes");
     }
     int id = 0;
     int x = 0;
