@@ -268,6 +268,16 @@ void Animation::SetLoop(bool loop)
     _loop = loop;
 }
 
+bool Animation::GetParalax()
+{
+    return paralax;
+}
+
+int Animation::GetParalaxSpeed()
+{
+    return paralaxSpeed;
+}
+
 //-----------------------------------------------------------------------------
 // ANIMATOR
 //-----------------------------------------------------------------------------
@@ -505,11 +515,22 @@ void Animator::handleAutoMode(Animation::Frame& defaultFrame, Animation& anim, c
 
     iss >> width >> height >> frameNbr;
     width = width / frameNbr;
-    for (int i = 0; i < frameNbr; ++i) {
-        Animation::Frame frame = defaultFrame;
-        frame.rect = Rectangle { (float)(i * width), 0, (float)width, (float)height };
-        anim.AddFrame(frame);
-    }
+    if (anim.GetParalax()) {
+        frameNbr = width;
+        int speed = anim.GetParalaxSpeed();
+        for (int i = 0; i < frameNbr; ++i) {
+            Animation::Frame frame = defaultFrame;
+            int current = i;
+            frame.rect = Rectangle { (float)(current), 0, (float)width, (float)height };
+            frame.duration = 1.0 / (float)speed;
+            anim.AddFrame(frame);
+        }
+    } else
+        for (int i = 0; i < frameNbr; ++i) {
+            Animation::Frame frame = defaultFrame;
+            frame.rect = Rectangle { (float)(i * width), 0, (float)width, (float)height };
+            anim.AddFrame(frame);
+        }
 }
 
 std::string Animator::trim(const std::string& str)
