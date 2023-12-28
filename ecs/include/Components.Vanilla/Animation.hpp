@@ -91,7 +91,11 @@ public:
 
     void SetParalax(bool paralax);
 
+    bool GetParalax();
+
     void SetParalaxSpeed(int paralaxSpeed);
+
+    int GetParalaxSpeed();
 
     void SetPriority(int priority);
 
