@@ -50,19 +50,19 @@ namespace eng {
          * @brief args: {int id, int x, int y}
          *
          */
-        static constexpr int I_PLAYER_SHOOTS = 5005;
+        static constexpr int I_PLAYER_SHOOTS = 5006;
 
         /**
          * @brief args: {int id, int x, int y}
          *
          */
-        static constexpr int I_PLAYER_MOVES = 5006;
+        static constexpr int I_PLAYER_MOVES = 5007;
 
         /**
          * @brief args: {int id}
          *
          */
-        static constexpr int I_PLAYER_DIES = 5007;
+        static constexpr int I_PLAYER_DIES = 5008;
 
         RType() = default;
         ~RType() = default;
