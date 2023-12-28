@@ -297,8 +297,8 @@ namespace rtype {
         int x = 0;
         int y = 0;
         std::memcpy(&id, instruction.data.data(), sizeof(int));
-        std::memcpy(&x, instruction.data.data(), sizeof(int));
-        std::memcpy(&y, instruction.data.data() + sizeof(int), sizeof(int));
+        std::memcpy(&x, instruction.data.data() + sizeof(int), sizeof(int));
+        std::memcpy(&y, instruction.data.data() + 2 * sizeof(int), sizeof(int));
 
         try {
             int laser = SYS.GetResourceManager().LoadPrefab("Laser");

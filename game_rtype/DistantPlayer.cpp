@@ -46,8 +46,18 @@ void DistantPlayer::HandleRequest(const serv::bytes& data)
         std::cerr << "\r\tOpcode: " << instruction.opcode << std::endl;
         std::cerr << "\r\tExpects answer: " << instruction.expectsAnswer << std::endl;
         std::cerr << "\r\tData size: " << instruction.data.size() << std::endl;
-        std::cerr << "\r\tData: " << instruction.data.toString() << std::endl;
-        _server.Send(serv::Instruction(serv::E_INVALID_OPCODE, 0, serv::bytes()), _endpoint);
+        std::cerr << "\r\tData to string: " << data.toString() << std::endl;
+        std::cerr << "\r\tData: ";
+        for (auto& byte : data) {
+            std::cerr << std::hex << (int)byte << " ";
+        }
+        std::cerr << std::endl;
+        exit(0);
+        try {
+            _server.Send(serv::Instruction(serv::E_INVALID_OPCODE, 0, serv::bytes(std::vector<int> { static_cast<int>(instruction.opcode) })), _endpoint);
+        } catch (const std::exception& e) {
+            std::cerr << "\rWhile handling invalid opcode: " << e.what() << std::endl;
+        }
     }
 }
 
@@ -182,9 +192,9 @@ void DistantPlayer::handlePlayerShoots(serv::Instruction& instruction)
     int x = 0;
     int y = 0;
     std::memcpy(&id, instruction.data.data(), sizeof(int));
-    std::memcpy(&x, instruction.data.data(), sizeof(int));
-    std::memcpy(&y, instruction.data.data() + sizeof(int), sizeof(int));
-
+    std::memcpy(&x, instruction.data.data() + sizeof(int), sizeof(int));
+    std::memcpy(&y, instruction.data.data() + 2 * sizeof(int), sizeof(int));
+    std::cout << "\rplayer " << id << " shoots at " << x << ", " << y << std::endl;
     try {
         int laser = SYS.GetResourceManager().LoadPrefab("Laser");
         auto& transform = SYS.GetComponent<CoreTransform>(laser);
@@ -195,10 +205,9 @@ void DistantPlayer::handlePlayerShoots(serv::Instruction& instruction)
                 continue;
             }
             std::cout << "\rsending shoot instruction to player " << player->GetID() << std::endl;
-            // player->Send(serv::Instruction(eng::RType::I_PLAYER_SHOOTS, 0, instruction.data));
             player->Send(serv::Instruction(eng::RType::I_PLAYER_SHOOTS, 0, serv::bytes(std::vector<int> { id, x, y })).ToBytes() + serv::SEPARATOR);
         }
     } catch (const std::exception& e) {
-        CONSOLE::err << "\rFailed to send shoot instruction to server." << std::endl;
+        CONSOLE::err << "\rFailed to send shoot instruction to clients." << std::endl;
     }
 }

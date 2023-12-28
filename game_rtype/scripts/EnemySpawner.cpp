@@ -27,6 +27,7 @@ EnemySpawner::~EnemySpawner()
 
 void EnemySpawner::Update(int e)
 {
+    return;
     if (not eng::Engine::GetEngine()->IsServer())
         return;
     if (_timer.GetElapsedTime() < _spawnDelay + _randomDelayVariation or _transform == nullptr

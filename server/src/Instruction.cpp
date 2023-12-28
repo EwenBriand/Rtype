@@ -25,7 +25,7 @@ namespace serv {
     Instruction::Instruction(const bytes& bytes)
     {
         if (bytes.size() < 5)
-            throw MalformedInstructionException("Instruction is too small");
+            throw MalformedInstructionException("\rInstruction is too small");
         std::vector<unsigned char> byteData = bytes._data;
         opcode = *(uint32_t*)byteData.data();
         expectsAnswer = *(uint8_t*)(byteData.data() + 4);

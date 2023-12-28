@@ -82,8 +82,6 @@ namespace serv {
             std::scoped_lock lock(*_mutex);
             value = _buffer.ReadUntil(SEPARATOR);
         }
-        if (value.size() >= SEPARATOR.size() && value.compare(value.size() - SEPARATOR.size(), SEPARATOR.size(), SEPARATOR) == 0)
-            value.erase(value.size() - SEPARATOR.size(), SEPARATOR.size());
         return value;
     }
 
@@ -97,6 +95,7 @@ namespace serv {
         bytes data = Read();
 
         while (not data.empty()) {
+            // std::cout << "\rHandleRequest: " << data.toString() << std::endl;
             _clientHandler->HandleRequest(data);
             data = Read();
         }
@@ -188,7 +187,7 @@ namespace serv {
             bytesTransferred += 1;
             int opcode = Instruction(bytes(_buffer.data(), bytesTransferred)).opcode;
             if (opcode != I_AM_ALIVE)
-                Log("Received opcode " + std::to_string(opcode) + " from " + endpointToString(_remoteEndpoint) + " (" + std::to_string(bytesTransferred) + " bytes)");
+                Log("Received opcode " + std::to_string(opcode) + " from " + endpointToString(_remoteEndpoint) + " (" + std::to_string(bytesTransferred) + " bytes) " + bytes(_buffer.data(), bytesTransferred).toString());
             HandleRequest(boost::system::error_code(), bytesTransferred);
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
@@ -283,7 +282,6 @@ namespace serv {
 
     void ServerUDP::CallHooks()
     {
-        Log("Calling hooks");
         std::scoped_lock lock(*_clientsMutex);
         for (auto& client : _clients) {
             client.second->HandleRequest(*this);
