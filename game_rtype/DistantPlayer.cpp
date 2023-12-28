@@ -31,7 +31,7 @@ void DistantPlayer::HandleRequest(const serv::bytes& data)
     try {
         auto instruction = serv::Instruction(data);
         if (_requestCallbacks.find(instruction.opcode) == _requestCallbacks.end()) {
-            throw serv::MalformedInstructionException("\rUnknown instruction received from client: " + std::to_string(instruction.opcode));
+            return;
         }
         auto handler = _requestCallbacks.at(instruction.opcode);
         if (handler == nullptr) {
@@ -65,7 +65,14 @@ std::shared_ptr<serv::IClient> DistantPlayer::Clone(boost::asio::ip::udp::endpoi
 void DistantPlayer::OnDisconnect()
 {
     std::cout << "\rClient disconnected" << std::endl;
-    // todo possess player with ai instead of distant player
+    for (auto it = Instances.begin(); it != Instances.end(); ++it) {
+        if ((*it).get() == this) {
+            Instances.erase(it);
+            break;
+        }
+    }
+    _server.Broadcast(serv::Instruction(serv::I_LOAD_SCENE, 0, serv::bytes("menu")));
+    //  todo switch Rtype state to lobby and clear all players
 }
 
 void DistantPlayer::SendClientLoadScene(const std::string& sceneName)
@@ -155,5 +162,35 @@ void DistantPlayer::handlePlayerMoves(serv::Instruction& instruction)
             continue;
         }
         player->Send(serv::Instruction(eng::RType::I_PLAYER_MOVES, 0, instruction.data));
+    }
+}
+
+void DistantPlayer::handlePlayerShoots(serv::Instruction& instruction)
+{
+    if (instruction.data.size() != 3 * sizeof(int)) {
+        throw serv::MalformedInstructionException("Player shoots instruction malformed");
+    }
+    int id = 0;
+    int x = 0;
+    int y = 0;
+    std::memcpy(&id, instruction.data.data(), sizeof(int));
+    std::memcpy(&x, instruction.data.data(), sizeof(int));
+    std::memcpy(&y, instruction.data.data() + sizeof(int), sizeof(int));
+
+    try {
+        int laser = SYS.GetResourceManager().LoadPrefab("Laser");
+        auto& transform = SYS.GetComponent<CoreTransform>(laser);
+        transform.x = x;
+        transform.y = y;
+        for (auto& player : Instances) {
+            if (player->GetID() == _playerId) {
+                continue;
+            }
+            std::cout << "\rsending shoot instruction to player " << player->GetID() << std::endl;
+            // player->Send(serv::Instruction(eng::RType::I_PLAYER_SHOOTS, 0, instruction.data));
+            player->Send(serv::Instruction(eng::RType::I_PLAYER_SHOOTS, 0, serv::bytes(std::vector<int> { id, x, y })).ToBytes() + serv::SEPARATOR);
+        }
+    } catch (const std::exception& e) {
+        CONSOLE::err << "\rFailed to send shoot instruction to server." << std::endl;
     }
 }

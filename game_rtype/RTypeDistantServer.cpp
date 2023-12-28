@@ -176,6 +176,7 @@ namespace rtype {
 
             if (id == _playerId) {
                 auto lpc = std::make_shared<LocalPlayerController>();
+                lpc->SetPlayerId(id);
                 _entityID = entityID;
                 lpc->SetEntity(_entityID);
                 ship.Possess(_entityID, lpc);
@@ -283,6 +284,29 @@ namespace rtype {
             transform.y = y;
         } catch (std::exception& e) {
             std::cerr << "\r" << e.what() << std::endl;
+        }
+    }
+
+    void RTypeDistantServer::handlePlayerShoots(serv::Instruction& instruction)
+    {
+        std::cout << "\rgot player shoot instruction" << std::endl;
+        if (instruction.data.size() != 3 * sizeof(int)) {
+            throw serv::MalformedInstructionException("Player shoots instruction malformed");
+        }
+        int id = 0;
+        int x = 0;
+        int y = 0;
+        std::memcpy(&id, instruction.data.data(), sizeof(int));
+        std::memcpy(&x, instruction.data.data(), sizeof(int));
+        std::memcpy(&y, instruction.data.data() + sizeof(int), sizeof(int));
+
+        try {
+            int laser = SYS.GetResourceManager().LoadPrefab("Laser");
+            auto& transform = SYS.GetComponent<CoreTransform>(laser);
+            transform.x = x;
+            transform.y = y;
+        } catch (const std::exception& e) {
+            CONSOLE::err << "\rFailed to send shoot instruction to server." << std::endl;
         }
     }
 } // namespace rtype
