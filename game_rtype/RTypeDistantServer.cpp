@@ -361,8 +361,9 @@ namespace rtype {
     {
         _isConnected = false;
         _startGame = false;
+        _isAssignedLocalPlayer = false;
         _currSceneName = "";
-        _playerId = -1;
+        _playerId = 0;
         _entityID = -1;
         _players.clear();
         _enemies.clear();
