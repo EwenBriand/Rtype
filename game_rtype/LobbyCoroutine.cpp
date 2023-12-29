@@ -47,6 +47,10 @@ namespace rtype {
 
     serv::Coroutine LobbyRoutineServer::run()
     {
+        eng::Engine::GetEngine()->GetSceneManager().UnloadScene("menu");
+        eng::Engine::GetEngine()->GetSceneManager().UnloadScene("level1");
+        eng::Engine::GetEngine()->GetServer().Log("Entering Lobby, now waiting for players to join");
+
         while (!lobbyIsFull()) {
             co_await std::suspend_always {};
         }
@@ -113,6 +117,7 @@ namespace rtype {
         std::cout << "Enter lobby routine" << std::endl;
         auto serverHandle = RTypeDistantServer::GetInstance();
         eng::Engine::GetEngine()->GetSceneManager().UnloadScene("menu");
+        eng::Engine::GetEngine()->GetSceneManager().UnloadScene("level1");
         eng::Timer timer;
         timer.Start();
         serverHandle->TryConnect();
