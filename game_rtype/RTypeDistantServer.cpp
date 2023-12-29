@@ -40,6 +40,8 @@ namespace rtype {
     void RTypeDistantServer::HandleRequest(const serv::bytes& data)
     {
         serv::Instruction instruction;
+        if (_reset)
+            return;
         try {
             instruction = serv::Instruction(data);
             if (_requestHandlers.find(instruction.opcode) != _requestHandlers.end()) {
@@ -122,6 +124,9 @@ namespace rtype {
 
     void RTypeDistantServer::handleConnectOk(serv::Instruction& instruction)
     {
+        if (_pingThread.joinable())
+            _pingThread.join();
+
         _isConnected = true;
         _pingThread = std::thread(&RTypeDistantServer::pingServerForAlive, this);
     }
@@ -167,7 +172,7 @@ namespace rtype {
     void RTypeDistantServer::handleAssignPlayerID(serv::Instruction& instruction)
     {
         _playerId = instruction.data.ToInt();
-        std::cout << "\rAssigned player id: " << _playerId << " in entity " << _entityID << std::endl;
+        std::cout << "\rAssigned player id: " << _playerId << std::endl;
     }
 
     void RTypeDistantServer::handlePlayerSpawn(serv::Instruction& instruction)
@@ -177,6 +182,10 @@ namespace rtype {
             throw std::runtime_error("Player spawn instruction has wrong data size.");
         }
         std::memcpy(&id, instruction.data.data(), sizeof(int));
+
+        if (_players.find(id) != _players.end()) {
+            return;
+        }
 
         try {
             auto entityID = _engine->GetECS().GetResourceManager().LoadPrefab("ship");
@@ -190,13 +199,15 @@ namespace rtype {
             transform.x = x;
             transform.y = y;
 
-            if (id == _playerId) {
+            if (id == _playerId and not _isAssignedLocalPlayer) {
+                _isAssignedLocalPlayer = true;
                 auto lpc = std::make_shared<LocalPlayerController>();
                 lpc->SetPlayerId(id);
                 _entityID = entityID;
                 lpc->SetEntity(_entityID);
                 ship.Possess(_entityID, lpc);
-                _engine->RegisterObserver()->RegisterTarget([this]() { sendPlayerMoves(_entityID); }, transform.x, transform.y);
+                _observer = _engine->RegisterObserver();
+                _observer->RegisterTarget([this]() { sendPlayerMoves(_entityID); }, transform.x, transform.y);
             } else {
                 auto pfsc = std::make_shared<PlayerFromServerController>();
                 pfsc->SetPlayerId(id);
@@ -345,5 +356,35 @@ namespace rtype {
         } catch (const std::exception& e) {
             CONSOLE::err << "\r" << e.what() << std::endl;
         }
+    }
+
+    void RTypeDistantServer::Reset()
+    {
+        _isConnected = false;
+        _startGame = false;
+        _currSceneName = "";
+        _playerId = -1;
+        _entityID = -1;
+        _players.clear();
+        _enemies.clear();
+        _engine->UnregisterObserver(_observer);
+        _reset = true;
+    }
+
+    bool RTypeDistantServer::ShouldReset()
+    {
+        return _reset;
+    }
+
+    void RTypeDistantServer::ResetReset()
+    {
+        _reset = false;
+    }
+
+    void RTypeDistantServer::handleResetSignal(serv::Instruction& instruction)
+    {
+        std::cout << "reset signal received" << std::endl;
+        if (RTypeDistantServer::GetInstance() != nullptr)
+            RTypeDistantServer::GetInstance()->Reset();
     }
 } // namespace rtype
