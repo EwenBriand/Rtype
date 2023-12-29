@@ -11,6 +11,7 @@
 #include "ECSImpl.hpp"
 #include "GraphicalRayLib/GraphicalRayLib.hpp"
 #include "SceneManager.hpp"
+#include "UIManager.hpp"
 #include <algorithm>
 #include <filesystem>
 #include <memory>
@@ -67,6 +68,7 @@ namespace eng {
             }
         },
             -1000);
+        ui::UIManager::Get().ModPipeline();
         m_graphicalModule->ModPipeline();
         if (m_game)
             m_game->ModPipeline(this);
@@ -131,6 +133,7 @@ namespace eng {
         m_unsortedPipeline->clear();
         m_preUpdatePipeline->clear();
         m_postUpdatePipeline->clear();
+        m_observers.clear();
         m_pipelineChanged = true;
         setupPipeline();
     }
@@ -384,6 +387,38 @@ namespace eng {
             m_client = std::make_shared<serv::ClientUDP>();
         } else {
             CONSOLE::warn << "Starting in single player mode" << std::endl;
+        }
+    }
+
+    bool Engine::PlayMode() const
+    {
+        return m_playMode;
+    }
+
+    void Engine::SetPlayMode(bool playMode)
+    {
+        m_playMode = playMode;
+    }
+
+    bool Engine::IsClient() const
+    {
+        return m_client != nullptr;
+    }
+
+    bool Engine::IsServer() const
+    {
+        return m_server != nullptr;
+    }
+
+    void Engine::UnregisterObserver(std::shared_ptr<Observer> observer)
+    {
+        if (not observer)
+            return;
+        for (int i = 0; i < m_observers.size(); ++i) {
+            if (m_observers[i] and m_observers[i].get() == observer.get()) {
+                m_observers.erase(m_observers.begin() + i);
+                return;
+            }
         }
     }
 

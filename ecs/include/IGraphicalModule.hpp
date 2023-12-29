@@ -438,6 +438,8 @@ namespace graph {
          * @return false
          */
         virtual bool CheckCollisionWithRectangle(vec2f pos, Rectangle dimensions) = 0;
+
+        virtual vec2i GetScreenSize() const = 0;
     };
 } // namespace graph
 

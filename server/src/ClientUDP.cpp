@@ -53,11 +53,12 @@ namespace serv {
         while (_running) {
             try {
                 bytes data = _sendQueue.Pop();
+                Instruction instruction(data);
                 _socket.send_to(boost::asio::buffer(data._data), boost::asio::ip::udp::endpoint(boost::asio::ip::address::from_string(_serverIp), _serverPort));
             } catch (std::exception& e) {
                 // empty queue
             }
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            std::this_thread::sleep_for(std::chrono::milliseconds(5));
         }
     }
 
@@ -73,6 +74,10 @@ namespace serv {
                 {
                     std::lock_guard<std::mutex> lock(*_mutex);
                     _inBuffer.Write(data);
+                    // { // debug
+                    //     Instruction tmp(data);
+                    //     std::cout << "\rReceived: " << tmp.opcode << std::endl;
+                    // }
                 }
 
             } catch (std::exception& e) {

@@ -1,0 +1,9 @@
+name: dual-ship
+sprite path: sprites/dual_ship.png
+fps: 10
+scale: 1.0
+priority: 3
+paralax: false
+flipX: true
+loop: true
+auto: 2000 113 10

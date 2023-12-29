@@ -28,10 +28,11 @@ DistantPlayer::~DistantPlayer()
 
 void DistantPlayer::HandleRequest(const serv::bytes& data)
 {
+    serv::Instruction instruction;
     try {
-        auto instruction = serv::Instruction(data);
+        instruction = serv::Instruction(data);
         if (_requestCallbacks.find(instruction.opcode) == _requestCallbacks.end()) {
-            throw serv::MalformedInstructionException("\rUnknown instruction received from client: " + std::to_string(instruction.opcode));
+            return;
         }
         auto handler = _requestCallbacks.at(instruction.opcode);
         if (handler == nullptr) {
@@ -40,7 +41,22 @@ void DistantPlayer::HandleRequest(const serv::bytes& data)
         (this->*_requestCallbacks.at(instruction.opcode))(instruction);
     } catch (const serv::MalformedInstructionException& e) {
         std::cerr << e.what() << std::endl;
-        _server.Send(serv::Instruction(serv::E_INVALID_OPCODE, 0, serv::bytes()), _endpoint);
+        std::cerr << "\rMore informations: \n";
+        std::cerr << "\r\traw size: " << data.size() << std::endl;
+        std::cerr << "\r\tOpcode: " << instruction.opcode << std::endl;
+        std::cerr << "\r\tExpects answer: " << instruction.expectsAnswer << std::endl;
+        std::cerr << "\r\tData size: " << instruction.data.size() << std::endl;
+        std::cerr << "\r\tData to string: " << data.toString() << std::endl;
+        std::cerr << "\r\tData: ";
+        for (auto& byte : data) {
+            std::cerr << std::hex << (int)byte << " ";
+        }
+        std::cerr << std::endl;
+        try {
+            _server.Send(serv::Instruction(serv::E_INVALID_OPCODE, 0, serv::bytes(std::vector<int> { static_cast<int>(instruction.opcode) })), _endpoint);
+        } catch (const std::exception& e) {
+            std::cerr << "\rWhile handling invalid opcode: " << e.what() << std::endl;
+        }
     }
 }
 
@@ -65,7 +81,16 @@ std::shared_ptr<serv::IClient> DistantPlayer::Clone(boost::asio::ip::udp::endpoi
 void DistantPlayer::OnDisconnect()
 {
     std::cout << "\rClient disconnected" << std::endl;
-    // todo possess player with ai instead of distant player
+    for (auto it = Instances.begin(); it != Instances.end(); ++it) {
+        if ((*it).get() == this) {
+            Instances.erase(it);
+            break;
+        }
+    }
+    _server.Broadcast(serv::Instruction(eng::RType::I_RESET_CLIENT, 0, serv::bytes()));
+
+    eng::Engine::GetEngine()->GetServer().ResetClients();
+    //  todo switch Rtype state to lobby and clear all players
 }
 
 void DistantPlayer::SendClientLoadScene(const std::string& sceneName)
@@ -149,11 +174,37 @@ void DistantPlayer::handlePlayerMoves(serv::Instruction& instruction)
     // todo anticheat goes here
     transform.x = x;
     transform.y = y;
-    std::cout << "\rplayer " << id << " moved to " << x << ", " << y << std::endl;
     for (auto& player : Instances) {
         if (player->GetID() == _playerId) {
             continue;
         }
         player->Send(serv::Instruction(eng::RType::I_PLAYER_MOVES, 0, instruction.data));
+    }
+}
+
+void DistantPlayer::handlePlayerShoots(serv::Instruction& instruction)
+{
+    eng::Engine::GetEngine()->GetServer().Log("Player shoots handler for player " + std::to_string(_playerId) + " called");
+    if (instruction.data.size() != 3 * sizeof(int)) {
+        throw serv::MalformedInstructionException("\rPlayer shoots instruction malformed: got " + std::to_string(instruction.data.size()) + " bytes, expected " + std::to_string(3 * sizeof(int)) + " bytes");
+    }
+    int id = 0;
+    int x = 0;
+    int y = 0;
+    instruction.data.Deserialize(id, x, y);
+    try {
+        int laser = SYS.GetResourceManager().LoadPrefab("Laser");
+        auto& transform = SYS.GetComponent<CoreTransform>(laser);
+        transform.x = x;
+        transform.y = y;
+        for (auto& player : Instances) {
+            if (player->GetID() == _playerId) {
+                continue;
+            }
+            std::cout << "\rsending shoot instruction to player " << player->GetID() << std::endl;
+            player->Send(serv::Instruction(eng::RType::I_PLAYER_SHOOTS, 0, serv::bytes(std::vector<int> { id, x, y })).ToBytes() + serv::SEPARATOR);
+        }
+    } catch (const std::exception& e) {
+        CONSOLE::err << "\rFailed to send shoot instruction to clients." << std::endl;
     }
 }

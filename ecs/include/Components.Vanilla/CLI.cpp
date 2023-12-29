@@ -42,6 +42,8 @@ std::map<std::string, std::function<void(CLI&, std::vector<std::string>)>> CLI::
     { "prefab.remove", [](CLI& cli, std::vector<std::string> args) { cli.removePrefab(args); } },
     { "ssend", [](CLI& cli, std::vector<std::string> args) { cli.sendMessageToServer(args); } },
     { "csend", [](CLI& cli, std::vector<std::string> args) { cli.sendMessageToClients(args); } },
+    { "play", [](CLI& cli, std::vector<std::string> args) { cli.play(args); } },
+    { "pause", [](CLI& cli, std::vector<std::string> args) { cli.pause(args); } },
 };
 
 const std::map<std::string, std::function<void(CLI&, std::vector<std::string>)>> CLI::getM_commands()
@@ -382,12 +384,15 @@ void CLI::setMember(std::vector<std::string> args)
 
     int cptIdx = std::stoi(args[0]);
     std::string memberName = args[1];
-    while (memberName[memberName.size() - 1] <= 32) {
-        memberName[memberName.size() - 1] = '\0';
+    while (memberName.size() > 0 and memberName[memberName.size() - 1] == ' ') {
+        memberName.resize(memberName.size() - 1);
     }
     std::string value = "";
     for (int i = 2; i < args.size(); i++)
         value += args[i] + " ";
+    while (value.size() > 0 and value[value.size() - 1] == ' ') {
+        value.resize(value.size() - 1);
+    }
     try {
         SYS.SetMember(SYS.GetEditorEntityContext(), cptIdx, memberName, value);
     } catch (std::exception& e) {
@@ -405,7 +410,7 @@ void CLI::listExposedMembers(std::vector<std::string> args)
         CONSOLE::err << "No entity context set" << std::endl;
         return;
     }
-
+    std::cout << "listmbr" << std::endl;
     int cptIdx = std::stoi(args[0]);
 
     try {
@@ -544,4 +549,14 @@ void CLI::sendMessageToClients(std::vector<std::string> args)
         CONSOLE::err << "Not connected to server" << std::endl;
         return;
     }
+}
+
+void CLI::play(std::vector<std::string> args)
+{
+    eng::Engine::GetEngine()->SetPlayMode(true);
+}
+
+void CLI::pause(std::vector<std::string> args)
+{
+    eng::Engine::GetEngine()->SetPlayMode(false);
 }

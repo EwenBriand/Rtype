@@ -40,6 +40,8 @@ namespace eng {
         void ClearBuffer() override;
         void DisplayBuffer() override;
 
+        graph::vec2i GetScreenSize() const override;
+
     private:
     };
 } // namespace eng

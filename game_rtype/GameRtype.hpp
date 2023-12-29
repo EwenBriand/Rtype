@@ -9,6 +9,12 @@ namespace eng {
     class RType : public eng::IGame {
     public:
         /**
+         * @brief Resets the client and returns it to the menu.
+         *
+         */
+        static constexpr int I_RESET_CLIENT = 15000;
+
+        /**
          * @brief Assigns an id to a player.
          * args: {int id}
          *
@@ -50,19 +56,19 @@ namespace eng {
          * @brief args: {int id, int x, int y}
          *
          */
-        static constexpr int I_PLAYER_SHOOTS = 5005;
+        static constexpr int I_PLAYER_SHOOTS = 5006;
 
         /**
          * @brief args: {int id, int x, int y}
          *
          */
-        static constexpr int I_PLAYER_MOVES = 5006;
+        static constexpr int I_PLAYER_MOVES = 5007;
 
         /**
          * @brief args: {int id}
          *
          */
-        static constexpr int I_PLAYER_DIES = 5007;
+        static constexpr int I_PLAYER_DIES = 5008;
 
         RType() = default;
         ~RType() = default;

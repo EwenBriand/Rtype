@@ -19,25 +19,27 @@ void UserComponentWrapper::OnLoad()
     try {
         Entity e = SYS.GetSystemHolder();
         CLI& cli = SYS.GetComponent<CLI>(e);
-        cli.RegisterCustomCommand("usercpt-load", [&](CLI& c, std::vector<std::string> args) {
-            if (args.size() < 2)
-                return;
-            Entity currE = cli.GetContext();
-            if (currE == SYS.GetSystemHolder())
-                throw std::runtime_error("Cannot add user component to system holder");
-            SYS.AddComponent<UserComponentWrapper>(currE);
-            try {
-                UserComponentWrapper& wrapper = SYS.GetComponent<UserComponentWrapper>(currE);
-                std::shared_ptr<AUserComponent> internal = SYS.GetResourceManager().LoadUserComponent(std::string(args[0]));
-                internal->OnAddComponent(currE);
-                wrapper.SetInternalComponent(internal);
-                std::cout << "setting resource Id to " << args[0] << std::endl; // TODO: remove this line
-                wrapper.SetResourceID(args[0]);
-            } catch (std::exception& e) {
-                CONSOLE::err << "Failed to load component: " << e.what() << std::endl;
-                CONSOLE::warn << "If you think this is because the binary has not been rebuilt, try manually deleting the " << args[0] << ".checksum file associated with the component." << std::endl;
-            }
-        });
+        cli.RegisterCustomCommand(
+            "usercpt-load", [&](CLI& c, std::vector<std::string> args) {
+                if (args.size() < 2)
+                    return;
+                Entity currE = cli.GetContext();
+                if (currE == SYS.GetSystemHolder())
+                    throw std::runtime_error("Cannot add user component to system holder");
+                SYS.AddComponent<UserComponentWrapper>(currE);
+                try {
+                    UserComponentWrapper& wrapper = SYS.GetComponent<UserComponentWrapper>(currE);
+                    std::shared_ptr<AUserComponent> internal = SYS.GetResourceManager().LoadUserComponent(std::string(args[0]));
+                    internal->OnAddComponent(currE);
+                    wrapper.SetInternalComponent(internal);
+                    std::cout << "setting resource Id to " << args[0] << std::endl; // TODO: remove this line
+                    wrapper.SetResourceID(args[0]);
+                } catch (std::exception& e) {
+                    CONSOLE::err << "Failed to load component: " << e.what() << std::endl;
+                    CONSOLE::warn << "If you think this is because the binary has not been rebuilt, try manually deleting the " << args[0] << ".checksum file associated with the component." << std::endl;
+                }
+            },
+            "Load a user component into the current entity");
 
     } catch (std::exception& e) {
         CONSOLE::err << "Failed to load user component wrapper: " << e.what() << std::endl;

@@ -6,6 +6,8 @@
 */
 
 #include "Tag.hpp"
+#include <algorithm>
+#include <cctype>
 
 const std::string& Tag::Get() const
 {

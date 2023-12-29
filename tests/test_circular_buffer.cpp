@@ -24,3 +24,12 @@ TEST(CircularBuffer, test1)
     data = buffer.ReadUntil(serv::SEPARATOR);
     ASSERT_EQ(data.toString(), "World");
 }
+
+TEST(CircularBuffer, test3)
+{
+    serv::CircularBuffer buffer(17);
+    buffer.Write(serv::bytes("10") + serv::SEPARATOR);
+    buffer.Write(serv::bytes("11") + serv::SEPARATOR);
+    auto data4 = buffer.ReadUntil(serv::SEPARATOR);
+    ASSERT_EQ(data4.toString(), "");
+}

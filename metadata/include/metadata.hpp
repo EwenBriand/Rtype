@@ -39,6 +39,8 @@ typedef unsigned char uchar;
  */
 #define serialize ;
 #define needs(x) ;
+#define dependsOn(x) ;
+#define BUILD_MANUAL ;
 
 #define GENERATE_METADATA(classname)        \
 public:                                     \

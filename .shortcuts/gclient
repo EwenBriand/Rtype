@@ -1,0 +1,3 @@
+#!/bin/bash
+
+./build/ecs/run_engine --config-dir=game_rtype/.engine/config --server-port=8080 --server-ip=127.0.0.1

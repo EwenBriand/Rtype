@@ -1,0 +1,9 @@
+name: back_level1
+sprite path: sprites/doom_anniversary.png
+fps: 1
+scale: 1.0
+loop: true
+paralax: true
+paralax speed: 150
+priority: -1
+auto: 1980 1080 1

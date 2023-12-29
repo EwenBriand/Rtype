@@ -27,7 +27,10 @@ namespace serv {
     {
         for (int i = 0; i < data.size(); ++i) {
             _buffer[_write] = data[i];
-            _write = (_write + 1) % _size;
+            if (_write >= _size)
+                _write = 0;
+            else
+                _write++;
         }
     }
 

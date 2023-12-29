@@ -158,7 +158,6 @@ private:
      * @brief If enabled, gravity will impact the object's velocity
      *  True by default.
      */
-
     serialize int _simulateGravity = false;
 
     /**
@@ -208,7 +207,6 @@ private:
      *
      */
     int _entityID = -1;
-
     /**
      * @brief a reference to the CoreTransform component of the entity this
      * component is attached to

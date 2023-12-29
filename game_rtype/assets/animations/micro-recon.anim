@@ -1,0 +1,8 @@
+name: micro-recon
+sprite path: sprites/micro_recon.png
+fps: 10
+scale: 1.0
+priority: 3
+paralax: false
+loop: true
+auto: 2000 80 14

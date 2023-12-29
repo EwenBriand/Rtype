@@ -72,7 +72,9 @@ namespace serv {
 
         ThreadSafeQueue<bytes> _sendQueue;
         CircularBuffer _inBuffer;
-        std::shared_ptr<std::mutex> _mutex;
+        // ThreadSafeQueue<bytes> _inBuffer;
+        std::shared_ptr<std::mutex>
+            _mutex;
         std::atomic_bool _running;
 
         std::string _serverIp;

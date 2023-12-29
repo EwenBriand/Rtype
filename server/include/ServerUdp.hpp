@@ -49,8 +49,8 @@ namespace serv {
         std::atomic_bool _answerFlag;
     };
 
-    static const bytes SEPARATOR = { 't', 'h', 'e', 'e', 'n', 'd', 'o', 'f', 't', 'h', 'e', 'm', 'e', 's', 's', 'a', 'g', 'e' };
-    static const std::size_t BUFF_SIZE = 1024;
+    static const bytes SEPARATOR("msgdone");
+    static const std::size_t BUFF_SIZE = 2048;
     class ServerUDP;
     /**
      * @brief Each client has a bucket, which contains all the information
@@ -127,7 +127,8 @@ namespace serv {
         std::function<void()> _requestHook;
         std::shared_ptr<IClient> _clientHandler;
         std::shared_ptr<std::mutex> _mutex;
-        CircularBuffer _buffer;
+        // CircularBuffer _buffer;
+        ThreadSafeQueue<bytes> _buffer;
         std::chrono::time_point<std::chrono::system_clock> _lastRequestTime;
         std::shared_ptr<std::mutex> _lastRequestTimeMutex;
     };
@@ -176,6 +177,12 @@ namespace serv {
         void Broadcast(const bytes& message);
 
         /**
+         * @brief Broadcasts an instruction
+         *
+         */
+        void Broadcast(const Instruction& instruction);
+
+        /**
          * @brief Calls the HandleRequest function of all clients. Until there are no more
          * requests in the queue.
          *
@@ -199,6 +206,12 @@ namespace serv {
          *
          */
         void Log(const std::string& entry);
+
+        /**
+         * @brief forgets all the clients
+         *
+         */
+        void ResetClients();
 
     private:
         /**
@@ -227,6 +240,8 @@ namespace serv {
         std::string endpointToString(boost::asio::ip::udp::endpoint endpoint);
 
         std::array<char, BUFF_SIZE> _buffer;
+
+        bool _resetClientsFlag = false;
 
         std::map<std::string, std::shared_ptr<ClientBucketUDP>> _clients;
         std::shared_ptr<std::mutex> _clientsMutex;

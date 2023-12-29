@@ -6,7 +6,10 @@
 */
 
 #include "LocalPlayerController.hpp"
+#include "Components.Vanilla/CoreTransform.hpp"
+#include "ECSImpl.hpp"
 #include "Engine.hpp"
+#include "GameRtype.hpp"
 
 // ====================================================================
 // IController methods
@@ -61,5 +64,22 @@ bool LocalPlayerController::testRight()
 
 bool LocalPlayerController::testShoot()
 {
-    return SYS.GetInputManager().MouseButtonPressed(MOUSE_BUTTON_LEFT);
+    bool shot = SYS.GetInputManager().MouseButtonPressed(MOUSE_BUTTON_LEFT);
+    auto* engine = eng::Engine::GetEngine();
+
+    if (shot and engine->IsClient()) {
+        try {
+            auto& transform = SYS.GetComponent<CoreTransform>(_entity);
+            std::vector<int> data = {
+                _playerId,
+                static_cast<int>(transform.x),
+                static_cast<int>(transform.y)
+            };
+            std::cout << "\rplayer " << _playerId << " shoots at " << transform.x << ", " << transform.y << std::endl;
+            engine->GetClient().Send(serv::Instruction(eng::RType::I_PLAYER_SHOOTS, 0, serv::bytes(data)));
+        } catch (const std::exception& e) {
+            CONSOLE::err << "\rFailed to send shoot instruction to server." << std::endl;
+        };
+    }
+    return shot;
 }

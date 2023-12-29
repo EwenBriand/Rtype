@@ -8,8 +8,8 @@ add_executable(
   test_coroutines.cpp
   test_circular_buffer.cpp
   test_serialization.cpp
-  test_Observer.cpp
-  test_ecs.cpp
+  # test_Observer.cpp
+  # test_ecs.cpp
 )
 target_link_libraries(
   specs

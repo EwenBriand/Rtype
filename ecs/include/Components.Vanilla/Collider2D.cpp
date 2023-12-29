@@ -76,6 +76,8 @@ void Collider2D::OnLoad()
 
 void Collider2D::Update(int entityID)
 {
+    if (_destroyMe)
+        return;
     checkCollisions();
     DebugDraw();
 }
@@ -88,6 +90,11 @@ void Collider2D::OnAddComponent(int entityID)
 int Collider2D::GetEntityID() const
 {
     return _entityID;
+}
+
+void Collider2D::SetDestroyMe(bool destroyMe)
+{
+    _destroyMe = destroyMe;
 }
 
 std::vector<float>& Collider2D::GetVerticesMutable() noexcept
@@ -232,7 +239,7 @@ void Collider2D::checkCollisions()
 {
     _wasColliding = _isColliding;
     SYS.ForEach<Collider2D>([this](Collider2D collider) {
-        if (collider.GetEntityID() == _entityID)
+        if (_destroyMe || collider.GetEntityID() == _entityID)
             return; // doesn't check collision with self
         checkCollision(collider);
     });
@@ -241,8 +248,6 @@ void Collider2D::checkCollisions()
     }
 }
 
-// col.adv 0 0 0 100 100 100 100 0
-
 void Collider2D::checkCollision(Collider2D& other)
 {
     other.recalculateEdgesAndNormals();
@@ -250,11 +255,11 @@ void Collider2D::checkCollision(Collider2D& other)
     const auto& axes2 = other.GetNormals();
 
     for (const auto& axis : axes1)
-        if (isAxisSeparating(axis, *this, other)) {
+        if (_destroyMe || isAxisSeparating(axis, *this, other)) {
             return;
         }
     for (const auto& axis : axes2)
-        if (isAxisSeparating(axis, *this, other)) {
+        if (_destroyMe || isAxisSeparating(axis, *this, other)) {
             return;
         }
     _isColliding = true;
@@ -273,10 +278,7 @@ bool Collider2D::isAxisSeparating(const graph::vec2f& axis, const Collider2D& a,
     auto [minA, maxA] = projectPolygon(axis, a);
     auto [minB, maxB] = projectPolygon(axis, b);
 
-    if (maxA < minB || maxB < minA) {
-        return true;
-    }
-    return false;
+    return (maxA < minB || maxB < minA);
 }
 
 std::pair<float, float> Collider2D::projectPolygon(const graph::vec2f& axis, const Collider2D& collider) const noexcept

@@ -78,6 +78,10 @@ def deep_clean_impl(args):
 def build_root(args):
     cd_gitroot()
     j_option = "-j" if "-j" in args else ""
+    targets = ""
+    for arg in args:
+        if arg != "-j":
+            targets += arg + " "
     if os.name == "nt":
         fail = os.system('mkdir build && cd build && cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release .. && make')
         if fail:
@@ -95,7 +99,7 @@ def build_root(args):
             print_color("red", "Metadata generation failed")
             exit(1)
         print_color("yellow", "Building engine")
-        fail = os.system("mkdir -p build && cd build && cmake -DWITH_PIC=on -DBUILD_SHARED_LIBS=on -DCMAKE_BUILD_TYPE=Release .. && make " + j_option)
+        fail = os.system("mkdir -p build && cd build && cmake -DWITH_PIC=on -DBUILD_SHARED_LIBS=on -DCMAKE_BUILD_TYPE=Release .. && make " + targets + j_option)
         if fail:
             print_color("red", "Build failed")
             exit(1)
@@ -336,6 +340,10 @@ def run_server(args):
     cd_gitroot()
     os.system(".shortcuts/server")
 
+def run_edit(args):
+    cd_gitroot()
+    os.system(".shortcuts/edit")
+
 commands = {
     "clean": ("performs a deep clean of the repository", lambda args: deep_clean_impl(args)),
     "build": ("builds the project", lambda args: build_root(args)),
@@ -350,6 +358,7 @@ commands = {
     "client": ("runs a client connecting to 127.0.0.1:8080", lambda args: run_client(args)),
     "gclient": ("just like client but with a graphical interface", lambda args: run_gclient(args)),
     "server": ("runs a server on port 8080", lambda args: run_server(args)),
+    "edit": ("runs the editor locally", lambda args: run_edit(args)),
 }
 
 if __name__ == "__main__":

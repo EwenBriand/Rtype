@@ -1,0 +1,8 @@
+name: red-ship
+sprite path: sprites/red-ship.png
+fps: 10
+scale: 1.0
+priority: 3
+paralax: false
+loop: true
+auto: 2000 200 10

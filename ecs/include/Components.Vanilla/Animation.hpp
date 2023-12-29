@@ -44,17 +44,17 @@ public:
     void SetPriority(int priority);
 
 private:
-    std::string _path;
-    Texture2D _texture;
-    Rectangle _rect;
-    Vector2 _origin;
-    Vector2 _scale;
-    float _rotation;
-    Color _color;
-    bool _flipX;
-    bool _flipY;
-    bool _visible;
-    int _priority;
+    std::string _path = "";
+    Texture2D _texture = { 0 };
+    Rectangle _rect = { 0.0f, 0.0f, 0.0f, 0.0f };
+    Vector2 _origin = { 0.0f, 0.0f };
+    Vector2 _scale = { 1.0f, 1.0f };
+    float _rotation = 0.0f;
+    Color _color = WHITE;
+    bool _flipX = false;
+    bool _flipY = false;
+    bool _visible = true;
+    int _priority = 0;
 };
 
 class Animation {
@@ -91,7 +91,11 @@ public:
 
     void SetParalax(bool paralax);
 
+    bool GetParalax();
+
     void SetParalaxSpeed(int paralaxSpeed);
+
+    int GetParalaxSpeed();
 
     void SetPriority(int priority);
 

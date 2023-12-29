@@ -205,12 +205,17 @@ namespace ecs {
          */
         void UnregisterEntity(Entity e)
         {
+            if (e >= _components[0].size())
+                throw std::runtime_error("Entity ID out of range");
+            if (std::find(_usedIds.begin(), _usedIds.end(), e) == _usedIds.end())
+                throw std::runtime_error("Entity ID not registered");
             for (size_t i = 0; i < sizeof...(VanillaComponents); ++i) {
                 _components[i][e].clear();
             }
             _usedIds.erase(std::remove(_usedIds.begin(), _usedIds.end(), e), _usedIds.end());
             _freeIds.push(e);
             _deletedThisFrame.push(e);
+            _editorEntityContext = _systemHolder;
         }
 
         /**
@@ -802,6 +807,12 @@ namespace ecs {
                 LoadEntity(p.path().string());
             }
             _editorEntityContext = _systemHolder;
+            for (auto& cpt : cloneBase) {
+                std::visit([&](auto&& arg) {
+                    arg.OnLoad();
+                },
+                    cpt);
+            }
             NotifyEnginePipelineErased();
         }
 
@@ -846,6 +857,13 @@ namespace ecs {
                 _usedIds.push_back(i);
             }
             _editorEntityContext = _systemHolder;
+
+            for (auto& cpt : cloneBase) {
+                std::visit([&](auto&& arg) {
+                    arg.OnLoad();
+                },
+                    cpt);
+            }
 
             // calling OnAddComponent on all components
             for (Entity e : _usedIds) {

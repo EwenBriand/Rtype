@@ -22,6 +22,8 @@ public:
     // public methods
     // ====================================================================
 
+    inline void SetPlayerId(int id) { _playerId = id; }
+
     // ====================================================================
     // getters/setters
     // ====================================================================
@@ -40,6 +42,8 @@ private:
     // ====================================================================
     // properties
     // ====================================================================
+    int _playerId = -1;
+
     std::vector<std::string> _directives;
     std::map<std::string, bool (LocalPlayerController::*)()> _directivesTests = {
         { Ship::COMMAND_UP, &LocalPlayerController::testUp },
