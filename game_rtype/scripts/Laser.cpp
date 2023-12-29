@@ -44,11 +44,12 @@ void Laser::Start()
             try {
                 std::string tag = (_entity == entityID) ? SYS.GetComponent<Collider2D>(otherID).GetTag() : SYS.GetComponent<Collider2D>(entityID).GetTag();
                 if (tag == "player") {
+                    std::cout << "laser was destroyed after colliding with a player" << std::endl;
                     SYS.GetComponent<Collider2D>(_entity).SetDestroyMe(true);
                     SYS.UnregisterEntity(_entity);
                 }
             } catch (std::exception& e) {
-                std::cerr << "Laser::Start(): " << e.what() << std::endl;
+                std::cerr << "Laser::OnCollisionEnter(): " << e.what() << std::endl;
             }
         });
     } else {
@@ -56,17 +57,14 @@ void Laser::Start()
         _rb->SetVelocity({ _speed, _rb->GetVelocity().y });
         collider.SetOnCollisionEnter([this](int entityID, int otherID) {
             try {
-                std::cout << "Laser::Start(): " << entityID << " " << otherID << std::endl;
                 std::string tag = (_entity == entityID) ? SYS.GetComponent<Collider2D>(otherID).GetTag() : SYS.GetComponent<Collider2D>(entityID).GetTag();
-                std::cout << "after tag" << std::endl;
                 if (tag == "enemy") {
-                    std::cout << "before test" << std::endl;
+                    std::cout << "laser was destroyed after colliding with an enemy" << std::endl;
                     SYS.GetComponent<Collider2D>(_entity).SetDestroyMe(true);
                     SYS.UnregisterEntity(_entity);
-                    std::cout << "after test " << _entity << std::endl;
                 }
             } catch (std::exception& e) {
-                std::cerr << "Laser::Start(): " << e.what() << std::endl;
+                std::cerr << "Laser::OnCollisionEnter: " << e.what() << std::endl;
             }
         });
     }

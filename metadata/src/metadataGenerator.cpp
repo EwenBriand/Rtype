@@ -355,7 +355,6 @@ namespace meta {
 
     void MetadataGenerator::check_depends(std::vector<std::string>& words, size_t& i, const std::string& path, const std::string& filepath)
     {
-        std::cout << "words[i] = " << words[i] << std::endl;
         if (words[i].substr(0, 9) == "dependsOn") {
             std::string libname = words[i].substr(11, words[i].size() - 13);
             auto libpath = path + '/' + libname;

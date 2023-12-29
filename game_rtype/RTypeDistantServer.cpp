@@ -326,7 +326,7 @@ namespace rtype {
             transform.x = x;
             transform.y = y;
         } catch (const std::exception& e) {
-            CONSOLE::err << "\rFailed to send shoot instruction to server." << std::endl;
+            CONSOLE::err << "Failed to spawn laser: " << e.what() << std::endl;
         }
     }
 
