@@ -384,12 +384,15 @@ void CLI::setMember(std::vector<std::string> args)
 
     int cptIdx = std::stoi(args[0]);
     std::string memberName = args[1];
-    while (memberName[memberName.size() - 1] <= 32) {
-        memberName[memberName.size() - 1] = '\0';
+    while (memberName.size() > 0 and memberName[memberName.size() - 1] == ' ') {
+        memberName.resize(memberName.size() - 1);
     }
     std::string value = "";
     for (int i = 2; i < args.size(); i++)
         value += args[i] + " ";
+    while (value.size() > 0 and value[value.size() - 1] == ' ') {
+        value.resize(value.size() - 1);
+    }
     try {
         SYS.SetMember(SYS.GetEditorEntityContext(), cptIdx, memberName, value);
     } catch (std::exception& e) {
@@ -407,7 +410,7 @@ void CLI::listExposedMembers(std::vector<std::string> args)
         CONSOLE::err << "No entity context set" << std::endl;
         return;
     }
-
+    std::cout << "listmbr" << std::endl;
     int cptIdx = std::stoi(args[0]);
 
     try {

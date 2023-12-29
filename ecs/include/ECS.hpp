@@ -215,6 +215,7 @@ namespace ecs {
             _usedIds.erase(std::remove(_usedIds.begin(), _usedIds.end(), e), _usedIds.end());
             _freeIds.push(e);
             _deletedThisFrame.push(e);
+            _editorEntityContext = _systemHolder;
         }
 
         /**

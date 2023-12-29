@@ -22,7 +22,7 @@ void SplashIcon::Update(int entityID)
         return;
     }
     _icon->Draw();
-    _icon->SetRotation(_icon->GetRotation() + _rotationSpeed);
+    _icon->SetRotation(_icon->GetRotation() + _rotationSpeed * SYS.GetDeltaTime());
 }
 
 void SplashIcon::OnAddComponent(int entityID)

@@ -27,7 +27,8 @@ EnemySpawner::~EnemySpawner()
 
 void EnemySpawner::Update(int e)
 {
-    return;
+    if (not eng::Engine::GetEngine()->PlayMode())
+        std::cout << "caution, engine not in play mode" << std::endl;
     if (not eng::Engine::GetEngine()->IsServer())
         return;
     if (_timer.GetElapsedTime() < _spawnDelay + _randomDelayVariation or _transform == nullptr
@@ -95,27 +96,26 @@ void EnemySpawner::broadcastSpawn(const rtype::AIController& controller, int x, 
 void EnemySpawner::setupObserver(std::shared_ptr<rtype::AIController> controller, int e)
 {
     std::shared_ptr<eng::Observer> observer = eng::Engine::GetEngine()->RegisterObserver();
-    try {
-        auto& transform = SYS.GetComponent<CoreTransform>(e);
-        observer->RegisterTarget([e, controller]() {
-            if (not eng::Engine::GetEngine()->IsServer())
-                return;
-            auto& server = eng::Engine::GetEngine()->GetServer();
+    // try {
+    //     auto& tr = SYS.GetComponent<CoreTransform>(e);
+    //     observer->RegisterTarget([e, controller]() {
+    //         if (not eng::Engine::GetEngine()->IsServer())
+    //             return;
+    //         auto& server = eng::Engine::GetEngine()->GetServer();
 
-            try {
-                auto& transform = SYS.GetComponent<CoreTransform>(e);
-                int id = controller->GetID();
-                int x = transform.x;
-                int y = transform.y;
-
-                serv::bytes data(std::vector<int>({ id, x, y }));
-                server.Broadcast(serv::Instruction(eng::RType::I_ENEMY_MOVES, 0, data));
-            } catch (const std::exception& e) {
-                CONSOLE::err << "Could not broadcast enemy moves\n\r\t" << e.what() << std::endl;
-            }
-        },
-            transform.x, transform.y);
-    } catch (const std::exception& e) {
-        CONSOLE::err << "Could not setup observer\n\r\t" << e.what() << std::endl;
-    }
+    //         try {
+    //             auto& tr = SYS.GetComponent<CoreTransform>(e);
+    //             int id = controller->GetID();
+    //             int x = tr.x;
+    //             int y = tr.y;
+    //             serv::bytes data(std::vector<int>({ id, x, y }));
+    //             server.Broadcast(serv::Instruction(eng::RType::I_ENEMY_MOVES, 0, data));
+    //         } catch (const std::exception& e) {
+    //             CONSOLE::err << "Could not broadcast enemy moves\n\r\t" << e.what() << std::endl;
+    //         }
+    //     },
+    //         tr.x, tr.y);
+    // } catch (const std::exception& e) {
+    //     CONSOLE::err << "Could not setup observer\n\r\t" << e.what() << std::endl;
+    // }
 }

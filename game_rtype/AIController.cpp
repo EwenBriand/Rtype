@@ -9,9 +9,15 @@
 #include "Components.Vanilla/CoreTransform.hpp"
 #include "ECSImpl.hpp"
 #include "Engine.hpp"
+#include "GameRtype.hpp"
 #include "Observer.hpp"
 
 namespace rtype {
+    AIController::AIController()
+    {
+        _shootTimer.Restart();
+    }
+
     std::vector<std::string>& AIController::GetDirectives()
     {
         try {
@@ -33,6 +39,7 @@ namespace rtype {
             if ((this->*test)())
                 _directives.push_back(directive);
         }
+        broadcastPosition();
     }
 
     bool AIController::testLeft()
@@ -42,9 +49,13 @@ namespace rtype {
 
     bool AIController::testShoot()
     {
+        if (not eng::Engine::GetEngine()->IsServer()) // order to shoot comes from server for synchronization
+            return false;
         if (_shootTimer.GetElapsedTime() > _shootInterval) {
             _shootTimer.Restart();
-            return true;
+            broadcastShoot();
+            instantiateRedLaser();
+            return false;
         }
         return false;
     }
@@ -62,6 +73,55 @@ namespace rtype {
     void AIController::SetObserver(std::shared_ptr<eng::Observer> observer)
     {
         _observer = observer;
+    }
+
+    void AIController::broadcastPosition()
+    {
+        if (eng::Engine::GetEngine()->IsClient() or _broadcastTimer.GetElapsedTime() < 0.5f) {
+            return;
+        }
+        _broadcastTimer.Restart();
+
+        try {
+            auto& transform = SYS.GetComponent<CoreTransform>(_entity);
+            serv::bytes args(std::vector<int>({ _id,
+                static_cast<int>(transform.x),
+                static_cast<int>(transform.y) }));
+            auto instruction = serv::Instruction(eng::RType::I_ENEMY_MOVES, 0, args);
+            eng::Engine::GetEngine()->GetServer().Broadcast(instruction.ToBytes() + serv::SEPARATOR);
+        } catch (const std::exception& e) {
+            std::cerr << "AIController::broadcastPosition(): " << e.what() << std::endl;
+        }
+    }
+
+    void AIController::broadcastShoot()
+    {
+        if (not eng::Engine::GetEngine()->IsServer()) // only server can broadcast
+            return;
+        try {
+            auto& transform = SYS.GetComponent<CoreTransform>(_entity);
+            serv::bytes args(std::vector<int>({ _id,
+                static_cast<int>(transform.x),
+                static_cast<int>(transform.y) }));
+            auto instruction = serv::Instruction(eng::RType::I_ENEMY_SHOOTS, 0, args);
+            eng::Engine::GetEngine()->GetServer().Broadcast(instruction);
+
+        } catch (const std::exception& e) {
+            std::cerr << "AIController::broadcastShoot(): " << e.what() << std::endl;
+        }
+    }
+
+    void AIController::instantiateRedLaser()
+    {
+        try {
+            auto laser = SYS.GetResourceManager().LoadPrefab("red-laser");
+            auto& transform = SYS.GetComponent<CoreTransform>(_entity);
+            auto& laserTransform = SYS.GetComponent<CoreTransform>(laser);
+            laserTransform.x = transform.x;
+            laserTransform.y = transform.y;
+        } catch (const std::exception& e) {
+            std::cerr << "AIController::instantiateRedLaser(): " << e.what() << std::endl;
+        }
     }
 
 } // namespace rtype

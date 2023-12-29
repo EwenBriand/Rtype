@@ -15,6 +15,7 @@ set(SOURCE
     src/CircularBuffer.cpp
     src/Coroutine.cpp
     src/Instruction.cpp
+    src/Bytes.cpp
 )
 
 add_library(${PROJECT_NAME} SHARED ${SOURCE})

@@ -52,7 +52,6 @@ void DistantPlayer::HandleRequest(const serv::bytes& data)
             std::cerr << std::hex << (int)byte << " ";
         }
         std::cerr << std::endl;
-        exit(0);
         try {
             _server.Send(serv::Instruction(serv::E_INVALID_OPCODE, 0, serv::bytes(std::vector<int> { static_cast<int>(instruction.opcode) })), _endpoint);
         } catch (const std::exception& e) {
@@ -173,7 +172,6 @@ void DistantPlayer::handlePlayerMoves(serv::Instruction& instruction)
     // todo anticheat goes here
     transform.x = x;
     transform.y = y;
-    std::cout << "\rplayer " << id << " moved to " << x << ", " << y << std::endl;
     for (auto& player : Instances) {
         if (player->GetID() == _playerId) {
             continue;
@@ -191,10 +189,7 @@ void DistantPlayer::handlePlayerShoots(serv::Instruction& instruction)
     int id = 0;
     int x = 0;
     int y = 0;
-    std::memcpy(&id, instruction.data.data(), sizeof(int));
-    std::memcpy(&x, instruction.data.data() + sizeof(int), sizeof(int));
-    std::memcpy(&y, instruction.data.data() + 2 * sizeof(int), sizeof(int));
-    std::cout << "\rplayer " << id << " shoots at " << x << ", " << y << std::endl;
+    instruction.data.Deserialize(id, x, y);
     try {
         int laser = SYS.GetResourceManager().LoadPrefab("Laser");
         auto& transform = SYS.GetComponent<CoreTransform>(laser);

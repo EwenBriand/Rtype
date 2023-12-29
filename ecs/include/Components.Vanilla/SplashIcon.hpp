@@ -22,9 +22,6 @@ public:
     void Update(int entityID);
 
 private:
-    serialize std::string _iconPath = "";
-    serialize float _rotationSpeed = 1.0f;
-
     /**
      * @brief Loads the icon from the filepath _iconPath.
      * If the filepath is empty, it will load the default icon.
@@ -33,6 +30,9 @@ private:
      *
      */
     void loadIcon();
+
+    serialize std::string _iconPath = "";
+    serialize float _rotationSpeed = 1.0f;
 
     std::shared_ptr<Sprite> _icon = nullptr;
 };

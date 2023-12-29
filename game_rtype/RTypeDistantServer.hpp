@@ -78,6 +78,7 @@ namespace rtype {
 
         void handleEnemySpawn(serv::Instruction& instruction);
         void handleEnemyMoves(serv::Instruction& instruction);
+        void handleEnemyShoots(serv::Instruction& instruction);
 
         /**
          * @brief Sens the I_PLAYER_MOVES instruction to the server
@@ -123,7 +124,7 @@ namespace rtype {
                 { eng::RType::I_ENEMY_SPAWN, &RTypeDistantServer::handleEnemySpawn },
                 { eng::RType::I_ENEMY_MOVES, &RTypeDistantServer::handleEnemyMoves },
                 { eng::RType::I_ENEMY_DIES, nullptr },
-                { eng::RType::I_ENEMY_SHOOTS, nullptr },
+                { eng::RType::I_ENEMY_SHOOTS, &RTypeDistantServer::handleEnemyShoots },
             };
     };
 } // namespace rtype

@@ -127,7 +127,8 @@ namespace serv {
         std::function<void()> _requestHook;
         std::shared_ptr<IClient> _clientHandler;
         std::shared_ptr<std::mutex> _mutex;
-        CircularBuffer _buffer;
+        // CircularBuffer _buffer;
+        ThreadSafeQueue<bytes> _buffer;
         std::chrono::time_point<std::chrono::system_clock> _lastRequestTime;
         std::shared_ptr<std::mutex> _lastRequestTimeMutex;
     };

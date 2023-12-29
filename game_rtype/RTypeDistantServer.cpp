@@ -6,6 +6,7 @@
 */
 
 #include "RTypeDistantServer.hpp"
+#include "AIController.hpp"
 #include "CoreTransform.hpp"
 #include "GameRtype.hpp"
 #include "LocalPlayerController.hpp"
@@ -30,8 +31,9 @@ namespace rtype {
 
     void RTypeDistantServer::HandleRequest(const serv::bytes& data)
     {
+        serv::Instruction instruction;
         try {
-            serv::Instruction instruction(data);
+            instruction = serv::Instruction(data);
             if (_requestHandlers.find(instruction.opcode) != _requestHandlers.end()) {
                 auto handler = _requestHandlers.at(instruction.opcode);
                 if (handler)
@@ -40,7 +42,13 @@ namespace rtype {
                 std::cerr << "\rUnknown instruction received from server: " << instruction.opcode << std::endl;
             }
         } catch (const serv::MalformedInstructionException& e) {
-            std::cerr << e.what() << std::endl;
+            std::cerr << "\rMore informations: \n";
+            std::cerr << "\r\traw size: " << data.size() << std::endl;
+            std::cerr << "\r\tOpcode: " << instruction.opcode << std::endl;
+            std::cerr << "\r\tExpects answer: " << instruction.expectsAnswer << std::endl;
+            std::cerr << "\r\tData size: " << instruction.data.size() << std::endl;
+            std::cerr << "\r\tData to string: " << data.toString() << std::endl;
+            std::cerr << "\r\tData: ";
         } catch (const std::exception& e) {
             std::cerr << e.what() << std::endl;
         }
@@ -236,9 +244,7 @@ namespace rtype {
         int y = 0;
         std::string prefabName = "";
 
-        std::memcpy(&id, instruction.data.data(), sizeof(int));
-        std::memcpy(&x, instruction.data.data() + sizeof(int), sizeof(int));
-        std::memcpy(&y, instruction.data.data() + 2 * sizeof(int), sizeof(int));
+        instruction.data.Deserialize(id, x, y);
         serv::bytes prefabNameBytes(instruction.data.data() + 3 * sizeof(int), instruction.data.size() - 3 * sizeof(int));
         prefabName.reserve(prefabNameBytes.size());
         for (auto& byte : prefabNameBytes) {
@@ -252,8 +258,8 @@ namespace rtype {
             transform.y = y;
 
             auto& ship = _engine->GetECS().GetComponent<Ship>(eid, "Ship");
-            auto pfsc = std::make_shared<PlayerFromServerController>();
-            pfsc->SetPlayerId(id);
+            auto pfsc = std::make_shared<rtype::AIController>();
+            pfsc->SetID(id);
             ship.Possess(eid, pfsc);
             _enemies[id] = eid;
         } catch (std::exception& e) {
@@ -266,22 +272,19 @@ namespace rtype {
         int id = 0;
         int x = 0;
         int y = 0;
-
         if (instruction.data.size() < 3 * sizeof(int)) {
             throw std::runtime_error("Enemy moves instruction has wrong data size.");
         }
-        std::memcpy(&id, instruction.data.data(), sizeof(int));
-        std::memcpy(&x, instruction.data.data() + sizeof(int), sizeof(int));
-        std::memcpy(&y, instruction.data.data() + 2 * sizeof(int), sizeof(int));
+        instruction.data.Deserialize(id, x, y);
 
         if (_enemies.find(id) == _enemies.end()) {
             return;
         }
         int entityID = _enemies[id];
         try {
-            auto& transform = _engine->GetECS().GetComponent<CoreTransform>(entityID);
-            transform.x = x;
-            transform.y = y;
+            auto& tr = _engine->GetECS().GetComponent<CoreTransform>(entityID);
+            tr.x = x;
+            tr.y = y;
         } catch (std::exception& e) {
             std::cerr << "\r" << e.what() << std::endl;
         }
@@ -289,16 +292,13 @@ namespace rtype {
 
     void RTypeDistantServer::handlePlayerShoots(serv::Instruction& instruction)
     {
-        std::cout << "\rgot player shoot instruction" << std::endl;
         if (instruction.data.size() != 3 * sizeof(int)) {
             throw serv::MalformedInstructionException("Player shoots instruction malformed");
         }
         int id = 0;
         int x = 0;
         int y = 0;
-        std::memcpy(&id, instruction.data.data(), sizeof(int));
-        std::memcpy(&x, instruction.data.data() + sizeof(int), sizeof(int));
-        std::memcpy(&y, instruction.data.data() + 2 * sizeof(int), sizeof(int));
+        instruction.data.Deserialize(id, x, y);
 
         try {
             int laser = SYS.GetResourceManager().LoadPrefab("Laser");
@@ -307,6 +307,21 @@ namespace rtype {
             transform.y = y;
         } catch (const std::exception& e) {
             CONSOLE::err << "\rFailed to send shoot instruction to server." << std::endl;
+        }
+    }
+
+    void RTypeDistantServer::handleEnemyShoots(serv::Instruction& instruction)
+    {
+        try {
+            int id, x, y;
+            instruction.data.Deserialize(id, x, y);
+
+            int laser = SYS.GetResourceManager().LoadPrefab("red-laser");
+            auto& transform = SYS.GetComponent<CoreTransform>(laser);
+            transform.x = x;
+            transform.y = y;
+        } catch (const std::exception& e) {
+            CONSOLE::warn << "\r" << e.what() << std::endl;
         }
     }
 } // namespace rtype

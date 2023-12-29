@@ -1,0 +1,10 @@
+name: red-laser
+sprite path: sprites/red-laser.png
+fps: 1
+scale: 0.03
+priority: 4
+paralax: false
+loop: true
+flipX: true
+flipY: true
+auto: 1028 1028 1

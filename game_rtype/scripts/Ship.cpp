@@ -96,8 +96,8 @@ void Ship::shoot()
     try {
         auto& transform = SYS.GetComponent<CoreTransform>(_entity);
         auto& laserTransform = SYS.GetComponent<CoreTransform>(laser);
-        laserTransform.x = transform.x + 230;
-        laserTransform.y = transform.y + 110;
+        laserTransform.x = transform.x;
+        laserTransform.y = transform.y;
     } catch (std::exception& e) {
         return;
     }

@@ -46,7 +46,7 @@ namespace serv {
     ClientBucketUDP::ClientBucketUDP(boost::asio::ip::udp::endpoint endpoint)
         : _endpoint(endpoint)
         , _clientHandler(nullptr)
-        , _buffer(2 * BUFF_SIZE)
+        // , _buffer(2 * BUFF_SIZE)
         , _mutex(std::make_shared<std::mutex>())
         , _lastRequestTimeMutex(std::make_shared<std::mutex>())
         , _lastRequestTime(std::chrono::high_resolution_clock::now())
@@ -72,7 +72,8 @@ namespace serv {
     void ClientBucketUDP::Write(const bytes& data)
     {
         std::scoped_lock lock(*_mutex);
-        _buffer.Write(data);
+        // _buffer.Write(data);
+        _buffer.Push(data);
     }
 
     bytes ClientBucketUDP::Read()
@@ -80,7 +81,12 @@ namespace serv {
         bytes value;
         {
             std::scoped_lock lock(*_mutex);
-            value = _buffer.ReadUntil(SEPARATOR);
+            // value = _buffer.ReadUntil(SEPARATOR);
+            try {
+                value = _buffer.Pop();
+            } catch (const std::exception& e) {
+                return bytes();
+            }
         }
         return value;
     }
@@ -95,6 +101,7 @@ namespace serv {
         bytes data = Read();
 
         while (not data.empty()) {
+            data.resize(data.size() - SEPARATOR.size());
             // std::cout << "\rHandleRequest: " << data.toString() << std::endl;
             _clientHandler->HandleRequest(data);
             data = Read();

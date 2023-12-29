@@ -74,6 +74,10 @@ namespace serv {
                 {
                     std::lock_guard<std::mutex> lock(*_mutex);
                     _inBuffer.Write(data);
+                    // { // debug
+                    //     Instruction tmp(data);
+                    //     std::cout << "\rReceived: " << tmp.opcode << std::endl;
+                    // }
                 }
 
             } catch (std::exception& e) {
