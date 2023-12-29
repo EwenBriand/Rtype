@@ -36,13 +36,13 @@ void Enemy::Start()
 
     _collider->SetOnCollisionEnter([this](int entityID, int otherID) {
         try {
-            std::cout << "Ship::Start(): " << entityID << " " << otherID << std::endl;
+            // std::cout << "Ship::Start(): " << entityID << " " << otherID << std::endl;
             std::string tag = (_entity == entityID) ? SYS.GetComponent<Collider2D>(otherID).GetTag() : SYS.GetComponent<Collider2D>(entityID).GetTag();
-            std::cout << "after tag" << std::endl;
+            // std::cout << "after tag" << std::endl;
             if (tag.compare(0, 12, "Player laser") == 0) {
-                std::cout << "before test" << std::endl;
+                // std::cout << "before test" << std::endl;
                 this->_health -= 1;
-                std::cout << "after test " << _entity << std::endl;
+                // std::cout << "after test " << _entity << std::endl;
             }
         } catch (std::exception& e) {
             std::cerr << "Ship::Start(): " << e.what() << std::endl;
@@ -73,7 +73,7 @@ void Enemy::Update(int entityID)
     _rb->SetVelocity({ 0, 0 });
     applyDirectives();
 
-    // std::cout << "Enemy::Update(): " << _rb->GetPrevPosition().x << std::endl;
+    std::cout << "Enemy::Update(): " << _rb->GetPrevPosition().x << std::endl;
 }
 
 // ===========================================================================================================
@@ -112,4 +112,9 @@ void Enemy::shoot()
     } catch (std::exception& e) {
         return;
     }
+}
+
+void Enemy::moveLeft()
+{
+    _rb->SetVelocity({ -_speed, _rb->GetVelocity().y });
 }

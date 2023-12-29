@@ -35,34 +35,34 @@ void EnemySpawner::Update(int e)
         or not eng::Engine::GetEngine()->PlayMode())
         return;
     _timer.Restart();
-    // if (_wave == 0 && _wave_enemy.size() > 0) {
-    //     _wave = _wave_enemy[0];
-    //     _wave_enemy.erase(_wave_enemy.begin());
-    // }
-    // if (_wave > 0) {
-    //     _wave--;
-    try {
-        graph::vec2i size = SYS.GetGraphicalModule()->GetScreenSize();
-        std::uniform_int_distribution<int> dist(0, size.y);
-        _transform->y = dist(_rng);
-
-        unsigned int e = SYS.GetResourceManager().LoadPrefab(_prefabName);
-        auto& transform = SYS.GetComponent<CoreTransform>(e);
-        transform.x = _transform->x;
-        transform.y = _transform->y;
-
-        auto& ship = SYS.GetComponent<Enemy>(e, "Enemy");
-        auto controller = std::make_shared<rtype::AIController>();
-        if (not controller)
-            throw std::runtime_error("Could not create AIController");
-        controller->SetID(id++);
-        ship.Possess(e, controller);
-        setupObserver(controller, e);
-        broadcastSpawn(*controller, transform.x, transform.y);
-    } catch (const std::exception& e) {
-        CONSOLE::err << "\rCould not spawn enemy: \n\r\t" << e.what() << std::endl;
+    if (_wave == 0 && _wave_enemy.size() > 0) {
+        _wave = _wave_enemy[0];
+        _wave_enemy.erase(_wave_enemy.begin());
     }
-    // }
+    if (_wave > 0) {
+        _wave--;
+        try {
+            graph::vec2i size = SYS.GetGraphicalModule()->GetScreenSize();
+            std::uniform_int_distribution<int> dist(0, size.y);
+            _transform->y = dist(_rng);
+
+            unsigned int e = SYS.GetResourceManager().LoadPrefab(_prefabName);
+            auto& transform = SYS.GetComponent<CoreTransform>(e);
+            transform.x = _transform->x;
+            transform.y = _transform->y;
+
+            auto& ship = SYS.GetComponent<Enemy>(e, "Enemy");
+            auto controller = std::make_shared<rtype::AIController>();
+            if (not controller)
+                throw std::runtime_error("Could not create AIController");
+            controller->SetID(id++);
+            ship.Possess(e, controller);
+            setupObserver(controller, e);
+            broadcastSpawn(*controller, transform.x, transform.y);
+        } catch (const std::exception& e) {
+            CONSOLE::err << "\rCould not spawn enemy: \n\r\t" << e.what() << std::endl;
+        }
+    }
 }
 
 void EnemySpawner::OnAddComponent(int e)

@@ -54,8 +54,12 @@ private:
     int _entity;
     eng::Observer _observer;
 
-    std::map<std::string, void (Enemy::*)()> _actions;
+    std::map<std::string, void (Enemy::*)()> _actions = {
+        { COMMAND_LEFT, &Enemy::moveLeft },
+        { COMMAND_SHOOT, &Enemy::shoot },
+    };
     void shoot();
+    void moveLeft();
 };
 
 #endif /* E2359F7A_1BE1_4E6A_B3E0_981C71D03CB9 */
