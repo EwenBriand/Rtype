@@ -241,8 +241,6 @@ void Collider2D::checkCollisions()
     }
 }
 
-// col.adv 0 0 0 100 100 100 100 0
-
 void Collider2D::checkCollision(Collider2D& other)
 {
     other.recalculateEdgesAndNormals();
@@ -273,10 +271,7 @@ bool Collider2D::isAxisSeparating(const graph::vec2f& axis, const Collider2D& a,
     auto [minA, maxA] = projectPolygon(axis, a);
     auto [minB, maxB] = projectPolygon(axis, b);
 
-    if (maxA < minB || maxB < minA) {
-        return true;
-    }
-    return false;
+    return (maxA < minB || maxB < minA);
 }
 
 std::pair<float, float> Collider2D::projectPolygon(const graph::vec2f& axis, const Collider2D& collider) const noexcept

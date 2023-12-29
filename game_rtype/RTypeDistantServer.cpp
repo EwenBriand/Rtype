@@ -15,6 +15,13 @@
 #include "Ship.hpp"
 
 namespace rtype {
+    const std::vector<std::string> RTypeDistantServer::PlayerPrefabs = {
+        "red-ship",
+        "infra",
+        "micro-recon",
+        "runner",
+    };
+
     RTypeDistantServer* RTypeDistantServer::Instance = nullptr;
 
     RTypeDistantServer::RTypeDistantServer(serv::ClientUDP& client)
@@ -177,8 +184,8 @@ namespace rtype {
             auto& transform = _engine->GetECS().GetComponent<CoreTransform>(entityID);
             int x = 0;
             int y = 0;
-            std::memcpy(&x, instruction.data.data() + sizeof(int), sizeof(int));
-            std::memcpy(&y, instruction.data.data() + 2 * sizeof(int), sizeof(int));
+
+            instruction.data.Deserialize(x, y);
             transform.x = x;
             transform.y = y;
 
@@ -195,6 +202,7 @@ namespace rtype {
                 _players[id] = pfsc;
                 ship.Possess(entityID, pfsc);
             }
+            setPlayerAnimation(id, entityID);
         } catch (std::exception& e) {
             std::cerr << "\r" << e.what() << std::endl;
         }
@@ -244,12 +252,12 @@ namespace rtype {
         int y = 0;
         std::string prefabName = "";
 
-        instruction.data.Deserialize(id, x, y);
-        serv::bytes prefabNameBytes(instruction.data.data() + 3 * sizeof(int), instruction.data.size() - 3 * sizeof(int));
-        prefabName.reserve(prefabNameBytes.size());
-        for (auto& byte : prefabNameBytes) {
-            prefabName += byte;
-        }
+        std::memcpy(&id, instruction.data.data(), sizeof(int));
+        std::memcpy(&x, instruction.data.data() + sizeof(int), sizeof(int));
+        std::memcpy(&y, instruction.data.data() + 2 * sizeof(int), sizeof(int));
+        prefabName.resize(instruction.data.size() - 3 * sizeof(int));
+
+        std::memcpy(&prefabName[0], instruction.data.data() + 3 * sizeof(int), instruction.data.size() - 3 * sizeof(int));
 
         try {
             auto eid = _engine->GetECS().GetResourceManager().LoadPrefab(prefabName);
@@ -322,6 +330,19 @@ namespace rtype {
             transform.y = y;
         } catch (const std::exception& e) {
             CONSOLE::warn << "\r" << e.what() << std::endl;
+        }
+    }
+
+    void RTypeDistantServer::setPlayerAnimation(int id, int entity)
+    {
+        if (id < 0 || id >= PlayerPrefabs.size()) {
+            return; // not a player
+        }
+        try {
+            auto& animator = SYS.GetComponent<Animator>(entity);
+            animator.Play(PlayerPrefabs[id % PlayerPrefabs.size()]);
+        } catch (const std::exception& e) {
+            CONSOLE::err << "\r" << e.what() << std::endl;
         }
     }
 } // namespace rtype

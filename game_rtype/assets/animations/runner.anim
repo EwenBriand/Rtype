@@ -1,0 +1,8 @@
+name: runner
+sprite path: sprites/runner.png
+fps: 10
+scale: 1.8
+priority: 3
+paralax: false
+loop: true
+auto: 2000 66 17

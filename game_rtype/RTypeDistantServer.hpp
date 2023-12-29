@@ -20,6 +20,7 @@ namespace rtype {
     class RTypeDistantServer : public serv::AClientRequestHandler {
 
     public:
+        static const std::vector<std::string> PlayerPrefabs;
         static RTypeDistantServer* Instance;
 
         static RTypeDistantServer* GetInstance();
@@ -91,6 +92,13 @@ namespace rtype {
          *
          */
         void pingServerForAlive();
+
+        /**
+         * @brief Loads the correct animation for the player depending on his/her id.
+         *
+         */
+        void setPlayerAnimation(int id, int entity);
+
         std::thread _pingThread;
 
         bool _isConnected = false;
