@@ -13,6 +13,7 @@ set(SRC
     RTypeDistantServer.cpp
     scripts/Ship.cpp
     scripts/Laser.cpp
+    scripts/Enemy.cpp
     GameRoutine.cpp
     PlayerFromServerController.cpp
     AIController.cpp
@@ -21,6 +22,7 @@ set(SRC
 set(META_SRC
     ../.metadata/LaserMeta.cpp
     ../.metadata/ShipMeta.cpp
+    ../.metadata/EnemyMeta.cpp
 )
 
 add_library(game_target SHARED

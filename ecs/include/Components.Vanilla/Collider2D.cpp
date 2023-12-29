@@ -76,6 +76,8 @@ void Collider2D::OnLoad()
 
 void Collider2D::Update(int entityID)
 {
+    if (_destroyMe)
+        return;
     checkCollisions();
     DebugDraw();
 }
@@ -88,6 +90,11 @@ void Collider2D::OnAddComponent(int entityID)
 int Collider2D::GetEntityID() const
 {
     return _entityID;
+}
+
+void Collider2D::SetDestroyMe(bool destroyMe)
+{
+    _destroyMe = destroyMe;
 }
 
 std::vector<float>& Collider2D::GetVerticesMutable() noexcept
@@ -232,7 +239,7 @@ void Collider2D::checkCollisions()
 {
     _wasColliding = _isColliding;
     SYS.ForEach<Collider2D>([this](Collider2D collider) {
-        if (collider.GetEntityID() == _entityID)
+        if (_destroyMe || collider.GetEntityID() == _entityID)
             return; // doesn't check collision with self
         checkCollision(collider);
     });
@@ -248,11 +255,11 @@ void Collider2D::checkCollision(Collider2D& other)
     const auto& axes2 = other.GetNormals();
 
     for (const auto& axis : axes1)
-        if (isAxisSeparating(axis, *this, other)) {
+        if (_destroyMe || isAxisSeparating(axis, *this, other)) {
             return;
         }
     for (const auto& axis : axes2)
-        if (isAxisSeparating(axis, *this, other)) {
+        if (_destroyMe || isAxisSeparating(axis, *this, other)) {
             return;
         }
     _isColliding = true;
@@ -276,9 +283,12 @@ bool Collider2D::isAxisSeparating(const graph::vec2f& axis, const Collider2D& a,
 
 std::pair<float, float> Collider2D::projectPolygon(const graph::vec2f& axis, const Collider2D& collider) const noexcept
 {
+    std::cout << "BUG 1 from " << collider.GetTag() << std::endl;
     std::vector<float> vertices = collider.GetVerticesWithPosition();
+    std::cout << "BUG 2" << std::endl;
     float min = axis.x * vertices[0] + axis.y * vertices[1];
     float max = min;
+    std::cout << "BUG 3" << std::endl;
 
     for (int i = 2; i < vertices.size(); i += 2) {
         float p = axis.x * vertices[i] + axis.y * vertices[i + 1];
@@ -288,5 +298,6 @@ std::pair<float, float> Collider2D::projectPolygon(const graph::vec2f& axis, con
             max = p;
         }
     }
+    std::cout << "BUG 4" << std::endl;
     return { min, max };
 }

@@ -8,6 +8,7 @@
 #include "RTypeDistantServer.hpp"
 #include "AIController.hpp"
 #include "CoreTransform.hpp"
+#include "Enemy.hpp"
 #include "GameRtype.hpp"
 #include "LocalPlayerController.hpp"
 #include "NetworkExceptions.hpp"
@@ -265,7 +266,7 @@ namespace rtype {
             transform.x = x;
             transform.y = y;
 
-            auto& ship = _engine->GetECS().GetComponent<Ship>(eid, "Ship");
+            auto& ship = _engine->GetECS().GetComponent<Enemy>(eid, "Enemy");
             auto pfsc = std::make_shared<rtype::AIController>();
             pfsc->SetID(id);
             ship.Possess(eid, pfsc);

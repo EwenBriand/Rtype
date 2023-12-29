@@ -50,6 +50,7 @@ private:
     serialize int _health = 10;
 
     RigidBody2D* _rb = nullptr;
+    Collider2D* _collider = nullptr;
     int _entity;
     eng::Observer _observer;
 

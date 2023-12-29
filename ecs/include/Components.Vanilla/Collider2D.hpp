@@ -119,6 +119,8 @@ public:
      */
     void SetOnCollisionExit(std::function<void(int)> callback);
 
+    void SetDestroyMe(bool destroyMe);
+
     /**
      * @brief Returns the vertices update with the position from the collider
      *
@@ -168,6 +170,8 @@ private:
      *
      */
     int _entityID;
+
+    bool _destroyMe = false;
 
     /**
      * @brief If this is set, the component will not have any influence on

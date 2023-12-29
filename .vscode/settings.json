@@ -78,6 +78,26 @@
         "xtr1common": "cpp",
         "xtree": "cpp",
         "xutility": "cpp",
-        "resumable": "cpp"
+        "resumable": "cpp",
+        "csignal": "cpp",
+        "cwctype": "cpp",
+        "any": "cpp",
+        "strstream": "cpp",
+        "*.tcc": "cpp",
+        "bitset": "cpp",
+        "codecvt": "cpp",
+        "complex": "cpp",
+        "set": "cpp",
+        "memory_resource": "cpp",
+        "numeric": "cpp",
+        "random": "cpp",
+        "source_location": "cpp",
+        "string_view": "cpp",
+        "numbers": "cpp",
+        "semaphore": "cpp",
+        "cfenv": "cpp",
+        "cinttypes": "cpp",
+        "valarray": "cpp",
+        "unordered_set": "cpp"
     }
 }

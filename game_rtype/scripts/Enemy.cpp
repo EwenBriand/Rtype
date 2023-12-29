@@ -1,46 +1,45 @@
 
 /*
-** @file Ship.cpp
-** @brief Implementation of the Ship class.
+** @file Enemy.cpp
+** @brief Implementation of the Enemy class.
 ** @date 2023-12-14 17:30:39.
 **
 */
 
-#include "Ship.hpp"
+#include "Enemy.hpp"
 #include "Components.Vanilla/CoreTransform.hpp"
 #include "ECSImpl.hpp"
 #include "Engine.hpp"
 
-MANAGED_RESOURCE(Ship)
+MANAGED_RESOURCE(Enemy)
 
-const std::string Ship::COMMAND_UP = "up";
-const std::string Ship::COMMAND_DOWN = "down";
-const std::string Ship::COMMAND_LEFT = "left";
-const std::string Ship::COMMAND_RIGHT = "right";
-const std::string Ship::COMMAND_SHOOT = "shoot";
-
+const std::string Enemy::COMMAND_LEFT = "left";
+const std::string Enemy::COMMAND_SHOOT = "shoot";
 // ===========================================================================================================
 // Component
 // ===========================================================================================================
 
-void Ship::OnAddComponent(int entityID)
+void Enemy::OnAddComponent(int entityID)
 {
+    _timer.Start();
     _entity = entityID;
 }
 
-void Ship::Start()
+void Enemy::Start()
 {
     _rb = &SYS.SafeGet<RigidBody2D>(_entity);
     _collider = &SYS.SafeGet<Collider2D>(_entity);
-    _collider->SetTag("player");
-    std::cout << "player id " << _entity << std::endl;
+    _collider->SetTag("enemy");
+    std::cout << "enemy id " << _entity << std::endl;
+    _speed = 100.0f;
+    _rb->SetVelocity({ _speed, _rb->GetVelocity().y });
 
     _collider->SetOnCollisionEnter([this](int entityID, int otherID) {
         try {
             std::cout << "Ship::Start(): " << entityID << " " << otherID << std::endl;
             std::string tag = (_entity == entityID) ? SYS.GetComponent<Collider2D>(otherID).GetTag() : SYS.GetComponent<Collider2D>(entityID).GetTag();
             std::cout << "after tag" << std::endl;
-            if (tag.compare(0, 11, "Enemy laser") == 0) {
+            if (tag.compare(0, 12, "Player laser") == 0) {
                 std::cout << "before test" << std::endl;
                 this->_health -= 1;
                 std::cout << "after test " << _entity << std::endl;
@@ -51,17 +50,30 @@ void Ship::Start()
     });
 }
 
-void Ship::Update(int entityID)
+void Enemy::Update(int entityID)
 {
+    if (not eng::Engine::GetEngine()->PlayMode())
+        return;
+    try {
+        const auto& transform = SYS.GetComponent<CoreTransform>(_entity);
+        if (transform.x < -100 or transform.x > 1920 + 100 or transform.y < -100 or transform.y > 1080 + 100) {
+            SYS.UnregisterEntity(_entity);
+        }
+    } catch (std::exception& e) {
+        std::cerr << "Laser::Update(): " << e.what() << std::endl;
+    }
+    // if (_timer.GetElapsedTime() > _delay) {
+    //     shoot();
+    //     _timer.Restart();
+    // }
     if (!_controller) {
         return;
     }
     _controller->PollDirectives();
     _rb->SetVelocity({ 0, 0 });
     applyDirectives();
-    if (_health <= 0) {
-        SYS.UnregisterEntity(_entity);
-    }
+
+    // std::cout << "Enemy::Update(): " << _rb->GetPrevPosition().x << std::endl;
 }
 
 // ===========================================================================================================
@@ -72,7 +84,7 @@ void Ship::Update(int entityID)
 // Private methods
 // ===========================================================================================================
 
-void Ship::applyDirectives()
+void Enemy::applyDirectives()
 {
     if (not eng::Engine::GetEngine()->PlayMode()) {
         return;
@@ -85,35 +97,13 @@ void Ship::applyDirectives()
         }
     }
 }
-
 // ===========================================================================================================
 // Directives
 // ===========================================================================================================
 
-void Ship::moveUp()
+void Enemy::shoot()
 {
-    _rb->SetVelocity({ _rb->GetVelocity().x, -_speed });
-}
-
-void Ship::moveDown()
-{
-    _rb->SetVelocity({ _rb->GetVelocity().x, _speed });
-}
-
-void Ship::moveLeft()
-{
-    _rb->SetVelocity({ -_speed, _rb->GetVelocity().y });
-}
-
-void Ship::moveRight()
-{
-    _rb->SetVelocity({ _speed, _rb->GetVelocity().y });
-}
-
-void Ship::shoot()
-{
-    std::cout << "Ship::shoot()" << std::endl;
-    int laser = SYS.GetResourceManager().LoadPrefab("Laser");
+    int laser = SYS.GetResourceManager().LoadPrefab("Laser-Enemy");
     try {
         auto& transform = SYS.GetComponent<CoreTransform>(_entity);
         auto& laserTransform = SYS.GetComponent<CoreTransform>(laser);

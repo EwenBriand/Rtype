@@ -6,7 +6,7 @@
 */
 
 #pragma once
-#include "./Ship.hpp"
+#include "./Enemy.hpp"
 #include "IController.hpp"
 #include "Observer.hpp"
 #include "Timer.hpp"
@@ -71,8 +71,8 @@ namespace rtype {
         std::shared_ptr<eng::Observer> _observer;
         std::vector<std::string> _directives;
         std::map<std::string, bool (AIController::*)()> _directivesTests = {
-            { Ship::COMMAND_LEFT, &AIController::testLeft },
-            { Ship::COMMAND_SHOOT, &AIController::testShoot }
+            { Enemy::COMMAND_LEFT, &AIController::testLeft },
+            { Enemy::COMMAND_SHOOT, &AIController::testShoot }
         };
     };
 } // namespace rtype
