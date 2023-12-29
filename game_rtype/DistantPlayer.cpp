@@ -87,7 +87,9 @@ void DistantPlayer::OnDisconnect()
             break;
         }
     }
-    _server.Broadcast(serv::Instruction(serv::I_LOAD_SCENE, 0, serv::bytes("menu")));
+    _server.Broadcast(serv::Instruction(eng::RType::I_RESET_CLIENT, 0, serv::bytes()));
+
+    eng::Engine::GetEngine()->GetServer().ResetClients();
     //  todo switch Rtype state to lobby and clear all players
 }
 

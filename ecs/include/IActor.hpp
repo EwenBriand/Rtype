@@ -5,6 +5,8 @@
 ** IActor.hpp
 */
 
+#pragma once
+
 #include "IController.hpp"
 #include <memory>
 

@@ -207,6 +207,12 @@ namespace serv {
          */
         void Log(const std::string& entry);
 
+        /**
+         * @brief forgets all the clients
+         *
+         */
+        void ResetClients();
+
     private:
         /**
          * @brief Receives strings and tries assigns them to client buckets asynchronously.
@@ -234,6 +240,8 @@ namespace serv {
         std::string endpointToString(boost::asio::ip::udp::endpoint endpoint);
 
         std::array<char, BUFF_SIZE> _buffer;
+
+        bool _resetClientsFlag = false;
 
         std::map<std::string, std::shared_ptr<ClientBucketUDP>> _clients;
         std::shared_ptr<std::mutex> _clientsMutex;

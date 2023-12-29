@@ -8,9 +8,11 @@
 #pragma once
 
 #include "ClientUDP.hpp"
+#include "Components.Vanilla/CoreTransform.hpp"
 #include "Engine.hpp"
 #include "GameRtype.hpp"
 #include "NetworkExceptions.hpp"
+#include "Observer.hpp"
 #include "PlayerFromServerController.hpp"
 #include <atomic>
 #include <map>
@@ -66,6 +68,24 @@ namespace rtype {
          */
         void InstantiateScene();
 
+        /**
+         * @brief Resets all data, ready to start a new game.
+         *
+         */
+        void Reset();
+
+        /**
+         * @brief Returns true if the game should be reset.
+         *
+         */
+        bool ShouldReset();
+
+        /**
+         * @brief Reset's the reset flag.
+         *
+         */
+        void ResetReset();
+
     private:
         void handleConnectOk(serv::Instruction& instruction);
         void handleServerFull(serv::Instruction& instruction);
@@ -80,6 +100,8 @@ namespace rtype {
         void handleEnemySpawn(serv::Instruction& instruction);
         void handleEnemyMoves(serv::Instruction& instruction);
         void handleEnemyShoots(serv::Instruction& instruction);
+
+        void handleResetSignal(serv::Instruction& instruction);
 
         /**
          * @brief Sens the I_PLAYER_MOVES instruction to the server
@@ -107,12 +129,17 @@ namespace rtype {
 
         eng::Engine* _engine = nullptr;
 
-        int _playerId;
+        int _playerId = 0;
         int _entityID;
+        bool _isAssignedLocalPlayer = false;
 
         std::map<int, std::shared_ptr<PlayerFromServerController>>
             _players;
         std::map<int, int> _enemies;
+
+        std::shared_ptr<eng::Observer> _observer;
+
+        bool _reset = false;
 
         std::map<int, void (RTypeDistantServer::*)(serv::Instruction&)>
             _requestHandlers = {
@@ -133,6 +160,8 @@ namespace rtype {
                 { eng::RType::I_ENEMY_MOVES, &RTypeDistantServer::handleEnemyMoves },
                 { eng::RType::I_ENEMY_DIES, nullptr },
                 { eng::RType::I_ENEMY_SHOOTS, &RTypeDistantServer::handleEnemyShoots },
+
+                { eng::RType::I_RESET_CLIENT, &RTypeDistantServer::handleResetSignal },
             };
     };
 } // namespace rtype

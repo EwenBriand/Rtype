@@ -110,7 +110,9 @@ namespace rtype {
 
     serv::Coroutine LobbyRoutineClient::run()
     {
+        std::cout << "Enter lobby routine" << std::endl;
         auto serverHandle = RTypeDistantServer::GetInstance();
+        eng::Engine::GetEngine()->GetSceneManager().UnloadScene("menu");
         eng::Timer timer;
         timer.Start();
         serverHandle->TryConnect();

@@ -11,6 +11,7 @@
 #include "ECSImpl.hpp"
 #include "GraphicalRayLib/GraphicalRayLib.hpp"
 #include "SceneManager.hpp"
+#include "UIManager.hpp"
 #include <algorithm>
 #include <filesystem>
 #include <memory>
@@ -67,6 +68,7 @@ namespace eng {
             }
         },
             -1000);
+        ui::UIManager::Get().ModPipeline();
         m_graphicalModule->ModPipeline();
         if (m_game)
             m_game->ModPipeline(this);
