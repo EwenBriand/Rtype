@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include "Components.Vanilla/UIButton.hpp"
 #include "Components.Vanilla/UserComponentWrapper.hpp"
 #include "metadata.hpp"
 
@@ -21,6 +22,10 @@ public:
     void Update(int entityID) override;
     void OnAddComponent(int entityID) override;
 
+    static bool _callbacksRegistered;
+
 private:
+    void registerButtonCallbacks();
+
     std::size_t _menuUIHandle = -1;
 };

@@ -103,6 +103,8 @@ namespace rtype {
 
         void handleResetSignal(serv::Instruction& instruction);
 
+        void handleDisconnect(serv::Instruction& instruction);
+
         /**
          * @brief Sens the I_PLAYER_MOVES instruction to the server
          *
@@ -162,6 +164,8 @@ namespace rtype {
                 { eng::RType::I_ENEMY_SHOOTS, &RTypeDistantServer::handleEnemyShoots },
 
                 { eng::RType::I_RESET_CLIENT, &RTypeDistantServer::handleResetSignal },
+
+                { serv::I_DISCONNECT, &RTypeDistantServer::handleDisconnect },
             };
     };
 } // namespace rtype

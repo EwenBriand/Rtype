@@ -22,6 +22,7 @@ namespace serv {
     static int I_SCENE_LOADED = 1004;
     static int I_START_GAME = 1005;
     static int I_MESSAGE = 1006;
+    static int I_DISCONNECT = 1007;
 
     static int E_SERVER_FULL = 300;
     static int E_INVALID_OPCODE = 301;

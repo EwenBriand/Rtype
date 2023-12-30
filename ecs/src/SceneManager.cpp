@@ -85,7 +85,6 @@ namespace eng {
     void SceneManager::UnloadScene(const std::string& sceneName)
     {
         if (_scenes.find(sceneName) == _scenes.end()) {
-            CONSOLE::err << "Error: scene [" << sceneName << "] not found" << std::endl;
             return;
         }
         _scenes.erase(sceneName);
