@@ -346,6 +346,30 @@ namespace rtype {
         }
     }
 
+    void RTypeDistantServer::handleEnemyDies(serv::Instruction& instruction)
+    {
+        int id = 0;
+        if (instruction.data.size() != sizeof(int)) {
+            throw serv::MalformedInstructionException("Enemy dies instruction malformed");
+        }
+
+        instruction.data.Deserialize(id);
+        try {
+            _killCount++;
+
+            std::cout << "\rEnemy " << id << " died." << std::endl;
+            try {
+                serv::bytes args(std::vector<int>({ _killCount }));
+                auto instruction = serv::Instruction(eng::RType::I_KILL_COUNT_UPT, 0, args);
+                eng::Engine::GetEngine()->GetServer().Broadcast(instruction.ToBytes() + serv::SEPARATOR);
+            } catch (const std::exception& e) {
+                std::cerr << "AIController::broadcastPosition(): " << e.what() << std::endl;
+            }
+        } catch (const std::exception& e) {
+            CONSOLE::err << "\r" << e.what() << std::endl;
+        }
+    }
+
     void RTypeDistantServer::setPlayerAnimation(int id, int entity)
     {
         if (id < 0 || id >= PlayerPrefabs.size()) {

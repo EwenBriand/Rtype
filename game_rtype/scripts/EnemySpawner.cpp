@@ -27,7 +27,6 @@ EnemySpawner::~EnemySpawner()
 
 void EnemySpawner::Update(int e)
 {
-    return;
     if (not eng::Engine::GetEngine()->PlayMode())
         std::cout << "caution, engine not in play mode" << std::endl;
     if (not eng::Engine::GetEngine()->IsServer())
@@ -68,6 +67,7 @@ void EnemySpawner::Update(int e)
 
 void EnemySpawner::OnAddComponent(int e)
 {
+    std::cout << "add enemy spawner" << std::endl;
     if (not eng::Engine::GetEngine()->IsServer())
         return;
     try {

@@ -213,3 +213,13 @@ void DistantPlayer::handleDisconnect(serv::Instruction&)
 {
     OnDisconnect();
 }
+
+void DistantPlayer::handleUpdateKillCount(serv::Instruction& instruction)
+{
+    if (instruction.data.size() != 1 * sizeof(int)) {
+        throw serv::MalformedInstructionException("\rPlayer shoots instruction malformed: got " + std::to_string(instruction.data.size()) + " bytes, expected " + std::to_string(3 * sizeof(int)) + " bytes");
+    }
+
+    instruction.data.Deserialize(_kill_count);
+    std::cout << "\rPlayer " << _playerId << " has " << _kill_count << " kills" << std::endl;
+}

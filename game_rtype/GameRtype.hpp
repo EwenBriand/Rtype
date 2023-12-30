@@ -70,6 +70,12 @@ namespace eng {
          */
         static constexpr int I_PLAYER_DIES = 5008;
 
+        /**
+         * @brief args: {int kill_count}
+         *
+         */
+        static constexpr int I_KILL_COUNT_UPT = 5009;
+
         RType() = default;
         ~RType() = default;
 
@@ -103,5 +109,7 @@ namespace eng {
         std::shared_ptr<serv::ClientUDP> m_client = nullptr;
 
         ecs::States _stateMachine;
+
+        int _kill_count = 0;
     };
 } // namespace eng
