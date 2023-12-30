@@ -1,4 +1,3 @@
-
 /*
 ** @file Ship.cpp
 ** @brief Implementation of the Ship class.

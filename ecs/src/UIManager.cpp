@@ -29,11 +29,6 @@ namespace ui {
         if (eng::Engine::GetEngine()->IsOptionSet(eng::Engine::Options::EDITOR)) {
             registerEditorHandles();
         }
-
-        eng::Engine::GetEngine()->pushPipeline([&]() {
-            Draw();
-        },
-            499);
     }
 
     // ! Capture the pointers by value to avoid dangling pointers !
@@ -116,6 +111,14 @@ namespace ui {
             std::get<1>(it)();
         }
         _drawBuffer.clear();
+    }
+
+    void UIManager::ModPipeline()
+    {
+        eng::Engine::GetEngine()->pushPipeline([&]() {
+            Draw();
+        },
+            499);
     }
 
     // ----------------------------------------------------------------------------

@@ -38,7 +38,8 @@ namespace rtype {
     std::shared_ptr<ecs::IState> GameRoutineServer::Exit(bool& changed)
     {
         if (_routine.Done()) {
-            // return next state here
+            changed = true;
+            return std::shared_ptr<ecs::IState>(new LobbyRoutineServer(_engine));
         }
         changed = false;
         return nullptr;
@@ -47,19 +48,34 @@ namespace rtype {
     serv::Coroutine GameRoutineServer::run()
     {
         co_await std::suspend_always {};
+        eng::Engine::GetEngine()->GetSceneManager().UnloadScene("lobby");
         serv::ServerUDP& server = _engine.GetServer();
         server.Log("Attributing player ids");
         assignPlayerIds();
         server.Log("Spawning players");
-        for (auto& player : DistantPlayer::Instances)
+        for (auto& player : DistantPlayer::Instances) {
             spawnPlayer(player);
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
         for (auto& player : DistantPlayer::Instances)
             player->SendClientStartGame();
         server.Log("Game started");
 
         while (true) {
+            if (DistantPlayer::Instances.size() < RTYPE_NB_PLAYERS)
+                break;
             co_await std::suspend_always {};
         }
+        DistantPlayer::Instances.clear();
+        server.Log("Game ended");
+        server.ResetClients();
+        eng::Engine::GetEngine()->GetSceneManager().LoadSceneAsync("menu");
+        server.Log("Loading menu scene");
+        while (not eng::Engine::GetEngine()->GetSceneManager().IsSceneReady("menu")) {
+            co_await std::suspend_always {};
+        }
+        server.Log("Menu scene loaded");
+        eng::Engine::GetEngine()->GetSceneManager().SwitchScene("menu");
     }
 
     void GameRoutineServer::assignPlayerIds() const
@@ -117,7 +133,8 @@ namespace rtype {
     std::shared_ptr<ecs::IState> GameRoutineClient::Exit(bool& changed)
     {
         if (_routine.Done()) {
-            // return next state here
+            changed = true;
+            return nullptr; // go back to menu and let it handle the rest
         }
         changed = false;
         return nullptr;
@@ -125,9 +142,21 @@ namespace rtype {
 
     serv::Coroutine GameRoutineClient::run()
     {
+        std::cout << "Enter game routine" << std::endl;
+        eng::Engine::GetEngine()->GetSceneManager().UnloadScene("lobby");
         while (true) {
+            if (rtype::RTypeDistantServer::Instance != nullptr and rtype::RTypeDistantServer::Instance->ShouldReset())
+                break;
             co_await std::suspend_always {};
         }
+        rtype::RTypeDistantServer::Instance->ResetReset();
+        eng::Engine::GetEngine()->GetSceneManager().LoadSceneAsync("menu");
+        std::cout << "Loading menu scene" << std::endl;
+        while (not eng::Engine::GetEngine()->GetSceneManager().IsSceneReady("menu")) {
+            co_await std::suspend_always {};
+        }
+        std::cout << "Menu scene loaded" << std::endl;
+        eng::Engine::GetEngine()->GetSceneManager().SwitchScene("menu");
     }
 
 } // namespace rtype

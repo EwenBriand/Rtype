@@ -124,6 +124,13 @@ namespace ui {
             _groups.erase(handle);
         }
 
+        /**
+         * @brief Updates the engine's pipeline. should not be called by
+         * another class than the engine.
+         *
+         */
+        void ModPipeline();
+
         // ----------------------------------------------------------------------------
         // Text utils
         // ----------------------------------------------------------------------------

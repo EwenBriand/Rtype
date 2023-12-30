@@ -242,9 +242,18 @@ namespace serv {
                 for (auto& clientKey : disconnectedClients) {
                     _clients.erase(clientKey);
                 }
+                if (_resetClientsFlag) {
+                    _clients.clear();
+                    _resetClientsFlag = false;
+                }
             }
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
         }
+    }
+
+    void ServerUDP::ResetClients()
+    {
+        _resetClientsFlag = true;
     }
 
     void ServerUDP::sendWorker()
