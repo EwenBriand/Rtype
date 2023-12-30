@@ -345,6 +345,29 @@ namespace rtype {
         }
     }
 
+    void RTypeDistantServer::handleEnemyDies(serv::Instruction& instruction)
+    {
+        if (instruction.data.size() != sizeof(int)) {
+            throw serv::MalformedInstructionException("Enemy dies instruction malformed");
+        }
+        int id = 0;
+        instruction.data.Deserialize(id);
+
+        if (_enemies.find(id) == _enemies.end()) {
+            return;
+        }
+        int entityID = _enemies[id];
+        try {
+            SYS.UnregisterEntity(entityID);
+            _enemies.erase(id);
+        } catch (const std::exception& e) {
+            CONSOLE::err << "\r" << e.what() << std::endl;
+        }
+        std::cout << "\rEnemy " << id << " died." << std::endl;
+        std::shared_ptr<eng::RType> game = std::dynamic_pointer_cast<eng::RType>(_engine->GetGame());
+        game->GetSessionData().killCount++;
+    }
+
     void RTypeDistantServer::setPlayerAnimation(int id, int entity)
     {
         if (id < 0 || id >= PlayerPrefabs.size()) {
@@ -365,9 +388,14 @@ namespace rtype {
         _currSceneName = "";
         _playerId = -1;
         _entityID = -1;
+        _isAssignedLocalPlayer = false;
         _players.clear();
         _enemies.clear();
         _engine->UnregisterObserver(_observer);
+
+        auto rtype = std::dynamic_pointer_cast<eng::RType>(_engine->GetGame());
+        rtype->GetSessionData().killCount = 0;
+
         _reset = true;
     }
 
@@ -383,7 +411,6 @@ namespace rtype {
 
     void RTypeDistantServer::handleResetSignal(serv::Instruction& instruction)
     {
-        std::cout << "reset signal received" << std::endl;
         if (RTypeDistantServer::GetInstance() != nullptr)
             RTypeDistantServer::GetInstance()->Reset();
     }

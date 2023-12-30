@@ -6,6 +6,11 @@
 #pragma once
 namespace eng {
     class Engine;
+
+    struct SessionData {
+        int killCount = 0;
+    };
+
     class RType : public eng::IGame {
     public:
         /**
@@ -70,6 +75,12 @@ namespace eng {
          */
         static constexpr int I_PLAYER_DIES = 5008;
 
+        /**
+         * @brief The number of enemies to kill for the game to end
+         *
+         */
+        static constexpr int KILL_COUNT_TO_END = 10;
+
         RType() = default;
         ~RType() = default;
 
@@ -80,6 +91,8 @@ namespace eng {
         void LoadFirstScene(Engine*) override;
         void PreSceneInstantiationHook(Engine*, const std::string& sceneName) override;
         void ModPipeline(Engine*) override;
+
+        inline SessionData& GetSessionData() { return _sessionData; }
 
     private:
         /**
@@ -97,6 +110,8 @@ namespace eng {
 
         void startServer(Engine* e);
         void connectToServer(Engine* e);
+
+        SessionData _sessionData;
 
         bool m_isServer = false;
         std::shared_ptr<serv::ServerUDP> m_server = nullptr;

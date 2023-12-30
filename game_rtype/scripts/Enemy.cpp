@@ -10,6 +10,9 @@
 #include "Components.Vanilla/CoreTransform.hpp"
 #include "ECSImpl.hpp"
 #include "Engine.hpp"
+#include "GameRtype.hpp"
+#include "ServerUdp.hpp"
+#include <memory>
 
 MANAGED_RESOURCE(Enemy)
 
@@ -30,7 +33,6 @@ void Enemy::Start()
     _rb = &SYS.SafeGet<RigidBody2D>(_entity);
     _collider = &SYS.SafeGet<Collider2D>(_entity);
     _collider->SetTag("enemy");
-    std::cout << "enemy id " << _entity << std::endl;
     _speed = 100.0f;
     _rb->SetVelocity({ _speed, _rb->GetVelocity().y });
 
@@ -39,6 +41,7 @@ void Enemy::Start()
             std::string tag = (_entity == entityID) ? SYS.GetComponent<Collider2D>(otherID).GetTag() : SYS.GetComponent<Collider2D>(entityID).GetTag();
             if (tag.compare(0, 12, "Player laser") == 0) {
                 this->_health -= 1;
+                checkDeath();
             }
         } catch (std::exception& e) {
             std::cerr << "Ship::Start(): " << e.what() << std::endl;
@@ -58,10 +61,6 @@ void Enemy::Update(int entityID)
     } catch (std::exception& e) {
         std::cerr << "Laser::Update(): " << e.what() << std::endl;
     }
-    // if (_timer.GetElapsedTime() > _delay) {
-    //     shoot();
-    //     _timer.Restart();
-    // }
     if (!_controller) {
         return;
     }
@@ -73,6 +72,11 @@ void Enemy::Update(int entityID)
 // ===========================================================================================================
 // Public methods
 // ===========================================================================================================
+
+void Enemy::SetID(int id)
+{
+    _id = id;
+}
 
 // ===========================================================================================================
 // Private methods
@@ -90,6 +94,29 @@ void Enemy::applyDirectives()
             (this->*_actions[directive])();
         }
     }
+}
+
+void Enemy::checkDeath()
+{
+    if (not eng::Engine::GetEngine()->IsServer())
+        return;
+    if (_health <= 0) {
+        std::shared_ptr<eng::RType> game = std::dynamic_pointer_cast<eng::RType>(eng::Engine::GetEngine()->GetGame());
+        game->GetSessionData().killCount++;
+        broadcastDeath();
+        try {
+            SYS.GetComponent<Collider2D>(_entity).SetDestroyMe(true);
+            SYS.UnregisterEntity(_entity);
+        } catch (std::exception& e) {
+            std::cerr << "Enemy::checkDeath(): " << e.what() << std::endl;
+        }
+    }
+}
+
+void Enemy::broadcastDeath()
+{
+    serv::Instruction instruction(eng::RType::I_ENEMY_DIES, 0, serv::bytes(std::vector<int>({ _id })));
+    eng::Engine::GetEngine()->GetServer().Broadcast(instruction);
 }
 // ===========================================================================================================
 // Directives

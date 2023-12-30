@@ -9,6 +9,7 @@
 #include "DistantPlayer.hpp"
 #include "ECSImpl.hpp"
 #include "GameRtype.hpp"
+#include "NetworkExceptions.hpp"
 #include "ServerUdp.hpp"
 #include "Ship.hpp"
 
@@ -145,6 +146,7 @@ namespace rtype {
         while (true) {
             if (rtype::RTypeDistantServer::Instance != nullptr and rtype::RTypeDistantServer::Instance->ShouldReset())
                 break;
+            checkEndGameConditions();
             co_await std::suspend_always {};
         }
         rtype::RTypeDistantServer::Instance->ResetReset();
@@ -155,6 +157,24 @@ namespace rtype {
         }
         std::cout << "Menu scene loaded" << std::endl;
         eng::Engine::GetEngine()->GetSceneManager().SwitchScene("menu");
+    }
+
+    void GameRoutineClient::checkEndGameConditions()
+    {
+        try {
+            auto rtype = std::dynamic_pointer_cast<eng::RType>(eng::Engine::GetEngine()->GetGame());
+            if (rtype == nullptr)
+                return;
+            std::cout << "ewen le debug est la: killcount " << rtype->GetSessionData().killCount << std::endl;
+            if (rtype->GetSessionData().killCount >= eng::RType::KILL_COUNT_TO_END) {
+                // TODO ewen: uncomment after you merged with branch game 1
+                // eng::Engine::GetEngine()->GetClient().Send(serv::Instruction(
+                // serv::I_DISCONNECT, 0, serv::bytes());
+                // ));
+            }
+        } catch (std::exception& e) {
+            return;
+        }
     }
 
 } // namespace rtype

@@ -27,7 +27,6 @@ EnemySpawner::~EnemySpawner()
 
 void EnemySpawner::Update(int e)
 {
-    return;
     if (not eng::Engine::GetEngine()->PlayMode())
         std::cout << "caution, engine not in play mode" << std::endl;
     if (not eng::Engine::GetEngine()->IsServer())
@@ -57,6 +56,7 @@ void EnemySpawner::Update(int e)
             if (not controller)
                 throw std::runtime_error("Could not create AIController");
             controller->SetID(id++);
+            ship.SetID(controller->GetID());
             ship.Possess(e, controller);
             setupObserver(controller, e);
             broadcastSpawn(*controller, transform.x, transform.y);

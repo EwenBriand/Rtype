@@ -50,6 +50,13 @@ namespace rtype {
     private:
         serv::Coroutine run();
 
+        /**
+         * @brief Checks if the game is done (all players are dead or enough
+         * enemies died), and terminates the game if it is.
+         *
+         */
+        void checkEndGameConditions();
+
         serv::Coroutine _routine;
         eng::Engine& _engine;
     };

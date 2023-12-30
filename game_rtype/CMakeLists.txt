@@ -34,14 +34,10 @@ target_link_libraries(game_target
     lengine)
 
 # manually building some scripts until we have a proper build system
-add_library(EnemySpawner SHARED
-    scripts/EnemySpawner.cpp
-    ../.metadata/EnemySpawnerMeta.cpp
-)
+add_library(EnemySpawner SHARED scripts/EnemySpawner.cpp ../.metadata/EnemySpawnerMeta.cpp)
+set_target_properties(EnemySpawner PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/metabuild)
+target_link_libraries(EnemySpawner game_target)
 
-set_target_properties(EnemySpawner PROPERTIES
-    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/metabuild
-)
-
-target_link_libraries(EnemySpawner
-    game_target)
+add_library(Enemy SHARED scripts/Enemy.cpp ../.metadata/EnemyMeta.cpp)
+set_target_properties(Enemy PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/metabuild)
+target_link_libraries(Enemy game_target)
