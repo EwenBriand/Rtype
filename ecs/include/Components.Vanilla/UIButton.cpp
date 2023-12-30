@@ -8,6 +8,7 @@
 #include "UIButton.hpp"
 #include "../ECSImpl.hpp"
 #include "CLI.hpp"
+#include "Engine.hpp"
 
 decltype(UIButton::AvailableActionsClick) UIButton::AvailableActionsClick;
 
@@ -63,6 +64,8 @@ void UIButton::RegisterCallback(const std::string& name, std::function<void()>&&
 void UIButton::OnLoad()
 {
     Entity systemHolder = SYS.GetSystemHolder();
+    if (not eng::Engine::GetEngine()->IsOptionSet(eng::Engine::Options::EDITOR))
+        return;
     try {
         auto& cli = SYS.GetComponent<CLI>(systemHolder);
         cli.RegisterCustomCommand("bt-listcb", [&](CLI& c, std::vector<std::string> args) {

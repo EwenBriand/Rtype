@@ -49,6 +49,7 @@ namespace rtype {
     serv::Coroutine GameRoutineServer::run()
     {
         co_await std::suspend_always {};
+        eng::Engine::GetEngine()->GetSceneManager().UnloadScene("lobby");
         serv::ServerUDP& server = _engine.GetServer();
         server.Log("Attributing player ids");
         assignPlayerIds();
@@ -143,6 +144,7 @@ namespace rtype {
     serv::Coroutine GameRoutineClient::run()
     {
         std::cout << "Enter game routine" << std::endl;
+        eng::Engine::GetEngine()->GetSceneManager().UnloadScene("lobby");
         while (true) {
             if (rtype::RTypeDistantServer::Instance != nullptr and rtype::RTypeDistantServer::Instance->ShouldReset())
                 break;

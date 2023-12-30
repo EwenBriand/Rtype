@@ -118,5 +118,7 @@ namespace eng {
         std::shared_ptr<serv::ClientUDP> m_client = nullptr;
 
         ecs::States _stateMachine;
+
+        int _kill_count = 0;
     };
 } // namespace eng

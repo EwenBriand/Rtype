@@ -86,6 +86,20 @@ namespace rtype {
          */
         void ResetReset();
 
+        /**
+         * @brief Set kill count.
+         *
+         * @param kill_count
+         */
+        void SetKillCount(int kill_count) noexcept;
+
+        /**
+         * @brief Returns the kill count.
+         *
+         * @return int
+         */
+        int GetKillCount() const noexcept;
+
     private:
         void handleConnectOk(serv::Instruction& instruction);
         void handleServerFull(serv::Instruction& instruction);
@@ -103,6 +117,8 @@ namespace rtype {
         void handleEnemyDies(serv::Instruction& instruction);
 
         void handleResetSignal(serv::Instruction& instruction);
+
+        void handleDisconnect(serv::Instruction& instruction);
 
         /**
          * @brief Sens the I_PLAYER_MOVES instruction to the server
@@ -163,6 +179,10 @@ namespace rtype {
                 { eng::RType::I_ENEMY_SHOOTS, &RTypeDistantServer::handleEnemyShoots },
 
                 { eng::RType::I_RESET_CLIENT, &RTypeDistantServer::handleResetSignal },
+
+                { serv::I_DISCONNECT, &RTypeDistantServer::handleDisconnect },
             };
+
+        int _killCount = 0;
     };
 } // namespace rtype

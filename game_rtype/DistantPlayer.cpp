@@ -211,3 +211,8 @@ void DistantPlayer::handlePlayerShoots(serv::Instruction& instruction)
         CONSOLE::err << "\rFailed to send shoot instruction to clients." << std::endl;
     }
 }
+
+void DistantPlayer::handleDisconnect(serv::Instruction&)
+{
+    OnDisconnect();
+}

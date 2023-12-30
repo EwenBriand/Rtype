@@ -7,6 +7,8 @@
 */
 
 #include "Enemy.hpp"
+#include "../GameRtype.hpp"
+#include "../RTypeDistantServer.hpp"
 #include "Components.Vanilla/CoreTransform.hpp"
 #include "ECSImpl.hpp"
 #include "Engine.hpp"
@@ -55,8 +57,11 @@ void Enemy::Update(int entityID)
         return;
     try {
         const auto& transform = SYS.GetComponent<CoreTransform>(_entity);
-        if (transform.x < -100 or transform.x > 1920 + 100 or transform.y < -100 or transform.y > 1080 + 100) {
+        if ((transform.x < -100 or transform.x > 1920 + 100 or transform.y < -100 or transform.y > 1080 + 100)) {
             SYS.UnregisterEntity(_entity);
+        }
+        if (_health <= 0) {
+            send_death(_entity);
         }
     } catch (std::exception& e) {
         std::cerr << "Laser::Update(): " << e.what() << std::endl;
@@ -81,6 +86,29 @@ void Enemy::SetID(int id)
 // ===========================================================================================================
 // Private methods
 // ===========================================================================================================
+
+void Enemy::send_death(int entity)
+{
+    // send message to server to add kill count
+
+    if (not eng::Engine::GetEngine()->IsClient()) {
+        return;
+    }
+
+    try {
+        auto& transform = SYS.GetComponent<CoreTransform>(_entity);
+        serv::bytes args(std::vector<int>({ _entity }));
+        auto instruction = serv::Instruction(eng::RType::I_ENEMY_DIES, 0, args);
+        auto engine = eng::Engine::GetEngine();
+        if (engine->IsClient()) {
+            engine->GetClient().Send(instruction);
+            std::cout << "Enemy death sent" << std::endl;
+        }
+    } catch (const std::exception& e) {
+        std::cerr << "Enemy death::sendDeath(): " << e.what() << std::endl;
+    }
+    SYS.UnregisterEntity(_entity);
+}
 
 void Enemy::applyDirectives()
 {

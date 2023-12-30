@@ -37,6 +37,7 @@ public:
     void Start() override;
     void OnAddComponent(int entityID) override;
     void Update(int entityID) override;
+    void send_death(int entityID);
 
     void SetID(int id);
 
