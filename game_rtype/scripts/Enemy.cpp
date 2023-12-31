@@ -20,6 +20,8 @@ MANAGED_RESOURCE(Enemy)
 
 const std::string Enemy::COMMAND_LEFT = "left";
 const std::string Enemy::COMMAND_SHOOT = "shoot";
+const std::string Enemy::COMMAND_UP = "up";
+const std::string Enemy::COMMAND_DOWN = "down";
 // ===========================================================================================================
 // Component
 // ===========================================================================================================
@@ -34,6 +36,7 @@ void Enemy::Start()
 {
     _rb = &SYS.SafeGet<RigidBody2D>(_entity);
     _collider = &SYS.SafeGet<Collider2D>(_entity);
+    _core = &SYS.SafeGet<CoreTransform>(_entity);
     _collider->SetTag("enemy");
     _speed = 100.0f;
     _rb->SetVelocity({ _speed, _rb->GetVelocity().y });
@@ -56,12 +59,8 @@ void Enemy::Update(int entityID)
     if (not eng::Engine::GetEngine()->PlayMode())
         return;
     try {
-        const auto& transform = SYS.GetComponent<CoreTransform>(_entity);
-        if ((transform.x < -100 or transform.x > 1920 + 100 or transform.y < -100 or transform.y > 1080 + 100)) {
+        if ((_core->x < -100 or _core->x > 1920 + 100 or _core->y < -100 or _core->y > 1080 + 100)) {
             SYS.UnregisterEntity(_entity);
-        }
-        if (_health <= 0) {
-            send_death(_entity);
         }
     } catch (std::exception& e) {
         std::cerr << "Laser::Update(): " << e.what() << std::endl;
@@ -70,7 +69,7 @@ void Enemy::Update(int entityID)
         return;
     }
     _controller->PollDirectives();
-    _rb->SetVelocity({ 0, 0 });
+    _rb->SetVelocity({ 0, _rb->GetVelocity().y });
     applyDirectives();
 }
 
@@ -87,36 +86,12 @@ void Enemy::SetID(int id)
 // Private methods
 // ===========================================================================================================
 
-void Enemy::send_death(int entity)
-{
-    // send message to server to add kill count
-
-    if (not eng::Engine::GetEngine()->IsClient()) {
-        return;
-    }
-
-    try {
-        auto& transform = SYS.GetComponent<CoreTransform>(_entity);
-        serv::bytes args(std::vector<int>({ _entity }));
-        auto instruction = serv::Instruction(eng::RType::I_ENEMY_DIES, 0, args);
-        auto engine = eng::Engine::GetEngine();
-        if (engine->IsClient()) {
-            engine->GetClient().Send(instruction);
-            std::cout << "Enemy death sent" << std::endl;
-        }
-    } catch (const std::exception& e) {
-        std::cerr << "Enemy death::sendDeath(): " << e.what() << std::endl;
-    }
-    SYS.UnregisterEntity(_entity);
-}
-
 void Enemy::applyDirectives()
 {
     if (not eng::Engine::GetEngine()->PlayMode()) {
         return;
     }
     std::vector<std::string>& directives = _controller->GetDirectives();
-    _rb->SetVelocity({ 0, 0 });
     for (auto& directive : directives) {
         if (_actions.find(directive) != _actions.end()) {
             (this->*_actions[directive])();
@@ -133,7 +108,7 @@ void Enemy::checkDeath()
         game->GetSessionData().killCount++;
         broadcastDeath();
         try {
-            SYS.GetComponent<Collider2D>(_entity).SetDestroyMe(true);
+            _collider->SetDestroyMe(true);
             SYS.UnregisterEntity(_entity);
         } catch (std::exception& e) {
             std::cerr << "Enemy::checkDeath(): " << e.what() << std::endl;
@@ -154,10 +129,9 @@ void Enemy::shoot()
 {
     int laser = SYS.GetResourceManager().LoadPrefab("Laser-Enemy");
     try {
-        auto& transform = SYS.GetComponent<CoreTransform>(_entity);
         auto& laserTransform = SYS.GetComponent<CoreTransform>(laser);
-        laserTransform.x = transform.x;
-        laserTransform.y = transform.y;
+        laserTransform.x = _core->x;
+        laserTransform.y = _core->y;
     } catch (std::exception& e) {
         return;
     }
@@ -166,4 +140,20 @@ void Enemy::shoot()
 void Enemy::moveLeft()
 {
     _rb->SetVelocity({ -_speed, _rb->GetVelocity().y });
+}
+
+void Enemy::moveUp()
+{
+    if (_core->y > 0)
+        _rb->SetVelocity({ _rb->GetVelocity().x, _speed });
+    else
+        _rb->SetVelocity({ _rb->GetVelocity().x, -_speed });
+}
+
+void Enemy::moveDown()
+{
+    if (_core->y < 1080)
+        _rb->SetVelocity({ _rb->GetVelocity().x, _speed });
+    else
+        _rb->SetVelocity({ _rb->GetVelocity().x, -_speed });
 }

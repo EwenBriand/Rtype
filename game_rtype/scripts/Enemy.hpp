@@ -33,11 +33,12 @@ public:
 
     static const std::string COMMAND_LEFT;
     static const std::string COMMAND_SHOOT;
+    static const std::string COMMAND_UP;
+    static const std::string COMMAND_DOWN;
 
     void Start() override;
     void OnAddComponent(int entityID) override;
     void Update(int entityID) override;
-    void send_death(int entityID);
 
     void SetID(int id);
 
@@ -69,6 +70,7 @@ private:
 
     RigidBody2D* _rb = nullptr;
     Collider2D* _collider = nullptr;
+    CoreTransform* _core = nullptr;
     int _entity;
     eng::Observer _observer;
     int _id = -1;
@@ -76,9 +78,14 @@ private:
     std::map<std::string, void (Enemy::*)()> _actions = {
         { COMMAND_LEFT, &Enemy::moveLeft },
         { COMMAND_SHOOT, &Enemy::shoot },
+        { COMMAND_UP, &Enemy::moveUp },
+        { COMMAND_DOWN, &Enemy::moveDown },
+
     };
     void shoot();
     void moveLeft();
+    void moveUp();
+    void moveDown();
 };
 
 #endif /* E2359F7A_1BE1_4E6A_B3E0_981C71D03CB9 */

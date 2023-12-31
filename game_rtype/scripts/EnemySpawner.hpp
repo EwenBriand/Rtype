@@ -44,6 +44,6 @@ private:
     float _maxRandomDelayVariation = 3.0f;
     CoreTransform* _transform = nullptr;
     std::mt19937 _rng;
-    std::vector<int> _wave_enemy = { 2, 5 };
+    std::vector<int> _wave_enemy = { 10, 20, 30, 40, 50 };
     int _wave = 0;
 };

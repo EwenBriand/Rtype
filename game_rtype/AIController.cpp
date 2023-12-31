@@ -15,7 +15,10 @@
 namespace rtype {
     AIController::AIController()
     {
+        srand(time(NULL));
         _shootTimer.Restart();
+        _UpTimer.Restart();
+        _DownTimer.Restart();
     }
 
     std::vector<std::string>& AIController::GetDirectives()
@@ -45,6 +48,24 @@ namespace rtype {
     bool AIController::testLeft()
     {
         return true;
+    }
+
+    bool AIController::testUp()
+    {
+        // if (_UpTimer.GetElapsedTime() > _directivesInterval) {
+        //     _UpTimer.Restart();
+        //     return rand() % 2;
+        // }
+        return false;
+    }
+
+    bool AIController::testDown()
+    {
+        // if (_DownTimer.GetElapsedTime() > _directivesInterval) {
+        //     _DownTimer.Restart();
+        //     return rand() % 2;
+        // }
+        return false;
     }
 
     bool AIController::testShoot()

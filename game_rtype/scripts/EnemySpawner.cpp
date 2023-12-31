@@ -37,7 +37,7 @@ void EnemySpawner::Update(int e)
     _timer.Restart();
     if (_wave == 0 && _wave_enemy.size() > 0) {
         _wave = _wave_enemy[0];
-        _wave_enemy.erase(_wave_enemy.begin());
+        // _wave_enemy.erase(_wave_enemy.begin());
     }
     if (_wave > 0) {
         _wave--;

@@ -167,12 +167,11 @@ namespace rtype {
             auto rtype = std::dynamic_pointer_cast<eng::RType>(eng::Engine::GetEngine()->GetGame());
             if (rtype == nullptr)
                 return;
-            std::cout << "ewen le debug est la: killcount " << rtype->GetSessionData().killCount << std::endl;
+            // std::cout << "ewen le debug est la: killcount " << rtype->GetSessionData().killCount << std::endl;
             if (rtype->GetSessionData().killCount >= eng::RType::KILL_COUNT_TO_END) {
                 // TODO ewen: uncomment after you merged with branch game 1
-                // eng::Engine::GetEngine()->GetClient().Send(serv::Instruction(
-                // serv::I_DISCONNECT, 0, serv::bytes());
-                // ));
+                eng::Engine::GetEngine()->GetClient().Send(serv::Instruction(
+                    serv::I_DISCONNECT, 0, serv::bytes()));
             }
         } catch (std::exception& e) {
             return;
