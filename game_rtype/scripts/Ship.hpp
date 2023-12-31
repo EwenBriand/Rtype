@@ -38,21 +38,31 @@ public:
     void OnAddComponent(int entityID) override;
     void Update(int entityID) override;
 
+    void SetID(int id);
+    int GetID() const;
+
 private:
+    serialize float _speed = 1.0f;
+    serialize int _damage = 1;
+    serialize int _health = 10;
+
     /**
      * @brief Applies the various directives to the ship.
      *
      */
     void applyDirectives();
 
-    serialize float _speed = 1.0f;
-    serialize int _damage = 1;
-    serialize int _health = 10;
+    /**
+     * @brief Checks if the ship has been destroyed and if yes, destroys it and broadcasts the news to all clients.
+     *
+     */
+    void checkForDeath();
 
     RigidBody2D* _rb = nullptr;
     Collider2D* _collider = nullptr;
     int _entity;
     eng::Observer _observer;
+    int _id = -1;
 
     void moveUp();
     void moveDown();

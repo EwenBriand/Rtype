@@ -106,10 +106,12 @@ namespace rtype {
         void handleLoadScene(serv::Instruction& instruction);
         void handleStartGame(serv::Instruction& instruction);
         void handleMessage(serv::Instruction& instruction);
+
         void handleAssignPlayerID(serv::Instruction& instruction);
         void handlePlayerSpawn(serv::Instruction& instruction);
         void handlePlayerMoves(serv::Instruction& instruction);
         void handlePlayerShoots(serv::Instruction& instruction);
+        void handlePlayerDies(serv::Instruction& instruction);
 
         void handleEnemySpawn(serv::Instruction& instruction);
         void handleEnemyMoves(serv::Instruction& instruction);
@@ -170,7 +172,7 @@ namespace rtype {
                 { eng::RType::I_PLAYER_ID, &RTypeDistantServer::handleAssignPlayerID },
                 { eng::RType::I_PLAYER_SPAWN, &RTypeDistantServer::handlePlayerSpawn },
                 { eng::RType::I_PLAYER_MOVES, &RTypeDistantServer::handlePlayerMoves },
-                { eng::RType::I_PLAYER_DIES, nullptr },
+                { eng::RType::I_PLAYER_DIES, &RTypeDistantServer::handlePlayerDies },
                 { eng::RType::I_PLAYER_SHOOTS, &RTypeDistantServer::handlePlayerShoots },
 
                 { eng::RType::I_ENEMY_SPAWN, &RTypeDistantServer::handleEnemySpawn },

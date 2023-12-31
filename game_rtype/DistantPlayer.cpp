@@ -173,10 +173,14 @@ void DistantPlayer::handlePlayerMoves(serv::Instruction& instruction)
         throw serv::MalformedInstructionException("Player moves instruction malformed");
     }
 
-    auto& transform = SYS.GetComponent<CoreTransform>(_entityID);
-    // todo anticheat goes here
-    transform.x = x;
-    transform.y = y;
+    try {
+        auto& transform = SYS.GetComponent<CoreTransform>(_entityID);
+        // todo anticheat goes here
+        transform.x = x;
+        transform.y = y;
+    } catch (const std::exception& e) {
+        return; // player died and will be removed
+    }
     for (auto& player : Instances) {
         if (player->GetID() == _playerId) {
             continue;
