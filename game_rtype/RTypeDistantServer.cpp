@@ -186,7 +186,8 @@ namespace rtype {
         if (_players.find(id) != _players.end()) {
             return;
         }
-
+        if (id == _playerId and _isAssignedLocalPlayer)
+            return;
         try {
             auto entityID = _engine->GetECS().GetResourceManager().LoadPrefab("ship");
             Ship& ship = _engine->GetECS().GetComponent<Ship>(entityID, "Ship");
@@ -362,8 +363,9 @@ namespace rtype {
     {
         _isConnected = false;
         _startGame = false;
+        _isAssignedLocalPlayer = false;
         _currSceneName = "";
-        _playerId = -1;
+        _playerId = 0;
         _entityID = -1;
         _players.clear();
         _enemies.clear();
@@ -386,5 +388,10 @@ namespace rtype {
         std::cout << "reset signal received" << std::endl;
         if (RTypeDistantServer::GetInstance() != nullptr)
             RTypeDistantServer::GetInstance()->Reset();
+    }
+
+    void RTypeDistantServer::handleDisconnect(serv::Instruction& instruction)
+    {
+        Reset();
     }
 } // namespace rtype

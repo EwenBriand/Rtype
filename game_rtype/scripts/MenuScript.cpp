@@ -8,10 +8,13 @@
 
 #include "MenuScript.hpp"
 #include "Engine.hpp"
+#include "RTypeDistantServer.hpp"
 #include "UIManager.hpp"
 #include <iostream>
 
 MANAGED_RESOURCE(MenuScript)
+
+bool MenuScript::_callbacksRegistered = false;
 
 MenuScript::~MenuScript()
 {
@@ -23,6 +26,10 @@ MenuScript::~MenuScript()
 
 void MenuScript::Start()
 {
+    if (_callbacksRegistered)
+        return;
+    _callbacksRegistered = true;
+    registerButtonCallbacks();
 }
 
 void MenuScript::Update(int entityID)
@@ -50,4 +57,14 @@ void MenuScript::Update(int entityID)
 
 void MenuScript::OnAddComponent(int e)
 {
+}
+
+void MenuScript::registerButtonCallbacks()
+{
+    UIButton::RegisterCallback("ui::backToMenu", [this]() {
+        auto engine = eng::Engine::GetEngine();
+        if (engine->IsClient()) {
+            engine->GetClient().Send(serv::Instruction(serv::I_DISCONNECT, 0, serv::bytes()));
+        }
+    });
 }
