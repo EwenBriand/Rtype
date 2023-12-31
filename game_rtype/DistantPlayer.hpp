@@ -82,6 +82,7 @@ private:
     void handleDisconnect(serv::Instruction&);
 
     int _playerId;
+    int _kill_count;
     int _entityID;
     std::vector<std::string> _directives;
 

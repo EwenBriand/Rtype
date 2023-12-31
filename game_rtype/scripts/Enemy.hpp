@@ -17,6 +17,8 @@
 #include "Observer.hpp"
 #include "metadata.hpp"
 
+BUILD_MANUAL
+
 /**
  * @brief This class is a script to control the Enemy.
  * It will depend on a controller, to enable controlling the Enemy
@@ -35,6 +37,9 @@ public:
     void Start() override;
     void OnAddComponent(int entityID) override;
     void Update(int entityID) override;
+    void send_death(int entityID);
+
+    void SetID(int id);
 
 private:
     /**
@@ -42,6 +47,19 @@ private:
      *
      */
     void applyDirectives();
+
+    /**
+     * @brief Checks if the enemy should die, and if so, kills it and
+     * notifies the game and clients.
+     *
+     */
+    void checkDeath();
+
+    /**
+     * @brief Sends the death message to all clients
+     *
+     */
+    void broadcastDeath();
 
     serialize float _speed = 1.0f;
     serialize int _damage = 1;
@@ -53,9 +71,14 @@ private:
     Collider2D* _collider = nullptr;
     int _entity;
     eng::Observer _observer;
+    int _id = -1;
 
-    std::map<std::string, void (Enemy::*)()> _actions;
+    std::map<std::string, void (Enemy::*)()> _actions = {
+        { COMMAND_LEFT, &Enemy::moveLeft },
+        { COMMAND_SHOOT, &Enemy::shoot },
+    };
     void shoot();
+    void moveLeft();
 };
 
 #endif /* E2359F7A_1BE1_4E6A_B3E0_981C71D03CB9 */

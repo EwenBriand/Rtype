@@ -7,6 +7,7 @@
 */
 
 #include "DistantPlayer.hpp"
+#include "GameRtype.hpp"
 #include "LobbyCoroutine.hpp"
 #include "NetworkExceptions.hpp"
 #include "ServerUdp.hpp"
@@ -24,6 +25,8 @@ DistantPlayer::DistantPlayer(serv::ServerUDP& server, bool send)
 
 DistantPlayer::~DistantPlayer()
 {
+    std::shared_ptr<eng::RType> rtype = std::dynamic_pointer_cast<eng::RType>(eng::Engine::GetEngine()->GetGame());
+    rtype->GetSessionData() = eng::SessionData();
 }
 
 void DistantPlayer::HandleRequest(const serv::bytes& data)

@@ -283,12 +283,9 @@ bool Collider2D::isAxisSeparating(const graph::vec2f& axis, const Collider2D& a,
 
 std::pair<float, float> Collider2D::projectPolygon(const graph::vec2f& axis, const Collider2D& collider) const noexcept
 {
-    std::cout << "BUG 1 from " << collider.GetTag() << std::endl;
     std::vector<float> vertices = collider.GetVerticesWithPosition();
-    std::cout << "BUG 2" << std::endl;
     float min = axis.x * vertices[0] + axis.y * vertices[1];
     float max = min;
-    std::cout << "BUG 3" << std::endl;
 
     for (int i = 2; i < vertices.size(); i += 2) {
         float p = axis.x * vertices[i] + axis.y * vertices[i + 1];
@@ -298,6 +295,5 @@ std::pair<float, float> Collider2D::projectPolygon(const graph::vec2f& axis, con
             max = p;
         }
     }
-    std::cout << "BUG 4" << std::endl;
     return { min, max };
 }

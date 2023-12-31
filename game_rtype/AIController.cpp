@@ -27,7 +27,7 @@ namespace rtype {
                 SYS.UnregisterEntity(_entity);
             }
         } catch (const std::exception& e) {
-            std::cerr << "AIController::GetDirectives(): " << e.what() << std::endl;
+            // entity was destroyed, will be cleaned up at the end of the frame
         }
         return _directives;
     }
