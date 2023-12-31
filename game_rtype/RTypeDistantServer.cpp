@@ -204,6 +204,7 @@ namespace rtype {
                 _isAssignedLocalPlayer = true;
                 auto lpc = std::make_shared<LocalPlayerController>();
                 lpc->SetPlayerId(id);
+                // ship.SetID(id);
                 _entityID = entityID;
                 lpc->SetEntity(_entityID);
                 ship.Possess(_entityID, lpc);
@@ -306,6 +307,7 @@ namespace rtype {
             auto& tr = _engine->GetECS().GetComponent<CoreTransform>(entityID);
             tr.x = x;
             tr.y = y;
+            std::cout << "player moved to " << x << ", " << y << std::endl;
         } catch (std::exception& e) {
             std::cerr << "\r" << e.what() << std::endl;
         }
@@ -399,6 +401,13 @@ namespace rtype {
         rtype->GetSessionData().killCount = 0;
 
         _reset = true;
+    }
+
+    void RTypeDistantServer::handlePlayerDies(serv::Instruction& instruction)
+    {
+
+        std::cout << "player died!!!" << std::endl;
+        eng::Engine::GetEngine()->GetClient().Send(serv::Instruction(serv::I_DISCONNECT, 0, serv::bytes()));
     }
 
     bool RTypeDistantServer::ShouldReset()

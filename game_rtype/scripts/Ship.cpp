@@ -9,6 +9,7 @@
 #include "Components.Vanilla/CoreTransform.hpp"
 #include "ECSImpl.hpp"
 #include "Engine.hpp"
+#include "GameRtype.hpp"
 
 MANAGED_RESOURCE(Ship)
 
@@ -36,13 +37,9 @@ void Ship::Start()
 
     _collider->SetOnCollisionEnter([this](int entityID, int otherID) {
         try {
-            // std::cout << "Ship::Start(): " << entityID << " " << otherID << std::endl;
             std::string tag = (_entity == entityID) ? SYS.GetComponent<Collider2D>(otherID).GetTag() : SYS.GetComponent<Collider2D>(entityID).GetTag();
-            // std::cout << "after tag" << std::endl;
             if (tag.compare(0, 11, "Enemy laser") == 0) {
-                // std::cout << "before test" << std::endl;
                 this->_health -= 1;
-                // std::cout << "after test " << _entity << std::endl;
             }
         } catch (std::exception& e) {
             std::cerr << "Ship::Start(): " << e.what() << std::endl;
@@ -58,14 +55,24 @@ void Ship::Update(int entityID)
     _controller->PollDirectives();
     _rb->SetVelocity({ 0, 0 });
     applyDirectives();
-    if (_health <= 0) {
-        SYS.UnregisterEntity(_entity);
+    if (eng::Engine::GetEngine()->IsServer()) {
+        checkForDeath();
     }
 }
 
 // ===========================================================================================================
 // Public methods
 // ===========================================================================================================
+
+void Ship::SetID(int id)
+{
+    _id = id;
+}
+
+int Ship::GetID() const
+{
+    return _id;
+}
 
 // ===========================================================================================================
 // Private methods
@@ -120,5 +127,13 @@ void Ship::shoot()
         laserTransform.y = transform.y;
     } catch (std::exception& e) {
         return;
+    }
+}
+
+void Ship::checkForDeath()
+{
+    if (_health <= 0) {
+        SYS.UnregisterEntity(_entity);
+        eng::Engine::GetEngine()->GetServer().Broadcast(serv::Instruction(eng::RType::I_PLAYER_DIES, 0, serv::bytes(std::vector<int> { _id })));
     }
 }
