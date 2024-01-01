@@ -11,6 +11,7 @@
 #include "Engine.hpp"
 #include "GameRtype.hpp"
 #include "Observer.hpp"
+#include <random>
 
 namespace rtype {
     AIController::AIController()
@@ -55,7 +56,11 @@ namespace rtype {
         if (_UpTimer.GetElapsedTime() > _directivesInterval) {
             _directivesInterval = 3.5f;
             _UpTimer.Restart();
-            return rand() % 2;
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            std::uniform_int_distribution<> distrib(0, 1);
+
+            return distrib(gen);
         }
         return false;
     }
@@ -65,7 +70,11 @@ namespace rtype {
         if (_DownTimer.GetElapsedTime() > _directivesInterval) {
             _directivesInterval = 3.5f;
             _DownTimer.Restart();
-            return rand() % 2;
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            std::uniform_int_distribution<> distrib(0, 1);
+
+            return distrib(gen);
         }
         return false;
     }

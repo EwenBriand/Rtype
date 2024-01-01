@@ -19,7 +19,7 @@ void AudioManager::Start()
 {
     _audioSource = &SYS.GetComponent<AudioSource>(_entity);
     _audioSource->AddMusicName("Muse/gas_gas_gas.ogg");
-    // _audioSource->Play<Music>("Muse/gas_gas_gas.ogg");
+    _audioSource->Play<Music>("Muse/gas_gas_gas.ogg");
     std::cout << "AudioManager::Start()" << std::endl;
 }
 
