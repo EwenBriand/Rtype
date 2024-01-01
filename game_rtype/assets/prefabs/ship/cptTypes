@@ -2,5 +2,6 @@ CoreTransform
 UserComponentWrapper
 Animator
 Collider2D
+AudioSource
 RigidBody2D
 Tag

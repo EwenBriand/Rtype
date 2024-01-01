@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include "Components.Vanilla/AudioSource.hpp"
 #include "Components.Vanilla/Collider2D.hpp"
 #include "Components.Vanilla/RigidBody2D.hpp"
 #include "Components.Vanilla/UserComponentWrapper.hpp"
@@ -60,6 +61,8 @@ private:
 
     RigidBody2D* _rb = nullptr;
     Collider2D* _collider = nullptr;
+    AudioSource* _audio = nullptr;
+    CoreTransform* _core = nullptr;
     int _entity;
     eng::Observer _observer;
     int _id = -1;

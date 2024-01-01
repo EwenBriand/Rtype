@@ -31,6 +31,8 @@ void Ship::OnAddComponent(int entityID)
 void Ship::Start()
 {
     _rb = &SYS.SafeGet<RigidBody2D>(_entity);
+    _audio = &SYS.SafeGet<AudioSource>(_entity);
+    _core = &SYS.SafeGet<CoreTransform>(_entity);
     _collider = &SYS.SafeGet<Collider2D>(_entity);
     _collider->SetTag("player");
     std::cout << "player id " << _entity << std::endl;
@@ -45,6 +47,8 @@ void Ship::Start()
             std::cerr << "Ship::Start(): " << e.what() << std::endl;
         }
     });
+
+    _audio->AddSoundName("Muse/laser_gun.ogg");
 }
 
 void Ship::Update(int entityID)
@@ -98,33 +102,39 @@ void Ship::applyDirectives()
 
 void Ship::moveUp()
 {
-    _rb->SetVelocity({ _rb->GetVelocity().x, -_speed });
+    if (_core->y > 50)
+        _rb->SetVelocity({ _rb->GetVelocity().x, -_speed });
 }
 
 void Ship::moveDown()
 {
-    _rb->SetVelocity({ _rb->GetVelocity().x, _speed });
+    if (_core->y < 1080 - 100)
+        _rb->SetVelocity({ _rb->GetVelocity().x, _speed });
 }
 
 void Ship::moveLeft()
 {
-    _rb->SetVelocity({ -_speed, _rb->GetVelocity().y });
+    if (_core->x > 0 + 50)
+        _rb->SetVelocity({ -_speed, _rb->GetVelocity().y });
 }
 
 void Ship::moveRight()
 {
-    _rb->SetVelocity({ _speed, _rb->GetVelocity().y });
+    if (_core->x < 1920 - 100)
+        _rb->SetVelocity({ _speed, _rb->GetVelocity().y });
 }
 
 void Ship::shoot()
 {
     std::cout << "Ship::shoot()" << std::endl;
     int laser = SYS.GetResourceManager().LoadPrefab("Laser");
+    if (_audio->IsPlaying<Sound>("Muse/laser_gun.ogg"))
+        _audio->Stop<Sound>("Muse/laser_gun.ogg");
+    _audio->Play<Sound>("Muse/laser_gun.ogg");
     try {
-        auto& transform = SYS.GetComponent<CoreTransform>(_entity);
         auto& laserTransform = SYS.GetComponent<CoreTransform>(laser);
-        laserTransform.x = transform.x;
-        laserTransform.y = transform.y;
+        laserTransform.x = _core->x;
+        laserTransform.y = _core->y;
     } catch (std::exception& e) {
         return;
     }

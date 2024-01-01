@@ -69,7 +69,10 @@ void Enemy::Update(int entityID)
         return;
     }
     _controller->PollDirectives();
-    _rb->SetVelocity({ 0, _rb->GetVelocity().y });
+    if (_core->y > 1080 - 100 || _core->y < 50)
+        _rb->SetVelocity({ 0, (_rb->GetVelocity().y >= 0) ? -_speed : _speed });
+    else
+        _rb->SetVelocity({ 0, _rb->GetVelocity().y });
     applyDirectives();
 }
 
@@ -144,16 +147,11 @@ void Enemy::moveLeft()
 
 void Enemy::moveUp()
 {
-    if (_core->y > 0)
+    if (_core->y > 50)
         _rb->SetVelocity({ _rb->GetVelocity().x, _speed });
-    else
-        _rb->SetVelocity({ _rb->GetVelocity().x, -_speed });
 }
 
 void Enemy::moveDown()
 {
-    if (_core->y < 1080)
-        _rb->SetVelocity({ _rb->GetVelocity().x, _speed });
-    else
-        _rb->SetVelocity({ _rb->GetVelocity().x, -_speed });
+    _rb->SetVelocity({ _rb->GetVelocity().x, _speed });
 }
