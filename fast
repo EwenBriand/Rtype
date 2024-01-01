@@ -55,21 +55,40 @@ def exec_system_command(command):
 
 def deep_clean_impl(args):
     cd_gitroot()
-    clean_commands = [
-        "cd build && make clean",
-        "find . -name \"*.o\" -type f -delete",
-        "find . -name \"*.so*\" -type f -delete",
-        "find . -name \"*.a\" -type f -delete",
-        "find . -name \"*.out*\" -type f -delete",
-        "find . -name \"*.log*\" -type f -delete",
-        "find . -type d -name \"CmakeFiles\" -exec rm -rf {} +",
-        "find . -type d -name \"build\" -exec rm -rf {} +",
-        "find . -type d -name \"build.tmpCompileSrc\" -exec rm -rf {} +",
-        "find . -name \"CMakeCache.txt\" -type f -delete",
-        "find . -name \"cmake_install.cmake\" -type f -delete",
-        "find . -name \"Makefile\" -type f -delete",
-        "find . -name \"*.checksum\" -type f -delete",
-    ]
+    clean_commands = []
+    if os.name == "nt":
+        clean_commands = [
+            "cd build && del /s /q *",
+            "cd build && rmdir /s /q *",
+            "del /s /q *.o",
+            "del /s /q *.so*",
+            "del /s /q *.a",
+            "del /s /q *.out*",
+            "del /s /q *.log*",
+            "rmdir /s /q CmakeFiles",
+            "rmdir /s /q build",
+            "rmdir /s /q build.tmpCompileSrc",
+            "del /s /q CMakeCache.txt",
+            "del /s /q cmake_install.cmake",
+            "del /s /q Makefile",
+            "del /s /q *.checksum",
+        ]
+    else:
+        clean_commands = [
+            "cd build && make clean",
+            "find . -name \"*.o\" -type f -delete",
+            "find . -name \"*.so*\" -type f -delete",
+            "find . -name \"*.a\" -type f -delete",
+            "find . -name \"*.out*\" -type f -delete",
+            "find . -name \"*.log*\" -type f -delete",
+            "find . -type d -name \"CmakeFiles\" -exec rm -rf {} +",
+            "find . -type d -name \"build\" -exec rm -rf {} +",
+            "find . -type d -name \"build.tmpCompileSrc\" -exec rm -rf {} +",
+            "find . -name \"CMakeCache.txt\" -type f -delete",
+            "find . -name \"cmake_install.cmake\" -type f -delete",
+            "find . -name \"Makefile\" -type f -delete",
+            "find . -name \"*.checksum\" -type f -delete",
+        ]
     for command in clean_commands:
         print("Executing: " + command)
         os.system(command)
