@@ -37,7 +37,7 @@ set(ECS_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-set(ECS
+file(GLOB ECS
     ${ECS_SRC}/../linenoise/linenoise.c
     ${ECS_SRC}/ECS.cpp
     ${ECS_SRC}/LibUtils.cpp
@@ -56,7 +56,7 @@ set(ECS
     ${ECS_SRC}/Observer.cpp
 )
 
-set(ENGINE
+file(GLOB ENGINE
     ${ECS_SRC}/Engine.cpp
     ${ECS_SRC}/ScopeLocation.cpp
 )
@@ -64,7 +64,7 @@ set(ENGINE
 set(VANILLA_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/include/Components.Vanilla)
 
-set(VANILLA
+file(GLOB VANILLA
     ${VANILLA_SRC}/Animator.cpp
     ${VANILLA_SRC}/AudioSource.cpp
     ${VANILLA_SRC}/CLI.cpp
@@ -87,7 +87,7 @@ set(META_VANILLA_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/../build/.metadata
 )
 
-set(META_VANILLA
+file(GLOB META_VANILLA
     ${META_VANILLA_SRC}/AnimatorMeta.cpp
     ${META_VANILLA_SRC}/Collider2DMeta.cpp
     ${META_VANILLA_SRC}/EventGraphMeta.cpp

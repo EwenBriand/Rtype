@@ -1,0 +1,42 @@
+[submodule "server/asio"]
+	path = server/asio
+	url = https://github.com/boostorg/asio.git
+[submodule "server/config"]
+	path = server/config
+	url = https://github.com/boostorg/config.git
+[submodule "server/assert"]
+	path = server/assert
+	url = https://github.com/boostorg/assert.git
+[submodule "server/throw_exception"]
+	path = server/throw_exception
+	url = https://github.com/boostorg/throw_exception.git
+[submodule "server/align"]
+	path = server/align
+	url = https://github.com/boostorg/align.git
+[submodule "server/system"]
+	path = server/system
+	url = https://github.com/boostorg/system.git
+[submodule "server/winapi"]
+	path = server/winapi
+	url = https://github.com/boostorg/winapi.git
+[submodule "server/predef"]
+	path = server/predef
+	url = https://github.com/boostorg/predef.git
+[submodule "server/date_time"]
+	path = server/date_time
+	url = https://github.com/boostorg/date_time.git
+[submodule "server/smart_ptr"]
+	path = server/smart_ptr
+	url = https://github.com/boostorg/smart_ptr.git
+[submodule "server/core"]
+	path = server/core
+	url = https://github.com/boostorg/core.git
+[submodule "server/utility"]
+	path = server/utility
+	url = https://github.com/boostorg/utility.git
+[submodule "server/static_assert"]
+	path = server/static_assert
+	url = https://github.com/boostorg/static_assert.git
+[submodule "server/type_traits"]
+	path = server/type_traits
+	url = https://github.com/boostorg/type_traits.git
