@@ -116,7 +116,7 @@ static void acquireMonitor(_GLFWwindow* window)
     _glfwSetVideoModeCocoa(window->monitor, &window->videoMode);
     const CGRect bounds = CGDisplayBounds(window->monitor->ns.displayID);
     const NSRect frame = NSMakeRect(bounds.origin.x,
-                                    _glfwCoreTransformYCocoa(bounds.origin.y + bounds.size.height - 1),
+                                    _glfwTransformYCocoa(bounds.origin.y + bounds.size.height - 1),
                                     bounds.size.width,
                                     bounds.size.height);
 
@@ -800,7 +800,7 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
         else
         {
             const int xpos = wndconfig->xpos;
-            const int ypos = _glfwCoreTransformYCocoa(wndconfig->ypos + wndconfig->height - 1);
+            const int ypos = _glfwTransformYCocoa(wndconfig->ypos + wndconfig->height - 1);
             contentRect = NSMakeRect(xpos, ypos, wndconfig->width, wndconfig->height);
         }
     }
@@ -899,9 +899,9 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-// CoreTransforms a y-coordinate between the CG display and NS screen spaces
+// Transforms a y-coordinate between the CG display and NS screen spaces
 //
-float _glfwCoreTransformYCocoa(float y)
+float _glfwTransformYCocoa(float y)
 {
     return CGDisplayBounds(CGMainDisplayID()).size.height - y - 1;
 }
@@ -1040,7 +1040,7 @@ void _glfwGetWindowPosCocoa(_GLFWwindow* window, int* xpos, int* ypos)
     if (xpos)
         *xpos = contentRect.origin.x;
     if (ypos)
-        *ypos = _glfwCoreTransformYCocoa(contentRect.origin.y + contentRect.size.height - 1);
+        *ypos = _glfwTransformYCocoa(contentRect.origin.y + contentRect.size.height - 1);
 
     } // autoreleasepool
 }
@@ -1050,7 +1050,7 @@ void _glfwSetWindowPosCocoa(_GLFWwindow* window, int x, int y)
     @autoreleasepool {
 
     const NSRect contentRect = [window->ns.view frame];
-    const NSRect dummyRect = NSMakeRect(x, _glfwCoreTransformYCocoa(y + contentRect.size.height - 1), 0, 0);
+    const NSRect dummyRect = NSMakeRect(x, _glfwTransformYCocoa(y + contentRect.size.height - 1), 0, 0);
     const NSRect frameRect = [window->ns.object frameRectForContentRect:dummyRect];
     [window->ns.object setFrameOrigin:frameRect.origin];
 
@@ -1252,7 +1252,7 @@ void _glfwSetWindowMonitorCocoa(_GLFWwindow* window,
         else
         {
             const NSRect contentRect =
-                NSMakeRect(xpos, _glfwCoreTransformYCocoa(ypos + height - 1), width, height);
+                NSMakeRect(xpos, _glfwTransformYCocoa(ypos + height - 1), width, height);
             const NSUInteger styleMask = [window->ns.object styleMask];
             const NSRect frameRect =
                 [window->ns.object frameRectForContentRect:contentRect
@@ -1307,7 +1307,7 @@ void _glfwSetWindowMonitorCocoa(_GLFWwindow* window,
     }
     else
     {
-        NSRect contentRect = NSMakeRect(xpos, _glfwCoreTransformYCocoa(ypos + height - 1),
+        NSRect contentRect = NSMakeRect(xpos, _glfwTransformYCocoa(ypos + height - 1),
                                         width, height);
         NSRect frameRect = [window->ns.object frameRectForContentRect:contentRect
                                                             styleMask:styleMask];
@@ -1621,7 +1621,7 @@ void _glfwSetCursorPosCocoa(_GLFWwindow* window, double x, double y)
         const NSPoint globalPoint = globalRect.origin;
 
         CGWarpMouseCursorPosition(CGPointMake(globalPoint.x,
-                                              _glfwCoreTransformYCocoa(globalPoint.y)));
+                                              _glfwTransformYCocoa(globalPoint.y)));
     }
 
     // HACK: Calling this right after setting the cursor position prevents macOS

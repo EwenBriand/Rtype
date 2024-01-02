@@ -2,7 +2,7 @@
 *
 *   raylib [shaders] example - Hot reloading
 *
-*   NOTE: This example needs raylib OpenGL 3.3 for shaders support and only #version 330
+*   NOTE: This example requires raylib OpenGL 3.3 for shaders support and only #version 330
 *         is currently supported. OpenGL ES 2.0 platforms are not supported at the moment.
 *
 *   Example originally created with raylib 3.0, last time updated with raylib 3.5
@@ -21,7 +21,7 @@
 
 #if defined(PLATFORM_DESKTOP)
     #define GLSL_VERSION            330
-#else   // PLATFORM_RPI, PLATFORM_ANDROID, PLATFORM_WEB
+#else   // PLATFORM_ANDROID, PLATFORM_WEB
     #define GLSL_VERSION            100
 #endif
 

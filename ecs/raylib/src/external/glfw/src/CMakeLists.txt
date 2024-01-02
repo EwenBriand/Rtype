@@ -371,7 +371,7 @@ if (GLFW_BUILD_SHARED_LIBRARY)
     endif()
 
     if (UNIX)
-        # Hide symbols not explicitly tagged for serialize from the shared library
+        # Hide symbols not explicitly tagged for export from the shared library
         target_compile_options(glfw PRIVATE "-fvisibility=hidden")
     endif()
 endif()

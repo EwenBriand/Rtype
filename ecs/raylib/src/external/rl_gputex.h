@@ -1,6 +1,6 @@
 /**********************************************************************************************
 *
-*   rl_gputex - GPU compressed textures loading and saving
+*   rl_gputex v1.0 - GPU compressed textures loading and saving
 *
 *   DESCRIPTION:
 *
@@ -261,11 +261,9 @@ void *rl_load_dds_from_memory(const unsigned char *file_data, unsigned int file_
             }
             else if (((header->ddspf.flags == 0x04) || (header->ddspf.flags == 0x05)) && (header->ddspf.fourcc > 0)) // Compressed
             {
-                int data_size = 0;
-
-                // Calculate data size, including all mipmaps
-                if (header->mipmap_count > 1) data_size = header->pitch_or_linear_size*2;
-                else data_size = header->pitch_or_linear_size;
+                // NOTE: This forces only 1 mipmap to be loaded which is not really correct but it works
+                int data_size = (header->pitch_or_linear_size < file_size - 0x80) ? header->pitch_or_linear_size : file_size - 0x80;
+                *mips = 1;
 
                 image_data = RL_MALLOC(data_size*sizeof(unsigned char));
 
@@ -515,7 +513,7 @@ int rl_save_ktx(const char *file_name, void *data, int width, int height, int fo
 
     // NOTE: We can save into a .ktx all PixelFormats supported by raylib, including compressed formats like DXT, ETC or ASTC
 
-    if (header.gl_format == -1) LOG("WARNING: IMAGE: GL format not supported for KTX serialize (%i)", header.gl_format);
+    if (header.gl_format == -1) LOG("WARNING: IMAGE: GL format not supported for KTX export (%i)", header.gl_format);
     else
     {
         memcpy(file_data_ptr, &header, sizeof(ktx_header));

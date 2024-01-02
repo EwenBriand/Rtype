@@ -2,7 +2,7 @@
 *
 *   raylib [shaders] example - Raymarching shapes generation
 *
-*   NOTE: This example needs raylib OpenGL 3.3 for shaders support and only #version 330
+*   NOTE: This example requires raylib OpenGL 3.3 for shaders support and only #version 330
 *         is currently supported. OpenGL ES 2.0 platforms are not supported at the moment.
 *
 *   Example originally created with raylib 2.0, last time updated with raylib 4.2
@@ -18,7 +18,7 @@
 
 #if defined(PLATFORM_DESKTOP)
     #define GLSL_VERSION            330
-#else   // PLATFORM_RPI, PLATFORM_ANDROID, PLATFORM_WEB -> Not supported at this moment
+#else   // PLATFORM_ANDROID, PLATFORM_WEB -> Not supported at this moment
     #define GLSL_VERSION            100
 #endif
 
@@ -82,7 +82,8 @@ int main(void)
         // Check if screen is resized
         if (IsWindowResized())
         {
-            float resolution[2] = { (float)GetScreenWidth(), (float)GetScreenHeight() };
+            resolution[0] = (float)GetScreenWidth();
+            resolution[1] = (float)GetScreenHeight();
             SetShaderValue(shader, resolutionLoc, resolution, SHADER_UNIFORM_VEC2);
         }
         //----------------------------------------------------------------------------------

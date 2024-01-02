@@ -15,7 +15,7 @@
 
 #if defined(PLATFORM_DESKTOP)
     #define GLSL_VERSION        330
-#else   // PLATFORM_RPI, PLATFORM_ANDROID, PLATFORM_WEB
+#else   // PLATFORM_ANDROID, PLATFORM_WEB
     #define GLSL_VERSION        100
 #endif
 
@@ -39,7 +39,6 @@ int main(void)
         .vResolution = 1200,                 // Vertical resolution in pixels
         .hScreenSize = 0.133793f,            // Horizontal size in meters
         .vScreenSize = 0.0669f,              // Vertical size in meters
-        .vScreenCenter = 0.04678f,           // Screen center in meters
         .eyeToScreenDistance = 0.041f,       // Distance between eye and display in meters
         .lensSeparationDistance = 0.07f,     // Lens separation distance in meters
         .interpupillaryDistance = 0.07f,     // IPD (distance between pupils) in meters

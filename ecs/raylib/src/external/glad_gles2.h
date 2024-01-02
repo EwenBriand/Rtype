@@ -123,9 +123,9 @@ extern "C" {
     #if GLAD_PLATFORM_WIN32 || defined(__CYGWIN__)
       #if defined(GLAD_API_CALL_EXPORT_BUILD)
         #if defined(__GNUC__)
-          #define GLAD_API_CALL __attribute__ ((dllserialize)) extern
+          #define GLAD_API_CALL __attribute__ ((dllexport)) extern
         #else
-          #define GLAD_API_CALL __declspec(dllserialize) extern
+          #define GLAD_API_CALL __declspec(dllexport) extern
         #endif
       #else
         #if defined(__GNUC__)
@@ -2552,10 +2552,10 @@ GLAD_API_CALL PFNGLDRAWRANGEELEMENTSBASEVERTEXEXTPROC glad_glDrawRangeElementsBa
 #define glDrawRangeElementsBaseVertexEXT glad_glDrawRangeElementsBaseVertexEXT
 GLAD_API_CALL PFNGLDRAWRANGEELEMENTSBASEVERTEXOESPROC glad_glDrawRangeElementsBaseVertexOES;
 #define glDrawRangeElementsBaseVertexOES glad_glDrawRangeElementsBaseVertexOES
-GLAD_API_CALL PFNGLDRAWTRANSFORMFEEDBACKEXTPROC glad_glDrawCoreTransformFeedbackEXT;
-#define glDrawCoreTransformFeedbackEXT glad_glDrawCoreTransformFeedbackEXT
-GLAD_API_CALL PFNGLDRAWTRANSFORMFEEDBACKINSTANCEDEXTPROC glad_glDrawCoreTransformFeedbackInstancedEXT;
-#define glDrawCoreTransformFeedbackInstancedEXT glad_glDrawCoreTransformFeedbackInstancedEXT
+GLAD_API_CALL PFNGLDRAWTRANSFORMFEEDBACKEXTPROC glad_glDrawTransformFeedbackEXT;
+#define glDrawTransformFeedbackEXT glad_glDrawTransformFeedbackEXT
+GLAD_API_CALL PFNGLDRAWTRANSFORMFEEDBACKINSTANCEDEXTPROC glad_glDrawTransformFeedbackInstancedEXT;
+#define glDrawTransformFeedbackInstancedEXT glad_glDrawTransformFeedbackInstancedEXT
 GLAD_API_CALL PFNGLEGLIMAGETARGETRENDERBUFFERSTORAGEOESPROC glad_glEGLImageTargetRenderbufferStorageOES;
 #define glEGLImageTargetRenderbufferStorageOES glad_glEGLImageTargetRenderbufferStorageOES
 GLAD_API_CALL PFNGLEGLIMAGETARGETTEXSTORAGEEXTPROC glad_glEGLImageTargetTexStorageEXT;
@@ -3449,8 +3449,8 @@ PFNGLDRAWELEMENTSINSTANCEDBASEVERTEXOESPROC glad_glDrawElementsInstancedBaseVert
 PFNGLDRAWELEMENTSINSTANCEDEXTPROC glad_glDrawElementsInstancedEXT = NULL;
 PFNGLDRAWRANGEELEMENTSBASEVERTEXEXTPROC glad_glDrawRangeElementsBaseVertexEXT = NULL;
 PFNGLDRAWRANGEELEMENTSBASEVERTEXOESPROC glad_glDrawRangeElementsBaseVertexOES = NULL;
-PFNGLDRAWTRANSFORMFEEDBACKEXTPROC glad_glDrawCoreTransformFeedbackEXT = NULL;
-PFNGLDRAWTRANSFORMFEEDBACKINSTANCEDEXTPROC glad_glDrawCoreTransformFeedbackInstancedEXT = NULL;
+PFNGLDRAWTRANSFORMFEEDBACKEXTPROC glad_glDrawTransformFeedbackEXT = NULL;
+PFNGLDRAWTRANSFORMFEEDBACKINSTANCEDEXTPROC glad_glDrawTransformFeedbackInstancedEXT = NULL;
 PFNGLEGLIMAGETARGETRENDERBUFFERSTORAGEOESPROC glad_glEGLImageTargetRenderbufferStorageOES = NULL;
 PFNGLEGLIMAGETARGETTEXSTORAGEEXTPROC glad_glEGLImageTargetTexStorageEXT = NULL;
 PFNGLEGLIMAGETARGETTEXTURE2DOESPROC glad_glEGLImageTargetTexture2DOES = NULL;
@@ -3981,8 +3981,8 @@ static void glad_gl_load_GL_EXT_draw_instanced( GLADuserptrloadfunc load, void* 
 }
 static void glad_gl_load_GL_EXT_draw_transform_feedback( GLADuserptrloadfunc load, void* userptr) {
     if(!GLAD_GL_EXT_draw_transform_feedback) return;
-    glad_glDrawCoreTransformFeedbackEXT = (PFNGLDRAWTRANSFORMFEEDBACKEXTPROC) load(userptr, "glDrawCoreTransformFeedbackEXT");
-    glad_glDrawCoreTransformFeedbackInstancedEXT = (PFNGLDRAWTRANSFORMFEEDBACKINSTANCEDEXTPROC) load(userptr, "glDrawCoreTransformFeedbackInstancedEXT");
+    glad_glDrawTransformFeedbackEXT = (PFNGLDRAWTRANSFORMFEEDBACKEXTPROC) load(userptr, "glDrawTransformFeedbackEXT");
+    glad_glDrawTransformFeedbackInstancedEXT = (PFNGLDRAWTRANSFORMFEEDBACKINSTANCEDEXTPROC) load(userptr, "glDrawTransformFeedbackInstancedEXT");
 }
 static void glad_gl_load_GL_EXT_external_buffer( GLADuserptrloadfunc load, void* userptr) {
     if(!GLAD_GL_EXT_external_buffer) return;
@@ -4763,7 +4763,7 @@ int gladLoadGLES2( GLADloadfunc load) {
 
 
 
-
+ 
 
 
 #ifdef __cplusplus

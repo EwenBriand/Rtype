@@ -6,7 +6,7 @@
 *
 *   This header uses:
 *       #define REASINGS_STATIC_INLINE      // Inlines all functions code, so it runs faster.
-*                                           // This needs lots of memory on system.
+*                                           // This requires lots of memory on system.
 *   How to use:
 *   The four inputs t,b,c,d are defined as follows:
 *   t = current time (in any unit measure, but same unit as duration)

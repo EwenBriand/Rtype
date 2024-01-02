@@ -47,7 +47,7 @@ features or fixing bugs.
 
 ## Compiling GLFW
 
-GLFW itself needs only the headers and libraries for your OS and window
+GLFW itself requires only the headers and libraries for your OS and window
 system.  It does not need the headers for any context creation API (WGL, GLX,
 EGL, NSGL, OSMesa) or rendering API (OpenGL, OpenGL ES, Vulkan) to enable
 support for them.
@@ -82,7 +82,7 @@ more information.
 GLFW supports Windows XP and later and macOS 10.8 and later.  Linux and other
 Unix-like systems running the X Window System are supported even without
 a desktop environment or modern extensions, although some features require
-a running window or clipboard manager.  The OSMesa backend needs Mesa 6.3.
+a running window or clipboard manager.  The OSMesa backend requires Mesa 6.3.
 
 See the [compatibility guide](https://www.glfw.org/docs/latest/compat.html)
 in the documentation for more information.
@@ -399,7 +399,7 @@ information on what to include when reporting a bug.
    [EGL] Added loading of glvnd `libOpenGL.so.0` where available for OpenGL
  - [EGL] Bugfix: The `GLFW_DOUBLEBUFFER` context attribute was ignored (#1843)
  - [GLX] Added loading of glvnd `libGLX.so.0` where available
- - [GLX] Bugfix: Context creation failed if GLX 1.4 was not serializeed by GLX library
+ - [GLX] Bugfix: Context creation failed if GLX 1.4 was not exported by GLX library
 
 
 ## Contact

@@ -15,8 +15,8 @@
 
 #include "raylib.h"
 
-#include "resources/audio_data.h"   // Wave file serializeed with ExportWaveAsCode()
-#include "resources/image_data.h"   // Image file serializeed with ExportImageAsCode()
+#include "resources/audio_data.h"   // Wave file exported with ExportWaveAsCode()
+#include "resources/image_data.h"   // Image file exported with ExportImageAsCode()
 
 //------------------------------------------------------------------------------------
 // Program main entry point

@@ -36,7 +36,7 @@ int main(void)
 
     Model models[NUM_MODELS] = { 0 };
 
-    models[0] = LoadModelFromMesh(GenMeshPlane(2, 2, 5, 5));
+    models[0] = LoadModelFromMesh(GenMeshPlane(2, 2, 4, 3));
     models[1] = LoadModelFromMesh(GenMeshCube(2.0f, 1.0f, 2.0f));
     models[2] = LoadModelFromMesh(GenMeshSphere(2, 32, 32));
     models[3] = LoadModelFromMesh(GenMeshHemiSphere(2, 16, 16));
@@ -45,8 +45,8 @@ int main(void)
     models[6] = LoadModelFromMesh(GenMeshKnot(1.0f, 2.0f, 16, 128));
     models[7] = LoadModelFromMesh(GenMeshPoly(5, 2.0f));
     models[8] = LoadModelFromMesh(GenMeshCustom());
-
-    // Generated meshes could be serializeed as .obj files
+    
+    // Generated meshes could be exported as .obj files
     //ExportMesh(models[0].meshes[0], "plane.obj");
     //ExportMesh(models[1].meshes[0], "cube.obj");
     //ExportMesh(models[2].meshes[0], "sphere.obj");

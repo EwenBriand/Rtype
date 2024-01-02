@@ -500,7 +500,7 @@ void _glfwGetMonitorWorkareaCocoa(_GLFWmonitor* monitor,
     if (xpos)
         *xpos = frameRect.origin.x;
     if (ypos)
-        *ypos = _glfwCoreTransformYCocoa(frameRect.origin.y + frameRect.size.height - 1);
+        *ypos = _glfwTransformYCocoa(frameRect.origin.y + frameRect.size.height - 1);
     if (width)
         *width = frameRect.size.width;
     if (height)

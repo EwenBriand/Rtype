@@ -44,7 +44,7 @@ int main(void)
 
         ClearBackground(RAYWHITE);
 
-        // TODO: Draw everything that needs to be drawn at this point:
+        // TODO: Draw everything that requires to be drawn at this point:
 
         DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);  // Example
 

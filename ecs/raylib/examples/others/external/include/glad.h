@@ -56,9 +56,9 @@ typedef void* (* GLADloadproc)(const char *name);
 #  if defined(WIN32) || defined(__CYGWIN__)
 #   if defined(GLAD_GLAPI_EXPORT_BUILD)
 #    if defined(__GNUC__)
-#     define GLAPI __attribute__ ((dllserialize)) extern
+#     define GLAPI __attribute__ ((dllexport)) extern
 #    else
-#     define GLAPI __declspec(dllserialize) extern
+#     define GLAPI __declspec(dllexport) extern
 #    endif
 #   else
 #    if defined(__GNUC__)
@@ -1637,11 +1637,11 @@ typedef GLboolean (APIENTRYP PFNGLISENABLEDIPROC)(GLenum target, GLuint index);
 GLAPI PFNGLISENABLEDIPROC glad_glIsEnabledi;
 #define glIsEnabledi glad_glIsEnabledi
 typedef void (APIENTRYP PFNGLBEGINTRANSFORMFEEDBACKPROC)(GLenum primitiveMode);
-GLAPI PFNGLBEGINTRANSFORMFEEDBACKPROC glad_glBeginCoreTransformFeedback;
-#define glBeginCoreTransformFeedback glad_glBeginCoreTransformFeedback
+GLAPI PFNGLBEGINTRANSFORMFEEDBACKPROC glad_glBeginTransformFeedback;
+#define glBeginTransformFeedback glad_glBeginTransformFeedback
 typedef void (APIENTRYP PFNGLENDTRANSFORMFEEDBACKPROC)();
-GLAPI PFNGLENDTRANSFORMFEEDBACKPROC glad_glEndCoreTransformFeedback;
-#define glEndCoreTransformFeedback glad_glEndCoreTransformFeedback
+GLAPI PFNGLENDTRANSFORMFEEDBACKPROC glad_glEndTransformFeedback;
+#define glEndTransformFeedback glad_glEndTransformFeedback
 typedef void (APIENTRYP PFNGLBINDBUFFERRANGEPROC)(GLenum target, GLuint index, GLuint buffer, GLintptr offset, GLsizeiptr size);
 GLAPI PFNGLBINDBUFFERRANGEPROC glad_glBindBufferRange;
 #define glBindBufferRange glad_glBindBufferRange
@@ -1649,11 +1649,11 @@ typedef void (APIENTRYP PFNGLBINDBUFFERBASEPROC)(GLenum target, GLuint index, GL
 GLAPI PFNGLBINDBUFFERBASEPROC glad_glBindBufferBase;
 #define glBindBufferBase glad_glBindBufferBase
 typedef void (APIENTRYP PFNGLTRANSFORMFEEDBACKVARYINGSPROC)(GLuint program, GLsizei count, const GLchar** varyings, GLenum bufferMode);
-GLAPI PFNGLTRANSFORMFEEDBACKVARYINGSPROC glad_glCoreTransformFeedbackVaryings;
-#define glCoreTransformFeedbackVaryings glad_glCoreTransformFeedbackVaryings
+GLAPI PFNGLTRANSFORMFEEDBACKVARYINGSPROC glad_glTransformFeedbackVaryings;
+#define glTransformFeedbackVaryings glad_glTransformFeedbackVaryings
 typedef void (APIENTRYP PFNGLGETTRANSFORMFEEDBACKVARYINGPROC)(GLuint program, GLuint index, GLsizei bufSize, GLsizei* length, GLsizei* size, GLenum* type, GLchar* name);
-GLAPI PFNGLGETTRANSFORMFEEDBACKVARYINGPROC glad_glGetCoreTransformFeedbackVarying;
-#define glGetCoreTransformFeedbackVarying glad_glGetCoreTransformFeedbackVarying
+GLAPI PFNGLGETTRANSFORMFEEDBACKVARYINGPROC glad_glGetTransformFeedbackVarying;
+#define glGetTransformFeedbackVarying glad_glGetTransformFeedbackVarying
 typedef void (APIENTRYP PFNGLCLAMPCOLORPROC)(GLenum target, GLenum clamp);
 GLAPI PFNGLCLAMPCOLORPROC glad_glClampColor;
 #define glClampColor glad_glClampColor
@@ -3847,7 +3847,7 @@ PFNGLLINEWIDTHPROC glad_glLineWidth;
 PFNGLCOLORP3UIVPROC glad_glColorP3uiv;
 PFNGLGETINTEGERI_VPROC glad_glGetIntegeri_v;
 PFNGLCOMPILESHADERPROC glad_glCompileShader;
-PFNGLGETTRANSFORMFEEDBACKVARYINGPROC glad_glGetCoreTransformFeedbackVarying;
+PFNGLGETTRANSFORMFEEDBACKVARYINGPROC glad_glGetTransformFeedbackVarying;
 PFNGLVERTEXATTRIBIPOINTERPROC glad_glVertexAttribIPointer;
 PFNGLMULTITEXCOORDP3UIPROC glad_glMultiTexCoordP3ui;
 PFNGLVERTEXP4UIPROC glad_glVertexP4ui;
@@ -4004,7 +4004,7 @@ PFNGLDELETESHADERPROC glad_glDeleteShader;
 PFNGLVERTEXATTRIB4NSVPROC glad_glVertexAttrib4Nsv;
 PFNGLVIEWPORTPROC glad_glViewport;
 PFNGLUNIFORM1UIVPROC glad_glUniform1uiv;
-PFNGLTRANSFORMFEEDBACKVARYINGSPROC glad_glCoreTransformFeedbackVaryings;
+PFNGLTRANSFORMFEEDBACKVARYINGSPROC glad_glTransformFeedbackVaryings;
 PFNGLUNIFORM2UIPROC glad_glUniform2ui;
 PFNGLVERTEXATTRIBI3IPROC glad_glVertexAttribI3i;
 PFNGLCLEARDEPTHPROC glad_glClearDepth;
@@ -4133,10 +4133,10 @@ PFNGLCOLORMASKPROC glad_glColorMask;
 PFNGLTEXPARAMETERIIVPROC glad_glTexParameterIiv;
 PFNGLBLENDEQUATIONPROC glad_glBlendEquation;
 PFNGLGETUNIFORMLOCATIONPROC glad_glGetUniformLocation;
-PFNGLENDTRANSFORMFEEDBACKPROC glad_glEndCoreTransformFeedback;
+PFNGLENDTRANSFORMFEEDBACKPROC glad_glEndTransformFeedback;
 PFNGLVERTEXATTRIB4USVPROC glad_glVertexAttrib4usv;
 PFNGLUNIFORM4FVPROC glad_glUniform4fv;
-PFNGLBEGINTRANSFORMFEEDBACKPROC glad_glBeginCoreTransformFeedback;
+PFNGLBEGINTRANSFORMFEEDBACKPROC glad_glBeginTransformFeedback;
 PFNGLVERTEXATTRIBI1IVPROC glad_glVertexAttribI1iv;
 PFNGLISSAMPLERPROC glad_glIsSampler;
 PFNGLVERTEXP3UIPROC glad_glVertexP3ui;
@@ -4711,12 +4711,12 @@ static void load_GL_VERSION_3_0(GLADloadproc load) {
 	glad_glEnablei = (PFNGLENABLEIPROC)load("glEnablei");
 	glad_glDisablei = (PFNGLDISABLEIPROC)load("glDisablei");
 	glad_glIsEnabledi = (PFNGLISENABLEDIPROC)load("glIsEnabledi");
-	glad_glBeginCoreTransformFeedback = (PFNGLBEGINTRANSFORMFEEDBACKPROC)load("glBeginCoreTransformFeedback");
-	glad_glEndCoreTransformFeedback = (PFNGLENDTRANSFORMFEEDBACKPROC)load("glEndCoreTransformFeedback");
+	glad_glBeginTransformFeedback = (PFNGLBEGINTRANSFORMFEEDBACKPROC)load("glBeginTransformFeedback");
+	glad_glEndTransformFeedback = (PFNGLENDTRANSFORMFEEDBACKPROC)load("glEndTransformFeedback");
 	glad_glBindBufferRange = (PFNGLBINDBUFFERRANGEPROC)load("glBindBufferRange");
 	glad_glBindBufferBase = (PFNGLBINDBUFFERBASEPROC)load("glBindBufferBase");
-	glad_glCoreTransformFeedbackVaryings = (PFNGLTRANSFORMFEEDBACKVARYINGSPROC)load("glCoreTransformFeedbackVaryings");
-	glad_glGetCoreTransformFeedbackVarying = (PFNGLGETTRANSFORMFEEDBACKVARYINGPROC)load("glGetCoreTransformFeedbackVarying");
+	glad_glTransformFeedbackVaryings = (PFNGLTRANSFORMFEEDBACKVARYINGSPROC)load("glTransformFeedbackVaryings");
+	glad_glGetTransformFeedbackVarying = (PFNGLGETTRANSFORMFEEDBACKVARYINGPROC)load("glGetTransformFeedbackVarying");
 	glad_glClampColor = (PFNGLCLAMPCOLORPROC)load("glClampColor");
 	glad_glBeginConditionalRender = (PFNGLBEGINCONDITIONALRENDERPROC)load("glBeginConditionalRender");
 	glad_glEndConditionalRender = (PFNGLENDCONDITIONALRENDERPROC)load("glEndConditionalRender");

@@ -2,7 +2,7 @@
 *
 *   raylib [shaders] example - Apply an shdrOutline to a texture
 *
-*   NOTE: This example needs raylib OpenGL 3.3 or ES2 versions for shaders support,
+*   NOTE: This example requires raylib OpenGL 3.3 or ES2 versions for shaders support,
 *         OpenGL 1.1 does not support shaders, recompile raylib to OpenGL 3.3 version.
 *
 *   Example originally created with raylib 4.0, last time updated with raylib 4.0
@@ -20,7 +20,7 @@
 
 #if defined(PLATFORM_DESKTOP)
     #define GLSL_VERSION            330
-#else   // PLATFORM_RPI, PLATFORM_ANDROID, PLATFORM_WEB
+#else   // PLATFORM_ANDROID, PLATFORM_WEB
     #define GLSL_VERSION            100
 #endif
 
@@ -81,7 +81,7 @@ int main(void)
             EndShaderMode();
 
             DrawText("Shader-based\ntexture\noutline", 10, 10, 20, GRAY);
-
+            DrawText("Scroll mouse wheel to\nchange outline size", 10, 72, 20, GRAY);
             DrawText(TextFormat("Outline size: %i px", (int)outlineSize), 10, 120, 20, MAROON);
 
             DrawFPS(710, 10);

@@ -712,7 +712,7 @@ static GLFWbool initExtensions(void)
                                 &_glfw.x11.randr.major,
                                 &_glfw.x11.randr.minor))
             {
-                // The GLFW RandR path needs at least version 1.3
+                // The GLFW RandR path requires at least version 1.3
                 if (_glfw.x11.randr.major > 1 || _glfw.x11.randr.minor >= 3)
                     _glfw.x11.randr.available = GLFW_TRUE;
             }

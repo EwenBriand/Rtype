@@ -72,7 +72,7 @@ Results on the [Silesia compression corpus](http://sun.aei.polsl.pl/~sdeor/index
 This software is available under 2 licenses -- choose whichever you prefer.
 ------------------------------------------------------------------------------
 ALTERNATIVE A - MIT License
-Copyright (c) 2020 Micha Mettke
+Copyright (c) 2020-2023 Micha Mettke
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
 the Software without restriction, including without limitation the rights to
@@ -122,6 +122,7 @@ extern "C" {
 
 struct sinfl {
   const unsigned char *bitptr;
+  const unsigned char *bitend;      // @raysan5: added
   unsigned long long bitbuf;
   int bitcnt;
 
@@ -185,9 +186,10 @@ sinfl_read64(const void *p) {
 }
 static void
 sinfl_copy64(unsigned char **dst, unsigned char **src) {
-  unsigned long long n;
-  memcpy(&n, *src, 8);
-  memcpy(*dst, &n, 8);
+  //unsigned long long n;
+  //memcpy(&n, *src, 8);
+  //memcpy(*dst, &n, 8);
+  memcpy(*dst, *src, 8);    // @raysan5
   *dst += 8, *src += 8;
 }
 static unsigned char*
@@ -210,9 +212,22 @@ sinfl_copy128(unsigned char **dst, unsigned char **src) {
 #endif
 static void
 sinfl_refill(struct sinfl *s) {
-  s->bitbuf |= sinfl_read64(s->bitptr) << s->bitcnt;
-  s->bitptr += (63 - s->bitcnt) >> 3;
-  s->bitcnt |= 56; /* bitcount in range [56,63] */
+  if (s->bitend - s->bitptr >= 8) {
+      // @raysan5: original code, only those 3 lines
+      s->bitbuf |= sinfl_read64(s->bitptr) << s->bitcnt;
+      s->bitptr += (63 - s->bitcnt) >> 3;
+      s->bitcnt |= 56; /* bitcount in range [56,63] */
+  } else {
+      // @raysan5: added this case when bits remaining < 8
+      int bitswant = 63 - s->bitcnt;
+      int byteswant = bitswant >> 3;
+      int bytesuse = s->bitend - s->bitptr <= byteswant ? (int)(s->bitend - s->bitptr) : byteswant;
+      unsigned long long n = 0;
+      memcpy(&n, s->bitptr, bytesuse);
+      s->bitbuf |= n << s->bitcnt;
+      s->bitptr += bytesuse;
+      s->bitcnt += bytesuse << 3;
+  }
 }
 static int
 sinfl_peek(struct sinfl *s, int cnt) {
@@ -384,6 +399,7 @@ sinfl_decompress(unsigned char *out, int cap, const unsigned char *in, int size)
   int last = 0;
 
   s.bitptr = in;
+  s.bitend = e;     // @raysan5: added
   while (1) {
     switch (state) {
     case hdr: {
@@ -400,17 +416,21 @@ sinfl_decompress(unsigned char *out, int cap, const unsigned char *in, int size)
     } break;
     case stored: {
       /* uncompressed block */
-      int len, nlen;
-      sinfl_refill(&s);
+      unsigned len, nlen;
       sinfl__get(&s,s.bitcnt & 7);
-      len = sinfl__get(&s,16);
-      nlen = sinfl__get(&s,16);
-      in -= 2; s.bitcnt = 0;
+      len = (unsigned short)sinfl__get(&s,16);
+      nlen = (unsigned short)sinfl__get(&s,16);
+      s.bitptr -= s.bitcnt / 8;
+      s.bitbuf = s.bitcnt = 0;
 
-      if (len > (e-in) || !len)
+      if ((unsigned short)len != (unsigned short)~nlen)
         return (int)(out-o);
-      memcpy(out, in, (size_t)len);
-      in += len, out += len;
+      if (len > (e - s.bitptr) || !len)
+        return (int)(out-o);
+
+      memcpy(out, s.bitptr, (size_t)len);
+      s.bitptr += len, out += len;
+      if (last) return (int)(out-o);
       state = hdr;
     } break;
     case fixed: {
@@ -443,8 +463,9 @@ sinfl_decompress(unsigned char *out, int cap, const unsigned char *in, int size)
 
       /* decode code lengths */
       for (n = 0; n < nlit + ndist;) {
+        int sym = 0;
         sinfl_refill(&s);
-        int sym = sinfl_decode(&s, hlens, 7);
+        sym = sinfl_decode(&s, hlens, 7);
         switch (sym) {default: lens[n++] = (unsigned char)sym; break;
         case 16: for (i=3+sinfl_get(&s,2);i;i--,n++) lens[n]=lens[n-1]; break;
         case 17: for (i=3+sinfl_get(&s,3);i;i--,n++) lens[n]=0; break;
@@ -458,8 +479,9 @@ sinfl_decompress(unsigned char *out, int cap, const unsigned char *in, int size)
     case blk: {
       /* decompress block */
       while (1) {
+        int sym;
         sinfl_refill(&s);
-        int sym = sinfl_decode(&s, s.lits, 10);
+        sym = sinfl_decode(&s, s.lits, 10);
         if (sym < 256) {
           /* literal */
           if (sinfl_unlikely(out >= oe)) {

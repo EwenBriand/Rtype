@@ -5,7 +5,7 @@
 //
 //   - Generators.  Create parametric surfaces, platonic solids, etc.
 //   - Queries.     Ask a mesh for its axis-aligned bounding box, etc.
-//   - CoreTransforms.  Rotate a mesh, merge it with another, add normals, etc.
+//   - Transforms.  Rotate a mesh, merge it with another, add normals, etc.
 //
 // In addition to the comment block above each function declaration, the API
 // has informal documentation here:
@@ -137,7 +137,7 @@ par_shapes_mesh* par_shapes_create_lsystem(char const* program, int slices,
 // Queries ---------------------------------------------------------------------
 
 // Dump out a text file conforming to the venerable OBJ format.
-void par_shapes_serialize(par_shapes_mesh const*, char const* objfile);
+void par_shapes_export(par_shapes_mesh const*, char const* objfile);
 
 // Take a pointer to 6 floats and set them to min xyz, max xyz.
 void par_shapes_compute_aabb(par_shapes_mesh const* mesh, float* aabb);
@@ -147,7 +147,7 @@ void par_shapes_compute_aabb(par_shapes_mesh const* mesh, float* aabb);
 par_shapes_mesh* par_shapes_clone(par_shapes_mesh const* mesh,
     par_shapes_mesh* target);
 
-// CoreTransformations -------------------------------------------------------------
+// Transformations -------------------------------------------------------------
 
 void par_shapes_merge(par_shapes_mesh* dst, par_shapes_mesh const* src);
 void par_shapes_translate(par_shapes_mesh*, float x, float y, float z);
@@ -505,7 +505,7 @@ void par_shapes_free_mesh(par_shapes_mesh* mesh)
     PAR_FREE(mesh);
 }
 
-void par_shapes_serialize(par_shapes_mesh const* mesh, char const* filename)
+void par_shapes_export(par_shapes_mesh const* mesh, char const* filename)
 {
     FILE* objfile = fopen(filename, "wt");
     float const* points = mesh->points;

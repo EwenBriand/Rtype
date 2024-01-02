@@ -8,7 +8,7 @@
 *
 *   NOTES:
 *     - Model3D (M3D) fileformat specs: https://gitlab.com/bztsrc/model3d
-*     - Bender M3D serializeed: https://gitlab.com/bztsrc/model3d/-/tree/master/blender
+*     - Bender M3D exported: https://gitlab.com/bztsrc/model3d/-/tree/master/blender
 *
 *   Example licensed under an unmodified zlib/libpng license, which is an OSI-certified,
 *   BSD-like license that allows static linking with closed source software
@@ -50,7 +50,7 @@ int main(void)
     Model model = LoadModel(modelFileName); // Load the bind-pose model mesh and basic data
 
     // Load animations
-    unsigned int animsCount = 0;
+    int animsCount = 0;
     int animFrameCounter = 0, animId = 0;
     ModelAnimation *anims = LoadModelAnimations(modelFileName, &animsCount); // Load skeletal animation data
 
@@ -79,20 +79,20 @@ int main(void)
                 animPlaying = true;
             }
 
-            // Select animation by pressing A
-            if (IsKeyPressed(KEY_A))
+            // Select animation by pressing C
+            if (IsKeyPressed(KEY_C))
             {
                 animFrameCounter = 0;
                 animId++;
 
-                if (animId >= animsCount) animId = 0;
+                if (animId >= (int)animsCount) animId = 0;
                 UpdateModelAnimation(model, anims[animId], 0);
                 animPlaying = true;
             }
         }
 
         // Toggle skeleton drawing
-        if (IsKeyPressed(KEY_S)) drawSkeleton ^= 1;
+        if (IsKeyPressed(KEY_B)) drawSkeleton ^= 1;
 
         // Toggle mesh drawing
         if (IsKeyPressed(KEY_M)) drawMesh ^= 1;
@@ -149,9 +149,10 @@ int main(void)
 
             EndMode3D();
 
-            DrawText("PRESS SPACE to PLAY MODEL ANIMATION", 10, GetScreenHeight() - 60, 10, MAROON);
-            DrawText("PRESS A to CYCLE THROUGH ANIMATIONS", 10, GetScreenHeight() - 40, 10, DARKGRAY);
-            DrawText("PRESS M to toggle MESH, S to toggle SKELETON DRAWING", 10, GetScreenHeight() - 20, 10, DARKGRAY);
+            DrawText("PRESS SPACE to PLAY MODEL ANIMATION", 10, GetScreenHeight() - 80, 10, MAROON);
+            DrawText("PRESS N to STEP ONE ANIMATION FRAME", 10, GetScreenHeight() - 60, 10, DARKGRAY);
+            DrawText("PRESS C to CYCLE THROUGH ANIMATIONS", 10, GetScreenHeight() - 40, 10, DARKGRAY);
+            DrawText("PRESS M to toggle MESH, B to toggle SKELETON DRAWING", 10, GetScreenHeight() - 20, 10, DARKGRAY);
             DrawText("(c) CesiumMan model by KhronosGroup", GetScreenWidth() - 210, GetScreenHeight() - 20, 10, GRAY);
 
         EndDrawing();

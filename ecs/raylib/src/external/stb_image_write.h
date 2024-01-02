@@ -72,7 +72,7 @@ USAGE:
 
    You can define STBI_WRITE_NO_STDIO to disable the file variant of these
    functions, so the library will not use stdio.h at all. However, this will
-   also disable HDR writing, because it needs stdio for formatted output.
+   also disable HDR writing, because it requires stdio for formatted output.
 
    Each function returns 0 on failure and non-0 on success.
 
@@ -1177,7 +1177,7 @@ STBIWDEF unsigned char *stbi_write_png_to_mem(const unsigned char *pixels, int s
    STBIW_FREE(filt);
    if (!zlib) return 0;
 
-   // each tag needs 12 bytes of overhead
+   // each tag requires 12 bytes of overhead
    out = (unsigned char *) STBIW_MALLOC(8 + 12+13 + 12+zlen + 12);
    if (!out) return 0;
    *out_len = 8 + 12+13 + 12+zlen + 12;

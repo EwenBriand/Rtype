@@ -255,12 +255,12 @@ extern "C" {
  #error "You must not have both GLFW_DLL and _GLFW_BUILD_DLL defined"
 #endif
 
-/* GLFWAPI is used to declare public API functions for serialize
+/* GLFWAPI is used to declare public API functions for export
  * from the DLL / shared library / dynamic library.
  */
 #if defined(_WIN32) && defined(_GLFW_BUILD_DLL)
  /* We are building GLFW as a Win32 DLL */
- #define GLFWAPI __declspec(dllserialize)
+ #define GLFWAPI __declspec(dllexport)
 #elif defined(_WIN32) && defined(GLFW_DLL)
  /* We are calling a GLFW Win32 DLL */
  #define GLFWAPI __declspec(dllimport)
@@ -674,7 +674,7 @@ extern "C" {
  *  library is [initialized](@ref intro_init).
  *
  *  @analysis Application programmer error.  Initialize GLFW before calling any
- *  function that needs initialization.
+ *  function that requires initialization.
  */
 #define GLFW_NOT_INITIALIZED        0x00010001
 /*! @brief No context is current for this thread.
@@ -780,7 +780,7 @@ extern "C" {
 /*! @brief The specified window does not have an OpenGL or OpenGL ES context.
  *
  *  A window that does not have an OpenGL or OpenGL ES context was passed to
- *  a function that needs it to have one.
+ *  a function that requires it to have one.
  *
  *  @analysis Application programmer error.  Fix the offending call.
  */
@@ -1119,7 +1119,7 @@ extern "C" {
 #define GLFW_WIN32_KEYBOARD_MENU    0x00025001
 /*! @brief Wayland specific
  *  [window hint](@ref GLFW_WAYLAND_APP_ID_hint).
- *
+ *  
  *  Allows specification of the Wayland app_id.
  */
 #define GLFW_WAYLAND_APP_ID         0x00026001
@@ -2196,7 +2196,7 @@ GLFWAPI void glfwTerminate(void);
  *
  *  Some hints are platform specific.  These may be set on any platform but they
  *  will only affect their specific platform.  Other platforms will ignore them.
- *  Setting these hints needs no platform specific headers or functions.
+ *  Setting these hints requires no platform specific headers or functions.
  *
  *  @param[in] hint The [init hint](@ref init_hints) to set.
  *  @param[in] value The new value of the init hint.
@@ -2956,7 +2956,7 @@ GLFWAPI void glfwDefaultWindowHints(void);
  *
  *  Some hints are platform specific.  These may be set on any platform but they
  *  will only affect their specific platform.  Other platforms will ignore them.
- *  Setting these hints needs no platform specific headers or functions.
+ *  Setting these hints requires no platform specific headers or functions.
  *
  *  @param[in] hint The [window hint](@ref window_hints) to set.
  *  @param[in] value The new value of the window hint.
@@ -2991,7 +2991,7 @@ GLFWAPI void glfwWindowHint(int hint, int value);
  *
  *  Some hints are platform specific.  These may be set on any platform but they
  *  will only affect their specific platform.  Other platforms will ignore them.
- *  Setting these hints needs no platform specific headers or functions.
+ *  Setting these hints requires no platform specific headers or functions.
  *
  *  @param[in] hint The [window hint](@ref window_hints) to set.
  *  @param[in] value The new value of the window hint.
@@ -3146,7 +3146,7 @@ GLFWAPI void glfwWindowHintString(int hint, const char* value);
  *  @remark @wayland A full screen window will not attempt to change the mode,
  *  no matter what the requested size or refresh rate.
  *
- *  @remark @wayland Screensaver inhibition needs the idle-inhibit protocol
+ *  @remark @wayland Screensaver inhibition requires the idle-inhibit protocol
  *  to be implemented in the user's compositor.
  *
  *  @thread_safety This function must only be called from the main thread.
@@ -6241,7 +6241,7 @@ GLFWAPI const char** glfwGetRequiredInstanceExtensions(uint32_t* count);
  *
  *  This function returns the address of the specified Vulkan core or extension
  *  function for the specified instance.  If instance is set to `NULL` it can
- *  return any function serializeed from the Vulkan loader, including at least the
+ *  return any function exported from the Vulkan loader, including at least the
  *  following functions:
  *
  *  - `vkEnumerateInstanceExtensionProperties`

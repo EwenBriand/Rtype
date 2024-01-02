@@ -352,7 +352,7 @@ extern int stb_vorbis_get_frame_short            (stb_vorbis *f, int num_c, shor
 
 extern int stb_vorbis_get_samples_float_interleaved(stb_vorbis *f, int channels, float *buffer, int num_floats);
 extern int stb_vorbis_get_samples_float(stb_vorbis *f, int channels, float **buffer, int num_samples);
-// gets num_samples samples, not necessarily on a frame boundary--this needs
+// gets num_samples samples, not necessarily on a frame boundary--this requires
 // buffering so you have to supply the buffers. DOES NOT APPLY THE COERCION RULES.
 // Returns the number of samples stored per channel; it may be less than requested
 // at the end of the file. If there are no more samples in the file, returns 0.
@@ -361,7 +361,7 @@ extern int stb_vorbis_get_samples_float(stb_vorbis *f, int channels, float **buf
 extern int stb_vorbis_get_samples_short_interleaved(stb_vorbis *f, int channels, short *buffer, int num_shorts);
 extern int stb_vorbis_get_samples_short(stb_vorbis *f, int channels, short **buffer, int num_samples);
 #endif
-// gets num_samples samples, not necessarily on a frame boundary--this needs
+// gets num_samples samples, not necessarily on a frame boundary--this requires
 // buffering so you have to supply the buffers. Applies the coercion rules above
 // to produce 'channels' channels. Returns the number of samples stored per channel;
 // it may be less than requested at the end of the file. If there are no more
@@ -445,7 +445,7 @@ enum STBVorbisError
 
 // STB_VORBIS_NO_FAST_SCALED_FLOAT
 //      does not use a fast float-to-int trick to accelerate float-to-int on
-//      most platforms which needs endianness be defined correctly.
+//      most platforms which requires endianness be defined correctly.
 //#define STB_VORBIS_NO_FAST_SCALED_FLOAT
 
 
@@ -502,7 +502,7 @@ enum STBVorbisError
 
 // STB_VORBIS_NO_HUFFMAN_BINARY_SEARCH
 //     If the 'fast huffman' search doesn't succeed, then stb_vorbis falls
-//     back on binary searching for the correct one. This needs storing
+//     back on binary searching for the correct one. This requires storing
 //     extra tables with the huffman codes in sorted order. Defining this
 //     symbol trades off space for speed by forcing a linear search in the
 //     non-fast case, except for "sparse" codebooks.
@@ -540,7 +540,7 @@ enum STBVorbisError
 // STB_VORBIS_NO_DEFER_FLOOR
 //     Normally we only decode the floor without synthesizing the actual
 //     full curve. We can instead synthesize the curve immediately. This
-//     needs more memory and is very likely slower, so I don't think
+//     requires more memory and is very likely slower, so I don't think
 //     you'd ever want to do it except for debugging.
 // #define STB_VORBIS_NO_DEFER_FLOOR
 
@@ -1070,7 +1070,7 @@ static float float32_unpack(uint32 x)
 // increasing frequencies--they rely on the lengths being sorted;
 // this makes for a very simple generation algorithm.
 // vorbis allows a huffman table with non-sorted lengths. This
-// needs a more sophisticated construction, since symbols in
+// requires a more sophisticated construction, since symbols in
 // order do not map to huffman codes "in order".
 static void add_entry(Codebook *c, uint32 huff_code, int symbol, int count, int len, uint32 *values)
 {
@@ -1202,7 +1202,7 @@ static void compute_sorted_huffman(Codebook *c, uint8 *lengths, uint32 *values)
    //   #1: sort a different data structure that says who they correspond to
    //   #2: for each sorted entry, search the original list to find who corresponds
    //   #3: for each original entry, find the sorted entry
-   // #1 needs extra storage, #2 is slow, #3 can use binary search!
+   // #1 requires extra storage, #2 is slow, #3 can use binary search!
    for (i=0; i < len; ++i) {
       int huff_len = c->sparse ? lengths[values[i]] : lengths[i];
       if (include_in_sort(c,huff_len)) {
@@ -2329,7 +2329,7 @@ void inverse_mdct_slow(float *buffer, int n, vorb *f, int blocktype)
 }
 #elif 0
 // transform to use a slow dct-iv; this is STILL basically trivial,
-// but only needs half as many ops
+// but only requires half as many ops
 void dct_iv_slow(float *buffer, int n)
 {
    float mcos[16384];
@@ -3495,7 +3495,7 @@ static int vorbis_finish_frame(stb_vorbis *f, int len, int left, int right)
    if (!prev)
       // there was no previous packet, so this data isn't valid...
       // this isn't entirely true, only the would-have-overlapped data
-      // isn't valid, but this seems to be what the spec needs
+      // isn't valid, but this seems to be what the spec requires
       return 0;
 
    // truncate a short frame
@@ -3519,7 +3519,7 @@ static int vorbis_pump_first_frame(stb_vorbis *f)
 static int is_whole_packet_present(stb_vorbis *f)
 {
    // make sure that we have the packet available before continuing...
-   // this needs a full ogg parse, but we know we can fetch from f->stream
+   // this requires a full ogg parse, but we know we can fetch from f->stream
 
    // instead of coding this out explicitly, we could save the current read state,
    // read the next packet with get8() until end-of-packet, check f->eof, then

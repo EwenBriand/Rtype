@@ -1,7 +1,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////
 //                                                                              //
-// WaveAsCode serializeer v1.0 - Wave data serializeed as an array of bytes           //
+// WaveAsCode exporter v1.0 - Wave data exported as an array of bytes           //
 //                                                                              //
 // more info and bugs-report:  github.com/raysan5/raylib                        //
 // feedback and support:       ray[at]raylib.com                                //

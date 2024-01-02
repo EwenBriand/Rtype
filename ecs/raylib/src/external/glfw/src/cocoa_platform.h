@@ -289,7 +289,7 @@ void _glfwPollMonitorsCocoa(void);
 void _glfwSetVideoModeCocoa(_GLFWmonitor* monitor, const GLFWvidmode* desired);
 void _glfwRestoreVideoModeCocoa(_GLFWmonitor* monitor);
 
-float _glfwCoreTransformYCocoa(float y);
+float _glfwTransformYCocoa(float y);
 
 void* _glfwLoadLocalVulkanLoaderCocoa(void);
 

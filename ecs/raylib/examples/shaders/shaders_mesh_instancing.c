@@ -24,7 +24,7 @@
 
 #if defined(PLATFORM_DESKTOP)
     #define GLSL_VERSION            330
-#else   // PLATFORM_RPI, PLATFORM_ANDROID, PLATFORM_WEB
+#else   // PLATFORM_ANDROID, PLATFORM_WEB
     #define GLSL_VERSION            100
 #endif
 
@@ -63,7 +63,7 @@ int main(void)
         Vector3 axis = Vector3Normalize((Vector3){ (float)GetRandomValue(0, 360), (float)GetRandomValue(0, 360), (float)GetRandomValue(0, 360) });
         float angle = (float)GetRandomValue(0, 10)*DEG2RAD;
         Matrix rotation = MatrixRotate(axis, angle);
-
+        
         transforms[i] = MatrixMultiply(rotation, translation);
     }
 
@@ -73,7 +73,7 @@ int main(void)
     // Get shader locations
     shader.locs[SHADER_LOC_MATRIX_MVP] = GetShaderLocation(shader, "mvp");
     shader.locs[SHADER_LOC_VECTOR_VIEW] = GetShaderLocation(shader, "viewPos");
-    shader.locs[SHADER_LOC_MATRIX_MODEL] = GetShaderLocationAttrib(shader, "instanceCoreTransform");
+    shader.locs[SHADER_LOC_MATRIX_MODEL] = GetShaderLocationAttrib(shader, "instanceTransform");
 
     // Set shader value: ambient light level
     int ambientLoc = GetShaderLocation(shader, "ambient");

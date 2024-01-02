@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////
 //                                                                                    //
-// ImageAsCode serializeer v1.0 - Image pixel data serializeed as an array of bytes         //
+// ImageAsCode exporter v1.0 - Image pixel data exported as an array of bytes         //
 //                                                                                    //
 // more info and bugs-report:  github.com/raysan5/raylib                              //
 // feedback and support:       ray[at]raylib.com                                      //

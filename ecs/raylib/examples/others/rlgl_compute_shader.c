@@ -2,7 +2,7 @@
 *
 *   raylib [rlgl] example - compute shader - Conway's Game of Life
 *
-*   NOTE: This example needs raylib OpenGL 4.3 versions for compute shaders support,
+*   NOTE: This example requires raylib OpenGL 4.3 versions for compute shaders support,
 *         shaders used in this example are #version 430 (OpenGL 4.3)
 *
 *   Example originally created with raylib 4.0, last time updated with raylib 2.5

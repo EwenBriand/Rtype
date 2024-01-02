@@ -104,7 +104,7 @@ echo      this flag.
 echo.
 echo * This is mostly here to make building simple "shipping" versions
 echo   easier, and it's a very small bit in the build scripts. The option
-echo   needs that you have upx installed and on your path, of course.
+echo   requires that you have upx installed and on your path, of course.
 echo.
 echo Examples:
 echo  Build a release build:                    build-windows.bat

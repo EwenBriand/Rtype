@@ -2,7 +2,7 @@
 *
 *   raylib [shapes] example - easings rectangle array
 *
-*   NOTE: This example needs 'easings.h' library, provided on raylib/src. Just copy
+*   NOTE: This example requires 'easings.h' library, provided on raylib/src. Just copy
 *   the library to same directory as example or make sure it's available on include path.
 *
 *   Example originally created with raylib 2.0, last time updated with raylib 2.5

@@ -38,7 +38,7 @@
  #define WIN32_LEAN_AND_MEAN
 #endif
 
-// This is a workaround for the fact that glfw3.h needs to serialize APIENTRY (for
+// This is a workaround for the fact that glfw3.h needs to export APIENTRY (for
 // example to allow applications to correctly declare a GL_KHR_debug callback)
 // but windows.h assumes no one will define APIENTRY before it does
 #undef APIENTRY
@@ -48,7 +48,7 @@
  #define UNICODE
 #endif
 
-// GLFW needs Windows XP or later
+// GLFW requires Windows XP or later
 #if WINVER < 0x0501
  #undef WINVER
  #define WINVER 0x0501

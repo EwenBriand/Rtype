@@ -6,7 +6,7 @@ attribute vec2 vertexTexCoord;
 attribute vec3 vertexNormal;
 attribute vec4 vertexColor;
 
-attribute mat4 instanceCoreTransform;
+attribute mat4 instanceTransform;
 
 // Input uniform values
 uniform mat4 mvp;
@@ -23,7 +23,7 @@ varying vec3 fragNormal;
 void main()
 {
     // Compute MVP for current instance
-    mat4 mvpi = mvp*instanceCoreTransform;
+    mat4 mvpi = mvp*instanceTransform;
 
     // Send vertex attributes to fragment shader
     fragPosition = vec3(mvpi*vec4(vertexPosition, 1.0));

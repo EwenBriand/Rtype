@@ -120,9 +120,9 @@ extern "C" {
     #if GLAD_PLATFORM_WIN32 || defined(__CYGWIN__)
       #if defined(GLAD_API_CALL_EXPORT_BUILD)
         #if defined(__GNUC__)
-          #define GLAD_API_CALL __attribute__ ((dllserialize)) extern
+          #define GLAD_API_CALL __attribute__ ((dllexport)) extern
         #else
-          #define GLAD_API_CALL __declspec(dllserialize) extern
+          #define GLAD_API_CALL __declspec(dllexport) extern
         #endif
       #else
         #if defined(__GNUC__)
@@ -3707,8 +3707,8 @@ GLAD_API_CALL PFNGLBEGINQUERYARBPROC glad_glBeginQueryARB;
 #define glBeginQueryARB glad_glBeginQueryARB
 GLAD_API_CALL PFNGLBEGINQUERYINDEXEDPROC glad_glBeginQueryIndexed;
 #define glBeginQueryIndexed glad_glBeginQueryIndexed
-GLAD_API_CALL PFNGLBEGINTRANSFORMFEEDBACKPROC glad_glBeginCoreTransformFeedback;
-#define glBeginCoreTransformFeedback glad_glBeginCoreTransformFeedback
+GLAD_API_CALL PFNGLBEGINTRANSFORMFEEDBACKPROC glad_glBeginTransformFeedback;
+#define glBeginTransformFeedback glad_glBeginTransformFeedback
 GLAD_API_CALL PFNGLBINDATTRIBLOCATIONPROC glad_glBindAttribLocation;
 #define glBindAttribLocation glad_glBindAttribLocation
 GLAD_API_CALL PFNGLBINDATTRIBLOCATIONARBPROC glad_glBindAttribLocationARB;
@@ -3755,8 +3755,8 @@ GLAD_API_CALL PFNGLBINDTEXTUREUNITPROC glad_glBindTextureUnit;
 #define glBindTextureUnit glad_glBindTextureUnit
 GLAD_API_CALL PFNGLBINDTEXTURESPROC glad_glBindTextures;
 #define glBindTextures glad_glBindTextures
-GLAD_API_CALL PFNGLBINDTRANSFORMFEEDBACKPROC glad_glBindCoreTransformFeedback;
-#define glBindCoreTransformFeedback glad_glBindCoreTransformFeedback
+GLAD_API_CALL PFNGLBINDTRANSFORMFEEDBACKPROC glad_glBindTransformFeedback;
+#define glBindTransformFeedback glad_glBindTransformFeedback
 GLAD_API_CALL PFNGLBINDVERTEXARRAYPROC glad_glBindVertexArray;
 #define glBindVertexArray glad_glBindVertexArray
 GLAD_API_CALL PFNGLBINDVERTEXBUFFERPROC glad_glBindVertexBuffer;
@@ -3967,8 +3967,8 @@ GLAD_API_CALL PFNGLCREATESHADERPROGRAMVPROC glad_glCreateShaderProgramv;
 #define glCreateShaderProgramv glad_glCreateShaderProgramv
 GLAD_API_CALL PFNGLCREATETEXTURESPROC glad_glCreateTextures;
 #define glCreateTextures glad_glCreateTextures
-GLAD_API_CALL PFNGLCREATETRANSFORMFEEDBACKSPROC glad_glCreateCoreTransformFeedbacks;
-#define glCreateCoreTransformFeedbacks glad_glCreateCoreTransformFeedbacks
+GLAD_API_CALL PFNGLCREATETRANSFORMFEEDBACKSPROC glad_glCreateTransformFeedbacks;
+#define glCreateTransformFeedbacks glad_glCreateTransformFeedbacks
 GLAD_API_CALL PFNGLCREATEVERTEXARRAYSPROC glad_glCreateVertexArrays;
 #define glCreateVertexArrays glad_glCreateVertexArrays
 GLAD_API_CALL PFNGLCULLFACEPROC glad_glCullFace;
@@ -4019,8 +4019,8 @@ GLAD_API_CALL PFNGLDELETESYNCPROC glad_glDeleteSync;
 #define glDeleteSync glad_glDeleteSync
 GLAD_API_CALL PFNGLDELETETEXTURESPROC glad_glDeleteTextures;
 #define glDeleteTextures glad_glDeleteTextures
-GLAD_API_CALL PFNGLDELETETRANSFORMFEEDBACKSPROC glad_glDeleteCoreTransformFeedbacks;
-#define glDeleteCoreTransformFeedbacks glad_glDeleteCoreTransformFeedbacks
+GLAD_API_CALL PFNGLDELETETRANSFORMFEEDBACKSPROC glad_glDeleteTransformFeedbacks;
+#define glDeleteTransformFeedbacks glad_glDeleteTransformFeedbacks
 GLAD_API_CALL PFNGLDELETEVERTEXARRAYSPROC glad_glDeleteVertexArrays;
 #define glDeleteVertexArrays glad_glDeleteVertexArrays
 GLAD_API_CALL PFNGLDEPTHFUNCPROC glad_glDepthFunc;
@@ -4097,14 +4097,14 @@ GLAD_API_CALL PFNGLDRAWRANGEELEMENTSPROC glad_glDrawRangeElements;
 #define glDrawRangeElements glad_glDrawRangeElements
 GLAD_API_CALL PFNGLDRAWRANGEELEMENTSBASEVERTEXPROC glad_glDrawRangeElementsBaseVertex;
 #define glDrawRangeElementsBaseVertex glad_glDrawRangeElementsBaseVertex
-GLAD_API_CALL PFNGLDRAWTRANSFORMFEEDBACKPROC glad_glDrawCoreTransformFeedback;
-#define glDrawCoreTransformFeedback glad_glDrawCoreTransformFeedback
-GLAD_API_CALL PFNGLDRAWTRANSFORMFEEDBACKINSTANCEDPROC glad_glDrawCoreTransformFeedbackInstanced;
-#define glDrawCoreTransformFeedbackInstanced glad_glDrawCoreTransformFeedbackInstanced
-GLAD_API_CALL PFNGLDRAWTRANSFORMFEEDBACKSTREAMPROC glad_glDrawCoreTransformFeedbackStream;
-#define glDrawCoreTransformFeedbackStream glad_glDrawCoreTransformFeedbackStream
-GLAD_API_CALL PFNGLDRAWTRANSFORMFEEDBACKSTREAMINSTANCEDPROC glad_glDrawCoreTransformFeedbackStreamInstanced;
-#define glDrawCoreTransformFeedbackStreamInstanced glad_glDrawCoreTransformFeedbackStreamInstanced
+GLAD_API_CALL PFNGLDRAWTRANSFORMFEEDBACKPROC glad_glDrawTransformFeedback;
+#define glDrawTransformFeedback glad_glDrawTransformFeedback
+GLAD_API_CALL PFNGLDRAWTRANSFORMFEEDBACKINSTANCEDPROC glad_glDrawTransformFeedbackInstanced;
+#define glDrawTransformFeedbackInstanced glad_glDrawTransformFeedbackInstanced
+GLAD_API_CALL PFNGLDRAWTRANSFORMFEEDBACKSTREAMPROC glad_glDrawTransformFeedbackStream;
+#define glDrawTransformFeedbackStream glad_glDrawTransformFeedbackStream
+GLAD_API_CALL PFNGLDRAWTRANSFORMFEEDBACKSTREAMINSTANCEDPROC glad_glDrawTransformFeedbackStreamInstanced;
+#define glDrawTransformFeedbackStreamInstanced glad_glDrawTransformFeedbackStreamInstanced
 GLAD_API_CALL PFNGLENABLEPROC glad_glEnable;
 #define glEnable glad_glEnable
 GLAD_API_CALL PFNGLENABLEVERTEXARRAYATTRIBPROC glad_glEnableVertexArrayAttrib;
@@ -4123,8 +4123,8 @@ GLAD_API_CALL PFNGLENDQUERYARBPROC glad_glEndQueryARB;
 #define glEndQueryARB glad_glEndQueryARB
 GLAD_API_CALL PFNGLENDQUERYINDEXEDPROC glad_glEndQueryIndexed;
 #define glEndQueryIndexed glad_glEndQueryIndexed
-GLAD_API_CALL PFNGLENDTRANSFORMFEEDBACKPROC glad_glEndCoreTransformFeedback;
-#define glEndCoreTransformFeedback glad_glEndCoreTransformFeedback
+GLAD_API_CALL PFNGLENDTRANSFORMFEEDBACKPROC glad_glEndTransformFeedback;
+#define glEndTransformFeedback glad_glEndTransformFeedback
 GLAD_API_CALL PFNGLEVALCOORD1XOESPROC glad_glEvalCoord1xOES;
 #define glEvalCoord1xOES glad_glEvalCoord1xOES
 GLAD_API_CALL PFNGLEVALCOORD1XVOESPROC glad_glEvalCoord1xvOES;
@@ -4219,8 +4219,8 @@ GLAD_API_CALL PFNGLGENSAMPLERSPROC glad_glGenSamplers;
 #define glGenSamplers glad_glGenSamplers
 GLAD_API_CALL PFNGLGENTEXTURESPROC glad_glGenTextures;
 #define glGenTextures glad_glGenTextures
-GLAD_API_CALL PFNGLGENTRANSFORMFEEDBACKSPROC glad_glGenCoreTransformFeedbacks;
-#define glGenCoreTransformFeedbacks glad_glGenCoreTransformFeedbacks
+GLAD_API_CALL PFNGLGENTRANSFORMFEEDBACKSPROC glad_glGenTransformFeedbacks;
+#define glGenTransformFeedbacks glad_glGenTransformFeedbacks
 GLAD_API_CALL PFNGLGENVERTEXARRAYSPROC glad_glGenVertexArrays;
 #define glGenVertexArrays glad_glGenVertexArrays
 GLAD_API_CALL PFNGLGENERATEMIPMAPPROC glad_glGenerateMipmap;
@@ -4505,14 +4505,14 @@ GLAD_API_CALL PFNGLGETTEXTUREPARAMETERIVPROC glad_glGetTextureParameteriv;
 #define glGetTextureParameteriv glad_glGetTextureParameteriv
 GLAD_API_CALL PFNGLGETTEXTURESUBIMAGEPROC glad_glGetTextureSubImage;
 #define glGetTextureSubImage glad_glGetTextureSubImage
-GLAD_API_CALL PFNGLGETTRANSFORMFEEDBACKVARYINGPROC glad_glGetCoreTransformFeedbackVarying;
-#define glGetCoreTransformFeedbackVarying glad_glGetCoreTransformFeedbackVarying
-GLAD_API_CALL PFNGLGETTRANSFORMFEEDBACKI64_VPROC glad_glGetCoreTransformFeedbacki64_v;
-#define glGetCoreTransformFeedbacki64_v glad_glGetCoreTransformFeedbacki64_v
-GLAD_API_CALL PFNGLGETTRANSFORMFEEDBACKI_VPROC glad_glGetCoreTransformFeedbacki_v;
-#define glGetCoreTransformFeedbacki_v glad_glGetCoreTransformFeedbacki_v
-GLAD_API_CALL PFNGLGETTRANSFORMFEEDBACKIVPROC glad_glGetCoreTransformFeedbackiv;
-#define glGetCoreTransformFeedbackiv glad_glGetCoreTransformFeedbackiv
+GLAD_API_CALL PFNGLGETTRANSFORMFEEDBACKVARYINGPROC glad_glGetTransformFeedbackVarying;
+#define glGetTransformFeedbackVarying glad_glGetTransformFeedbackVarying
+GLAD_API_CALL PFNGLGETTRANSFORMFEEDBACKI64_VPROC glad_glGetTransformFeedbacki64_v;
+#define glGetTransformFeedbacki64_v glad_glGetTransformFeedbacki64_v
+GLAD_API_CALL PFNGLGETTRANSFORMFEEDBACKI_VPROC glad_glGetTransformFeedbacki_v;
+#define glGetTransformFeedbacki_v glad_glGetTransformFeedbacki_v
+GLAD_API_CALL PFNGLGETTRANSFORMFEEDBACKIVPROC glad_glGetTransformFeedbackiv;
+#define glGetTransformFeedbackiv glad_glGetTransformFeedbackiv
 GLAD_API_CALL PFNGLGETUNIFORMBLOCKINDEXPROC glad_glGetUniformBlockIndex;
 #define glGetUniformBlockIndex glad_glGetUniformBlockIndex
 GLAD_API_CALL PFNGLGETUNIFORMINDICESPROC glad_glGetUniformIndices;
@@ -4629,8 +4629,8 @@ GLAD_API_CALL PFNGLISSYNCPROC glad_glIsSync;
 #define glIsSync glad_glIsSync
 GLAD_API_CALL PFNGLISTEXTUREPROC glad_glIsTexture;
 #define glIsTexture glad_glIsTexture
-GLAD_API_CALL PFNGLISTRANSFORMFEEDBACKPROC glad_glIsCoreTransformFeedback;
-#define glIsCoreTransformFeedback glad_glIsCoreTransformFeedback
+GLAD_API_CALL PFNGLISTRANSFORMFEEDBACKPROC glad_glIsTransformFeedback;
+#define glIsTransformFeedback glad_glIsTransformFeedback
 GLAD_API_CALL PFNGLISVERTEXARRAYPROC glad_glIsVertexArray;
 #define glIsVertexArray glad_glIsVertexArray
 GLAD_API_CALL PFNGLLIGHTMODELXOESPROC glad_glLightModelxOES;
@@ -4831,8 +4831,8 @@ GLAD_API_CALL PFNGLPATCHPARAMETERFVPROC glad_glPatchParameterfv;
 #define glPatchParameterfv glad_glPatchParameterfv
 GLAD_API_CALL PFNGLPATCHPARAMETERIPROC glad_glPatchParameteri;
 #define glPatchParameteri glad_glPatchParameteri
-GLAD_API_CALL PFNGLPAUSETRANSFORMFEEDBACKPROC glad_glPauseCoreTransformFeedback;
-#define glPauseCoreTransformFeedback glad_glPauseCoreTransformFeedback
+GLAD_API_CALL PFNGLPAUSETRANSFORMFEEDBACKPROC glad_glPauseTransformFeedback;
+#define glPauseTransformFeedback glad_glPauseTransformFeedback
 GLAD_API_CALL PFNGLPIXELMAPXPROC glad_glPixelMapx;
 #define glPixelMapx glad_glPixelMapx
 GLAD_API_CALL PFNGLPIXELSTOREFPROC glad_glPixelStoref;
@@ -5065,8 +5065,8 @@ GLAD_API_CALL PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC glad_glRenderbufferStorage
 #define glRenderbufferStorageMultisample glad_glRenderbufferStorageMultisample
 GLAD_API_CALL PFNGLRENDERBUFFERSTORAGEMULTISAMPLEEXTPROC glad_glRenderbufferStorageMultisampleEXT;
 #define glRenderbufferStorageMultisampleEXT glad_glRenderbufferStorageMultisampleEXT
-GLAD_API_CALL PFNGLRESUMETRANSFORMFEEDBACKPROC glad_glResumeCoreTransformFeedback;
-#define glResumeCoreTransformFeedback glad_glResumeCoreTransformFeedback
+GLAD_API_CALL PFNGLRESUMETRANSFORMFEEDBACKPROC glad_glResumeTransformFeedback;
+#define glResumeTransformFeedback glad_glResumeTransformFeedback
 GLAD_API_CALL PFNGLROTATEXOESPROC glad_glRotatexOES;
 #define glRotatexOES glad_glRotatexOES
 GLAD_API_CALL PFNGLSAMPLECOVERAGEPROC glad_glSampleCoverage;
@@ -5223,12 +5223,12 @@ GLAD_API_CALL PFNGLTEXTURESUBIMAGE3DPROC glad_glTextureSubImage3D;
 #define glTextureSubImage3D glad_glTextureSubImage3D
 GLAD_API_CALL PFNGLTEXTUREVIEWPROC glad_glTextureView;
 #define glTextureView glad_glTextureView
-GLAD_API_CALL PFNGLTRANSFORMFEEDBACKBUFFERBASEPROC glad_glCoreTransformFeedbackBufferBase;
-#define glCoreTransformFeedbackBufferBase glad_glCoreTransformFeedbackBufferBase
-GLAD_API_CALL PFNGLTRANSFORMFEEDBACKBUFFERRANGEPROC glad_glCoreTransformFeedbackBufferRange;
-#define glCoreTransformFeedbackBufferRange glad_glCoreTransformFeedbackBufferRange
-GLAD_API_CALL PFNGLTRANSFORMFEEDBACKVARYINGSPROC glad_glCoreTransformFeedbackVaryings;
-#define glCoreTransformFeedbackVaryings glad_glCoreTransformFeedbackVaryings
+GLAD_API_CALL PFNGLTRANSFORMFEEDBACKBUFFERBASEPROC glad_glTransformFeedbackBufferBase;
+#define glTransformFeedbackBufferBase glad_glTransformFeedbackBufferBase
+GLAD_API_CALL PFNGLTRANSFORMFEEDBACKBUFFERRANGEPROC glad_glTransformFeedbackBufferRange;
+#define glTransformFeedbackBufferRange glad_glTransformFeedbackBufferRange
+GLAD_API_CALL PFNGLTRANSFORMFEEDBACKVARYINGSPROC glad_glTransformFeedbackVaryings;
+#define glTransformFeedbackVaryings glad_glTransformFeedbackVaryings
 GLAD_API_CALL PFNGLTRANSLATEXOESPROC glad_glTranslatexOES;
 #define glTranslatexOES glad_glTranslatexOES
 GLAD_API_CALL PFNGLUNIFORM1DPROC glad_glUniform1d;
@@ -5883,7 +5883,7 @@ PFNGLBEGINCONDITIONALRENDERPROC glad_glBeginConditionalRender = NULL;
 PFNGLBEGINQUERYPROC glad_glBeginQuery = NULL;
 PFNGLBEGINQUERYARBPROC glad_glBeginQueryARB = NULL;
 PFNGLBEGINQUERYINDEXEDPROC glad_glBeginQueryIndexed = NULL;
-PFNGLBEGINTRANSFORMFEEDBACKPROC glad_glBeginCoreTransformFeedback = NULL;
+PFNGLBEGINTRANSFORMFEEDBACKPROC glad_glBeginTransformFeedback = NULL;
 PFNGLBINDATTRIBLOCATIONPROC glad_glBindAttribLocation = NULL;
 PFNGLBINDATTRIBLOCATIONARBPROC glad_glBindAttribLocationARB = NULL;
 PFNGLBINDBUFFERPROC glad_glBindBuffer = NULL;
@@ -5907,7 +5907,7 @@ PFNGLBINDSAMPLERSPROC glad_glBindSamplers = NULL;
 PFNGLBINDTEXTUREPROC glad_glBindTexture = NULL;
 PFNGLBINDTEXTUREUNITPROC glad_glBindTextureUnit = NULL;
 PFNGLBINDTEXTURESPROC glad_glBindTextures = NULL;
-PFNGLBINDTRANSFORMFEEDBACKPROC glad_glBindCoreTransformFeedback = NULL;
+PFNGLBINDTRANSFORMFEEDBACKPROC glad_glBindTransformFeedback = NULL;
 PFNGLBINDVERTEXARRAYPROC glad_glBindVertexArray = NULL;
 PFNGLBINDVERTEXBUFFERPROC glad_glBindVertexBuffer = NULL;
 PFNGLBINDVERTEXBUFFERSPROC glad_glBindVertexBuffers = NULL;
@@ -6013,7 +6013,7 @@ PFNGLCREATESHADERPROC glad_glCreateShader = NULL;
 PFNGLCREATESHADEROBJECTARBPROC glad_glCreateShaderObjectARB = NULL;
 PFNGLCREATESHADERPROGRAMVPROC glad_glCreateShaderProgramv = NULL;
 PFNGLCREATETEXTURESPROC glad_glCreateTextures = NULL;
-PFNGLCREATETRANSFORMFEEDBACKSPROC glad_glCreateCoreTransformFeedbacks = NULL;
+PFNGLCREATETRANSFORMFEEDBACKSPROC glad_glCreateTransformFeedbacks = NULL;
 PFNGLCREATEVERTEXARRAYSPROC glad_glCreateVertexArrays = NULL;
 PFNGLCULLFACEPROC glad_glCullFace = NULL;
 PFNGLDEBUGMESSAGECALLBACKPROC glad_glDebugMessageCallback = NULL;
@@ -6039,7 +6039,7 @@ PFNGLDELETESAMPLERSPROC glad_glDeleteSamplers = NULL;
 PFNGLDELETESHADERPROC glad_glDeleteShader = NULL;
 PFNGLDELETESYNCPROC glad_glDeleteSync = NULL;
 PFNGLDELETETEXTURESPROC glad_glDeleteTextures = NULL;
-PFNGLDELETETRANSFORMFEEDBACKSPROC glad_glDeleteCoreTransformFeedbacks = NULL;
+PFNGLDELETETRANSFORMFEEDBACKSPROC glad_glDeleteTransformFeedbacks = NULL;
 PFNGLDELETEVERTEXARRAYSPROC glad_glDeleteVertexArrays = NULL;
 PFNGLDEPTHFUNCPROC glad_glDepthFunc = NULL;
 PFNGLDEPTHMASKPROC glad_glDepthMask = NULL;
@@ -6078,10 +6078,10 @@ PFNGLDRAWELEMENTSINSTANCEDBASEVERTEXBASEINSTANCEPROC glad_glDrawElementsInstance
 PFNGLDRAWELEMENTSINSTANCEDEXTPROC glad_glDrawElementsInstancedEXT = NULL;
 PFNGLDRAWRANGEELEMENTSPROC glad_glDrawRangeElements = NULL;
 PFNGLDRAWRANGEELEMENTSBASEVERTEXPROC glad_glDrawRangeElementsBaseVertex = NULL;
-PFNGLDRAWTRANSFORMFEEDBACKPROC glad_glDrawCoreTransformFeedback = NULL;
-PFNGLDRAWTRANSFORMFEEDBACKINSTANCEDPROC glad_glDrawCoreTransformFeedbackInstanced = NULL;
-PFNGLDRAWTRANSFORMFEEDBACKSTREAMPROC glad_glDrawCoreTransformFeedbackStream = NULL;
-PFNGLDRAWTRANSFORMFEEDBACKSTREAMINSTANCEDPROC glad_glDrawCoreTransformFeedbackStreamInstanced = NULL;
+PFNGLDRAWTRANSFORMFEEDBACKPROC glad_glDrawTransformFeedback = NULL;
+PFNGLDRAWTRANSFORMFEEDBACKINSTANCEDPROC glad_glDrawTransformFeedbackInstanced = NULL;
+PFNGLDRAWTRANSFORMFEEDBACKSTREAMPROC glad_glDrawTransformFeedbackStream = NULL;
+PFNGLDRAWTRANSFORMFEEDBACKSTREAMINSTANCEDPROC glad_glDrawTransformFeedbackStreamInstanced = NULL;
 PFNGLENABLEPROC glad_glEnable = NULL;
 PFNGLENABLEVERTEXARRAYATTRIBPROC glad_glEnableVertexArrayAttrib = NULL;
 PFNGLENABLEVERTEXATTRIBARRAYPROC glad_glEnableVertexAttribArray = NULL;
@@ -6091,7 +6091,7 @@ PFNGLENDCONDITIONALRENDERPROC glad_glEndConditionalRender = NULL;
 PFNGLENDQUERYPROC glad_glEndQuery = NULL;
 PFNGLENDQUERYARBPROC glad_glEndQueryARB = NULL;
 PFNGLENDQUERYINDEXEDPROC glad_glEndQueryIndexed = NULL;
-PFNGLENDTRANSFORMFEEDBACKPROC glad_glEndCoreTransformFeedback = NULL;
+PFNGLENDTRANSFORMFEEDBACKPROC glad_glEndTransformFeedback = NULL;
 PFNGLEVALCOORD1XOESPROC glad_glEvalCoord1xOES = NULL;
 PFNGLEVALCOORD1XVOESPROC glad_glEvalCoord1xvOES = NULL;
 PFNGLEVALCOORD2XOESPROC glad_glEvalCoord2xOES = NULL;
@@ -6139,7 +6139,7 @@ PFNGLGENRENDERBUFFERSPROC glad_glGenRenderbuffers = NULL;
 PFNGLGENRENDERBUFFERSEXTPROC glad_glGenRenderbuffersEXT = NULL;
 PFNGLGENSAMPLERSPROC glad_glGenSamplers = NULL;
 PFNGLGENTEXTURESPROC glad_glGenTextures = NULL;
-PFNGLGENTRANSFORMFEEDBACKSPROC glad_glGenCoreTransformFeedbacks = NULL;
+PFNGLGENTRANSFORMFEEDBACKSPROC glad_glGenTransformFeedbacks = NULL;
 PFNGLGENVERTEXARRAYSPROC glad_glGenVertexArrays = NULL;
 PFNGLGENERATEMIPMAPPROC glad_glGenerateMipmap = NULL;
 PFNGLGENERATEMIPMAPEXTPROC glad_glGenerateMipmapEXT = NULL;
@@ -6282,10 +6282,10 @@ PFNGLGETTEXTUREPARAMETERIUIVPROC glad_glGetTextureParameterIuiv = NULL;
 PFNGLGETTEXTUREPARAMETERFVPROC glad_glGetTextureParameterfv = NULL;
 PFNGLGETTEXTUREPARAMETERIVPROC glad_glGetTextureParameteriv = NULL;
 PFNGLGETTEXTURESUBIMAGEPROC glad_glGetTextureSubImage = NULL;
-PFNGLGETTRANSFORMFEEDBACKVARYINGPROC glad_glGetCoreTransformFeedbackVarying = NULL;
-PFNGLGETTRANSFORMFEEDBACKI64_VPROC glad_glGetCoreTransformFeedbacki64_v = NULL;
-PFNGLGETTRANSFORMFEEDBACKI_VPROC glad_glGetCoreTransformFeedbacki_v = NULL;
-PFNGLGETTRANSFORMFEEDBACKIVPROC glad_glGetCoreTransformFeedbackiv = NULL;
+PFNGLGETTRANSFORMFEEDBACKVARYINGPROC glad_glGetTransformFeedbackVarying = NULL;
+PFNGLGETTRANSFORMFEEDBACKI64_VPROC glad_glGetTransformFeedbacki64_v = NULL;
+PFNGLGETTRANSFORMFEEDBACKI_VPROC glad_glGetTransformFeedbacki_v = NULL;
+PFNGLGETTRANSFORMFEEDBACKIVPROC glad_glGetTransformFeedbackiv = NULL;
 PFNGLGETUNIFORMBLOCKINDEXPROC glad_glGetUniformBlockIndex = NULL;
 PFNGLGETUNIFORMINDICESPROC glad_glGetUniformIndices = NULL;
 PFNGLGETUNIFORMLOCATIONPROC glad_glGetUniformLocation = NULL;
@@ -6344,7 +6344,7 @@ PFNGLISSAMPLERPROC glad_glIsSampler = NULL;
 PFNGLISSHADERPROC glad_glIsShader = NULL;
 PFNGLISSYNCPROC glad_glIsSync = NULL;
 PFNGLISTEXTUREPROC glad_glIsTexture = NULL;
-PFNGLISTRANSFORMFEEDBACKPROC glad_glIsCoreTransformFeedback = NULL;
+PFNGLISTRANSFORMFEEDBACKPROC glad_glIsTransformFeedback = NULL;
 PFNGLISVERTEXARRAYPROC glad_glIsVertexArray = NULL;
 PFNGLLIGHTMODELXOESPROC glad_glLightModelxOES = NULL;
 PFNGLLIGHTMODELXVOESPROC glad_glLightModelxvOES = NULL;
@@ -6445,7 +6445,7 @@ PFNGLORTHOXOESPROC glad_glOrthoxOES = NULL;
 PFNGLPASSTHROUGHXOESPROC glad_glPassThroughxOES = NULL;
 PFNGLPATCHPARAMETERFVPROC glad_glPatchParameterfv = NULL;
 PFNGLPATCHPARAMETERIPROC glad_glPatchParameteri = NULL;
-PFNGLPAUSETRANSFORMFEEDBACKPROC glad_glPauseCoreTransformFeedback = NULL;
+PFNGLPAUSETRANSFORMFEEDBACKPROC glad_glPauseTransformFeedback = NULL;
 PFNGLPIXELMAPXPROC glad_glPixelMapx = NULL;
 PFNGLPIXELSTOREFPROC glad_glPixelStoref = NULL;
 PFNGLPIXELSTOREIPROC glad_glPixelStorei = NULL;
@@ -6562,7 +6562,7 @@ PFNGLRENDERBUFFERSTORAGEPROC glad_glRenderbufferStorage = NULL;
 PFNGLRENDERBUFFERSTORAGEEXTPROC glad_glRenderbufferStorageEXT = NULL;
 PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC glad_glRenderbufferStorageMultisample = NULL;
 PFNGLRENDERBUFFERSTORAGEMULTISAMPLEEXTPROC glad_glRenderbufferStorageMultisampleEXT = NULL;
-PFNGLRESUMETRANSFORMFEEDBACKPROC glad_glResumeCoreTransformFeedback = NULL;
+PFNGLRESUMETRANSFORMFEEDBACKPROC glad_glResumeTransformFeedback = NULL;
 PFNGLROTATEXOESPROC glad_glRotatexOES = NULL;
 PFNGLSAMPLECOVERAGEPROC glad_glSampleCoverage = NULL;
 PFNGLSAMPLECOVERAGEARBPROC glad_glSampleCoverageARB = NULL;
@@ -6641,9 +6641,9 @@ PFNGLTEXTURESUBIMAGE1DPROC glad_glTextureSubImage1D = NULL;
 PFNGLTEXTURESUBIMAGE2DPROC glad_glTextureSubImage2D = NULL;
 PFNGLTEXTURESUBIMAGE3DPROC glad_glTextureSubImage3D = NULL;
 PFNGLTEXTUREVIEWPROC glad_glTextureView = NULL;
-PFNGLTRANSFORMFEEDBACKBUFFERBASEPROC glad_glCoreTransformFeedbackBufferBase = NULL;
-PFNGLTRANSFORMFEEDBACKBUFFERRANGEPROC glad_glCoreTransformFeedbackBufferRange = NULL;
-PFNGLTRANSFORMFEEDBACKVARYINGSPROC glad_glCoreTransformFeedbackVaryings = NULL;
+PFNGLTRANSFORMFEEDBACKBUFFERBASEPROC glad_glTransformFeedbackBufferBase = NULL;
+PFNGLTRANSFORMFEEDBACKBUFFERRANGEPROC glad_glTransformFeedbackBufferRange = NULL;
+PFNGLTRANSFORMFEEDBACKVARYINGSPROC glad_glTransformFeedbackVaryings = NULL;
 PFNGLTRANSLATEXOESPROC glad_glTranslatexOES = NULL;
 PFNGLUNIFORM1DPROC glad_glUniform1d = NULL;
 PFNGLUNIFORM1DVPROC glad_glUniform1dv = NULL;
@@ -7110,7 +7110,7 @@ static void glad_gl_load_GL_VERSION_2_1( GLADuserptrloadfunc load, void* userptr
 static void glad_gl_load_GL_VERSION_3_0( GLADuserptrloadfunc load, void* userptr) {
     if(!GLAD_GL_VERSION_3_0) return;
     glad_glBeginConditionalRender = (PFNGLBEGINCONDITIONALRENDERPROC) load(userptr, "glBeginConditionalRender");
-    glad_glBeginCoreTransformFeedback = (PFNGLBEGINTRANSFORMFEEDBACKPROC) load(userptr, "glBeginCoreTransformFeedback");
+    glad_glBeginTransformFeedback = (PFNGLBEGINTRANSFORMFEEDBACKPROC) load(userptr, "glBeginTransformFeedback");
     glad_glBindBufferBase = (PFNGLBINDBUFFERBASEPROC) load(userptr, "glBindBufferBase");
     glad_glBindBufferRange = (PFNGLBINDBUFFERRANGEPROC) load(userptr, "glBindBufferRange");
     glad_glBindFragDataLocation = (PFNGLBINDFRAGDATALOCATIONPROC) load(userptr, "glBindFragDataLocation");
@@ -7131,7 +7131,7 @@ static void glad_gl_load_GL_VERSION_3_0( GLADuserptrloadfunc load, void* userptr
     glad_glDisablei = (PFNGLDISABLEIPROC) load(userptr, "glDisablei");
     glad_glEnablei = (PFNGLENABLEIPROC) load(userptr, "glEnablei");
     glad_glEndConditionalRender = (PFNGLENDCONDITIONALRENDERPROC) load(userptr, "glEndConditionalRender");
-    glad_glEndCoreTransformFeedback = (PFNGLENDTRANSFORMFEEDBACKPROC) load(userptr, "glEndCoreTransformFeedback");
+    glad_glEndTransformFeedback = (PFNGLENDTRANSFORMFEEDBACKPROC) load(userptr, "glEndTransformFeedback");
     glad_glFlushMappedBufferRange = (PFNGLFLUSHMAPPEDBUFFERRANGEPROC) load(userptr, "glFlushMappedBufferRange");
     glad_glFramebufferRenderbuffer = (PFNGLFRAMEBUFFERRENDERBUFFERPROC) load(userptr, "glFramebufferRenderbuffer");
     glad_glFramebufferTexture1D = (PFNGLFRAMEBUFFERTEXTURE1DPROC) load(userptr, "glFramebufferTexture1D");
@@ -7150,7 +7150,7 @@ static void glad_gl_load_GL_VERSION_3_0( GLADuserptrloadfunc load, void* userptr
     glad_glGetStringi = (PFNGLGETSTRINGIPROC) load(userptr, "glGetStringi");
     glad_glGetTexParameterIiv = (PFNGLGETTEXPARAMETERIIVPROC) load(userptr, "glGetTexParameterIiv");
     glad_glGetTexParameterIuiv = (PFNGLGETTEXPARAMETERIUIVPROC) load(userptr, "glGetTexParameterIuiv");
-    glad_glGetCoreTransformFeedbackVarying = (PFNGLGETTRANSFORMFEEDBACKVARYINGPROC) load(userptr, "glGetCoreTransformFeedbackVarying");
+    glad_glGetTransformFeedbackVarying = (PFNGLGETTRANSFORMFEEDBACKVARYINGPROC) load(userptr, "glGetTransformFeedbackVarying");
     glad_glGetUniformuiv = (PFNGLGETUNIFORMUIVPROC) load(userptr, "glGetUniformuiv");
     glad_glGetVertexAttribIiv = (PFNGLGETVERTEXATTRIBIIVPROC) load(userptr, "glGetVertexAttribIiv");
     glad_glGetVertexAttribIuiv = (PFNGLGETVERTEXATTRIBIUIVPROC) load(userptr, "glGetVertexAttribIuiv");
@@ -7163,7 +7163,7 @@ static void glad_gl_load_GL_VERSION_3_0( GLADuserptrloadfunc load, void* userptr
     glad_glRenderbufferStorageMultisample = (PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC) load(userptr, "glRenderbufferStorageMultisample");
     glad_glTexParameterIiv = (PFNGLTEXPARAMETERIIVPROC) load(userptr, "glTexParameterIiv");
     glad_glTexParameterIuiv = (PFNGLTEXPARAMETERIUIVPROC) load(userptr, "glTexParameterIuiv");
-    glad_glCoreTransformFeedbackVaryings = (PFNGLTRANSFORMFEEDBACKVARYINGSPROC) load(userptr, "glCoreTransformFeedbackVaryings");
+    glad_glTransformFeedbackVaryings = (PFNGLTRANSFORMFEEDBACKVARYINGSPROC) load(userptr, "glTransformFeedbackVaryings");
     glad_glUniform1ui = (PFNGLUNIFORM1UIPROC) load(userptr, "glUniform1ui");
     glad_glUniform1uiv = (PFNGLUNIFORM1UIVPROC) load(userptr, "glUniform1uiv");
     glad_glUniform2ui = (PFNGLUNIFORM2UIPROC) load(userptr, "glUniform2ui");
@@ -7268,18 +7268,18 @@ static void glad_gl_load_GL_VERSION_3_3( GLADuserptrloadfunc load, void* userptr
 static void glad_gl_load_GL_VERSION_4_0( GLADuserptrloadfunc load, void* userptr) {
     if(!GLAD_GL_VERSION_4_0) return;
     glad_glBeginQueryIndexed = (PFNGLBEGINQUERYINDEXEDPROC) load(userptr, "glBeginQueryIndexed");
-    glad_glBindCoreTransformFeedback = (PFNGLBINDTRANSFORMFEEDBACKPROC) load(userptr, "glBindCoreTransformFeedback");
+    glad_glBindTransformFeedback = (PFNGLBINDTRANSFORMFEEDBACKPROC) load(userptr, "glBindTransformFeedback");
     glad_glBlendEquationSeparatei = (PFNGLBLENDEQUATIONSEPARATEIPROC) load(userptr, "glBlendEquationSeparatei");
     glad_glBlendEquationi = (PFNGLBLENDEQUATIONIPROC) load(userptr, "glBlendEquationi");
     glad_glBlendFuncSeparatei = (PFNGLBLENDFUNCSEPARATEIPROC) load(userptr, "glBlendFuncSeparatei");
     glad_glBlendFunci = (PFNGLBLENDFUNCIPROC) load(userptr, "glBlendFunci");
-    glad_glDeleteCoreTransformFeedbacks = (PFNGLDELETETRANSFORMFEEDBACKSPROC) load(userptr, "glDeleteCoreTransformFeedbacks");
+    glad_glDeleteTransformFeedbacks = (PFNGLDELETETRANSFORMFEEDBACKSPROC) load(userptr, "glDeleteTransformFeedbacks");
     glad_glDrawArraysIndirect = (PFNGLDRAWARRAYSINDIRECTPROC) load(userptr, "glDrawArraysIndirect");
     glad_glDrawElementsIndirect = (PFNGLDRAWELEMENTSINDIRECTPROC) load(userptr, "glDrawElementsIndirect");
-    glad_glDrawCoreTransformFeedback = (PFNGLDRAWTRANSFORMFEEDBACKPROC) load(userptr, "glDrawCoreTransformFeedback");
-    glad_glDrawCoreTransformFeedbackStream = (PFNGLDRAWTRANSFORMFEEDBACKSTREAMPROC) load(userptr, "glDrawCoreTransformFeedbackStream");
+    glad_glDrawTransformFeedback = (PFNGLDRAWTRANSFORMFEEDBACKPROC) load(userptr, "glDrawTransformFeedback");
+    glad_glDrawTransformFeedbackStream = (PFNGLDRAWTRANSFORMFEEDBACKSTREAMPROC) load(userptr, "glDrawTransformFeedbackStream");
     glad_glEndQueryIndexed = (PFNGLENDQUERYINDEXEDPROC) load(userptr, "glEndQueryIndexed");
-    glad_glGenCoreTransformFeedbacks = (PFNGLGENTRANSFORMFEEDBACKSPROC) load(userptr, "glGenCoreTransformFeedbacks");
+    glad_glGenTransformFeedbacks = (PFNGLGENTRANSFORMFEEDBACKSPROC) load(userptr, "glGenTransformFeedbacks");
     glad_glGetActiveSubroutineName = (PFNGLGETACTIVESUBROUTINENAMEPROC) load(userptr, "glGetActiveSubroutineName");
     glad_glGetActiveSubroutineUniformName = (PFNGLGETACTIVESUBROUTINEUNIFORMNAMEPROC) load(userptr, "glGetActiveSubroutineUniformName");
     glad_glGetActiveSubroutineUniformiv = (PFNGLGETACTIVESUBROUTINEUNIFORMIVPROC) load(userptr, "glGetActiveSubroutineUniformiv");
@@ -7289,12 +7289,12 @@ static void glad_gl_load_GL_VERSION_4_0( GLADuserptrloadfunc load, void* userptr
     glad_glGetSubroutineUniformLocation = (PFNGLGETSUBROUTINEUNIFORMLOCATIONPROC) load(userptr, "glGetSubroutineUniformLocation");
     glad_glGetUniformSubroutineuiv = (PFNGLGETUNIFORMSUBROUTINEUIVPROC) load(userptr, "glGetUniformSubroutineuiv");
     glad_glGetUniformdv = (PFNGLGETUNIFORMDVPROC) load(userptr, "glGetUniformdv");
-    glad_glIsCoreTransformFeedback = (PFNGLISTRANSFORMFEEDBACKPROC) load(userptr, "glIsCoreTransformFeedback");
+    glad_glIsTransformFeedback = (PFNGLISTRANSFORMFEEDBACKPROC) load(userptr, "glIsTransformFeedback");
     glad_glMinSampleShading = (PFNGLMINSAMPLESHADINGPROC) load(userptr, "glMinSampleShading");
     glad_glPatchParameterfv = (PFNGLPATCHPARAMETERFVPROC) load(userptr, "glPatchParameterfv");
     glad_glPatchParameteri = (PFNGLPATCHPARAMETERIPROC) load(userptr, "glPatchParameteri");
-    glad_glPauseCoreTransformFeedback = (PFNGLPAUSETRANSFORMFEEDBACKPROC) load(userptr, "glPauseCoreTransformFeedback");
-    glad_glResumeCoreTransformFeedback = (PFNGLRESUMETRANSFORMFEEDBACKPROC) load(userptr, "glResumeCoreTransformFeedback");
+    glad_glPauseTransformFeedback = (PFNGLPAUSETRANSFORMFEEDBACKPROC) load(userptr, "glPauseTransformFeedback");
+    glad_glResumeTransformFeedback = (PFNGLRESUMETRANSFORMFEEDBACKPROC) load(userptr, "glResumeTransformFeedback");
     glad_glUniform1d = (PFNGLUNIFORM1DPROC) load(userptr, "glUniform1d");
     glad_glUniform1dv = (PFNGLUNIFORM1DVPROC) load(userptr, "glUniform1dv");
     glad_glUniform2d = (PFNGLUNIFORM2DPROC) load(userptr, "glUniform2d");
@@ -7411,8 +7411,8 @@ static void glad_gl_load_GL_VERSION_4_2( GLADuserptrloadfunc load, void* userptr
     glad_glDrawArraysInstancedBaseInstance = (PFNGLDRAWARRAYSINSTANCEDBASEINSTANCEPROC) load(userptr, "glDrawArraysInstancedBaseInstance");
     glad_glDrawElementsInstancedBaseInstance = (PFNGLDRAWELEMENTSINSTANCEDBASEINSTANCEPROC) load(userptr, "glDrawElementsInstancedBaseInstance");
     glad_glDrawElementsInstancedBaseVertexBaseInstance = (PFNGLDRAWELEMENTSINSTANCEDBASEVERTEXBASEINSTANCEPROC) load(userptr, "glDrawElementsInstancedBaseVertexBaseInstance");
-    glad_glDrawCoreTransformFeedbackInstanced = (PFNGLDRAWTRANSFORMFEEDBACKINSTANCEDPROC) load(userptr, "glDrawCoreTransformFeedbackInstanced");
-    glad_glDrawCoreTransformFeedbackStreamInstanced = (PFNGLDRAWTRANSFORMFEEDBACKSTREAMINSTANCEDPROC) load(userptr, "glDrawCoreTransformFeedbackStreamInstanced");
+    glad_glDrawTransformFeedbackInstanced = (PFNGLDRAWTRANSFORMFEEDBACKINSTANCEDPROC) load(userptr, "glDrawTransformFeedbackInstanced");
+    glad_glDrawTransformFeedbackStreamInstanced = (PFNGLDRAWTRANSFORMFEEDBACKSTREAMINSTANCEDPROC) load(userptr, "glDrawTransformFeedbackStreamInstanced");
     glad_glGetActiveAtomicCounterBufferiv = (PFNGLGETACTIVEATOMICCOUNTERBUFFERIVPROC) load(userptr, "glGetActiveAtomicCounterBufferiv");
     glad_glGetInternalformativ = (PFNGLGETINTERNALFORMATIVPROC) load(userptr, "glGetInternalformativ");
     glad_glMemoryBarrier = (PFNGLMEMORYBARRIERPROC) load(userptr, "glMemoryBarrier");
@@ -7555,7 +7555,7 @@ static void glad_gl_load_GL_ARB_direct_state_access( GLADuserptrloadfunc load, v
     glad_glCreateRenderbuffers = (PFNGLCREATERENDERBUFFERSPROC) load(userptr, "glCreateRenderbuffers");
     glad_glCreateSamplers = (PFNGLCREATESAMPLERSPROC) load(userptr, "glCreateSamplers");
     glad_glCreateTextures = (PFNGLCREATETEXTURESPROC) load(userptr, "glCreateTextures");
-    glad_glCreateCoreTransformFeedbacks = (PFNGLCREATETRANSFORMFEEDBACKSPROC) load(userptr, "glCreateCoreTransformFeedbacks");
+    glad_glCreateTransformFeedbacks = (PFNGLCREATETRANSFORMFEEDBACKSPROC) load(userptr, "glCreateTransformFeedbacks");
     glad_glCreateVertexArrays = (PFNGLCREATEVERTEXARRAYSPROC) load(userptr, "glCreateVertexArrays");
     glad_glDisableVertexArrayAttrib = (PFNGLDISABLEVERTEXARRAYATTRIBPROC) load(userptr, "glDisableVertexArrayAttrib");
     glad_glEnableVertexArrayAttrib = (PFNGLENABLEVERTEXARRAYATTRIBPROC) load(userptr, "glEnableVertexArrayAttrib");
@@ -7580,9 +7580,9 @@ static void glad_gl_load_GL_ARB_direct_state_access( GLADuserptrloadfunc load, v
     glad_glGetTextureParameterIuiv = (PFNGLGETTEXTUREPARAMETERIUIVPROC) load(userptr, "glGetTextureParameterIuiv");
     glad_glGetTextureParameterfv = (PFNGLGETTEXTUREPARAMETERFVPROC) load(userptr, "glGetTextureParameterfv");
     glad_glGetTextureParameteriv = (PFNGLGETTEXTUREPARAMETERIVPROC) load(userptr, "glGetTextureParameteriv");
-    glad_glGetCoreTransformFeedbacki64_v = (PFNGLGETTRANSFORMFEEDBACKI64_VPROC) load(userptr, "glGetCoreTransformFeedbacki64_v");
-    glad_glGetCoreTransformFeedbacki_v = (PFNGLGETTRANSFORMFEEDBACKI_VPROC) load(userptr, "glGetCoreTransformFeedbacki_v");
-    glad_glGetCoreTransformFeedbackiv = (PFNGLGETTRANSFORMFEEDBACKIVPROC) load(userptr, "glGetCoreTransformFeedbackiv");
+    glad_glGetTransformFeedbacki64_v = (PFNGLGETTRANSFORMFEEDBACKI64_VPROC) load(userptr, "glGetTransformFeedbacki64_v");
+    glad_glGetTransformFeedbacki_v = (PFNGLGETTRANSFORMFEEDBACKI_VPROC) load(userptr, "glGetTransformFeedbacki_v");
+    glad_glGetTransformFeedbackiv = (PFNGLGETTRANSFORMFEEDBACKIVPROC) load(userptr, "glGetTransformFeedbackiv");
     glad_glGetVertexArrayIndexed64iv = (PFNGLGETVERTEXARRAYINDEXED64IVPROC) load(userptr, "glGetVertexArrayIndexed64iv");
     glad_glGetVertexArrayIndexediv = (PFNGLGETVERTEXARRAYINDEXEDIVPROC) load(userptr, "glGetVertexArrayIndexediv");
     glad_glGetVertexArrayiv = (PFNGLGETVERTEXARRAYIVPROC) load(userptr, "glGetVertexArrayiv");
@@ -7618,8 +7618,8 @@ static void glad_gl_load_GL_ARB_direct_state_access( GLADuserptrloadfunc load, v
     glad_glTextureSubImage1D = (PFNGLTEXTURESUBIMAGE1DPROC) load(userptr, "glTextureSubImage1D");
     glad_glTextureSubImage2D = (PFNGLTEXTURESUBIMAGE2DPROC) load(userptr, "glTextureSubImage2D");
     glad_glTextureSubImage3D = (PFNGLTEXTURESUBIMAGE3DPROC) load(userptr, "glTextureSubImage3D");
-    glad_glCoreTransformFeedbackBufferBase = (PFNGLTRANSFORMFEEDBACKBUFFERBASEPROC) load(userptr, "glCoreTransformFeedbackBufferBase");
-    glad_glCoreTransformFeedbackBufferRange = (PFNGLTRANSFORMFEEDBACKBUFFERRANGEPROC) load(userptr, "glCoreTransformFeedbackBufferRange");
+    glad_glTransformFeedbackBufferBase = (PFNGLTRANSFORMFEEDBACKBUFFERBASEPROC) load(userptr, "glTransformFeedbackBufferBase");
+    glad_glTransformFeedbackBufferRange = (PFNGLTRANSFORMFEEDBACKBUFFERRANGEPROC) load(userptr, "glTransformFeedbackBufferRange");
     glad_glUnmapNamedBuffer = (PFNGLUNMAPNAMEDBUFFERPROC) load(userptr, "glUnmapNamedBuffer");
     glad_glVertexArrayAttribBinding = (PFNGLVERTEXARRAYATTRIBBINDINGPROC) load(userptr, "glVertexArrayAttribBinding");
     glad_glVertexArrayAttribFormat = (PFNGLVERTEXARRAYATTRIBFORMATPROC) load(userptr, "glVertexArrayAttribFormat");
@@ -8671,7 +8671,7 @@ int gladLoadGL( GLADloadfunc load) {
 
 
 
-
+ 
 
 
 #ifdef __cplusplus

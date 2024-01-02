@@ -2,7 +2,7 @@
 *
 *   raylib [shaders] example - Texture Waves
 *
-*   NOTE: This example needs raylib OpenGL 3.3 or ES2 versions for shaders support,
+*   NOTE: This example requires raylib OpenGL 3.3 or ES2 versions for shaders support,
 *         OpenGL 1.1 does not support shaders, recompile raylib to OpenGL 3.3 version.
 *
 *   NOTE: Shaders used in this example are #version 330 (OpenGL 3.3), to test this example
@@ -24,7 +24,7 @@
 
 #if defined(PLATFORM_DESKTOP)
     #define GLSL_VERSION            330
-#else   // PLATFORM_RPI, PLATFORM_ANDROID, PLATFORM_WEB
+#else   // PLATFORM_ANDROID, PLATFORM_WEB
     #define GLSL_VERSION            100
 #endif
 
@@ -46,7 +46,7 @@ int main(void)
     // Load shader and setup location points and values
     Shader shader = LoadShader(0, TextFormat("resources/shaders/glsl%i/wave.fs", GLSL_VERSION));
 
-    int secondsLoc = GetShaderLocation(shader, "secondes");
+    int secondsLoc = GetShaderLocation(shader, "seconds");
     int freqXLoc = GetShaderLocation(shader, "freqX");
     int freqYLoc = GetShaderLocation(shader, "freqY");
     int ampXLoc = GetShaderLocation(shader, "ampX");

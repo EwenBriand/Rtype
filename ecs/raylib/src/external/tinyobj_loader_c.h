@@ -300,7 +300,7 @@ static int tryParseDouble(const char *s, const char *s_end, double *result) {
    * thus we must take care to convert the exponent/and or the
    * mantissa to a * 2^E, where a is the mantissa and E is the
    * exponent.
-   * To get the final double we will use ldexp, it needs the
+   * To get the final double we will use ldexp, it requires the
    * exponent to be in base 2.
    */
   int exponent = 0;
@@ -544,7 +544,7 @@ static void initMaterial(tinyobj_material_t *material) {
 
 /* Implementation of string to int hashtable */
 
-#define HASH_TABLE_ERROR 1
+#define HASH_TABLE_ERROR 1 
 #define HASH_TABLE_SUCCESS 0
 
 #define HASH_TABLE_DEFAULT_SIZE 10
@@ -609,7 +609,7 @@ static int hash_table_insert_value(unsigned long hash, long value, hash_table_t*
   {
     if (i >= hash_table->capacity)
       return HASH_TABLE_ERROR;
-    index = (start_index + (i * i)) % hash_table->capacity;
+    index = (start_index + (i * i)) % hash_table->capacity; 
   }
 
   entry = hash_table->entries + index;
@@ -721,25 +721,6 @@ static tinyobj_material_t *tinyobj_material_add(tinyobj_material_t *prev,
   dst[num_materials] = (*new_mat); /* Just copy pointer for char* members */
   return dst;
 }
-#include <unistd.h>
-static char *update_filename_absolute_path(const char *filename)
-{
-    /*
-        * If the filename is not absolute, prepend the current working directory
-    */
-    if ((filename)[0] != '/') {
-        char *cwd = getcwd(NULL, 0);
-        char *new_filename = (char*)TINYOBJ_MALLOC(strlen(cwd) + strlen(filename) + 2);
-        strcpy(new_filename, cwd);
-        strcat(new_filename, "/");
-        strcat(new_filename, filename);
-        TINYOBJ_FREE(cwd);
-        if (new_filename[strlen(new_filename) - 1] == '\r' && strlen(new_filename) >= 1)
-            new_filename[strlen(new_filename) - 1] = '\0';
-        return new_filename;
-    }
-    return strdup(filename);
-}
 
 static int tinyobj_parse_and_index_mtl_file(tinyobj_material_t **materials_out,
                                             unsigned int *num_materials_out,
@@ -764,17 +745,13 @@ static int tinyobj_parse_and_index_mtl_file(tinyobj_material_t **materials_out,
 
   (*materials_out) = NULL;
   (*num_materials_out) = 0;
-  char *absolute_path_to_file = update_filename_absolute_path(filename);
-  if (!absolute_path_to_file) {
-    fprintf(stderr, "TINYOBJ: Error opening file '%s': %s (%d)\n", filename, strerror(errno), errno);
-    return TINYOBJ_ERROR_FILE_OPERATION;
-  }
-  fp = fopen(absolute_path_to_file, "r");
-  TINYOBJ_FREE(absolute_path_to_file);
+
+  fp = fopen(filename, "rt");
   if (!fp) {
     fprintf(stderr, "TINYOBJ: Error reading file '%s': %s (%d)\n", filename, strerror(errno), errno);
     return TINYOBJ_ERROR_FILE_OPERATION;
   }
+
   /* Create a default material */
   initMaterial(&material);
 
@@ -993,7 +970,7 @@ int tinyobj_parse_mtl_file(tinyobj_material_t **materials_out,
                            unsigned int *num_materials_out,
                            const char *filename) {
   return tinyobj_parse_and_index_mtl_file(materials_out, num_materials_out, filename, NULL);
-}
+} 
 
 
 typedef enum {
@@ -1258,6 +1235,7 @@ int tinyobj_parse_obj(tinyobj_attrib_t *attrib, tinyobj_shape_t **shapes,
   if (buf == NULL) return TINYOBJ_ERROR_INVALID_PARAMETER;
   if (materials_out == NULL) return TINYOBJ_ERROR_INVALID_PARAMETER;
   if (num_materials_out == NULL) return TINYOBJ_ERROR_INVALID_PARAMETER;
+
   tinyobj_attrib_init(attrib);
    /* 1. Find '\n' and create line data. */
   {
@@ -1291,6 +1269,11 @@ int tinyobj_parse_obj(tinyobj_attrib_t *attrib, tinyobj_shape_t **shapes,
       if (is_line_ending(buf, i, end_idx)) {
         line_infos[line_no].pos = prev_pos;
         line_infos[line_no].len = i - prev_pos;
+         
+// ---- QUICK BUG FIX : https://github.com/raysan5/raylib/issues/3473
+        if ( i > 0 && buf[i-1] == '\r' ) line_infos[line_no].len--;
+// --------
+
         prev_pos = i + 1;
         line_no++;
       }
@@ -1301,7 +1284,7 @@ int tinyobj_parse_obj(tinyobj_attrib_t *attrib, tinyobj_shape_t **shapes,
     }
   }
 
-  commands = (Command *)TINYOBJ_MALLOC(sizeof(Command) * num_lines);
+  commands = (Command *)TINYOBJ_MALLOC(sizeof(Command) * num_lines); 
 
   create_hash_table(HASH_TABLE_DEFAULT_SIZE, &material_table);
 
@@ -1334,6 +1317,7 @@ int tinyobj_parse_obj(tinyobj_attrib_t *attrib, tinyobj_shape_t **shapes,
   if (line_infos) {
     TINYOBJ_FREE(line_infos);
   }
+
   /* Load material(if exits) */
   if (mtllib_line_index >= 0 && commands[mtllib_line_index].mtllib_name &&
       commands[mtllib_line_index].mtllib_name_len > 0) {
@@ -1370,10 +1354,10 @@ int tinyobj_parse_obj(tinyobj_attrib_t *attrib, tinyobj_shape_t **shapes,
     attrib->num_texcoords = (unsigned int)num_vt;
     attrib->faces = (tinyobj_vertex_index_t *)TINYOBJ_MALLOC(sizeof(tinyobj_vertex_index_t) * num_f);
     attrib->face_num_verts = (int *)TINYOBJ_MALLOC(sizeof(int) * num_faces);
-
+    
     attrib->num_faces = (unsigned int)num_faces;
     attrib->num_face_num_verts = (unsigned int)num_f;
-
+    
     attrib->material_ids = (int *)TINYOBJ_MALLOC(sizeof(int) * num_faces);
 
     for (i = 0; i < num_lines; i++) {
@@ -1395,7 +1379,7 @@ int tinyobj_parse_obj(tinyobj_attrib_t *attrib, tinyobj_shape_t **shapes,
         }
         */
         if (commands[i].material_name &&
-           commands[i].material_name_len >0)
+           commands[i].material_name_len >0) 
         {
           /* Create a null terminated string */
           char* material_name_null_term = (char*) TINYOBJ_MALLOC(commands[i].material_name_len + 1);
@@ -1544,7 +1528,7 @@ int tinyobj_parse_obj(tinyobj_attrib_t *attrib, tinyobj_shape_t **shapes,
   }
 
   destroy_hash_table(&material_table);
-
+  
   (*materials_out) = materials;
   (*num_materials_out) = num_materials;
 

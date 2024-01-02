@@ -107,9 +107,9 @@ extern "C" {
     #if GLAD_PLATFORM_WIN32 || defined(__CYGWIN__)
       #if defined(GLAD_API_CALL_EXPORT_BUILD)
         #if defined(__GNUC__)
-          #define GLAD_API_CALL __attribute__ ((dllserialize)) extern
+          #define GLAD_API_CALL __attribute__ ((dllexport)) extern
         #else
-          #define GLAD_API_CALL __declspec(dllserialize) extern
+          #define GLAD_API_CALL __declspec(dllexport) extern
         #endif
       #else
         #if defined(__GNUC__)
@@ -1741,7 +1741,7 @@ typedef enum VkPresentModeKHR {
     VK_PRESENT_MODE_FIFO_RELAXED_KHR = 3,
     VK_PRESENT_MODE_MAX_ENUM_KHR = 0x7FFFFFFF
 } VkPresentModeKHR;
-typedef enum VkSurfaceCoreTransformFlagBitsKHR {
+typedef enum VkSurfaceTransformFlagBitsKHR {
     VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR = 1,
     VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR = 2,
     VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR = 4,
@@ -1752,7 +1752,7 @@ typedef enum VkSurfaceCoreTransformFlagBitsKHR {
     VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_270_BIT_KHR = 128,
     VK_SURFACE_TRANSFORM_INHERIT_BIT_KHR = 256,
     VK_SURFACE_TRANSFORM_FLAG_BITS_MAX_ENUM_KHR = 0x7FFFFFFF
-} VkSurfaceCoreTransformFlagBitsKHR;
+} VkSurfaceTransformFlagBitsKHR;
 typedef enum VkDebugReportFlagBitsEXT {
     VK_DEBUG_REPORT_INFORMATION_BIT_EXT = 1,
     VK_DEBUG_REPORT_WARNING_BIT_EXT = 2,
@@ -2674,7 +2674,7 @@ typedef VkFlags64 VkPipelineStageFlags2;
 typedef VkFlags64 VkFormatFeatureFlags2;
 typedef VkFlags VkRenderingFlags;
 typedef VkFlags VkCompositeAlphaFlagsKHR;
-typedef VkFlags VkSurfaceCoreTransformFlagsKHR;
+typedef VkFlags VkSurfaceTransformFlagsKHR;
 typedef VkFlags VkSwapchainCreateFlagsKHR;
 typedef VkFlags VkPeerMemoryFeatureFlags;
 typedef VkFlags VkMemoryAllocateFlags;
@@ -3555,8 +3555,8 @@ typedef struct VkSurfaceCapabilitiesKHR {
     VkExtent2D                         minImageExtent;
     VkExtent2D                         maxImageExtent;
     uint32_t                           maxImageArrayLayers;
-    VkSurfaceCoreTransformFlagsKHR         supportedCoreTransforms;
-    VkSurfaceCoreTransformFlagBitsKHR      currentCoreTransform;
+    VkSurfaceTransformFlagsKHR         supportedTransforms;
+    VkSurfaceTransformFlagBitsKHR      currentTransform;
     VkCompositeAlphaFlagsKHR           supportedCompositeAlpha;
     VkImageUsageFlags                  supportedUsageFlags;
 } VkSurfaceCapabilitiesKHR;
@@ -3575,7 +3575,7 @@ typedef struct VkSwapchainCreateInfoKHR {
     VkSharingMode                      imageSharingMode;
     uint32_t           queueFamilyIndexCount;
     const  uint32_t *                   pQueueFamilyIndices;
-    VkSurfaceCoreTransformFlagBitsKHR      preCoreTransform;
+    VkSurfaceTransformFlagBitsKHR      preTransform;
     VkCompositeAlphaFlagBitsKHR        compositeAlpha;
     VkPresentModeKHR                   presentMode;
     VkBool32                           clipped;
@@ -3663,7 +3663,7 @@ typedef struct VkPhysicalDeviceVariablePointersFeatures  VkPhysicalDeviceVariabl
 
 typedef struct VkExternalMemoryProperties {
     VkExternalMemoryFeatureFlags    externalMemoryFeatures;
-    VkExternalMemoryHandleTypeFlags   serializeFromImportedHandleTypes;
+    VkExternalMemoryHandleTypeFlags   exportFromImportedHandleTypes;
     VkExternalMemoryHandleTypeFlags   compatibleHandleTypes;
 } VkExternalMemoryProperties;
 
@@ -3718,7 +3718,7 @@ typedef struct VkExportMemoryAllocateInfo {
 typedef struct VkExternalSemaphoreProperties {
     VkStructureType   sType;
     void *                             pNext;
-    VkExternalSemaphoreHandleTypeFlags   serializeFromImportedHandleTypes;
+    VkExternalSemaphoreHandleTypeFlags   exportFromImportedHandleTypes;
     VkExternalSemaphoreHandleTypeFlags   compatibleHandleTypes;
     VkExternalSemaphoreFeatureFlags   externalSemaphoreFeatures;
 } VkExternalSemaphoreProperties;
@@ -3732,7 +3732,7 @@ typedef struct VkExportSemaphoreCreateInfo {
 typedef struct VkExternalFenceProperties {
     VkStructureType   sType;
     void *                             pNext;
-    VkExternalFenceHandleTypeFlags   serializeFromImportedHandleTypes;
+    VkExternalFenceHandleTypeFlags   exportFromImportedHandleTypes;
     VkExternalFenceHandleTypeFlags   compatibleHandleTypes;
     VkExternalFenceFeatureFlags   externalFenceFeatures;
 } VkExternalFenceProperties;
@@ -3874,7 +3874,7 @@ typedef struct VkMemoryDedicatedRequirements {
     VkStructureType   sType;
     void *                             pNext;
     VkBool32                           prefersDedicatedAllocation;
-    VkBool32                           needsDedicatedAllocation;
+    VkBool32                           requiresDedicatedAllocation;
 } VkMemoryDedicatedRequirements;
 
 typedef struct VkImageViewUsageCreateInfo {
@@ -6319,7 +6319,7 @@ int gladLoadVulkan( VkPhysicalDevice physical_device, GLADloadfunc load) {
 
 
 
-
+ 
 
 
 #ifdef __cplusplus

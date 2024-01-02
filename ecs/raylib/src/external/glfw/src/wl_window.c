@@ -1107,7 +1107,7 @@ static void setCursor(_GLFWwindow* window, const char* name)
     if (window->wl.scale > 1 && _glfw.wl.cursorThemeHiDPI)
     {
         // We only support up to scale=2 for now, since libwayland-cursor
-        // needs us to load a different theme for each size.
+        // requires us to load a different theme for each size.
         scale = 2;
         theme = _glfw.wl.cursorThemeHiDPI;
     }

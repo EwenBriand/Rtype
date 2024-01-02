@@ -2,7 +2,7 @@
 *
 *   raylib [shaders] example - Multiple sample2D with default batch system
 *
-*   NOTE: This example needs raylib OpenGL 3.3 or ES2 versions for shaders support,
+*   NOTE: This example requires raylib OpenGL 3.3 or ES2 versions for shaders support,
 *         OpenGL 1.1 does not support shaders, recompile raylib to OpenGL 3.3 version.
 *
 *   NOTE: Shaders used in this example are #version 330 (OpenGL 3.3), to test this example
@@ -22,7 +22,7 @@
 
 #if defined(PLATFORM_DESKTOP)
     #define GLSL_VERSION            330
-#else   // PLATFORM_RPI, PLATFORM_ANDROID, PLATFORM_WEB
+#else   // PLATFORM_ANDROID, PLATFORM_WEB
     #define GLSL_VERSION            100
 #endif
 

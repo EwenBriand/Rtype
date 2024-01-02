@@ -169,9 +169,11 @@ static FunctionInfo *funcs = NULL;
 // Command line variables
 static char apiDefine[32] = { 0 };         // Functions define (i.e. RLAPI for raylib.h, RMDEF for raymath.h, etc.)
 static char truncAfter[32] = { 0 };        // Truncate marker (i.e. "RLGL IMPLEMENTATION" for rlgl.h)
-static char inFileName[512] = { 0 };       // Input file name (required in case of provided through CLI)
-static char outFileName[512] = { 0 };      // Output file name (required for file save/serialize)
 static int outputFormat = DEFAULT;
+
+// NOTE: Max length depends on OS, in Windows MAX_PATH = 256
+static char inFileName[512] = { 0 };        // Input file name (required in case of drag & drop over executable)
+static char outFileName[512] = { 0 };       // Output file name (required for file save/export)
 
 //----------------------------------------------------------------------------------
 // Module Functions Declaration
@@ -188,7 +190,7 @@ static unsigned int TextLength(const char *text);           // Get text length i
 static bool IsTextEqual(const char *text1, const char *text2, unsigned int count);
 static int TextFindIndex(const char *text, const char *find); // Find first text occurrence within a string
 static void MemoryCopy(void *dest, const void *src, unsigned int count);
-static char *EscapeBackslashes(char *text);                 // Replace '\' by "\\" when serializeing to JSON and XML
+static char *EscapeBackslashes(char *text);                 // Replace '\' by "\\" when exporting to JSON and XML
 static const char *StrDefineType(DefineType type);          // Get string of define type
 
 static void ExportParsedData(const char *fileName, int format); // Export parsed data in desired format
@@ -445,11 +447,11 @@ int main(int argc, char* argv[])
             {
                 if (isFloat)
                 {
-                    defines[defineIndex].type = linePtr[j-1] == 'f' ? FLOAT : DOUBLE;
+                    defines[defineIndex].type = (linePtr[j-1] == 'f')? FLOAT : DOUBLE;
                 }
                 else
                 {
-                    defines[defineIndex].type = linePtr[j-1] == 'L' ? LONG : INT;
+                    defines[defineIndex].type = (linePtr[j-1] == 'L')? LONG : INT;
                     defines[defineIndex].isHex = isHex;
                 }
             }
@@ -532,8 +534,8 @@ int main(int argc, char* argv[])
                     {
                         // Found a valid number -> update largestType
                         int numberType;
-                        if (isFloat) numberType = valuePtr[c - 1] == 'f' ? FLOAT_MATH : DOUBLE_MATH;
-                        else numberType = valuePtr[c - 1] == 'L' ? LONG_MATH : INT_MATH;
+                        if (isFloat) numberType = (valuePtr[c - 1] == 'f')? FLOAT_MATH : DOUBLE_MATH;
+                        else numberType = (valuePtr[c - 1] == 'L')? LONG_MATH : INT_MATH;
 
                         if (numberType > largestType) largestType = numberType;
                     }
@@ -1324,7 +1326,7 @@ static unsigned int TextLength(const char *text)
     return length;
 }
 
-// Compare two text strings, needs number of characters to compare
+// Compare two text strings, requires number of characters to compare
 static bool IsTextEqual(const char *text1, const char *text2, unsigned int count)
 {
     bool result = true;
@@ -1706,7 +1708,7 @@ static void ExportParsedData(const char *fileName, int format)
         } break;
         case XML:
         {
-            // XML format to serialize data:
+            // XML format to export data:
             /*
             <?xml version="1.0" encoding="Windows-1252" ?>
             <raylibAPI>

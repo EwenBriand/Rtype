@@ -20,6 +20,7 @@
 - [Does raylib support the Vulkan API?](#does-raylib-support-the-vulkan-api)
 - [What could I expect to see in raylib in the future?](#what-could-i-expect-to-see-in-raylib-in-the-future)
 - [Who are the raylib developers?](#who-are-the-raylib-developers)
+- [MORE QUESTIONS...](https://github.com/raysan5/raylib/wiki/Frequently-Asked-Questions)
 
 ### What is raylib?
 
@@ -27,7 +28,7 @@ raylib is a C programming library, designed to be simple and easy-to-use. It pro
 
 ### What can I do with raylib?
 
-raylib can be used to create any kind of graphics/multimedia applications: videogames, tools, mobile apps, web applications... Actually it can be used to create any application that needs something to be shown in a display with graphic hardware acceleration (OpenGL); including [IoT](https://en.wikipedia.org/wiki/Internet_of_things) devices with a graphics display.
+raylib can be used to create any kind of graphics/multimedia applications: videogames, tools, mobile apps, web applications... Actually it can be used to create any application that requires something to be shown in a display with graphic hardware acceleration (OpenGL); including [IoT](https://en.wikipedia.org/wiki/Internet_of_things) devices with a graphics display.
 
 ### Which kinds of games can I make with raylib?
 
@@ -121,7 +122,7 @@ raylib can load data from multiple standard file formats:
  - Fonts: FNT (sprite font), TTF, OTF
  - Models/Meshes: OBJ, IQM, GLTF, VOX, M3D
  - Audio: WAV, OGG, MP3, FLAC, XM, MOD, QOA
-
+ 
 ### Does raylib support the Vulkan API?
 
 No, raylib is built on top of OpenGL API, and there are currently no plans to support any other graphics APIs. In any case, raylib uses rlgl as an abstraction layer to support different OpenGL versions. If really required, a Vulkan backend equivalent could be added but creating that abstraction layer would imply a considerable amount of work.
@@ -134,4 +135,4 @@ The main focus of the library is simplicity. Most of the efforts are invested in
 
 The main raylib developer and maintainer is [Ramon Santamaria](https://www.linkedin.com/in/raysan/) but there's 360+ contributors that have helped by adding new features, testing the library and solving issues in the 9+ years life of raylib.
 
-The full list of raylib contributors can be seen [on GitHub](https://github.com/raysan5/raylib/graphs/contributors).
+The full list of raylib contributors can be seen [on GitHub](https://github.com/raysan5/raylib/graphs/contributors). 

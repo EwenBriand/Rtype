@@ -40,7 +40,7 @@ int main(void)
     camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
     camera.fovy = 45.0f;
     camera.projection = CAMERA_PERSPECTIVE;
-
+    
     // Load texture to be applied to the cubes sides
     Texture2D texture = LoadTexture("resources/cubicmap_atlas.png");
 
@@ -67,7 +67,7 @@ int main(void)
                 DrawCubeTexture(texture, (Vector3){ -2.0f, 2.0f, 0.0f }, 2.0f, 4.0f, 2.0f, WHITE);
 
                 // Draw cube with an applied texture, but only a defined rectangle piece of the texture
-                DrawCubeTextureRec(texture, (Rectangle){ 0, texture.height/2, texture.width/2, texture.height/2 },
+                DrawCubeTextureRec(texture, (Rectangle){ 0, texture.height/2, texture.width/2, texture.height/2 }, 
                     (Vector3){ 2.0f, 1.0f, 0.0f }, 2.0f, 2.0f, 2.0f, WHITE);
 
                 DrawGrid(10, 1.0f);        // Draw a grid
@@ -83,7 +83,7 @@ int main(void)
     // De-Initialization
     //--------------------------------------------------------------------------------------
     UnloadTexture(texture); // Unload texture
-
+    
     CloseWindow();          // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
 
@@ -107,7 +107,7 @@ void DrawCubeTexture(Texture2D texture, Vector3 position, float width, float hei
     // Vertex data transformation can be defined with the commented lines,
     // but in this example we calculate the transformed vertex data directly when calling rlVertex3f()
     //rlPushMatrix();
-        // NOTE: CoreTransformation is applied in inverse order (scale -> rotate -> translate)
+        // NOTE: Transformation is applied in inverse order (scale -> rotate -> translate)
         //rlTranslatef(2.0f, 0.0f, 0.0f);
         //rlRotatef(45, 0, 1, 0);
         //rlScalef(2.0f, 2.0f, 2.0f);
@@ -169,7 +169,7 @@ void DrawCubeTextureRec(Texture2D texture, Rectangle source, Vector3 position, f
     rlSetTexture(texture.id);
 
     // We calculate the normalized texture coordinates for the desired texture-source-rectangle
-    // It means converting from (tex.width, tex.height) coordinates to [0.0f, 1.0f] equivalent
+    // It means converting from (tex.width, tex.height) coordinates to [0.0f, 1.0f] equivalent 
     rlBegin(RL_QUADS);
         rlColor4ub(color.r, color.g, color.b, color.a);
 

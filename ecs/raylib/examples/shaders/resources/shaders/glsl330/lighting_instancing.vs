@@ -6,7 +6,7 @@ in vec2 vertexTexCoord;
 in vec3 vertexNormal;
 //in vec4 vertexColor;      // Not required
 
-in mat4 instanceCoreTransform;
+in mat4 instanceTransform;
 
 // Input uniform values
 uniform mat4 mvp;
@@ -23,7 +23,7 @@ out vec3 fragNormal;
 void main()
 {
     // Compute MVP for current instance
-    mat4 mvpi = mvp*instanceCoreTransform;
+    mat4 mvpi = mvp*instanceTransform;
 
     // Send vertex attributes to fragment shader
     fragPosition = vec3(mvpi*vec4(vertexPosition, 1.0));

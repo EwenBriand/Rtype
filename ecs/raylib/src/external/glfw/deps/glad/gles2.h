@@ -112,9 +112,9 @@ extern "C" {
     #if GLAD_PLATFORM_WIN32 || defined(__CYGWIN__)
       #if defined(GLAD_API_CALL_EXPORT_BUILD)
         #if defined(__GNUC__)
-          #define GLAD_API_CALL __attribute__ ((dllserialize)) extern
+          #define GLAD_API_CALL __attribute__ ((dllexport)) extern
         #else
-          #define GLAD_API_CALL __declspec(dllserialize) extern
+          #define GLAD_API_CALL __declspec(dllexport) extern
         #endif
       #else
         #if defined(__GNUC__)
@@ -1794,7 +1794,7 @@ int gladLoadGLES2( GLADloadfunc load) {
 
 
 
-
+ 
 
 
 #ifdef __cplusplus

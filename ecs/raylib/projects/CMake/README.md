@@ -17,7 +17,7 @@ cmake --build build
 
 ### Web
 
-Compiling for the web needs the [Emscripten SDK](https://emscripten.org/docs/getting_started/downloads.html):
+Compiling for the web requires the [Emscripten SDK](https://emscripten.org/docs/getting_started/downloads.html):
 
 ``` bash
 mkdir build

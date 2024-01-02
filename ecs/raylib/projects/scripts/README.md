@@ -53,7 +53,7 @@ all of the flags.
 
 \* This is mostly here to make building simple "shipping" versions
    easier, and it's a very small bit in the build scripts. The option
-   needs that you have upx installed and on your path, of course.
+   requires that you have upx installed and on your path, of course.
 
 #### Examples
 | What the command does                                       | Command                   |
