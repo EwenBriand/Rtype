@@ -40,3 +40,12 @@
 [submodule "server/type_traits"]
 	path = server/type_traits
 	url = https://github.com/boostorg/type_traits.git
+[submodule "server/numeric/conversion"]
+	path = server/numeric/conversion
+	url = https://github.com/boostorg/conversion.git
+[submodule "server/numeric_conversion"]
+	path = server/numeric_conversion
+	url = https://github.com/boostorg/numeric_conversion.git
+[submodule "server/conversion"]
+	path = server/conversion
+	url = https://github.com/boostorg/conversion.git

@@ -6,9 +6,10 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/asio/include/
     ${CMAKE_CURRENT_SOURCE_DIR}/assert/include/
     ${CMAKE_CURRENT_SOURCE_DIR}/config/include/
+    ${CMAKE_CURRENT_SOURCE_DIR}/conversion/include/
     ${CMAKE_CURRENT_SOURCE_DIR}/core/include/
     ${CMAKE_CURRENT_SOURCE_DIR}/date_time/include/
-    ${CMAKE_CURRENT_SOURCE_DIR}/numeric/conversion/include/
+    ${CMAKE_CURRENT_SOURCE_DIR}/numeric_conversion/include/
     ${CMAKE_CURRENT_SOURCE_DIR}/predef/include/
     ${CMAKE_CURRENT_SOURCE_DIR}/operators/include/
     ${CMAKE_CURRENT_SOURCE_DIR}/smart_ptr/include/
