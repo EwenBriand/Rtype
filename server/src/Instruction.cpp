@@ -7,6 +7,7 @@
 
 #include "Message.hpp"
 #include "ServerUdp.hpp"
+#include "AsioClone.hpp"
 
 namespace serv {
     Instruction::Instruction()
@@ -41,11 +42,11 @@ namespace serv {
         return bytes;
     }
 
-    Message Instruction::ToMessage(boost::asio::ip::udp::endpoint endpoint) const
+    Message Instruction::ToMessage(EndpointWrapper endpointW) const
     {
         Message message;
         message.data = ToBytes() + SEPARATOR;
-        message.endpoint = endpoint;
+        message.endpointW.endpoint = endpointW.endpoint;
         return message;
     }
 

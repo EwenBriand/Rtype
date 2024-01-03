@@ -8,7 +8,6 @@
 #pragma once
 #include "CircularBuffer.hpp"
 #include "ServerUdp.hpp"
-#include <boost/asio.hpp>
 #include <stdexcept>
 #include <string>
 
@@ -29,9 +28,10 @@ namespace serv {
     static int E_SERVER_INTERNAL_ERROR = 302;
     static int E_CHEATER = 303;
 
+    struct EndpointWrapper;
     class NetworkException : public std::exception {
     public:
-        NetworkException(ServerUDP& server, int errorCode, const std::string& message, boost::asio::ip::udp::endpoint endpoint)
+        NetworkException(ServerUDP& server, int errorCode, const std::string& message, EndpointWrapper endpoint)
             : _message(message)
         {
             try {
@@ -52,7 +52,7 @@ namespace serv {
 
     class AntiCheatException : public std::exception {
     public:
-        AntiCheatException(ServerUDP& server, const std::string& message, boost::asio::ip::udp::endpoint endpoint)
+        AntiCheatException(ServerUDP& server, const std::string& message, const EndpointWrapper& endpoint)
             : _message(message)
         {
             try {

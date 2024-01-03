@@ -55,3 +55,9 @@
 [submodule "ecs/raylib"]
 	path = ecs/raylib
 	url = https://github.com/raysan5/raylib.git
+[submodule "server/mpl"]
+	path = server/mpl
+	url = https://github.com/boostorg/mpl.git
+[submodule "server/preprocessor"]
+	path = server/preprocessor
+	url = https://github.com/boostorg/preprocessor.git

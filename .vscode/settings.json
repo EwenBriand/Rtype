@@ -98,6 +98,16 @@
         "cfenv": "cpp",
         "cinttypes": "cpp",
         "valarray": "cpp",
-        "unordered_set": "cpp"
+        "unordered_set": "cpp",
+        "barrier": "cpp",
+        "execution": "cpp",
+        "latch": "cpp",
+        "ranges": "cpp",
+        "regex": "cpp",
+        "scoped_allocator": "cpp",
+        "shared_mutex": "cpp",
+        "span": "cpp",
+        "stack": "cpp",
+        "syncstream": "cpp"
     }
 }

@@ -8,6 +8,7 @@
 #include "ServerUdp.hpp"
 #include "Engine.hpp"
 #include "NetworkExceptions.hpp"
+#include "AsioClone.hpp"
 #include <chrono>
 #include <iomanip>
 #include <iostream>
@@ -24,9 +25,9 @@ namespace serv {
     {
     }
 
-    void AClient::SetEndpoint(boost::asio::ip::udp::endpoint endpoint)
+    void AClient::SetEndpoint(EndpointWrapper endpoint)
     {
-        _endpoint = endpoint;
+        _endpoint = std::make_shared<EndpointWrapper>(endpoint);
     }
 
     void AClient::ResetAnswerFlag()
@@ -43,8 +44,8 @@ namespace serv {
     // CLIENT BUCKET
     // ============================================================================
 
-    ClientBucketUDP::ClientBucketUDP(boost::asio::ip::udp::endpoint endpoint)
-        : _endpoint(endpoint)
+    ClientBucketUDP::ClientBucketUDP(EndpointWrapper endpoint)
+        : _endpoint(std::make_shared<EndpointWrapper>(endpoint))
         , _clientHandler(nullptr)
         // , _buffer(2 * BUFF_SIZE)
         , _mutex(std::make_shared<std::mutex>())
@@ -73,7 +74,7 @@ namespace serv {
     {
         std::scoped_lock lock(*_mutex);
         // _buffer.Write(data);
-        _buffer.Push(data);
+        _buffer.Push(std::move(data));
     }
 
     bytes ClientBucketUDP::Read()
@@ -91,9 +92,9 @@ namespace serv {
         return value;
     }
 
-    boost::asio::ip::udp::endpoint ClientBucketUDP::GetEndpoint() const
+    EndpointWrapper ClientBucketUDP::GetEndpoint() const
     {
-        return _endpoint;
+        return *_endpoint;
     }
 
     void ClientBucketUDP::HandleRequest(ServerUDP& server)
@@ -111,7 +112,7 @@ namespace serv {
     void ClientBucketUDP::SetHandleRequest(std::shared_ptr<IClient> clientHandler)
     {
         _clientHandler = clientHandler;
-        _clientHandler->SetEndpoint(_endpoint);
+        _clientHandler->SetEndpoint(*_endpoint);
     }
 
     void ClientBucketUDP::OnDisconnect()
@@ -122,22 +123,22 @@ namespace serv {
 
     // ============================================================================
     // SERVER UDP
-    // ============================================================================i
+    // ============================================================================
 
     ServerUDP::ServerUDP(unsigned short port)
-        : _socket(_ioService)
-        , _endpoint(boost::asio::ip::udp::v4(), port)
+        : _asio(std::make_shared<AsioClone>())
         , _clientHandlerCopyBase(nullptr)
         , _running(false)
         , _logMutex(std::make_shared<std::mutex>())
         , _clientsMutex(std::make_shared<std::mutex>())
     {
-        boost::system::error_code error;
-        _socket.open(_endpoint.protocol(), error);
+        _endpoint = std::make_shared<EndpointWrapper>(boost::asio::ip::udp::v4(), port);
+        AsioClone::error_code error;
+        _asio->open(_endpoint->endpoint.protocol(), error);
         if (error)
             throw std::runtime_error("Failed to open socket (1)");
-        _socket.set_option(boost::asio::ip::udp::socket::reuse_address(true));
-        _socket.bind(_endpoint, error);
+        _asio->set_option_reuseaddr();
+        _asio->bind(*_endpoint, error);
         if (error)
             throw std::runtime_error("Failed to open socket (2)");
 
@@ -165,8 +166,7 @@ namespace serv {
             _sendThread.join();
         if (_checkForDisconnectionsThread.joinable())
             _checkForDisconnectionsThread.join();
-
-        _ioService.stop();
+        _asio->stop();
     }
 
     void ServerUDP::Start()
@@ -174,7 +174,7 @@ namespace serv {
         if (_clientHandlerCopyBase == nullptr)
             throw std::runtime_error("No client handler set");
         _running = true;
-        _ioService.run();
+        _asio->run();
         _receiveThread
             = std::thread(&ServerUDP::receiveWorker, this);
         _sendThread = std::thread(&ServerUDP::sendWorker, this);
@@ -183,10 +183,8 @@ namespace serv {
 
     void ServerUDP::receiveWorker()
     {
-
         while (_running) {
-            _socket.receive_from(
-                boost::asio::buffer(_buffer), _remoteEndpoint);
+            _asio->receive_from(boost::asio::buffer(_buffer), *_remoteEndpoint);
 
             std::size_t bytesTransferred = bytes::find_last_of(_buffer, [](unsigned char c) {
                 return c != 0;
@@ -194,33 +192,33 @@ namespace serv {
             bytesTransferred += 1;
             int opcode = Instruction(bytes(_buffer.data(), bytesTransferred)).opcode;
             if (opcode != I_AM_ALIVE)
-                Log("Received opcode " + std::to_string(opcode) + " from " + endpointToString(_remoteEndpoint) + " (" + std::to_string(bytesTransferred) + " bytes) " + bytes(_buffer.data(), bytesTransferred).toString());
-            HandleRequest(boost::system::error_code(), bytesTransferred);
+                Log("Received opcode " + std::to_string(opcode) + " from " + endpointToString(*_remoteEndpoint) + " (" + std::to_string(bytesTransferred) + " bytes) " + bytes(_buffer.data(), bytesTransferred).toString());
+            HandleRequest(AsioClone::error_code(), bytesTransferred);
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
     }
 
     void ServerUDP::HandleRequest(
-        const boost::system::error_code& error, std::size_t bytesTransferred)
+        const AsioClone::error_code& error, std::size_t bytesTransferred)
     {
-        if (error && error != boost::asio::error::message_size)
+        if (error && error != _asio->get_message_size_error())
             return;
         bytes data(_buffer.data(), bytesTransferred);
 
         try {
-            std::string clientKey = endpointToString(_remoteEndpoint);
+            std::string clientKey = endpointToString(*_remoteEndpoint);
             std::scoped_lock lock(*_clientsMutex);
             if (_clients.find(clientKey) == _clients.end()) {
                 _clients.insert({ clientKey, std::make_shared<ClientBucketUDP>(_remoteEndpoint) });
-                _clients.at(clientKey)->SetHandleRequest(_clientHandlerCopyBase->Clone(_remoteEndpoint));
+                _clients.at(clientKey)->SetHandleRequest(_clientHandlerCopyBase->Clone(*_remoteEndpoint));
                 Log("New client connected: " + clientKey);
             }
             _clients.at(clientKey)->UpdateLastRequestTime();
             _clients.at(clientKey)->Write(data);
         } catch (const std::exception& e) {
             Log(e.what());
-            if (_clients.find(endpointToString(_remoteEndpoint)) != _clients.end())
-                _clients.erase(endpointToString(_remoteEndpoint));
+            if (_clients.find(endpointToString(*_remoteEndpoint)) != _clients.end())
+                _clients.erase(endpointToString(*_remoteEndpoint));
         }
     }
 
@@ -264,8 +262,8 @@ namespace serv {
             if (!_sendQueue.IsEmpty()) {
                 try {
                     Message message = _sendQueue.Pop();
-                    _socket.send_to(boost::asio::buffer(message.data._data), message.endpoint);
-                    Log("Sent opcode " + std::to_string(Instruction(message.data).opcode) + " to " + endpointToString(message.endpoint));
+                    _asio->send_to(boost::asio::buffer(message.data._data), (*message.endpointW));
+                    Log("Sent opcode " + std::to_string(Instruction(message.data).opcode) + " to " + endpointToString((*message.endpointW)));
                 } catch (std::exception& e) {
                     std::cerr << e.what() << std::endl;
                 }
@@ -276,23 +274,24 @@ namespace serv {
 
     void ServerUDP::Send(const Message& message)
     {
-        _sendQueue.Push(message);
+        Message messageCopy = message;
+        _sendQueue.Push(messageCopy);
     }
 
-    void ServerUDP::Send(const Instruction& instruction, const boost::asio::ip::udp::endpoint& endpoint)
+    void ServerUDP::Send(const Instruction& instruction, const EndpointWrapper& endpoint)
     {
-        _sendQueue.Push(instruction.ToMessage(endpoint));
+        _sendQueue.Push(std::move(instruction.ToMessage(endpoint)));
     }
 
-    std::string ServerUDP::endpointToString(boost::asio::ip::udp::endpoint endpoint)
+    std::string ServerUDP::endpointToString(EndpointWrapper endpoint)
     {
-        return endpoint.address().to_string() + ":" + std::to_string(endpoint.port());
+        return endpoint.endpoint.address().to_string() + ":" + std::to_string(endpoint.endpoint.port());
     }
 
     void ServerUDP::Broadcast(const bytes& data)
     {
         for (auto& client : _clients) {
-            Send({ data, client.second->GetEndpoint() });
+            Send(Message({ data, std::make_unique<EndpointWrapper>(client.second->GetEndpoint()) }));
         }
     }
 

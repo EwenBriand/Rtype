@@ -9,8 +9,10 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/conversion/include/
     ${CMAKE_CURRENT_SOURCE_DIR}/core/include/
     ${CMAKE_CURRENT_SOURCE_DIR}/date_time/include/
+    ${CMAKE_CURRENT_SOURCE_DIR}/mpl/include/
     ${CMAKE_CURRENT_SOURCE_DIR}/numeric_conversion/include/
     ${CMAKE_CURRENT_SOURCE_DIR}/predef/include/
+    ${CMAKE_CURRENT_SOURCE_DIR}/preprocessor/include/
     ${CMAKE_CURRENT_SOURCE_DIR}/operators/include/
     ${CMAKE_CURRENT_SOURCE_DIR}/smart_ptr/include/
     ${CMAKE_CURRENT_SOURCE_DIR}/static_assert/include/

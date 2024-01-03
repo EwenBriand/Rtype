@@ -12,7 +12,7 @@
 #include <string>
 
 #ifdef _WIN32
-#include <windows.h>
+// #include <windows.h>
 #define LIBHANDLE HMODULE
 #define SYMHANDLE FARPROC
 #define GETSYMBOL GetProcAddress

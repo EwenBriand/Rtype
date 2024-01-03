@@ -33,7 +33,7 @@ namespace serv {
         void Push(const T& element)
         {
             std::lock_guard<std::mutex> lock(_mutex);
-            _queue.push(element);
+            _queue.push(std::move(element));
         }
 
         /**
@@ -46,7 +46,7 @@ namespace serv {
             std::lock_guard<std::mutex> lock(_mutex);
             if (_queue.empty())
                 throw std::runtime_error("Queue is empty");
-            T element = _queue.front();
+            T element = std::move(_queue.front());
             _queue.pop();
             return element;
         }

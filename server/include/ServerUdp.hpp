@@ -10,7 +10,6 @@
 #include "Message.hpp"
 #include "ThreadSafeQueue.hpp"
 #include <atomic>
-#include <boost/asio.hpp>
 #include <chrono>
 #include <fstream>
 #include <functional>
@@ -19,17 +18,20 @@
 #include <queue>
 #include <thread>
 #include <vector>
+#include <memory>
 
 #pragma once
 
 namespace serv {
+    struct EndpointWrapper;
+    class AsioClone;
     class ServerUDP;
     class IClient {
     public:
         virtual ~IClient() = default;
         virtual void HandleRequest(const bytes& data) = 0;
-        virtual std::shared_ptr<IClient> Clone(boost::asio::ip::udp::endpoint endpoint) = 0;
-        virtual void SetEndpoint(boost::asio::ip::udp::endpoint endpoint) = 0;
+        virtual std::shared_ptr<IClient> Clone(EndpointWrapper endpoint) = 0;
+        virtual void SetEndpoint(EndpointWrapper endpoint) = 0;
         virtual bool GetAnswerFlag() = 0;
         virtual void ResetAnswerFlag() = 0;
         virtual void OnDisconnect() = 0;
@@ -39,13 +41,13 @@ namespace serv {
     public:
         AClient(ServerUDP& server);
 
-        void SetEndpoint(boost::asio::ip::udp::endpoint endpoint) override;
+        void SetEndpoint(EndpointWrapper endpoint) override;
         void ResetAnswerFlag() override;
         bool GetAnswerFlag() override;
 
     protected:
         ServerUDP& _server;
-        boost::asio::ip::udp::endpoint _endpoint;
+        std::shared_ptr<EndpointWrapper> _endpoint;
         std::atomic_bool _answerFlag;
     };
 
@@ -59,7 +61,7 @@ namespace serv {
      */
     class ClientBucketUDP {
     public:
-        ClientBucketUDP(boost::asio::ip::udp::endpoint endpoint);
+        ClientBucketUDP(EndpointWrapper endpoint);
         ~ClientBucketUDP();
 
         /**
@@ -81,7 +83,7 @@ namespace serv {
          *
          * @return asio::ip::udp::endpoint
          */
-        boost::asio::ip::udp::endpoint GetEndpoint() const;
+        EndpointWrapper GetEndpoint() const;
 
         /**
          * @brief Set the handle Request object
@@ -123,7 +125,8 @@ namespace serv {
         void OnDisconnect();
 
     private:
-        boost::asio::ip::udp::endpoint _endpoint;
+        std::shared_ptr<AsioClone> _asio;
+        std::shared_ptr<EndpointWrapper> _endpoint;
         std::function<void()> _requestHook;
         std::shared_ptr<IClient> _clientHandler;
         std::shared_ptr<std::mutex> _mutex;
@@ -150,7 +153,7 @@ namespace serv {
          *
          */
         void HandleRequest(
-            const boost::system::error_code& error, std::size_t bytesTransferred);
+            const AsioClone::error_code& error, std::size_t bytesTransferred);
 
         /**
          * @brief Buffers a message to be sent asynchronously.
@@ -162,7 +165,7 @@ namespace serv {
          * @brief Sends an instruction.
          *
          */
-        void Send(const Instruction& instruction, const boost::asio::ip::udp::endpoint& endpoint);
+        void Send(const Instruction& instruction, const EndpointWrapper& endpoint);
 
         /**
          * @brief Start the server.
@@ -232,12 +235,12 @@ namespace serv {
          */
         void checkForDisconnections();
 
-        boost::asio::io_service _ioService;
-        boost::asio::ip::udp::socket _socket;
-        boost::asio::ip::udp::endpoint _endpoint;
-        boost::asio::ip::udp::endpoint _remoteEndpoint;
+        std::shared_ptr<AsioClone> _asio;
+        AsioClone::io_service _ioService;
+        std::shared_ptr<EndpointWrapper> _endpoint;
+        std::shared_ptr<EndpointWrapper> _remoteEndpoint;
 
-        std::string endpointToString(boost::asio::ip::udp::endpoint endpoint);
+        std::string endpointToString(EndpointWrapper endpoint);
 
         std::array<char, BUFF_SIZE> _buffer;
 

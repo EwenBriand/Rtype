@@ -4,7 +4,10 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/ecs/include"
+                "${workspaceFolder}/ecs/include",
+                "${workspaceFolder}/server/asio/include",
+                "${workspaceFolder}/server/mpl/include",
+                "${workspaceFolder}/server/config/include"
             ],
             "defines": [
                 "_DEBUG",
