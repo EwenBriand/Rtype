@@ -7,14 +7,40 @@
 
 #ifndef FCA93E06_260A_4A6F_987B_B0613F83E883
 #define FCA93E06_260A_4A6F_987B_B0613F83E883
+#pragma once
 #include "../Component.hpp"
 #include "../IGraphicalModule.hpp"
+#include "luaScriptingAPI.hpp"
 #include "metadata.hpp"
 #include <iostream>
 
-serialize class CoreTransform : public ecs::Component<CoreTransform> {
+_LUAC serialize class CoreTransform : public ecs::Component<CoreTransform> {
 public:
     GENERATE_METADATA(CoreTransform)
+    _LUAM float SetX(float x);
+    _LUAM float SetY(float y);
+    _LUAM float SetZ(float z);
+
+    _LUAM float SetRotationX(float x);
+    _LUAM float SetRotationY(float y);
+    _LUAM float SetRotationZ(float z);
+
+    _LUAM float SetScaleX(float x);
+    _LUAM float SetScaleY(float y);
+    _LUAM float SetScaleZ(float z);
+
+    _LUAM float GetX() const;
+    _LUAM float GetY() const;
+    _LUAM float GetZ() const;
+
+    _LUAM float GetRotationX() const;
+    _LUAM float GetRotationY() const;
+    _LUAM float GetRotationZ() const;
+
+    _LUAM float GetScaleX() const;
+    _LUAM float GetScaleY() const;
+    _LUAM float GetScaleZ() const;
+
     serialize float x = 0;
     serialize float y = 0;
     serialize float z = 0;
