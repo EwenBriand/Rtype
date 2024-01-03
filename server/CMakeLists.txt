@@ -36,3 +36,7 @@ set(SOURCE
 )
 
 add_library(${PROJECT_NAME} SHARED ${SOURCE})
+
+if (WIN32)
+    target_link_libraries(${PROJECT_NAME} ws2_32)
+endif()

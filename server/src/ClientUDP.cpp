@@ -7,8 +7,8 @@
 
 #include "ClientUDP.hpp"
 #include "ServerUdp.hpp"
+#include "AsioClone.hpp"
 #include <iostream>
-#include <boost/asio.hpp>
 
 namespace serv {
     ClientUDP::ClientUDP()
@@ -55,7 +55,8 @@ namespace serv {
             try {
                 bytes data = _sendQueue.Pop();
                 Instruction instruction(data);
-                _socket->send_to(boost::asio::buffer(data._data), boost::asio::ip::udp::endpoint(boost::asio::ip::address::from_string(_serverIp), _serverPort));
+                EndpointWrapper endpoint(boost::asio::ip::address::from_string(_serverIp), _serverPort);
+                _socket->send_to(boost::asio::buffer(data._data), endpoint);
             } catch (std::exception& e) {
                 // empty queue
             }
@@ -67,7 +68,7 @@ namespace serv {
     {
         while (_running) {
             try {
-                boost::asio::ip::udp::endpoint senderEndpoint;
+                EndpointWrapper senderEndpoint;
                 bytes data;
                 data.resize(1024);
                 std::size_t bytesTransferred = _socket->receive_from(boost::asio::buffer(data._data), senderEndpoint);

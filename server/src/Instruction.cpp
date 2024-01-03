@@ -44,9 +44,7 @@ namespace serv {
 
     Message Instruction::ToMessage(EndpointWrapper endpointW) const
     {
-        Message message;
-        message.data = ToBytes() + SEPARATOR;
-        message.endpointW.endpoint = endpointW.endpoint;
+        Message message(ToBytes() + SEPARATOR, std::make_unique<EndpointWrapper>(endpointW));
         return message;
     }
 

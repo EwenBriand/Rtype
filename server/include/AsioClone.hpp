@@ -13,6 +13,7 @@ namespace serv {
     struct EndpointWrapper {
         boost::asio::ip::udp::endpoint endpoint;
         EndpointWrapper(boost::asio::ip::udp protocol, unsigned short port) : endpoint(protocol, port) {}
+        EndpointWrapper(boost::asio::ip::address addr, unsigned short port) : endpoint(addr, port) {}
         EndpointWrapper() = default;
         EndpointWrapper(const EndpointWrapper &other) : endpoint(other.endpoint) {}
         bool operator==(const EndpointWrapper &other) const {

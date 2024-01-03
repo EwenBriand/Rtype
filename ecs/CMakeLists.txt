@@ -14,8 +14,14 @@ include_directories(
     ../include/
     ../graph/lightgraph/include/
     ../graph/glad/include/glad/
-    ./linenoise
+    # ./linenoise
 )
+
+if (NOT WIN32)
+    include_directories(
+        ./linenoise
+    )
+endif()
 
 set(CMAKE_LIBRARY_PATH
     ${CMAKE_LIBRARY_PATH}
@@ -37,8 +43,11 @@ set(ECS_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-file(GLOB ECS
+file(GLOB LINENOISE
     ${ECS_SRC}/../linenoise/linenoise.c
+)
+
+file(GLOB ECS
     ${ECS_SRC}/ECS.cpp
     ${ECS_SRC}/LibUtils.cpp
     ${ECS_SRC}/ResourceManager.cpp
@@ -104,12 +113,22 @@ file(GLOB META_VANILLA
     ${META_VANILLA_SRC}/SplashIconMeta.cpp
 )
 
-add_library(lengine SHARED
-    ${ECS}
-    ${ENGINE}
-    ${VANILLA}
-    ${META_VANILLA}
-)
+if (WIN32)
+    add_library(lengine SHARED
+        ${ECS}
+        ${ENGINE}
+        ${VANILLA}
+        ${META_VANILLA}
+    )
+else()
+    add_library(lengine SHARED
+        ${ECS}
+        ${LINENOISE}
+        ${ENGINE}
+        ${VANILLA}
+        ${META_VANILLA}
+    )
+endif()
 
 target_link_libraries(lengine
     metadatagen
