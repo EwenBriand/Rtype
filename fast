@@ -69,6 +69,7 @@ def deep_clean_impl(args):
         "find . -name \"cmake_install.cmake\" -type f -delete",
         "find . -name \"Makefile\" -type f -delete",
         "find . -name \"*.checksum\" -type f -delete",
+        "rm -rf metabuild/",
     ]
     for command in clean_commands:
         print("Executing: " + command)
