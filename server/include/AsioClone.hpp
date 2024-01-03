@@ -14,6 +14,7 @@ namespace serv {
         boost::asio::ip::udp::endpoint endpoint;
         EndpointWrapper(boost::asio::ip::udp protocol, unsigned short port) : endpoint(protocol, port) {}
         EndpointWrapper() = default;
+        EndpointWrapper(const EndpointWrapper &other) : endpoint(other.endpoint) {}
         bool operator==(const EndpointWrapper &other) const {
             return endpoint == other.endpoint;
         }
@@ -80,10 +81,12 @@ namespace serv {
                 return _socket.send_to(buffer, ep.endpoint);
             }
 
-            // inline size_
-
             inline error_code get_message_size_error() {
                 return boost::asio::error::message_size;
+            }
+
+            inline error_code init_error_code() {
+                return error_code();
             }
     };
 }

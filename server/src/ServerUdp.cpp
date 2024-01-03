@@ -44,8 +44,8 @@ namespace serv {
     // CLIENT BUCKET
     // ============================================================================
 
-    ClientBucketUDP::ClientBucketUDP(EndpointWrapper endpoint)
-        : _endpoint(std::make_shared<EndpointWrapper>(endpoint))
+    ClientBucketUDP::ClientBucketUDP(std::shared_ptr<EndpointWrapper> endpoint)
+        : _endpoint(endpoint)
         , _clientHandler(nullptr)
         // , _buffer(2 * BUFF_SIZE)
         , _mutex(std::make_shared<std::mutex>())
@@ -193,14 +193,14 @@ namespace serv {
             int opcode = Instruction(bytes(_buffer.data(), bytesTransferred)).opcode;
             if (opcode != I_AM_ALIVE)
                 Log("Received opcode " + std::to_string(opcode) + " from " + endpointToString(*_remoteEndpoint) + " (" + std::to_string(bytesTransferred) + " bytes) " + bytes(_buffer.data(), bytesTransferred).toString());
-            HandleRequest(AsioClone::error_code(), bytesTransferred);
+            HandleRequest(bytesTransferred);
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
     }
-
-    void ServerUDP::HandleRequest(
-        const AsioClone::error_code& error, std::size_t bytesTransferred)
+    
+    void ServerUDP::HandleRequest(std::size_t bytesTransferred)
     {
+        AsioClone::error_code error = _asio->init_error_code();
         if (error && error != _asio->get_message_size_error())
             return;
         bytes data(_buffer.data(), bytesTransferred);

@@ -61,7 +61,7 @@ namespace serv {
      */
     class ClientBucketUDP {
     public:
-        ClientBucketUDP(EndpointWrapper endpoint);
+        ClientBucketUDP(std::shared_ptr<EndpointWrapper> endpoint);
         ~ClientBucketUDP();
 
         /**
@@ -136,6 +136,9 @@ namespace serv {
         std::shared_ptr<std::mutex> _lastRequestTimeMutex;
     };
 
+}
+
+namespace serv {
     class ServerUDP {
     public:
         static constexpr std::size_t BUFF_SIZE = 1024;
@@ -152,8 +155,7 @@ namespace serv {
          * _requestQueue.
          *
          */
-        void HandleRequest(
-            const AsioClone::error_code& error, std::size_t bytesTransferred);
+        void HandleRequest(std::size_t bytesTransferred);
 
         /**
          * @brief Buffers a message to be sent asynchronously.
@@ -236,7 +238,6 @@ namespace serv {
         void checkForDisconnections();
 
         std::shared_ptr<AsioClone> _asio;
-        AsioClone::io_service _ioService;
         std::shared_ptr<EndpointWrapper> _endpoint;
         std::shared_ptr<EndpointWrapper> _remoteEndpoint;
 
