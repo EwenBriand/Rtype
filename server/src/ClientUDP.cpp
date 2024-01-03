@@ -21,6 +21,7 @@ namespace serv {
     ClientUDP::~ClientUDP()
     {
         _running = false;
+        _socket.close();
         if (_sendThread.joinable())
             _sendThread.join();
         if (_receiveThread.joinable())

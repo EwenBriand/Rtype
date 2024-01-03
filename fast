@@ -69,6 +69,7 @@ def deep_clean_impl(args):
         "find . -name \"cmake_install.cmake\" -type f -delete",
         "find . -name \"Makefile\" -type f -delete",
         "find . -name \"*.checksum\" -type f -delete",
+        "rm -rf metabuild/",
     ]
     for command in clean_commands:
         print("Executing: " + command)
@@ -95,6 +96,7 @@ def build_root(args):
             exit(1)
         print_color("yellow", "Generating metadata for vanilla components")
         fail = os.system(f"mkdir -p build && pwd && cd build && ../metadata/build/generate_metadata ../ecs/include/Components.Vanilla")
+        os.system("python luaEngineApplet/parseExposed.py  ecs/include/ server/include luaEngineApplet/include")
         if fail:
             print_color("red", "Metadata generation failed")
             exit(1)
@@ -359,6 +361,7 @@ commands = {
     "gclient": ("just like client but with a graphical interface", lambda args: run_gclient(args)),
     "server": ("runs a server on port 8080", lambda args: run_server(args)),
     "edit": ("runs the editor locally", lambda args: run_edit(args)),
+    "lua": ("generates the lua bindings", lambda args: os.system("python luaEngineApplet/parseExposed.py  ecs/include/Components.Vanilla/ luaEngineApplet/include")),
 }
 
 if __name__ == "__main__":

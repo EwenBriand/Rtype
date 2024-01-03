@@ -9,6 +9,9 @@ if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
 message(FATAL_ERROR "In-source builds are not allowed. Please run cmake from the 'build' directory.")
 endif()
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+
 include(FetchContent)
 FetchContent_Declare(
   googletest
@@ -28,6 +31,66 @@ else()
 endif()
 
 
+FetchContent_Declare(
+  lua
+  GIT_REPOSITORY https://github.com/lua/lua.git
+  GIT_TAG v5.4.3
+)
+FetchContent_GetProperties(lua)
+if(NOT lua_POPULATED)
+  FetchContent_Populate(lua)
+  set(LUA_SOURCES
+    ${lua_SOURCE_DIR}/lapi.c
+    ${lua_SOURCE_DIR}/lcode.c
+    ${lua_SOURCE_DIR}/lctype.c
+    ${lua_SOURCE_DIR}/ldebug.c
+    ${lua_SOURCE_DIR}/ldo.c
+    ${lua_SOURCE_DIR}/ldump.c
+    ${lua_SOURCE_DIR}/lfunc.c
+    ${lua_SOURCE_DIR}/lgc.c
+    ${lua_SOURCE_DIR}/llex.c
+    ${lua_SOURCE_DIR}/lmem.c
+    ${lua_SOURCE_DIR}/lobject.c
+    ${lua_SOURCE_DIR}/lopcodes.c
+    ${lua_SOURCE_DIR}/lparser.c
+    ${lua_SOURCE_DIR}/lstate.c
+    ${lua_SOURCE_DIR}/lstring.c
+    ${lua_SOURCE_DIR}/ltable.c
+    ${lua_SOURCE_DIR}/ltm.c
+    ${lua_SOURCE_DIR}/lundump.c
+    ${lua_SOURCE_DIR}/lvm.c
+    ${lua_SOURCE_DIR}/lzio.c
+    ${lua_SOURCE_DIR}/lauxlib.c
+    ${lua_SOURCE_DIR}/lbaselib.c
+    ${lua_SOURCE_DIR}/lcorolib.c
+    ${lua_SOURCE_DIR}/ldblib.c
+    ${lua_SOURCE_DIR}/liolib.c
+    ${lua_SOURCE_DIR}/lmathlib.c
+    ${lua_SOURCE_DIR}/loslib.c
+    ${lua_SOURCE_DIR}/lstrlib.c
+    ${lua_SOURCE_DIR}/ltablib.c
+    ${lua_SOURCE_DIR}/lutf8lib.c
+    ${lua_SOURCE_DIR}/loadlib.c
+    ${lua_SOURCE_DIR}/linit.c
+  )
+  add_library(lua SHARED ${LUA_SOURCES})
+  include_directories(${lua_SOURCE_DIR})
+endif ()
+
+FetchContent_Declare(
+    luabridge
+    GIT_REPOSITORY https://github.com/vinniefalco/LuaBridge.git
+    GIT_TAG master
+)
+FetchContent_GetProperties(luabridge)
+if(NOT luabridge_POPULATED)
+  FetchContent_Populate(luabridge)
+  message(STATUS "luabridge_SOURCE_DIR: ${luabridge_SOURCE_DIR}")
+  include_directories(${luabridge_SOURCE_DIR}/Source)
+endif()
+include_directories(${luabridge_SOURCE_DIR}/Source)
+
+
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(BUILD_SHARED_LIBS ON)
 set(CMAKE_BUILD_TYPE Release)
@@ -41,13 +104,15 @@ add_compile_options(-O3)
 include_directories(server/include)
 include_directories(ecs/include)
 include_directories(ecs/include/Components.Vanilla)
+include_directories(ecs/include/GraphicalRayLib)
 include_directories(ecs/raylib/src)
 include_directories(metadata/include)
-
+include_directories(luaEngineApplet/include)
 
 add_subdirectory(metadata)
 add_subdirectory(ecs/raylib/)
 add_subdirectory(server)
+# add_subdirectory(luaEngineApplet)
 
 add_custom_target(call_metagen ALL
     DEPENDS MetaData generate_metadata

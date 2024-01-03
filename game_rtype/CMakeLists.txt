@@ -31,7 +31,8 @@ add_library(game_target SHARED
     ${META_SRC}
 )
 target_link_libraries(game_target
-    lengine)
+    lengine
+)
 
 # manually building some scripts until we have a proper build system
 add_library(EnemySpawner SHARED scripts/EnemySpawner.cpp ../.metadata/EnemySpawnerMeta.cpp)
