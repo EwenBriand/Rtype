@@ -63,7 +63,7 @@ void DistantPlayer::HandleRequest(const serv::bytes& data)
     }
 }
 
-std::shared_ptr<serv::IClient> DistantPlayer::Clone(boost::asio::ip::udp::endpoint endpoint)
+std::shared_ptr<serv::IClient> DistantPlayer::Clone(std::shared_ptr<serv::EndpointWrapper> endpoint)
 {
     if (Instances.size() >= rtype::RTYPE_NB_PLAYERS) {
         throw serv::NetworkException(_server, serv::E_SERVER_FULL, "Server is full", endpoint);

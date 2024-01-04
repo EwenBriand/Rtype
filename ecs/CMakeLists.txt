@@ -11,10 +11,10 @@ add_compile_options(
 include_directories(
     ./include
     ../metadata/include/
+    ../server/asio/include/
     ../include/
     ../graph/lightgraph/include/
     ../graph/glad/include/glad/
-    # ./linenoise
 )
 
 if (NOT WIN32)
@@ -96,7 +96,7 @@ set(META_VANILLA_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/../build/.metadata
 )
 
-file(GLOB META_VANILLA
+set(META_VANILLA
     ${META_VANILLA_SRC}/AnimatorMeta.cpp
     ${META_VANILLA_SRC}/Collider2DMeta.cpp
     ${META_VANILLA_SRC}/EventGraphMeta.cpp
@@ -113,20 +113,26 @@ file(GLOB META_VANILLA
     ${META_VANILLA_SRC}/SplashIconMeta.cpp
 )
 
+add_library(meta_vanilla_lib STATIC ${META_VANILLA})
+
 if (WIN32)
+    execute_process(
+        COMMAND python3 ../move_metadata
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    )
     add_library(lengine SHARED
+        $<TARGET_OBJECTS:meta_vanilla_lib>
         ${ECS}
         ${ENGINE}
         ${VANILLA}
-        ${META_VANILLA}
     )
 else()
     add_library(lengine SHARED
+        $<TARGET_OBJECTS:meta_vanilla_lib>
         ${ECS}
         ${LINENOISE}
         ${ENGINE}
         ${VANILLA}
-        ${META_VANILLA}
     )
 endif()
 

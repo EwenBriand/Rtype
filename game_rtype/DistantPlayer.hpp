@@ -10,6 +10,7 @@
 #include "IController.hpp"
 #include "Message.hpp"
 #include "NetworkExceptions.hpp"
+// #include "AsioClone.hpp"
 #include <atomic>
 #include <functional>
 #include <map>
@@ -73,7 +74,7 @@ public:
     void SetEntity(int entityID) override;
 
     void HandleRequest(const serv::bytes& data) override;
-    std::shared_ptr<serv::IClient> Clone(boost::asio::ip::udp::endpoint endpoint) override;
+    std::shared_ptr<serv::IClient> Clone(std::shared_ptr<serv::EndpointWrapper> endpoint) override;
 
 private:
     void handleOK(serv::Instruction&);

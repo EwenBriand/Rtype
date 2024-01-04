@@ -30,8 +30,8 @@ namespace serv {
     public:
         virtual ~IClient() = default;
         virtual void HandleRequest(const bytes& data) = 0;
-        virtual std::shared_ptr<IClient> Clone(EndpointWrapper endpoint) = 0;
-        virtual void SetEndpoint(EndpointWrapper endpoint) = 0;
+        virtual std::shared_ptr<IClient> Clone(std::shared_ptr<EndpointWrapper> endpoint) = 0;
+        virtual void SetEndpoint(std::shared_ptr<EndpointWrapper> endpoint) = 0;
         virtual bool GetAnswerFlag() = 0;
         virtual void ResetAnswerFlag() = 0;
         virtual void OnDisconnect() = 0;
@@ -41,7 +41,7 @@ namespace serv {
     public:
         AClient(ServerUDP& server);
 
-        void SetEndpoint(EndpointWrapper endpoint) override;
+        void SetEndpoint(std::shared_ptr<EndpointWrapper> endpoint) override;
         void ResetAnswerFlag() override;
         bool GetAnswerFlag() override;
 
@@ -83,7 +83,7 @@ namespace serv {
          *
          * @return asio::ip::udp::endpoint
          */
-        EndpointWrapper GetEndpoint() const;
+        std::shared_ptr<EndpointWrapper> GetEndpoint() const;
 
         /**
          * @brief Set the handle Request object
@@ -167,7 +167,7 @@ namespace serv {
          * @brief Sends an instruction.
          *
          */
-        void Send(const Instruction& instruction, const EndpointWrapper& endpoint);
+        void Send(const Instruction& instruction, std::shared_ptr<EndpointWrapper> endpoint);
 
         /**
          * @brief Start the server.

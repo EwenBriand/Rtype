@@ -26,9 +26,9 @@ namespace serv {
     {
     }
 
-    void AClient::SetEndpoint(EndpointWrapper endpoint)
+    void AClient::SetEndpoint(std::shared_ptr<EndpointWrapper> endpoint)
     {
-        _endpoint = std::make_shared<EndpointWrapper>(endpoint);
+        _endpoint = endpoint;
     }
 
     void AClient::ResetAnswerFlag()
@@ -93,9 +93,9 @@ namespace serv {
         return value;
     }
 
-    EndpointWrapper ClientBucketUDP::GetEndpoint() const
+    std::shared_ptr<EndpointWrapper> ClientBucketUDP::GetEndpoint() const
     {
-        return *_endpoint;
+        return _endpoint;
     }
 
     void ClientBucketUDP::HandleRequest(ServerUDP& server)
@@ -113,7 +113,7 @@ namespace serv {
     void ClientBucketUDP::SetHandleRequest(std::shared_ptr<IClient> clientHandler)
     {
         _clientHandler = clientHandler;
-        _clientHandler->SetEndpoint(*_endpoint);
+        _clientHandler->SetEndpoint(_endpoint);
     }
 
     void ClientBucketUDP::OnDisconnect()
@@ -211,7 +211,7 @@ namespace serv {
             std::scoped_lock lock(*_clientsMutex);
             if (_clients.find(clientKey) == _clients.end()) {
                 _clients.insert({ clientKey, std::make_shared<ClientBucketUDP>(_remoteEndpoint) });
-                _clients.at(clientKey)->SetHandleRequest(_clientHandlerCopyBase->Clone(*_remoteEndpoint));
+                _clients.at(clientKey)->SetHandleRequest(_clientHandlerCopyBase->Clone(_remoteEndpoint));
                 Log("New client connected: " + clientKey);
             }
             _clients.at(clientKey)->UpdateLastRequestTime();
@@ -229,7 +229,7 @@ namespace serv {
         while (_running) {
             for (auto& client : _clients) {
                 if (client.second->GetLastRequestTime() > 3000) {
-                    std::string clientKey = endpointToString(client.second->GetEndpoint());
+                    std::string clientKey = endpointToString(*client.second->GetEndpoint());
                     Log("Client " + clientKey + " disconnected");
                     _clients.at(clientKey)->OnDisconnect();
                     disconnectedClients.push_back(clientKey);
@@ -279,9 +279,9 @@ namespace serv {
         _sendQueue.Push(messageCopy);
     }
 
-    void ServerUDP::Send(const Instruction& instruction, const EndpointWrapper& endpoint)
+    void ServerUDP::Send(const Instruction& instruction, std::shared_ptr<EndpointWrapper> endpoint)
     {
-        _sendQueue.Push(std::move(instruction.ToMessage(endpoint)));
+        _sendQueue.Push(instruction.ToMessage(*endpoint));
     }
 
     std::string ServerUDP::endpointToString(EndpointWrapper endpoint)
@@ -292,7 +292,7 @@ namespace serv {
     void ServerUDP::Broadcast(const bytes& data)
     {
         for (auto& client : _clients) {
-            Send(Message({ data, std::make_unique<EndpointWrapper>(client.second->GetEndpoint()) }));
+            Send(Message({ data, client.second->GetEndpoint() }));
         }
     }
 

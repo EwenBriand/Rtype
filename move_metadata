@@ -1,0 +1,29 @@
+#!/usr/bin/python3
+
+import sys
+import os
+
+def main():
+    relative_path = [
+        "../.metadata/AnimatorMeta.cpp",
+        "../.metadata/Collider2DMeta.cpp",
+        "../.metadata/EventGraphMeta.cpp",
+        "../.metadata/NodeStrMeta.cpp",
+        "../.metadata/TextFieldMeta.cpp",
+        "../.metadata/UIDivMeta.cpp",
+        "../.metadata/AudioSourceMeta.cpp",
+        "../.metadata/CoreTransformMeta.cpp",
+        "../.metadata/NodePrintStrMeta.cpp",
+        "../.metadata/RigidBody2DMeta.cpp",
+        "../.metadata/UIButtonMeta.cpp",
+        "../.metadata/UIMenuMeta.cpp",
+        "../.metadata/TagMeta.cpp",
+        "../.metadata/SplashIconMeta.cpp"
+    ]
+    if not os.path.exists("../build/.metadata"):
+        os.makedirs("../build/.metadata")
+    for path in relative_path:
+        os.rename(path, "../build/" + path[3:])
+
+if __name__ == "__main__":
+    main()

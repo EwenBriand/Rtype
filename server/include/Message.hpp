@@ -15,12 +15,12 @@ namespace serv {
 
     struct Message {
         bytes data;
-        std::unique_ptr<EndpointWrapper> endpointW;
+        std::shared_ptr<EndpointWrapper> endpointW;
 
-        Message(bytes data, std::unique_ptr<EndpointWrapper> endpointW)
-            : data(std::move(data)), endpointW(std::move(endpointW)) {}
+        Message(bytes data, std::shared_ptr<EndpointWrapper> endpointW)
+            : data(data), endpointW(endpointW) {}
         Message(const Message& other)
-            : data(other.data), endpointW(std::make_unique<EndpointWrapper>(*other.endpointW)) {}
+            : data(other.data), endpointW(other.endpointW) {}
 
         bytes& operator<<(bytes& data)
         {
@@ -31,7 +31,7 @@ namespace serv {
         {
             if (this != &other) {
                 data = other.data;
-                endpointW = std::make_unique<EndpointWrapper>(*other.endpointW);
+                endpointW = other.endpointW;
             }
             return *this;
         }

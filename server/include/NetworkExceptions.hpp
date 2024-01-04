@@ -35,7 +35,7 @@ namespace serv {
             : _message(message)
         {
             try {
-                server.Send(serv::Instruction(errorCode, errorCode, serv::bytes(message)), *endpoint);
+                server.Send(serv::Instruction(errorCode, errorCode, serv::bytes(message)), endpoint);
             } catch (const std::exception& e) {
                 std::cerr << "Could not send error message: " << e.what() << std::endl;
             }
@@ -52,7 +52,7 @@ namespace serv {
 
     class AntiCheatException : public std::exception {
     public:
-        AntiCheatException(ServerUDP& server, const std::string& message, const EndpointWrapper& endpoint)
+        AntiCheatException(ServerUDP& server, const std::string& message, std::shared_ptr<EndpointWrapper> endpoint)
             : _message(message)
         {
             try {

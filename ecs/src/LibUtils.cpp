@@ -12,7 +12,8 @@
 #include <string>
 
 #ifdef _WIN32
-// #include <windows.h>
+#include <windows.h>
+#include <sstream>
 #define LIBHANDLE HMODULE
 #define SYMHANDLE FARPROC
 #define GETSYMBOL GetProcAddress
@@ -46,8 +47,13 @@ namespace lib {
             std::cout << "nm result : " << std::endl;
             std::string nm_command = "nm " + path_copy + " | grep _ZTI5Laser";
             std::system(nm_command.c_str());
-
+#ifdef _WIN32
+            std::stringstream ss;
+            ss << "Cannot load library: [" << path_copy << "] : " << ERRORLIB();
+            throw std::runtime_error(ss.str());
+#else
             throw std::runtime_error("Cannot load library: [" + path_copy + "] : " + std::string(ERRORLIB()));
+#endif
         }
         return static_cast<void*>(handle);
     }
