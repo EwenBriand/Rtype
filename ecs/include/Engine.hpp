@@ -295,19 +295,32 @@ namespace eng {
          */
         void UnregisterObserver(std::shared_ptr<Observer> observer);
 
+        /**
+         * @brief Set the arguments in the global, else throws
+         * an exception.
+         *
+         */
         template <typename T>
         void SetGlobal(const std::string& name, T value)
         {
-            m_config[name] = value;
+            std::any anyValue = value;
+            _globals[name] = anyValue;
         }
 
+        /**
+         * @brief Returns the value of the global if it exists, else throws
+         * an exception.
+         *
+         */
         template <typename T>
         T GetGlobal(const std::string& name)
         {
             try {
-                return std::any_cast<T>(m_config.at(name));
+                return std::any_cast<T>(_globals.at(name));
             } catch (const std::out_of_range& e) {
                 throw std::logic_error("The global " + name + " does not exist");
+            } catch (const std::bad_any_cast& e) {
+                throw std::logic_error("The global " + name + " is not of the requested type");
             }
         }
 
@@ -318,6 +331,12 @@ namespace eng {
          *
          */
         void discoverConfig(const std::string& configPath);
+
+        /**
+         * @brief Map that contain all the global variable.
+         *
+         */
+        std::map<std::string, std::any> _globals;
 
         /**
          * @brief Loads a single configuration file.

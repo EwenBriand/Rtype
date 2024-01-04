@@ -123,6 +123,11 @@ void Enemy::broadcastDeath()
 {
     serv::Instruction instruction(eng::RType::I_ENEMY_DIES, 0, serv::bytes(std::vector<int>({ _id })));
     eng::Engine::GetEngine()->GetServer().Broadcast(instruction);
+
+    std::cout << "ADD KILL TO COUNT" << std::endl;
+    eng::Engine::GetEngine()->SetGlobal("killCount", eng::Engine::GetEngine()->GetGlobal<int>("killCount") + 1);
+
+    std::cout << "KILL COUNT: " << eng::Engine::GetEngine()->GetGlobal<int>("killCount") << std::endl;
 }
 // ===========================================================================================================
 // Directives
