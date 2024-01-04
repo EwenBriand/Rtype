@@ -85,4 +85,7 @@ add_custom_target(doc
 
 add_subdirectory(ecs)
 add_subdirectory(game_rtype)
-add_subdirectory(tests)
+
+if (NOT WIN32)
+    add_subdirectory(tests)
+endif()
