@@ -405,7 +405,6 @@ namespace rtype {
 
     void RTypeDistantServer::handlePlayerDies(serv::Instruction& instruction)
     {
-
         std::cout << "player died!!!" << std::endl;
         eng::Engine::GetEngine()->GetClient().Send(serv::Instruction(serv::I_DISCONNECT, 0, serv::bytes()));
     }

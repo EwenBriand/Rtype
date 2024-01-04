@@ -15,10 +15,14 @@
 #include "SceneManager.hpp"
 #include "ServerUdp.hpp"
 #include "Types.hpp"
+#include "luaScriptingAPI.hpp"
+#include <any>
 #include <exception>
 #include <fstream>
+#include <map>
 #include <memory>
 #include <mutex>
+#include <string>
 #include <vector>
 
 #define pushPipeline(action, priority) \
@@ -37,7 +41,7 @@ namespace eng {
      * By default, polling events is set to 0, and updating the ECS is set to 500.
      *
      */
-    class Engine {
+    _LUAC class Engine {
     public:
         struct Options {
             /**
@@ -125,21 +129,21 @@ namespace eng {
          * @brief Returns true if the option has been set in the command line.
          *
          */
-        bool IsOptionSet(const std::string& option);
+        _LUAM bool IsOptionSet(const std::string& option);
 
         /**
          * @brief Returns the value of the option if it exists, else throws
          * an exception.
          *
          */
-        std::string GetOptionValue(const std::string& option);
+        _LUAM std::string GetOptionValue(const std::string& option);
 
         /**
          * @brief Returns the value of the config field if it exists, else throws
          * an exception.
          *
          */
-        std::string GetConfigValue(const std::string& option);
+        _LUAM std::string GetConfigValue(const std::string& option);
 
         /**
          * @brief Clears the default pipeline.
@@ -446,6 +450,7 @@ namespace eng {
     private:
         std::string m_msg;
         std::string m_what;
+        std::map<std::string, std::any> _globals;
     };
 
     class CompatibilityException : public std::exception {

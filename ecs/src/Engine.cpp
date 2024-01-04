@@ -12,6 +12,7 @@
 #include "GraphicalRayLib/GraphicalRayLib.hpp"
 #include "SceneManager.hpp"
 #include "UIManager.hpp"
+#include "luaScriptingAPI.hpp"
 #include <algorithm>
 #include <filesystem>
 #include <memory>

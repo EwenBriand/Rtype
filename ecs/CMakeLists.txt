@@ -8,6 +8,65 @@ add_compile_options(
     -fmodules-ts
 )
 
+
+FetchContent_Declare(
+  lua
+  GIT_REPOSITORY https://github.com/lua/lua.git
+  GIT_TAG v5.4.3
+)
+FetchContent_GetProperties(lua)
+if(NOT lua_POPULATED)
+  FetchContent_Populate(lua)
+  set(LUA_SOURCES
+    ${lua_SOURCE_DIR}/lapi.c
+    ${lua_SOURCE_DIR}/lcode.c
+    ${lua_SOURCE_DIR}/lctype.c
+    ${lua_SOURCE_DIR}/ldebug.c
+    ${lua_SOURCE_DIR}/ldo.c
+    ${lua_SOURCE_DIR}/ldump.c
+    ${lua_SOURCE_DIR}/lfunc.c
+    ${lua_SOURCE_DIR}/lgc.c
+    ${lua_SOURCE_DIR}/llex.c
+    ${lua_SOURCE_DIR}/lmem.c
+    ${lua_SOURCE_DIR}/lobject.c
+    ${lua_SOURCE_DIR}/lopcodes.c
+    ${lua_SOURCE_DIR}/lparser.c
+    ${lua_SOURCE_DIR}/lstate.c
+    ${lua_SOURCE_DIR}/lstring.c
+    ${lua_SOURCE_DIR}/ltable.c
+    ${lua_SOURCE_DIR}/ltm.c
+    ${lua_SOURCE_DIR}/lundump.c
+    ${lua_SOURCE_DIR}/lvm.c
+    ${lua_SOURCE_DIR}/lzio.c
+    ${lua_SOURCE_DIR}/lauxlib.c
+    ${lua_SOURCE_DIR}/lbaselib.c
+    ${lua_SOURCE_DIR}/lcorolib.c
+    ${lua_SOURCE_DIR}/ldblib.c
+    ${lua_SOURCE_DIR}/liolib.c
+    ${lua_SOURCE_DIR}/lmathlib.c
+    ${lua_SOURCE_DIR}/loslib.c
+    ${lua_SOURCE_DIR}/lstrlib.c
+    ${lua_SOURCE_DIR}/ltablib.c
+    ${lua_SOURCE_DIR}/lutf8lib.c
+    ${lua_SOURCE_DIR}/loadlib.c
+    ${lua_SOURCE_DIR}/linit.c
+  )
+  add_library(lua SHARED ${LUA_SOURCES})
+  include_directories(${lua_SOURCE_DIR})
+endif ()
+
+FetchContent_Declare(
+    luabridge
+    GIT_REPOSITORY https://github.com/vinniefalco/LuaBridge.git
+    GIT_TAG master
+)
+FetchContent_GetProperties(luabridge)
+if(NOT luabridge_POPULATED)
+  FetchContent_Populate(luabridge)
+  message(STATUS "luabridge_SOURCE_DIR: ${luabridge_SOURCE_DIR}")
+  include_directories(${luabridge_SOURCE_DIR}/Source)
+endif()
+
 include_directories(
     ./include
     ../metadata/include/
@@ -54,6 +113,7 @@ set(ECS
     ${ECS_SRC}/States.cpp
     ${ECS_SRC}/Timer.cpp
     ${ECS_SRC}/Observer.cpp
+    ${ECS_SRC}/../../luaEngineApplet/src/LuaModule.cpp
 )
 
 set(ENGINE
@@ -81,6 +141,7 @@ set(VANILLA
     ${VANILLA_SRC}/UserComponentWrapper.cpp
     ${VANILLA_SRC}/Tag.cpp
     ${VANILLA_SRC}/SplashIcon.cpp
+    ${VANILLA_SRC}/LuaScript.cpp
 )
 
 set(META_VANILLA_SRC
@@ -102,6 +163,7 @@ set(META_VANILLA
     ${META_VANILLA_SRC}/UIMenuMeta.cpp
     ${META_VANILLA_SRC}/TagMeta.cpp
     ${META_VANILLA_SRC}/SplashIconMeta.cpp
+    ${META_VANILLA_SRC}/LuaScriptMeta.cpp
 )
 
 add_library(lengine SHARED
@@ -115,6 +177,7 @@ target_link_libraries(lengine
     metadatagen
     raylib
     server_udp
+    lua
 )
 
 add_dependencies(lengine

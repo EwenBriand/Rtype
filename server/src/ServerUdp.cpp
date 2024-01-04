@@ -158,7 +158,7 @@ namespace serv {
     ServerUDP::~ServerUDP()
     {
         _running = false;
-
+        _socket.close();
         if (_receiveThread.joinable())
             _receiveThread.join();
         if (_sendThread.joinable())
