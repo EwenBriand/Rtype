@@ -363,19 +363,31 @@ def create_cfg(args):
 
 def run_client(args):
     cd_gitroot()
-    os.system(".shortcuts/client")
+    if os.name == "nt":
+        subprocess.run([".shortcuts\client.bat"])
+    else:
+        os.system(".shortcuts/client")
 
 def run_gclient(args):
     cd_gitroot()
-    os.system(".shortcuts/gclient")
+    if os.name == "nt":
+        subprocess.run([".shortcuts\gclient.bat"])
+    else:
+        os.system(".shortcuts/gclient")
 
 def run_server(args):
     cd_gitroot()
-    os.system(".shortcuts/server")
+    if os.name == "nt":
+        subprocess.run([".shortcuts\server.bat"])
+    else:
+        os.system(".shortcuts/server")
 
 def run_edit(args):
     cd_gitroot()
-    os.system(".shortcuts/edit")
+    if os.name == "nt":
+        subprocess.run([".shortcuts\edit.bat"])
+    else:
+        os.system(".shortcuts/edit")
 
 commands = {
     "clean": ("performs a deep clean of the repository", lambda args: deep_clean_impl(args)),
