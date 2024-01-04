@@ -63,6 +63,7 @@ private:
     Collider2D* _collider = nullptr;
     AudioSource* _audio = nullptr;
     CoreTransform* _core = nullptr;
+    TextField* _textField = nullptr;
     int _entity;
     eng::Observer _observer;
     int _id = -1;

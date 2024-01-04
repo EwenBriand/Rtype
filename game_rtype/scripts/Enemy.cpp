@@ -35,17 +35,23 @@ void Enemy::OnAddComponent(int entityID)
 void Enemy::Start()
 {
     _rb = &SYS.SafeGet<RigidBody2D>(_entity);
-    _collider = &SYS.SafeGet<Collider2D>(_entity);
     _core = &SYS.SafeGet<CoreTransform>(_entity);
-    _collider->SetTag("enemy");
+
+    _textField = &SYS.SafeGet<TextField>(_entity);
+    _textField->SetPosition({ -80, -80 });
+    _textField->SetText((std::to_string(_health) + " HP"));
+
     _speed = 100.0f;
     _rb->SetVelocity({ _speed, _rb->GetVelocity().y });
 
+    _collider = &SYS.SafeGet<Collider2D>(_entity);
+    _collider->SetTag("enemy");
     _collider->SetOnCollisionEnter([this](int entityID, int otherID) {
         try {
             std::string tag = (_entity == entityID) ? SYS.GetComponent<Collider2D>(otherID).GetTag() : SYS.GetComponent<Collider2D>(entityID).GetTag();
             if (tag.compare(0, 12, "Player laser") == 0) {
                 this->_health -= 1;
+                _textField->SetText((std::to_string(_health) + " HP"));
                 checkDeath();
             }
         } catch (std::exception& e) {
@@ -68,6 +74,7 @@ void Enemy::Update(int entityID)
     if (!_controller) {
         return;
     }
+
     _controller->PollDirectives();
     if (_core->y > 1080 - 100 || _core->y < 50)
         _rb->SetVelocity({ 0, (_rb->GetVelocity().y >= 0) ? -_speed : _speed });

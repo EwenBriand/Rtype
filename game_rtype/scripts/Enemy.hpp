@@ -11,6 +11,8 @@
 
 #include "Components.Vanilla/Collider2D.hpp"
 #include "Components.Vanilla/RigidBody2D.hpp"
+#include "Components.Vanilla/TextField.hpp"
+#include "Components.Vanilla/UIDiv.hpp"
 #include "Components.Vanilla/UserComponentWrapper.hpp"
 #include "IActor.hpp"
 #include "IController.hpp"
@@ -71,6 +73,7 @@ private:
     RigidBody2D* _rb = nullptr;
     Collider2D* _collider = nullptr;
     CoreTransform* _core = nullptr;
+    TextField* _textField = nullptr;
     int _entity;
     eng::Observer _observer;
     int _id = -1;
