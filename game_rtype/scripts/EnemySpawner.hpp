@@ -35,8 +35,7 @@ private:
     void broadcastSpawn(const rtype::AIController& controller, int x, int y);
     void setupObserver(std::shared_ptr<rtype::AIController> controller, int e);
 
-    serialize float _spawnDelay
-        = 5.0f;
+    serialize float _spawnDelay = 5.0f;
     serialize std::string _prefabName = "dual-ship";
 
     eng::Timer _timer;

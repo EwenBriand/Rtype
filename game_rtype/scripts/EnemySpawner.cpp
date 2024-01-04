@@ -64,6 +64,8 @@ void EnemySpawner::Update(int e)
             CONSOLE::err << "\rCould not spawn enemy: \n\r\t" << e.what() << std::endl;
         }
     }
+    int res = eng::Engine::GetEngine()->GetGlobal<int>("killCount");
+    std::cout << "kill count: " << res << std::endl;
 }
 
 void EnemySpawner::OnAddComponent(int e)
@@ -80,6 +82,7 @@ void EnemySpawner::OnAddComponent(int e)
     } catch (const std::exception& e) {
         CONSOLE::err << "Could not get transform\n\r\t" << e.what() << std::endl;
     }
+    eng::Engine::GetEngine()->SetGlobal<int>("killCount", 0);
 }
 
 void EnemySpawner::Start()

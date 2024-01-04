@@ -52,21 +52,21 @@ namespace rtype {
 
     bool AIController::testUp()
     {
-        // if (_UpTimer.GetElapsedTime() > _directivesInterval) {
-        //     _directivesInterval = 3.5f;
-        //     _UpTimer.Restart();
-        //     return rand() % 2;
-        // }
+        if (_UpTimer.GetElapsedTime() > _directivesInterval) {
+            _directivesInterval = 3.5f;
+            _UpTimer.Restart();
+            return rand() % 2;
+        }
         return false;
     }
 
     bool AIController::testDown()
     {
-        // if (_DownTimer.GetElapsedTime() > _directivesInterval) {
-        //     _directivesInterval = 3.5f;
-        //     _DownTimer.Restart();
-        //     return rand() % 2;
-        // }
+        if (_DownTimer.GetElapsedTime() > _directivesInterval) {
+            _directivesInterval = 3.5f;
+            _DownTimer.Restart();
+            return rand() % 2;
+        }
         return false;
     }
 
