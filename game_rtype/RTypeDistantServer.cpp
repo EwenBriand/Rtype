@@ -388,9 +388,9 @@ namespace rtype {
         std::cout << "enemy died" << std::endl;
         try {
             int id = 0;
-            // int kcount = 0;
-            // instruction.data.Deserialize(id, kcount);
-            instruction.data.Deserialize(id);
+            int kcount = 0;
+            instruction.data.Deserialize(id, kcount);
+            // instruction.data.Deserialize(id);
 
             if (_enemies.find(id) == _enemies.end()) {
                 return;
@@ -404,8 +404,8 @@ namespace rtype {
             }
             std::cout << "\rEnemy " << id << " died." << std::endl;
             std::shared_ptr<eng::RType> game = std::dynamic_pointer_cast<eng::RType>(_engine->GetGame());
-            // game->GetSessionData().killCount = kcount;
-            // eng::Engine::GetEngine()->SetGlobal("killCount", kcount);
+            game->GetSessionData().killCount = kcount;
+            eng::Engine::GetEngine()->SetGlobal("killCount", kcount);
         } catch (const std::exception& e) {
             CONSOLE::err << "\r" << e.what() << std::endl;
         }
