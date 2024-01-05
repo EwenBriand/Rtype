@@ -1,12 +1,12 @@
 <template>
-    <div class="sidebar">
+    <!-- <div class="sidebar">
       <div class="home">
         <img src="../assets/icon-home.png" alt="home" />
       </div>
 
-      <img src="../assets/divider.png" alt="divider" />
+      <img src="../assets/divider.png" alt="divider" /> -->
 
-      <div class="menu">
+      <!-- <div class="menu">
         <div class="editor">
           <div class="selector">
             <img src="../assets/selector.png" alt="selector" />
@@ -23,7 +23,7 @@
       <div class="settings">
         <img src="../assets/icon-settings.png" alt="settings" />
       </div>
-    </div>
+    </div> -->
 
     <div class="entityTree">
       <div class="header">
@@ -40,7 +40,6 @@
 
     <div class="fileExplorer">
       <div class="header">
-
         <div @click="changeComponentToFile" class="selectorExplorer" :class="{componentSelected: componentSelectedId == 1}">
           <img src="../assets/icon-explorer.png" alt="fileExplorer" />
           <h3 class="selectorExplorerText">Explorer</h3>
@@ -57,16 +56,21 @@
     </div>
 
     <div class="properties">
-      <div class="header"></div>
+      <div class="header">
+        <p>{{ projectName }}</p>
+      </div>
     </div>
 </template>
 
 <script setup>
   import { ref } from "vue";
+  import { useRouter } from "vue-router";
 
   let componentSelectedId = ref(1);
   let currentFiles = ref([]);
   let fileSelected = ref(-1);
+  const router = useRouter();
+  const projectName = router.currentRoute.value.params.projectName;
 
   const changeComponentToFile = () => {
     componentSelectedId.value = 1;

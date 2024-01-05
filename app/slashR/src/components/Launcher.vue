@@ -17,7 +17,7 @@
           <ul class="project-list">
             <img class="line" alt="Line" src="../assets/separator.svg" />
             <template v-for="(item, index) in projectList" :key="index">
-              <li class="project" > {{ item }} </li>
+              <li @click="router.push({ name: 'workspace', params: { projectName: item } });" class="project" > {{ item }} </li>
               <img alt="Line" src="../assets/separator.svg" />
             </template>
           </ul>
@@ -49,12 +49,14 @@
   const projectName = ref('')
   const router = useRouter();
 
-  const createNewProject = (name) => {
-    if (name === undefined || name == "")
-      createProject("NewProject")
-    else
-      createProject(name)
-    router.push('/workspace');
+  const createNewProject = async (name) => {
+    if (name === undefined || name == "") {
+      await createProject("NewProject")
+      router.push({ name: 'workspace', params: { projectName: "NewProject" } });
+    } else {
+      await createProject(name)
+      router.push({ name: 'workspace', params: { projectName: name } });
+    }
   }
 
   onMounted(async () => {
@@ -141,6 +143,11 @@
     justify-content: flex-start;
     padding-left: 30px;
     padding-top: 10px;
+  }
+
+  .project:hover {
+    color: #AD2A2A;
+    background-color: #4D4D4D;
   }
 
   .desktop .button-section {

@@ -1,6 +1,7 @@
 import fs from 'fs';
 import * as fsp from 'fs/promises'
 import { delay } from './utils'
+import { getAppPaths } from './getPaths'
 
 export const isInstalled = (homePath) => {
     if (fs.existsSync(homePath + '.slashR'))
@@ -21,8 +22,11 @@ export const installer = async (homePath, appPath) => {
     }
 }
 
-export const createProject = async (homePath, projectName) => {
-    const projectPath = homePath + '.slashR/projects' + projectName
+export const createProject = async (projectName) => {
+    const paths = getAppPaths()
+    let number = 0
+
+    const projectPath = paths.homePath + '.slashR/projects/' + projectName
     console.log("projectPath:" + projectPath)
 
     try {
@@ -42,6 +46,10 @@ export const createProject = async (homePath, projectName) => {
         await fsp.writeFile(baseFd, 'scenesSavePath="../../scenes/"\nuserScriptsPath="../../../scripts/"\nassetRoot="../../../assets/"\ngame="../../../../build/game_rtype/libgame_target.so"\ntmpBuildDir="../../../../"')
         await baseFd.close()
     } catch (err) {
+        if (err.code === 'EEXIST') {
+            console.log("Project already exists")
+            createProject(projectName + number)
+        }
         console.error("Project creation failed:" + err);
     }
 }
