@@ -158,13 +158,13 @@ All these path are relative to the base.cfg file.
 **How to run the engine to use the game binary:**
 Use the following command line for a server:
 ```bash
-./build/ecs/run_engine --editor --config-dir=<your game name>/.engine/config --server-port=8080 --server-mode --no-graphics
+./bin/run_engine --editor --config-dir=<your game name>/.engine/config --server-port=8080 --server-mode --no-graphics
 ```
 
 For a client you can run:
 
 ```bash
-./build/ecs/run_engine --editor --config-dir=game_rtype/.engine/config --server-port=8080 --server-ip=127.0.0.1
+./bin/run_engine --editor --config-dir=game_rtype/.engine/config --server-port=8080 --server-ip=127.0.0.1
 ```
 *The ```--no-graphics``` option can also be used on the client for testing purposes*.
 *The ```--editor``` option will allow access to the CLI which can be used to send messages to the server using ```ssend <message>``` and to the clients using ```csend <message>```*
