@@ -9,10 +9,11 @@
 #define FCA93E06_260A_4A6F_987B_B0613F83E883
 #include "../Component.hpp"
 #include "../IGraphicalModule.hpp"
+#include "luaScriptingAPI.hpp"
 #include "metadata.hpp"
 #include <iostream>
 
-serialize class CoreTransform : public ecs::Component<CoreTransform> {
+_LUAC serialize class CoreTransform : public ecs::Component<CoreTransform> {
 public:
     GENERATE_METADATA(CoreTransform)
     serialize float x = 0;

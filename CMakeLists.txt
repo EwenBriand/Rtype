@@ -151,3 +151,4 @@ add_custom_target(doc
 add_subdirectory(ecs)
 add_subdirectory(game_rtype)
 add_subdirectory(tests)
+add_subdirectory(game_bowling)

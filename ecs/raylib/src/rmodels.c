@@ -3896,27 +3896,22 @@ static Model LoadOBJ(const char* fileName)
             if (mm >= model.meshCount) {
                 printf("DANGER mm = %i\n", mm);
             }
-            printf("not here 1\n");
             // Get indices for the face
             tinyobj_vertex_index_t idx0 = attrib.faces[3 * af + 0];
             tinyobj_vertex_index_t idx1 = attrib.faces[3 * af + 1];
             tinyobj_vertex_index_t idx2 = attrib.faces[3 * af + 2];
-            printf("not here 2\n");
             // Fill vertices buffer (float) using vertex index of the face
             for (int v = 0; v < 3; v++) {
                 model.meshes[mm].vertices[vCount[mm] + v] = attrib.vertices[idx0.v_idx * 3 + v];
             }
-            printf("not here 3\n");
             vCount[mm] += 3;
             for (int v = 0; v < 3; v++) {
                 model.meshes[mm].vertices[vCount[mm] + v] = attrib.vertices[idx1.v_idx * 3 + v];
             }
-            printf("not here 4\n");
             vCount[mm] += 3;
             for (int v = 0; v < 3; v++) {
                 model.meshes[mm].vertices[vCount[mm] + v] = attrib.vertices[idx2.v_idx * 3 + v];
             }
-            printf("not here 5\n");
             vCount[mm] += 3;
             if (attrib.num_texcoords > 0) {
                 // Fill texcoords buffer (float) using vertex index of the face
@@ -3932,25 +3927,20 @@ static Model LoadOBJ(const char* fileName)
                 model.meshes[mm].texcoords[vtCount[mm] + 1] = 1.0f - attrib.texcoords[idx2.vt_idx * 2 + 1];
                 vtCount[mm] += 2;
             }
-            printf("not here 6\n");
             if (attrib.num_normals > 0) {
                 // Fill normals buffer (float) using vertex index of the face
                 for (int v = 0; v < 3; v++) {
                     model.meshes[mm].normals[vnCount[mm] + v] = attrib.normals[idx0.vn_idx * 3 + v];
                 }
-                printf("not here 7\n");
                 vnCount[mm] += 3;
                 for (int v = 0; v < 3; v++) {
                     model.meshes[mm].normals[vnCount[mm] + v] = attrib.normals[idx1.vn_idx * 3 + v];
                 }
-                printf("not here 8\n");
                 vnCount[mm] += 3;
                 for (int v = 0; v < 3; v++) {
                     model.meshes[mm].normals[vnCount[mm] + v] = attrib.normals[idx2.vn_idx * 3 + v];
                 }
-                printf("not here 9\n");
                 vnCount[mm] += 3;
-                printf("not here 10\n");
             }
         }
         // Init model materials
