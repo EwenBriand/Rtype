@@ -44,7 +44,6 @@ void Laser::Start()
             try {
                 std::string tag = (_entity == entityID) ? SYS.GetComponent<Collider2D>(otherID).GetTag() : SYS.GetComponent<Collider2D>(entityID).GetTag();
                 if (tag == "player") {
-                    std::cout << "laser was destroyed after colliding with a player" << std::endl;
                     SYS.GetComponent<Collider2D>(_entity).SetDestroyMe(true);
                     SYS.UnregisterEntity(_entity);
                 }
@@ -59,7 +58,6 @@ void Laser::Start()
             try {
                 std::string tag = (_entity == entityID) ? SYS.GetComponent<Collider2D>(otherID).GetTag() : SYS.GetComponent<Collider2D>(entityID).GetTag();
                 if (tag == "enemy") {
-                    std::cout << "laser was destroyed after colliding with an enemy" << std::endl;
                     SYS.GetComponent<Collider2D>(_entity).SetDestroyMe(true);
                     SYS.UnregisterEntity(_entity);
                 }

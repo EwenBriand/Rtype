@@ -7,6 +7,7 @@
 */
 
 #include "DistantPlayer.hpp"
+#include "GameRtype.hpp"
 #include "LobbyCoroutine.hpp"
 #include "NetworkExceptions.hpp"
 #include "ServerUdp.hpp"
@@ -24,6 +25,8 @@ DistantPlayer::DistantPlayer(serv::ServerUDP& server, bool send)
 
 DistantPlayer::~DistantPlayer()
 {
+    std::shared_ptr<eng::RType> rtype = std::dynamic_pointer_cast<eng::RType>(eng::Engine::GetEngine()->GetGame());
+    rtype->GetSessionData() = eng::SessionData();
 }
 
 void DistantPlayer::HandleRequest(const serv::bytes& data)
@@ -170,10 +173,14 @@ void DistantPlayer::handlePlayerMoves(serv::Instruction& instruction)
         throw serv::MalformedInstructionException("Player moves instruction malformed");
     }
 
-    auto& transform = SYS.GetComponent<CoreTransform>(_entityID);
-    // todo anticheat goes here
-    transform.x = x;
-    transform.y = y;
+    try {
+        auto& transform = SYS.GetComponent<CoreTransform>(_entityID);
+        // todo anticheat goes here
+        transform.x = x;
+        transform.y = y;
+    } catch (const std::exception& e) {
+        return; // player died and will be removed
+    }
     for (auto& player : Instances) {
         if (player->GetID() == _playerId) {
             continue;

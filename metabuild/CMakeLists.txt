@@ -2,10 +2,10 @@ cmake_minimum_required(VERSION 3.5)
 project(autogen)
 
 set(CMAKE_CXX_STANDARD 20)
-include_directories(/home/amour/Documents/epitech/rtype/.tmpCompileSrc/Ship /home/amour/Documents/epitech/rtype/.tmpCompileSrc/Ship /home/amour/Documents/epitech/rtype/metadata/include/ /home/amour/Documents/epitech/rtype/ecs/include/ /home/amour/Documents/epitech/rtype/ecs/raylib/src/ /home/amour/Documents/epitech/rtype/ecs/raylib/examples/shapes/ /home/amour/Documents/epitech/rtype/server/include/ /home/amour/Documents/epitech/rtype/game_rtype/scripts  /home/amour/Documents/epitech/rtype/game_rtype )
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY /home/amour/Documents/epitech/rtype/.tmpCompileSrc/Ship)
+include_directories(/home/ebriand/3year/rtype/RTypeV0.0/.tmpCompileSrc/AudioManager /home/ebriand/3year/rtype/RTypeV0.0/.tmpCompileSrc/AudioManager /home/ebriand/3year/rtype/RTypeV0.0/metadata/include/ /home/ebriand/3year/rtype/RTypeV0.0/ecs/include/ /home/ebriand/3year/rtype/RTypeV0.0/ecs/raylib/src/ /home/ebriand/3year/rtype/RTypeV0.0/ecs/raylib/examples/shapes/ /home/ebriand/3year/rtype/RTypeV0.0/server/include/ /home/ebriand/3year/rtype/RTypeV0.0/game_rtype/scripts  /home/ebriand/3year/rtype/RTypeV0.0/game_rtype )
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY /home/ebriand/3year/rtype/RTypeV0.0/.tmpCompileSrc/AudioManager)
 set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH}  ${CMAKE_CURRENT_SOURCE_DIR}/../build/)
 link_directories(
 )
-add_library(Ship SHARED /home/amour/Documents/epitech/rtype/.tmpCompileSrc/Ship/Ship.hpp .././.metadata/ShipMeta.cpp /home/amour/Documents/epitech/rtype/.tmpCompileSrc/Ship/Ship.cpp)
+add_library(AudioManager SHARED /home/ebriand/3year/rtype/RTypeV0.0/.tmpCompileSrc/AudioManager/AudioManager.hpp .././.metadata/AudioManagerMeta.cpp /home/ebriand/3year/rtype/RTypeV0.0/.tmpCompileSrc/AudioManager/AudioManager.cpp)
 add_compile_options(-g3)

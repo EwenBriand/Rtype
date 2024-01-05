@@ -107,6 +107,7 @@ namespace meta {
             check_depends(words, i, scriptPath, filepath);
             if (words[i] == "class" && i > 0 && words[i - 1] == "serialize") {
                 serializeed = true;
+                std::cout << "-- Generating metadata for class in " << filename << std::endl;
                 std::string filenameNoExtension = filename.substr(0, filename.find_last_of("."));
                 generateMetadataForClass(words, i, "./.metadata/" + filenameNoExtension + "Meta" + ".cpp");
             }
@@ -141,7 +142,8 @@ namespace meta {
                 nonTrivialEnd = true;
                 needsInit = false;
                 initFunctions(loadFunction, saveFunction, getMetadataFunction, className);
-
+            } else if (words[i] == "{") {
+                ++openBrackets;
             } else if (words[i] == "}")
                 --openBrackets;
             if (words[i] == "serialize") {
@@ -280,7 +282,7 @@ namespace meta {
         _cmakefile += "project(autogen)\n";
         _cmakefile += "\n";
         _cmakefile += "set(CMAKE_CXX_STANDARD 20)\n";
-        _cmakefile += "include_directories(" + folder + " " + folder + " " + _buildRoot + "/metadata/include/ " + _buildRoot + "/ecs/include/ " + _buildRoot + "/ecs/raylib/src/ " + _buildRoot + "/ecs/raylib/examples/shapes/ " + _buildRoot + "/server/include/";
+        _cmakefile += "include_directories(" + folder + " " + folder + " " + _buildRoot + "/metadata/include/ " + _buildRoot + "/ecs/include/ " + _buildRoot + "/ecs/raylib/src/ " + _buildRoot + "/ecs/raylib/examples/shapes/ " + _buildRoot + "/server/include/ " + _buildRoot + "/luaEngineApplet/include/";
 
         for (auto& include : _add_include) {
             _cmakefile += " " + include + " ";

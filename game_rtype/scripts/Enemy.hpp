@@ -11,11 +11,15 @@
 
 #include "Components.Vanilla/Collider2D.hpp"
 #include "Components.Vanilla/RigidBody2D.hpp"
+#include "Components.Vanilla/TextField.hpp"
+#include "Components.Vanilla/UIDiv.hpp"
 #include "Components.Vanilla/UserComponentWrapper.hpp"
 #include "IActor.hpp"
 #include "IController.hpp"
 #include "Observer.hpp"
 #include "metadata.hpp"
+
+BUILD_MANUAL
 
 /**
  * @brief This class is a script to control the Enemy.
@@ -31,10 +35,14 @@ public:
 
     static const std::string COMMAND_LEFT;
     static const std::string COMMAND_SHOOT;
+    static const std::string COMMAND_UP;
+    static const std::string COMMAND_DOWN;
 
     void Start() override;
     void OnAddComponent(int entityID) override;
     void Update(int entityID) override;
+
+    void SetID(int id);
 
 private:
     /**
@@ -42,6 +50,20 @@ private:
      *
      */
     void applyDirectives();
+
+    /**
+     * @brief Checks if the enemy should die, and if so, kills it and
+     * notifies the game and clients.
+     *
+     */
+    void checkDeath();
+    void instantiateRedLaser();
+    void broadcastShoot();
+    /**
+     * @brief Sends the death message to all clients
+     *
+     */
+    void broadcastDeath();
 
     serialize float _speed = 1.0f;
     serialize int _damage = 1;
@@ -51,15 +73,23 @@ private:
 
     RigidBody2D* _rb = nullptr;
     Collider2D* _collider = nullptr;
+    CoreTransform* _core = nullptr;
+    TextField* _textField = nullptr;
     int _entity;
     eng::Observer _observer;
+    int _id = -1;
 
     std::map<std::string, void (Enemy::*)()> _actions = {
         { COMMAND_LEFT, &Enemy::moveLeft },
         { COMMAND_SHOOT, &Enemy::shoot },
+        { COMMAND_UP, &Enemy::moveUp },
+        { COMMAND_DOWN, &Enemy::moveDown },
+
     };
     void shoot();
     void moveLeft();
+    void moveUp();
+    void moveDown();
 };
 
 #endif /* E2359F7A_1BE1_4E6A_B3E0_981C71D03CB9 */

@@ -11,11 +11,15 @@
 #include "Engine.hpp"
 #include "GameRtype.hpp"
 #include "Observer.hpp"
+#include <random>
 
 namespace rtype {
     AIController::AIController()
     {
+        srand(time(NULL));
         _shootTimer.Restart();
+        _UpTimer.Restart();
+        _DownTimer.Restart();
     }
 
     std::vector<std::string>& AIController::GetDirectives()
@@ -47,15 +51,37 @@ namespace rtype {
         return true;
     }
 
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> distrib(0, 1);
+
+    bool AIController::testUp()
+    {
+        if (_UpTimer.GetElapsedTime() > _directivesInterval) {
+            _directivesInterval = 3.5f;
+            _UpTimer.Restart();
+            return distrib(gen);
+        }
+        return false;
+    }
+
+    bool AIController::testDown()
+    {
+        if (_DownTimer.GetElapsedTime() > _directivesInterval) {
+            _directivesInterval = 3.5f;
+            _DownTimer.Restart();
+            return distrib(gen);
+        }
+        return false;
+    }
+
     bool AIController::testShoot()
     {
         if (not eng::Engine::GetEngine()->IsServer()) // order to shoot comes from server for synchronization
             return false;
         if (_shootTimer.GetElapsedTime() > _shootInterval) {
             _shootTimer.Restart();
-            broadcastShoot();
-            instantiateRedLaser();
-            return false;
+            return true;
         }
         return false;
     }
