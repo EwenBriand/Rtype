@@ -7,23 +7,23 @@
       <div class="transparent-circle-1" />
       <div class="transparent-circle-2" />
       <div class="purple-circle" />
-      <div class="button-circle-shadow" />
+      <!-- <div class="button-circle-shadow" />
       <div class="button-circle-shadow-2" />
-      <div class="image-circle-shadow" />
+      <div class="image-circle-shadow" /> -->
       <div class="card">
-        <h1 class="title-wrapper"> Welcome to SlashR Gaby </h1>
+        <h1 class="title-wrapper"> Welcome to SlashR</h1>
         <div class="project-section">
           <h3 class="project-section-title">Recent projects</h3>
           <ul class="project-list">
             <img class="line" alt="Line" src="../assets/separator.svg" />
-            <template v-for="(item, index) in fileNames" :key="index">
+            <template v-for="(item, index) in projectList" :key="index">
               <li class="project" > {{ item }} </li>
               <img alt="Line" src="../assets/separator.svg" />
             </template>
           </ul>
           <div class="button-section">
-            <button class="button"> Create new </button>
-            <button class="button"> Open </button>
+            <input v-model="projectName" @keyup.enter="createNewProject(projectName)" class="input" type="text" placeholder="New project name"/>
+            <button @click="createNewProject(projectName)" class="button">Create new</button>
           </div>
         </div>
         <div class="image-section">
@@ -39,21 +39,32 @@
 </template>
 
 <script setup>
-import fs from 'fs'
-import { app } from '@electron/remote'
-import { ref } from 'vue'
+  import { ref, onMounted } from 'vue'
+  import { getConfigData, getDirs, getProjectList } from '../scripts/getPaths';
+  import { createProject } from '../scripts/engineManagment';
+  import { useRouter } from 'vue-router'
 
-const path = ref(app.getAppPath())
-const fileNames = fs.readdirSync(path.value)
+  let paths = ref({})
+  const projectList = ref([])
+  const projectName = ref('')
+  const router = useRouter();
+
+  const createNewProject = (name) => {
+    if (name === undefined || name == "")
+      createProject("NewProject")
+    else
+      createProject(name)
+    router.push('/workspace');
+  }
+
+  onMounted(async () => {
+    const data = await getConfigData();
+    paths.value = getDirs(data);
+    projectList.value = await getProjectList(paths.value.projectsdir);
+  });
 </script>
 
 <script>
-
-  // const getProjectName = (path) => {
-  //   return path.split("/").pop();
-  // };
-
-
   export default {
     name: "slashrLauncher",
   };
@@ -69,7 +80,7 @@ const fileNames = fs.readdirSync(path.value)
   }
   .desktop .card {
     display: flex;
-    top: 10%;
+    top: 3%;
     flex-wrap: nowrap;
     flex-direction: row;
     justify-content: center;
@@ -117,6 +128,8 @@ const fileNames = fs.readdirSync(path.value)
     list-style-type: none;
     margin: 0;
     padding: 0;
+    overflow-y: scroll;
+    height: 200px;
   }
 
   .desktop .project {

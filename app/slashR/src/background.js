@@ -21,7 +21,8 @@ async function createWindow() {
     movable: true,
     height: 800,
     width: 1280,
-    resizable: false,
+    
+    resizable: true,
     backgroundColor: '#121212',
     webPreferences: {
 

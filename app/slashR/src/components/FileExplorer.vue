@@ -32,3 +32,9 @@ export default {
         </ul>
     </div>
 </template>
+
+<style>
+    div {
+        color: white;
+    }
+</style>

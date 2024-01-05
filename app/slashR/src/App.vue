@@ -1,15 +1,10 @@
 <template>
-  <slashrLauncher />
+  <router-view />
 </template>
 
 <script>
-import slashrLauncher from './components/Launcher.vue';
-
 export default {
   name: 'App',
-  components: {
-    slashrLauncher,
-  }
 }
 
 </script>
