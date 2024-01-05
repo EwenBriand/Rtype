@@ -32,8 +32,10 @@ public:
     void OnLoad() override;
 
 private:
-    void broadcastSpawn(const rtype::AIController& controller, int x, int y);
+    void broadcastSpawn(const rtype::AIController& controller, int x, int y, std::string prefabName);
     void setupObserver(std::shared_ptr<rtype::AIController> controller, int e);
+    void spawnEnemy1();
+    void spawnEnemy2();
 
     serialize float _spawnDelay
         = 5.0f;

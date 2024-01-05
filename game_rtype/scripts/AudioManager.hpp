@@ -28,6 +28,7 @@ public:
 
 private:
     AudioSource* _audioSource;
+    TextField* _textField;
     int _entity;
 };
 

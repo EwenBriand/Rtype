@@ -76,6 +76,12 @@ namespace eng {
         static constexpr int I_PLAYER_DIES = 5008;
 
         /**
+         * @brief args: {int nameLen, string prefabName, int id, int x, int y}
+         *
+         */
+        static constexpr int I_ENEMY_SPAWN2 = 5009;
+
+        /**
          * @brief The number of enemies to kill for the game to end
          *
          */

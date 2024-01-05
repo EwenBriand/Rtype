@@ -33,15 +33,21 @@ void Ship::Start()
     _rb = &SYS.SafeGet<RigidBody2D>(_entity);
     _audio = &SYS.SafeGet<AudioSource>(_entity);
     _core = &SYS.SafeGet<CoreTransform>(_entity);
-    _collider = &SYS.SafeGet<Collider2D>(_entity);
-    _collider->SetTag("player");
+
+    _textField = &SYS.SafeGet<TextField>(_entity);
+    _textField->SetPosition({ -50, -80 });
+    _textField->SetText((std::to_string(_health) + " HP"));
+
     std::cout << "player id " << _entity << std::endl;
 
+    _collider = &SYS.SafeGet<Collider2D>(_entity);
+    _collider->SetTag("player");
     _collider->SetOnCollisionEnter([this](int entityID, int otherID) {
         try {
             std::string tag = (_entity == entityID) ? SYS.GetComponent<Collider2D>(otherID).GetTag() : SYS.GetComponent<Collider2D>(entityID).GetTag();
             if (tag.compare(0, 11, "Enemy laser") == 0) {
                 this->_health -= 1;
+                _textField->SetText((std::to_string(_health) + " HP"));
             }
         } catch (std::exception& e) {
             std::cerr << "Ship::Start(): " << e.what() << std::endl;

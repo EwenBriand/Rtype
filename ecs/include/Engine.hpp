@@ -291,6 +291,36 @@ namespace eng {
          */
         void UnregisterObserver(std::shared_ptr<Observer> observer);
 
+        /**
+         * @brief Set the Global object
+         *
+         * @tparam T
+         * @param name
+         * @param value
+         */
+        template <typename T>
+        void SetGlobal(const std::string& name, T value)
+        {
+            _globals[name] = value;
+        }
+
+        /**
+         * @brief Get the Global object
+         *
+         * @tparam T
+         * @param name
+         * @return T
+         */
+        template <typename T>
+        T GetGlobal(const std::string& name)
+        {
+            try {
+                return std::any_cast<T>(_globals.at(name));
+            } catch (const std::out_of_range& e) {
+                throw std::logic_error("The global " + name + " does not exist");
+            }
+        }
+
     private:
         /**
          * @brief Discovers the configuration in the .engine folder and
@@ -298,6 +328,8 @@ namespace eng {
          *
          */
         void discoverConfig(const std::string& configPath);
+
+        std::map<std::string, std::any> _globals;
 
         /**
          * @brief Loads a single configuration file.

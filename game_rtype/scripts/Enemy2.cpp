@@ -1,12 +1,12 @@
 
 /*
-** @file Enemy.cpp
-** @brief Implementation of the Enemy class.
+** @file Enemy2.cpp
+** @brief Implementation of the Enemy2 class.
 ** @date 2023-12-14 17:30:39.
 **
 */
 
-#include "Enemy.hpp"
+#include "Enemy2.hpp"
 #include "../GameRtype.hpp"
 #include "../RTypeDistantServer.hpp"
 #include "Components.Vanilla/CoreTransform.hpp"
@@ -16,23 +16,23 @@
 #include "ServerUdp.hpp"
 #include <memory>
 
-MANAGED_RESOURCE(Enemy)
+MANAGED_RESOURCE(Enemy2)
 
-const std::string Enemy::COMMAND_LEFT = "left";
-const std::string Enemy::COMMAND_SHOOT = "shoot";
-const std::string Enemy::COMMAND_UP = "up";
-const std::string Enemy::COMMAND_DOWN = "down";
+const std::string Enemy2::COMMAND_LEFT = "left";
+const std::string Enemy2::COMMAND_SHOOT = "shoot";
+const std::string Enemy2::COMMAND_UP = "up";
+const std::string Enemy2::COMMAND_DOWN = "down";
 // ===========================================================================================================
 // Component
 // ===========================================================================================================
 
-void Enemy::OnAddComponent(int entityID)
+void Enemy2::OnAddComponent(int entityID)
 {
     _timer.Start();
     _entity = entityID;
 }
 
-void Enemy::Start()
+void Enemy2::Start()
 {
     _rb = &SYS.SafeGet<RigidBody2D>(_entity);
     _core = &SYS.SafeGet<CoreTransform>(_entity);
@@ -45,7 +45,7 @@ void Enemy::Start()
     _rb->SetVelocity({ _speed, _rb->GetVelocity().y });
 
     _collider = &SYS.SafeGet<Collider2D>(_entity);
-    _collider->SetTag("enemy");
+    _collider->SetTag("Enemy2");
     _collider->SetOnCollisionEnter([this](int entityID, int otherID) {
         try {
             std::string tag = (_entity == entityID) ? SYS.GetComponent<Collider2D>(otherID).GetTag() : SYS.GetComponent<Collider2D>(entityID).GetTag();
@@ -60,7 +60,7 @@ void Enemy::Start()
     });
 }
 
-void Enemy::Update(int entityID)
+void Enemy2::Update(int entityID)
 {
     if (not eng::Engine::GetEngine()->PlayMode())
         return;
@@ -87,7 +87,7 @@ void Enemy::Update(int entityID)
 // Public methods
 // ===========================================================================================================
 
-void Enemy::SetID(int id)
+void Enemy2::SetID(int id)
 {
     _id = id;
 }
@@ -96,7 +96,7 @@ void Enemy::SetID(int id)
 // Private methods
 // ===========================================================================================================
 
-void Enemy::applyDirectives()
+void Enemy2::applyDirectives()
 {
     if (not eng::Engine::GetEngine()->PlayMode()) {
         return;
@@ -109,7 +109,7 @@ void Enemy::applyDirectives()
     }
 }
 
-void Enemy::checkDeath()
+void Enemy2::checkDeath()
 {
     if (not eng::Engine::GetEngine()->IsServer())
         return;
@@ -121,14 +121,14 @@ void Enemy::checkDeath()
             _collider->SetDestroyMe(true);
             SYS.UnregisterEntity(_entity);
         } catch (std::exception& e) {
-            std::cerr << "Enemy::checkDeath(): " << e.what() << std::endl;
+            std::cerr << "Enemy2::checkDeath(): " << e.what() << std::endl;
         }
     }
 }
 
-void Enemy::broadcastDeath()
+void Enemy2::broadcastDeath()
 {
-    eng::Engine::GetEngine()->SetGlobal<int>("killCount", eng::Engine::GetEngine()->GetGlobal<int>("killCount") + 1);
+    eng::Engine::GetEngine()->SetGlobal<int>("killCount", eng::Engine::GetEngine()->GetGlobal<int>("killCount") + 2);
     // serv::Instruction instruction(eng::RType::I_ENEMY_DIES, 0, serv::bytes(std::vector<int>({ _id, eng::Engine::GetEngine()->GetGlobal<int>("killCount") })));
     serv::Instruction instruction(eng::RType::I_ENEMY_DIES, 0, serv::bytes(std::vector<int>({ _id })));
     eng::Engine::GetEngine()->GetServer().Broadcast(instruction);
@@ -137,34 +137,38 @@ void Enemy::broadcastDeath()
 // Directives
 // ===========================================================================================================
 
-void Enemy::shoot()
+void Enemy2::shoot()
 {
-    broadcastShoot();
-    instantiateRedLaser();
+    broadcastShoot(_core->x, _core->y - 10);
+    instantiateRedLaser(_core->x, _core->y - 10);
+    broadcastShoot(_core->x, _core->y + 10);
+    instantiateRedLaser(_core->x, _core->y + 10);
 }
 
-void Enemy::moveLeft()
+void Enemy2::moveLeft()
 {
     _rb->SetVelocity({ -_speed, _rb->GetVelocity().y });
 }
 
-void Enemy::moveUp()
+void Enemy2::moveUp()
 {
+    if (_core->y > 50)
+        _rb->SetVelocity({ _rb->GetVelocity().x, _speed });
 }
 
-void Enemy::moveDown()
+void Enemy2::moveDown()
 {
+    _rb->SetVelocity({ _rb->GetVelocity().x, _speed });
 }
 
-void Enemy::broadcastShoot()
+void Enemy2::broadcastShoot(int x, int y)
 {
     if (not eng::Engine::GetEngine()->IsServer()) // only server can broadcast
         return;
     try {
-        auto& transform = SYS.GetComponent<CoreTransform>(_entity);
         serv::bytes args(std::vector<int>({ _id,
-            static_cast<int>(transform.x),
-            static_cast<int>(transform.y) }));
+            static_cast<int>(x),
+            static_cast<int>(y) }));
         auto instruction = serv::Instruction(eng::RType::I_ENEMY_SHOOTS, 0, args);
         eng::Engine::GetEngine()->GetServer().Broadcast(instruction);
 
@@ -173,14 +177,14 @@ void Enemy::broadcastShoot()
     }
 }
 
-void Enemy::instantiateRedLaser()
+void Enemy2::instantiateRedLaser(int x, int y)
 {
     try {
         auto laser = SYS.GetResourceManager().LoadPrefab("red-laser");
         auto& transform = SYS.GetComponent<CoreTransform>(_entity);
         auto& laserTransform = SYS.GetComponent<CoreTransform>(laser);
-        laserTransform.x = transform.x;
-        laserTransform.y = transform.y;
+        laserTransform.x = x;
+        laserTransform.y = y;
     } catch (const std::exception& e) {
         std::cerr << "AIController::instantiateRedLaser(): " << e.what() << std::endl;
     }

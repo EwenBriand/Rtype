@@ -1,13 +1,11 @@
-
 /*
-** @file Enemy.hpp
-** @brief Definition of the Enemy class.
+** @file Enemy2.hpp
+** @brief Definition of the Enemy2 class.
 ** @date 2023-12-14 17:30:39.
 **
 */
 
-#ifndef E2359F7A_1BE1_4E6A_B3E0_981C71D03CB9
-#define E2359F7A_1BE1_4E6A_B3E0_981C71D03CB9
+#pragma once
 
 #include "Components.Vanilla/Collider2D.hpp"
 #include "Components.Vanilla/RigidBody2D.hpp"
@@ -22,16 +20,16 @@
 BUILD_MANUAL
 
 /**
- * @brief This class is a script to control the Enemy.
- * It will depend on a controller, to enable controlling the Enemy
+ * @brief This class is a script to control the Enemy2.
+ * It will depend on a controller, to enable controlling the Enemy2
  * from the network, the local player, or the ai.
  *
  */
-serialize class Enemy : public AUserComponent, public ecs::AActor {
+serialize class Enemy2 : public AUserComponent, public ecs::AActor {
 public:
-    GENERATE_METADATA(Enemy)
-    Enemy() = default;
-    ~Enemy() = default;
+    GENERATE_METADATA(Enemy2)
+    Enemy2() = default;
+    ~Enemy2() = default;
 
     static const std::string COMMAND_LEFT;
     static const std::string COMMAND_SHOOT;
@@ -46,19 +44,20 @@ public:
 
 private:
     /**
-     * @brief Applies the various directives to the Enemy.
+     * @brief Applies the various directives to the Enemy2.
      *
      */
     void applyDirectives();
 
     /**
-     * @brief Checks if the enemy should die, and if so, kills it and
+     * @brief Checks if the Enemy2 should die, and if so, kills it and
      * notifies the game and clients.
      *
      */
     void checkDeath();
-    void instantiateRedLaser();
-    void broadcastShoot();
+    void instantiateRedLaser(int x, int y);
+    void broadcastShoot(int x, int y);
+
     /**
      * @brief Sends the death message to all clients
      *
@@ -79,11 +78,11 @@ private:
     eng::Observer _observer;
     int _id = -1;
 
-    std::map<std::string, void (Enemy::*)()> _actions = {
-        { COMMAND_LEFT, &Enemy::moveLeft },
-        { COMMAND_SHOOT, &Enemy::shoot },
-        { COMMAND_UP, &Enemy::moveUp },
-        { COMMAND_DOWN, &Enemy::moveDown },
+    std::map<std::string, void (Enemy2::*)()> _actions = {
+        { COMMAND_LEFT, &Enemy2::moveLeft },
+        { COMMAND_SHOOT, &Enemy2::shoot },
+        { COMMAND_UP, &Enemy2::moveUp },
+        { COMMAND_DOWN, &Enemy2::moveDown },
 
     };
     void shoot();
@@ -91,5 +90,3 @@ private:
     void moveUp();
     void moveDown();
 };
-
-#endif /* E2359F7A_1BE1_4E6A_B3E0_981C71D03CB9 */
