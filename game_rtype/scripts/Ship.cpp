@@ -9,6 +9,7 @@
 #include "Components.Vanilla/CoreTransform.hpp"
 #include "ECSImpl.hpp"
 #include "Engine.hpp"
+#include "GameRtype.hpp"
 
 MANAGED_RESOURCE(Ship)
 
@@ -30,24 +31,30 @@ void Ship::OnAddComponent(int entityID)
 void Ship::Start()
 {
     _rb = &SYS.SafeGet<RigidBody2D>(_entity);
-    _collider = &SYS.SafeGet<Collider2D>(_entity);
-    _collider->SetTag("player");
+    _audio = &SYS.SafeGet<AudioSource>(_entity);
+    _core = &SYS.SafeGet<CoreTransform>(_entity);
+
+    _textField = &SYS.SafeGet<TextField>(_entity);
+    _textField->SetPosition({ -50, -80 });
+    _textField->SetText((std::to_string(_health) + " HP"));
+
     std::cout << "player id " << _entity << std::endl;
 
+    _collider = &SYS.SafeGet<Collider2D>(_entity);
+    _collider->SetTag("player");
     _collider->SetOnCollisionEnter([this](int entityID, int otherID) {
         try {
-            // std::cout << "Ship::Start(): " << entityID << " " << otherID << std::endl;
             std::string tag = (_entity == entityID) ? SYS.GetComponent<Collider2D>(otherID).GetTag() : SYS.GetComponent<Collider2D>(entityID).GetTag();
-            // std::cout << "after tag" << std::endl;
             if (tag.compare(0, 11, "Enemy laser") == 0) {
-                // std::cout << "before test" << std::endl;
                 this->_health -= 1;
-                // std::cout << "after test " << _entity << std::endl;
+                _textField->SetText((std::to_string(_health) + " HP"));
             }
         } catch (std::exception& e) {
             std::cerr << "Ship::Start(): " << e.what() << std::endl;
         }
     });
+
+    _audio->AddSoundName("Muse/laser_gun.ogg");
 }
 
 void Ship::Update(int entityID)
@@ -58,14 +65,24 @@ void Ship::Update(int entityID)
     _controller->PollDirectives();
     _rb->SetVelocity({ 0, 0 });
     applyDirectives();
-    if (_health <= 0) {
-        SYS.UnregisterEntity(_entity);
+    if (eng::Engine::GetEngine()->IsServer()) {
+        checkForDeath();
     }
 }
 
 // ===========================================================================================================
 // Public methods
 // ===========================================================================================================
+
+void Ship::SetID(int id)
+{
+    _id = id;
+}
+
+int Ship::GetID() const
+{
+    return _id;
+}
 
 // ===========================================================================================================
 // Private methods
@@ -91,34 +108,48 @@ void Ship::applyDirectives()
 
 void Ship::moveUp()
 {
-    _rb->SetVelocity({ _rb->GetVelocity().x, -_speed });
+    if (_core->y > 50)
+        _rb->SetVelocity({ _rb->GetVelocity().x, -_speed });
 }
 
 void Ship::moveDown()
 {
-    _rb->SetVelocity({ _rb->GetVelocity().x, _speed });
+    if (_core->y < 1080 - 100)
+        _rb->SetVelocity({ _rb->GetVelocity().x, _speed });
 }
 
 void Ship::moveLeft()
 {
-    _rb->SetVelocity({ -_speed, _rb->GetVelocity().y });
+    if (_core->x > 0 + 50)
+        _rb->SetVelocity({ -_speed, _rb->GetVelocity().y });
 }
 
 void Ship::moveRight()
 {
-    _rb->SetVelocity({ _speed, _rb->GetVelocity().y });
+    if (_core->x < 1920 - 100)
+        _rb->SetVelocity({ _speed, _rb->GetVelocity().y });
 }
 
 void Ship::shoot()
 {
     std::cout << "Ship::shoot()" << std::endl;
     int laser = SYS.GetResourceManager().LoadPrefab("Laser");
+    if (_audio->IsPlaying<Sound>("Muse/laser_gun.ogg"))
+        _audio->Stop<Sound>("Muse/laser_gun.ogg");
+    _audio->Play<Sound>("Muse/laser_gun.ogg");
     try {
-        auto& transform = SYS.GetComponent<CoreTransform>(_entity);
         auto& laserTransform = SYS.GetComponent<CoreTransform>(laser);
-        laserTransform.x = transform.x;
-        laserTransform.y = transform.y;
+        laserTransform.x = _core->x;
+        laserTransform.y = _core->y;
     } catch (std::exception& e) {
         return;
+    }
+}
+
+void Ship::checkForDeath()
+{
+    if (_health <= 0) {
+        SYS.UnregisterEntity(_entity);
+        eng::Engine::GetEngine()->GetServer().Broadcast(serv::Instruction(eng::RType::I_PLAYER_DIES, 0, serv::bytes(std::vector<int> { _id })));
     }
 }

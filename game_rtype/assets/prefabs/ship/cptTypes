@@ -1,6 +1,9 @@
 CoreTransform
 UserComponentWrapper
+UIDiv
+TextField
 Animator
 Collider2D
+AudioSource
 RigidBody2D
 Tag

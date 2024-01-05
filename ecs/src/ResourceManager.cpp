@@ -63,11 +63,13 @@ namespace ecs {
         std::string rawPath = path.substr(0, path.find_last_of('.'));
         std::string rawFolder = path.substr(0, path.find_last_of('/'));
         std::string copyPath = rootDir + "/" + tmpCopyDirectory + "/" + rawPath.substr(rawPath.find_last_of('/') + 1);
+        std::string luaLibs = eng::Engine::GetEngine()->GetConfigValue("luaHeaders");
+        std::string luabridge = eng::Engine::GetEngine()->GetConfigValue("luaBridge");
         std::string command = "mkdir -p " + copyPath + " && cp " + rawPath + ".cpp " + rawPath + ".hpp " + copyPath; // todo windows
         system(command.c_str());
         try {
             auto metagen = meta::MetadataGenerator();
-            metagen.generateMetadata(copyPath, "./metabuild", rootDir, { userScriptDir, MakePath({ userScriptDir, ".." }) }, userScriptDir);
+            metagen.generateMetadata(copyPath, "./metabuild", rootDir, { userScriptDir, MakePath({ userScriptDir, ".." }), luaLibs, luabridge }, userScriptDir);
             metagen.buildCMake();
         } catch (std::exception& e) {
             CONSOLE::err << "Build failed: " << path << std::endl;

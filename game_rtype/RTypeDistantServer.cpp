@@ -9,6 +9,7 @@
 #include "AIController.hpp"
 #include "CoreTransform.hpp"
 #include "Enemy.hpp"
+#include "Enemy2.hpp"
 #include "GameRtype.hpp"
 #include "LocalPlayerController.hpp"
 #include "NetworkExceptions.hpp"
@@ -204,6 +205,7 @@ namespace rtype {
                 _isAssignedLocalPlayer = true;
                 auto lpc = std::make_shared<LocalPlayerController>();
                 lpc->SetPlayerId(id);
+                // ship.SetID(id);
                 _entityID = entityID;
                 lpc->SetEntity(_entityID);
                 ship.Possess(_entityID, lpc);
@@ -288,6 +290,40 @@ namespace rtype {
         }
     }
 
+    void RTypeDistantServer::handleEnemySpawn2(serv::Instruction& instruction)
+    {
+        std::cout << "enemy spawn 2" << std::endl;
+        if (instruction.data.size() < 3 * sizeof(int)) {
+            throw std::runtime_error("Enemy spawn instruction has wrong data size.");
+        }
+        int id = 0;
+        int x = 0;
+        int y = 0;
+        std::string prefabName = "";
+
+        std::memcpy(&id, instruction.data.data(), sizeof(int));
+        std::memcpy(&x, instruction.data.data() + sizeof(int), sizeof(int));
+        std::memcpy(&y, instruction.data.data() + 2 * sizeof(int), sizeof(int));
+        prefabName.resize(instruction.data.size() - 3 * sizeof(int));
+
+        std::memcpy(&prefabName[0], instruction.data.data() + 3 * sizeof(int), instruction.data.size() - 3 * sizeof(int));
+
+        try {
+            auto eid = _engine->GetECS().GetResourceManager().LoadPrefab(prefabName);
+            auto& transform = _engine->GetECS().GetComponent<CoreTransform>(eid);
+            transform.x = x;
+            transform.y = y;
+
+            auto& ship = _engine->GetECS().GetComponent<Enemy2>(eid, "Enemy2");
+            auto pfsc = std::make_shared<rtype::AIController>();
+            pfsc->SetID(id);
+            ship.Possess(eid, pfsc);
+            _enemies[id] = eid;
+        } catch (std::exception& e) {
+            std::cerr << "\r" << e.what() << std::endl;
+        }
+    }
+
     void RTypeDistantServer::handleEnemyMoves(serv::Instruction& instruction)
     {
         int id = 0;
@@ -306,6 +342,7 @@ namespace rtype {
             auto& tr = _engine->GetECS().GetComponent<CoreTransform>(entityID);
             tr.x = x;
             tr.y = y;
+            std::cout << "player moved to " << x << ", " << y << std::endl;
         } catch (std::exception& e) {
             std::cerr << "\r" << e.what() << std::endl;
         }
@@ -346,6 +383,34 @@ namespace rtype {
         }
     }
 
+    void RTypeDistantServer::handleEnemyDies(serv::Instruction& instruction)
+    {
+        std::cout << "enemy died" << std::endl;
+        try {
+            int id = 0;
+            // int kcount = 0;
+            // instruction.data.Deserialize(id, kcount);
+            instruction.data.Deserialize(id);
+
+            if (_enemies.find(id) == _enemies.end()) {
+                return;
+            }
+            int entityID = _enemies[id];
+            try {
+                SYS.UnregisterEntity(entityID);
+                _enemies.erase(id);
+            } catch (const std::exception& e) {
+                CONSOLE::err << "\r" << e.what() << std::endl;
+            }
+            std::cout << "\rEnemy " << id << " died." << std::endl;
+            std::shared_ptr<eng::RType> game = std::dynamic_pointer_cast<eng::RType>(_engine->GetGame());
+            // game->GetSessionData().killCount = kcount;
+            // eng::Engine::GetEngine()->SetGlobal("killCount", kcount);
+        } catch (const std::exception& e) {
+            CONSOLE::err << "\r" << e.what() << std::endl;
+        }
+    }
+
     void RTypeDistantServer::setPlayerAnimation(int id, int entity)
     {
         if (id < 0 || id >= PlayerPrefabs.size()) {
@@ -367,10 +432,22 @@ namespace rtype {
         _currSceneName = "";
         _playerId = 0;
         _entityID = -1;
+        _isAssignedLocalPlayer = false;
         _players.clear();
         _enemies.clear();
         _engine->UnregisterObserver(_observer);
+
+        auto rtype = std::dynamic_pointer_cast<eng::RType>(_engine->GetGame());
+        rtype->GetSessionData().killCount = 0;
+
         _reset = true;
+    }
+
+    void RTypeDistantServer::handlePlayerDies(serv::Instruction& instruction)
+    {
+
+        std::cout << "player died!!!" << std::endl;
+        eng::Engine::GetEngine()->GetClient().Send(serv::Instruction(serv::I_DISCONNECT, 0, serv::bytes()));
     }
 
     bool RTypeDistantServer::ShouldReset()
@@ -385,7 +462,6 @@ namespace rtype {
 
     void RTypeDistantServer::handleResetSignal(serv::Instruction& instruction)
     {
-        std::cout << "reset signal received" << std::endl;
         if (RTypeDistantServer::GetInstance() != nullptr)
             RTypeDistantServer::GetInstance()->Reset();
     }

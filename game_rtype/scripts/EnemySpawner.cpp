@@ -8,6 +8,7 @@
 #include "EnemySpawner.hpp"
 #include "AIController.hpp"
 #include "Enemy.hpp"
+#include "Enemy2.hpp"
 #include "Engine.hpp"
 #include "GameRtype.hpp"
 #include "IGraphicalModule.hpp"
@@ -27,7 +28,6 @@ EnemySpawner::~EnemySpawner()
 
 void EnemySpawner::Update(int e)
 {
-    return;
     if (not eng::Engine::GetEngine()->PlayMode())
         std::cout << "caution, engine not in play mode" << std::endl;
     if (not eng::Engine::GetEngine()->IsServer())
@@ -38,7 +38,7 @@ void EnemySpawner::Update(int e)
     _timer.Restart();
     if (_wave == 0 && _wave_enemy.size() > 0) {
         _wave = _wave_enemy[0];
-        _wave_enemy.erase(_wave_enemy.begin());
+        // _wave_enemy.erase(_wave_enemy.begin());
     }
     if (_wave > 0) {
         _wave--;
@@ -47,27 +47,63 @@ void EnemySpawner::Update(int e)
             std::uniform_int_distribution<int> dist(0, size.y);
             _transform->y = dist(_rng);
 
-            unsigned int e = SYS.GetResourceManager().LoadPrefab(_prefabName);
-            auto& transform = SYS.GetComponent<CoreTransform>(e);
-            transform.x = _transform->x;
-            transform.y = _transform->y;
-
-            auto& ship = SYS.GetComponent<Enemy>(e, "Enemy");
-            auto controller = std::make_shared<rtype::AIController>();
-            if (not controller)
-                throw std::runtime_error("Could not create AIController");
-            controller->SetID(id++);
-            ship.Possess(e, controller);
-            setupObserver(controller, e);
-            broadcastSpawn(*controller, transform.x, transform.y);
+            if (eng::Engine::GetEngine()->GetGlobal<int>("killCount") < 5) {
+                spawnEnemy1();
+            } else {
+                _spawnDelay = 10.0f;
+                std::random_device rd;
+                std::mt19937 gen(rd());
+                std::uniform_int_distribution<> distrib(0, 1);
+                (distrib(gen) == 0) ? spawnEnemy1() : spawnEnemy2();
+            }
         } catch (const std::exception& e) {
             CONSOLE::err << "\rCould not spawn enemy: \n\r\t" << e.what() << std::endl;
         }
     }
+    std::cout << "kill count: " << eng::Engine::GetEngine()->GetGlobal<int>("killCount") << std::endl;
+}
+
+void EnemySpawner::spawnEnemy1()
+{
+    unsigned int e = SYS.GetResourceManager().LoadPrefab(_prefabName);
+    auto& transform = SYS.GetComponent<CoreTransform>(e);
+    transform.x = _transform->x;
+    transform.y = _transform->y;
+
+    auto& ship = SYS.GetComponent<Enemy>(e, "Enemy");
+    auto controller = std::make_shared<rtype::AIController>();
+    if (not controller)
+        throw std::runtime_error("Could not create AIController");
+    controller->SetID(id++);
+    ship.SetID(controller->GetID());
+    ship.Possess(e, controller);
+    setupObserver(controller, e);
+    broadcastSpawn(*controller, transform.x, transform.y, _prefabName);
+}
+
+void EnemySpawner::spawnEnemy2()
+{
+    std::cout << "spawn dual ship 2" << std::endl;
+    unsigned int e = SYS.GetResourceManager().LoadPrefab("dual-ship2");
+    auto& transform = SYS.GetComponent<CoreTransform>(e);
+    transform.x = _transform->x;
+    transform.y = _transform->y;
+
+    auto& ship = SYS.GetComponent<Enemy2>(e, "Enemy2");
+    auto controller = std::make_shared<rtype::AIController>();
+    std::cout << "find Enemy 2" << std::endl;
+    if (not controller)
+        throw std::runtime_error("Could not create AIController");
+    controller->SetID(id++);
+    ship.SetID(controller->GetID());
+    ship.Possess(e, controller);
+    setupObserver(controller, e);
+    broadcastSpawn(*controller, transform.x, transform.y, "dual-ship2");
 }
 
 void EnemySpawner::OnAddComponent(int e)
 {
+    std::cout << "add enemy spawner" << std::endl;
     if (not eng::Engine::GetEngine()->IsServer())
         return;
     try {
@@ -89,15 +125,19 @@ void EnemySpawner::OnLoad()
 {
 }
 
-void EnemySpawner::broadcastSpawn(const rtype::AIController& controller, int x, int y)
+void EnemySpawner::broadcastSpawn(const rtype::AIController& controller, int x, int y, std::string prefabName)
 {
     auto* engine = eng::Engine::GetEngine();
 
     if (not engine->IsServer())
         return;
     serv::bytes args(std::vector<int>({ controller.GetID(), x, y }));
-    args += serv::bytes(_prefabName);
-    auto instruction = serv::Instruction(eng::RType::I_ENEMY_SPAWN, 0, args);
+    args += serv::bytes(prefabName);
+    serv::Instruction instruction;
+    if (prefabName == "dual-ship2")
+        instruction = serv::Instruction(eng::RType::I_ENEMY_SPAWN2, 0, args);
+    else
+        instruction = serv::Instruction(eng::RType::I_ENEMY_SPAWN, 0, args);
     engine->GetServer().Broadcast(instruction.ToBytes() + serv::SEPARATOR);
 }
 

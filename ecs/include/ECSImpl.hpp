@@ -14,9 +14,11 @@
 #include "Components.Vanilla/CLI.hpp"
 #include "Components.Vanilla/Collider2D.hpp"
 #include "Components.Vanilla/CoreTransform.hpp"
+#include "Components.Vanilla/Deleteme.hpp"
 #include "Components.Vanilla/EditorMouseManager.hpp"
 #include "Components.Vanilla/EntityExplorer.hpp"
 #include "Components.Vanilla/EventGraph.hpp"
+#include "Components.Vanilla/LuaScript.hpp"
 #include "Components.Vanilla/NodePrintStr.hpp"
 #include "Components.Vanilla/NodeStr.hpp"
 #include "Components.Vanilla/RigidBody2D.hpp"
@@ -49,7 +51,8 @@ namespace ecs {
         AudioSource,
         RigidBody2D,
         Tag,
-        SplashIcon>;
+        SplashIcon,
+        LuaScript>;
 
 }
 
