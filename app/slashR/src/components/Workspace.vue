@@ -1,12 +1,12 @@
 <template>
-    <!-- <div class="sidebar">
+    <div class="sidebar">
       <div class="home">
-        <img src="../assets/icon-home.png" alt="home" />
+        <img @click="router.push('/launcher')" src="../assets/icon-home.png" alt="home" class="homeIcon"/>
       </div>
 
-      <img src="../assets/divider.png" alt="divider" /> -->
+      <img src="../assets/divider.png" alt="divider" />
 
-      <!-- <div class="menu">
+       <div class="menu">
         <div class="editor">
           <div class="selector">
             <img src="../assets/selector.png" alt="selector" />
@@ -23,19 +23,20 @@
       <div class="settings">
         <img src="../assets/icon-settings.png" alt="settings" />
       </div>
-    </div> -->
+    </div>
 
     <div class="entityTree">
       <div class="header">
         <ul class="currentFilesList">
           <img @click="openSceneSelector" src="../assets/icon-add.png" alt="add scene" class="addSceneLogo"/>
-          <li class="currentFilename" v-for="file in currentFiles" :key="file">
-            <img @click="removeSceneFromList" src="../assets/icon-close.png" alt="close" class="closeFile"/>
+          <li :class="{currentFileSelected: index === fileSelected}" class="currentFilename" v-for="(file, index) in currentFiles" :key="index">
+            <img @click="removeSceneFromList(file)" src="../assets/icon-close.png" alt="close" class="closeFile" />
             <div @click="selectSceneFromList(file)">{{ file }}</div>
           </li>
         </ul>
       </div>
-      <EntityCreator v-if="currentFiles[fileSelected] == 'SceneSelector'"/>
+      <SceneCreator :projectName="projectName" :addSceneToList="addSceneToList" v-if="currentFiles[fileSelected] == 'SceneSelector'"/>
+      <EntityTree :projectName="projectName" :sceneName="currentFiles[fileSelected]" v-else :key="reloader"/>
     </div>
 
     <div class="fileExplorer">
@@ -51,7 +52,7 @@
         </div>
       </div>
 
-      <FileExplorer v-if="componentSelectedId == 1" />
+      <FileExplorer v-if="componentSelectedId == 1" :projectName="projectName" />
       <MyTerminal v-if="componentSelectedId == 2"/>
     </div>
 
@@ -67,10 +68,18 @@
   import { useRouter } from "vue-router";
 
   let componentSelectedId = ref(1);
-  let currentFiles = ref([]);
-  let fileSelected = ref(-1);
+  let currentFiles = ref(['SceneSelector']);
+  let fileSelected = ref(0);
+  let reloader = ref(0);
   const router = useRouter();
   const projectName = router.currentRoute.value.params.projectName;
+
+  const reloadEntityTree = () => {
+    if (reloader.value == 0)
+      reloader.value = 1;
+    else
+      reloader.value = 0;
+  };
 
   const changeComponentToFile = () => {
     componentSelectedId.value = 1;
@@ -81,37 +90,45 @@
   };
 
   const openSceneSelector = () => {
-    const existingFileIndex = currentFiles.value.indexOf('SceneSelector');
-    if (existingFileIndex != -1) {
-      fileSelected.value = existingFileIndex;
-      return;
-    }
-    currentFiles.value.push('SceneSelector');
-    fileSelected.value = fileSelected.value + 1;
+    addSceneToList('SceneSelector');
   };
 
-  const selectSceneFromList = (file) => {
-    fileSelected.value = currentFiles.value.indexOf(file.value);
+  const addSceneToList = (name) => {
+    const existingFileIndex = currentFiles.value.indexOf(name);
+    if (existingFileIndex === -1)
+      currentFiles.value.push(name);
+    selectSceneFromList(name)
   };
 
-  const removeSceneFromList = () => {
-    currentFiles.value.splice(fileSelected.value, 1);
-    if (fileSelected.value > -1)
+  const selectSceneFromList = (name) => {
+    const index = currentFiles.value.indexOf(name);
+    fileSelected.value = index;
+    reloadEntityTree()
+  };
+
+  const removeSceneFromList = (name) => {
+    const index = currentFiles.value.indexOf(name);
+    currentFiles.value.splice(index, 1);
+    if (fileSelected.value > -1) {
       fileSelected.value = fileSelected.value - 1;
+      reloadEntityTree()
+    }
   };
-
 </script>
 
 <script>
   import FileExplorer from "./FileExplorer.vue";
   import MyTerminal from "./Terminal.vue";
-  import EntityCreator from "./EntityCreator.vue";
+  import SceneCreator from "./SceneCreator.vue";
+  import EntityTree from "./EntityTree.vue";
 
   export default {
     name: "workspaceEmpty",
     components: {
       FileExplorer,
       MyTerminal,
+      SceneCreator,
+      EntityTree
     },
   };
 </script>
@@ -155,6 +172,12 @@
         align-self: center;
     }
 
+    .homeIcon:hover {
+        cursor: pointer;
+        background-color: #4D4D4D;
+        border-radius: 10px;
+    }
+
     .selector {
         position: absolute;
         width: 45px;
@@ -196,6 +219,7 @@
         list-style-type: none;
         margin: 0;
         padding: 0;
+        color: white;
     }
 
     .addSceneLogo {
@@ -221,19 +245,31 @@
       background-color: #AD2A2A;
     }
 
-    .entityTree > .header > .currentFilesList > .currentFilename {
-        color: white;
+    .currentScene {
+      color: #AD2A2A;
+    }
+
+    .currentFilename {
+        /* color: white; */
         font-family: 'Roboto', sans-serif;
         align-items: center;
         font-size: 11px;
         font-weight: 500;
-        background-color: #4D4D4D;
+        background-color: #272727;
         border-radius: 5px;
         margin: 4px;
         padding: 6px;
         display: flex;
     }
 
+    .currentFileSelected {
+      background-color: #4D4D4D;
+    }
+
+    .currentFilename:hover {
+        cursor: pointer;
+        background-color: #4D4D4D;
+    }
     /* FILE EXPLORER */
 
     .fileExplorer {
@@ -268,6 +304,7 @@
     .selectorExplorer:hover, .selectorTerminal:hover {
       cursor: pointer;
       background-color: #4D4D4D;
+      border-top-right-radius: 10px;
     }
 
     .selectorExplorerText {

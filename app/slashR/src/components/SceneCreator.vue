@@ -11,7 +11,7 @@
                 <div class="sceneList">
                     <img class="sceneSeparator" alt="sceneSeparator" src="../assets/separator.svg" />
                     <template v-for="(item, index) in sceneList" :key="index">
-                        <li @click="addScene(item)" class="sceneElement" > {{ item }} </li>
+                        <li @click="openScene(item)" class="sceneElement" > {{ item }} </li>
                         <img class="sceneSeparator" alt="sceneSeparator" src="../assets/separator.svg" />
                     </template>
                 </div>
@@ -21,33 +21,49 @@
 
 <script setup>
     import { ref } from 'vue';
+    import { getList, getConfigData, getDirs } from '../scripts/getPaths';
+    import { createScene } from '../scripts/engineManagment';
+    import { onMounted, defineProps } from 'vue';
 
-    const getScene = () => {
-        return ["SceneBoss", "NewScene"]
-    }
+    const props = defineProps(['projectName', 'addSceneToList']);
 
-    const createNewScene = (name) => {
-        if (name === undefined || name == "")
-            console.log("Creating NewScene")
-        else
-            console.log("Creating ", name)
-    }
-
-    const addScene = (name) => {
-        console.log("Adding ", name)
-    }
+    let paths = ref({})
+    let sceneList = ref([])
+    let scenePath = ref('')
+    let projectName = ref(props.projectName);
+    const addSceneToList = ref(props.addSceneToList);
     const cmdInput = ref('');
-    const sceneList = getScene();
+
+    const createNewScene = async (name) => {
+        let createdSceneName = "";
+
+        if (name === undefined || name == "")
+            createdSceneName = await createScene("NewScene", projectName.value);
+        else {
+            createdSceneName = await createScene(name, projectName.value);
+        }
+        sceneList.value = await getList(scenePath.value);
+    }
+
+    const openScene = (name) => {
+        addSceneToList.value(name);
+    }
+
+    onMounted(async () => {
+        const data = await getConfigData();
+        paths.value = getDirs(data);
+        scenePath.value = paths.value.projectsdir + projectName.value + "/.engine/scenes";
+        sceneList.value = await getList(scenePath.value);
+    });
 </script>
 
 <script>
 export default {
-    name: 'EntityCreator',
+    name: 'SceneCreator',
 }
 </script>
 
 <style>
-
 
     .container {
         width: 100%;
@@ -104,8 +120,8 @@ export default {
 
     .createIcon:hover {
         background-color: #4D4D4D;
+        cursor: pointer;
     }
-
 
     .sceneList {
         margin-right: 20px;
@@ -124,7 +140,8 @@ export default {
     }
 
     .sceneElement:hover {
-        background-color: #4D4D4D;
+        color: #AD2A2A;
+        cursor: pointer;
     }
 
     .sceneSeparator {

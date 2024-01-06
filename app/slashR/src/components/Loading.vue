@@ -135,6 +135,7 @@ export default {
 
   .installButton:hover {
     box-shadow: inset 2px 2px 10px #AD2A2A;
+    cursor: pointer;
   }
 
   .installButton:active {

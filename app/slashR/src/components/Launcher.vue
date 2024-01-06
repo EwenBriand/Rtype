@@ -40,7 +40,7 @@
 
 <script setup>
   import { ref, onMounted } from 'vue'
-  import { getConfigData, getDirs, getProjectList } from '../scripts/getPaths';
+  import { getConfigData, getDirs, getList } from '../scripts/getPaths';
   import { createProject } from '../scripts/engineManagment';
   import { useRouter } from 'vue-router'
 
@@ -48,21 +48,22 @@
   const projectList = ref([])
   const projectName = ref('')
   const router = useRouter();
+  const goToProjectName = ref('')
 
   const createNewProject = async (name) => {
     if (name === undefined || name == "") {
-      await createProject("NewProject")
-      router.push({ name: 'workspace', params: { projectName: "NewProject" } });
+      goToProjectName.value = await createProject("NewProject")
+      router.push({ name: 'workspace', params: { projectName: goToProjectName.value } });
     } else {
-      await createProject(name)
-      router.push({ name: 'workspace', params: { projectName: name } });
+      goToProjectName.value = await createProject(name)
+      router.push({ name: 'workspace', params: { projectName: goToProjectName.value } });
     }
   }
 
   onMounted(async () => {
     const data = await getConfigData();
     paths.value = getDirs(data);
-    projectList.value = await getProjectList(paths.value.projectsdir);
+    projectList.value = await getList(paths.value.projectsdir);
   });
 </script>
 
@@ -147,7 +148,7 @@
 
   .project:hover {
     color: #AD2A2A;
-    background-color: #4D4D4D;
+    cursor: pointer;
   }
 
   .desktop .button-section {
@@ -177,9 +178,9 @@
 
   }
 
-
   .button:hover {
     background: #8d2121;
+    cursor: pointer;
   }
 
   .desktop .image-section {

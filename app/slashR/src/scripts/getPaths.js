@@ -67,17 +67,11 @@ export const getDirs = (data) => {
 }
 
 
-export const getProjectList = async (path) => {
+export const getList = async (path) => {
     try {
         const result = await fsp.readdir(path);
         return result;
     } catch (err) {
         console.error("get project list failed:" + err)
     }
-}
-
-export const getSceneList = () => {
-}
-
-export const getTerminalHistory = () => {
 }
