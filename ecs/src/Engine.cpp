@@ -259,6 +259,11 @@ namespace eng {
                 value = std::filesystem::canonical(configDir + value.substr(2)).string();
             }
         }
+        #ifdef _WIN32
+        for (auto& [key, value] : m_config) {
+            std::replace(value.begin(), value.end(), '/', '\\');
+        }
+        #endif
     }
 
     void Engine::discoverConfig(const std::string& configDir)

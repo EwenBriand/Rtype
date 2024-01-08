@@ -329,7 +329,11 @@ namespace eng {
 
         std::map<std::string, std::string> m_config;
         std::map<std::string, std::string> m_options = {
-            { eng::Engine::Options::CONFIG_DIR, "../.engine/config" }
+        #ifdef _WIN32
+            { eng::Engine::Options::CONFIG_DIR, "..\\.engine\\config"},
+        #else
+            { eng::Engine::Options::CONFIG_DIR, "../.engine/config" },
+        #endif
         };
 
         std::shared_ptr<SceneManager> m_sceneManager;

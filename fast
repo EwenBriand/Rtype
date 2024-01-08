@@ -114,7 +114,7 @@ def build_root(args):
         if fail:
             print_color("red", "Build failed")
             exit(1)
-        fail = os.system('cd build && cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release .. && make')
+        fail = os.system('cd build && cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release .. && make && cd .. && copy build\\server\\*.dll* build\\ecs')
         if fail:
             print_color("red", "Build failed")
             exit(1)
