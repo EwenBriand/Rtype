@@ -25,7 +25,7 @@ unsigned int EnemySpawner::id = 1000;
 std::random_device rd; // Random device engine, usually based on /dev/urandom on UNIX-like systems
 std::mt19937 gen(rd()); // Initialize Mersenne Twister random number generator with rd
 std::uniform_int_distribution<> distrib(0, 1); // Define the distribution, inclusive.
-std::uniform_int_distribution<> distrib2(0, 0); // Define the distribution, inclusive.
+std::uniform_int_distribution<> distrib2(0, 3); // Define the distribution, inclusive.
 
 EnemySpawner::~EnemySpawner()
 {

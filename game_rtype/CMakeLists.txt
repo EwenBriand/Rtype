@@ -14,6 +14,9 @@ set(SRC
     scripts/Ship.cpp
     scripts/Laser.cpp
     scripts/Heal.cpp
+    scripts/X2.cpp
+    scripts/X3.cpp
+    scripts/Tcemort.cpp
     scripts/Enemy.cpp
     scripts/Enemy2.cpp
     GameRoutine.cpp
@@ -24,6 +27,9 @@ set(SRC
 set(META_SRC
     ../.metadata/LaserMeta.cpp
     ../.metadata/HealMeta.cpp
+    ../.metadata/X2Meta.cpp
+    ../.metadata/X3Meta.cpp
+    ../.metadata/TcemortMeta.cpp
     ../.metadata/ShipMeta.cpp
     ../.metadata/EnemyMeta.cpp
     ../.metadata/Enemy2Meta.cpp

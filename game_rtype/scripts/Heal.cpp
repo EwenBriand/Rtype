@@ -24,7 +24,6 @@ MANAGED_RESOURCE(Heal)
 
 void Heal::OnAddComponent(int entityID)
 {
-    _timer.Start();
     _broadcastTimer.Start();
     _entity = entityID;
 }
@@ -36,8 +35,6 @@ void Heal::Start()
     _core = &SYS.SafeGet<CoreTransform>(_entity);
 
     _rb->SetVelocity({ -_speed, 0 });
-
-    auto& sprite = SYS.SafeGet<Animator>(_entity);
 
     _collider = &SYS.SafeGet<Collider2D>(_entity);
     _collider->SetTag("Heal");

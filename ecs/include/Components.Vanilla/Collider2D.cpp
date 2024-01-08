@@ -290,7 +290,7 @@ std::pair<float, float> Collider2D::projectPolygon(const graph::vec2f& axis, con
     std::vector<float> vertices = collider.GetVerticesWithPosition();
     // std::cout << vertices.size() << std::endl;
     if (vertices.size() < 2)
-        throw std::runtime_error("Cannot project a polygon with less than 2 vertices");
+        std::cerr << "Cannot project a polygon with less than 2 vertices" << std::endl;
 
     // std::cout << "in projectPolygon 1" << std::endl;
     float min = axis.x * vertices[0] + axis.y * vertices[1];

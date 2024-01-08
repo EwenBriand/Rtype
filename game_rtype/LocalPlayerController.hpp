@@ -24,6 +24,13 @@ public:
 
     inline void SetPlayerId(int id) { _playerId = id; }
 
+    /**
+     * @brief Send a shoot to the server.
+     *
+     * @param x The x position of the shoot.
+     * @param y The y position of the shoot.
+     */
+    void SendShoot(int x, int y);
     // ====================================================================
     // getters/setters
     // ====================================================================

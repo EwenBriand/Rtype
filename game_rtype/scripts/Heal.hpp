@@ -48,7 +48,6 @@ private:
     void broadcastDeath();
 
     serialize float _speed = 60.0f;
-    eng::Timer _timer;
 
     RigidBody2D* _rb = nullptr;
     Collider2D* _collider = nullptr;
