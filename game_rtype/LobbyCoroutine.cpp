@@ -133,7 +133,6 @@ namespace rtype {
             co_await std::suspend_always {};
         }
         while (not serverHandle->SceneIsReady()) {
-            std::cout << ".";
             co_await std::suspend_always {};
         }
         serverHandle->InstantiateScene();

@@ -7,6 +7,7 @@
 
 #pragma once
 #include "CircularBuffer.hpp"
+#include <utility>
 #include <boost/asio.hpp>
 
 namespace serv {

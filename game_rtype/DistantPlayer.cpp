@@ -165,9 +165,10 @@ void DistantPlayer::handlePlayerMoves(serv::Instruction& instruction)
     int id = 0;
     int x = 0;
     int y = 0;
-    std::memcpy(&id, instruction.data.data(), sizeof(int));
-    std::memcpy(&x, instruction.data.data() + sizeof(int), sizeof(int));
-    std::memcpy(&y, instruction.data.data() + 2 * sizeof(int), sizeof(int));
+    // std::memcpy(&id, instruction.data.data(), sizeof(int));
+    // std::memcpy(&x, instruction.data.data() + sizeof(int), sizeof(int));
+    // std::memcpy(&y, instruction.data.data() + 2 * sizeof(int), sizeof(int));
+    instruction.data.Deserialize(id, x, y);
     if (id != _playerId) {
         std::cerr << "\rplayer id: " << id << std::endl;
         throw serv::MalformedInstructionException("Player moves instruction malformed");
