@@ -80,7 +80,8 @@ private:
     void handlePlayerMoves(serv::Instruction&);
     void handlePlayerShoots(serv::Instruction&);
     void handleDisconnect(serv::Instruction&);
-
+    void handleMessage(serv::Instruction&);
+    
     int _playerId;
     int _kill_count;
     int _entityID;
@@ -93,5 +94,6 @@ private:
         { serv::I_AM_ALIVE, nullptr },
         { eng::RType::I_PLAYER_SHOOTS, &DistantPlayer::handlePlayerShoots },
         { serv::I_DISCONNECT, &DistantPlayer::handleDisconnect },
+        { serv::I_MESSAGE, &DistantPlayer::handleMessage },
     };
 };

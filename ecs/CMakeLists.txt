@@ -74,6 +74,8 @@ set(VANILLA
     ${VANILLA_SRC}/EntityExplorer.cpp
     ${VANILLA_SRC}/RigidBody2D.cpp
     ${VANILLA_SRC}/TextField.cpp
+    ${VANILLA_SRC}/Text.cpp
+    ${VANILLA_SRC}/InputField.cpp
     ${VANILLA_SRC}/UIButton.cpp
     ${VANILLA_SRC}/UIDiv.cpp
     ${VANILLA_SRC}/UIMenu.cpp
@@ -96,6 +98,8 @@ set(META_VANILLA
     ${META_VANILLA_SRC}/EventGraphMeta.cpp
     ${META_VANILLA_SRC}/NodeStrMeta.cpp
     ${META_VANILLA_SRC}/TextFieldMeta.cpp
+    ${META_VANILLA_SRC}/InputFieldMeta.cpp
+    ${META_VANILLA_SRC}/TextMeta.cpp
     ${META_VANILLA_SRC}/UIDivMeta.cpp
     ${META_VANILLA_SRC}/AudioSourceMeta.cpp
     ${META_VANILLA_SRC}/CoreTransformMeta.cpp
