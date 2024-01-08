@@ -2,23 +2,23 @@
 ** EPITECH PROJECT, 2023
 ** safe
 ** File description:
-** RLCube.cpp
+** RLSphere.cpp
 */
 
-#include "RLCube.hpp"
+#include "RLSphere.hpp"
 #include "ECSImpl.hpp"
 #include "Engine.hpp"
 #include "metadata.hpp"
 #include <raylib.h>
 #include <raymath.h>
 
-MANAGED_RESOURCE(RLCube)
+MANAGED_RESOURCE(RLSphere)
 
-RLCube::~RLCube()
+RLSphere::~RLSphere()
 {
 }
 
-void RLCube::Update(int e)
+void RLSphere::Update(int e)
 {
     if (not _textureIsLoaded)
         loadTexture();
@@ -30,29 +30,29 @@ void RLCube::Update(int e)
 
         DrawModel(_mesh, { 0, 0, 0 }, 1.0f, WHITE);
     } catch (const std::exception& e) {
-        std::cout << "RLCube::Update: " << e.what() << std::endl;
+        std::cout << "RLSphere::Update: " << e.what() << std::endl;
     }
 }
 
-void RLCube::OnAddComponent(int e)
+void RLSphere::OnAddComponent(int e)
 {
-    Mesh cubeMesh = GenMeshCube(1.0f, 1.0f, 1.0f);
+    Mesh cubeMesh = GenMeshSphere(1.0f, 32, 32);
     _mesh = LoadModelFromMesh(cubeMesh);
 }
 
-void RLCube::Start()
+void RLSphere::Start()
 {
 }
 
-void RLCube::OnLoad()
+void RLSphere::OnLoad()
 {
 }
 
-void RLCube::updateMeshFromTransform()
+void RLSphere::updateMeshFromTransform()
 {
 }
 
-void RLCube::loadTexture()
+void RLSphere::loadTexture()
 {
     if (_texturePath == "")
         return;

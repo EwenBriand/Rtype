@@ -50,6 +50,7 @@ void RLMesh::updatePosition(int entityID)
         m_model.transform = MatrixRotateXYZ({ transform.rotationX, transform.rotationY, transform.rotationZ });
         m_model.transform = MatrixMultiply(m_model.transform, MatrixScale(transform.scaleX, transform.scaleY, transform.scaleZ));
         m_model.transform = MatrixMultiply(m_model.transform, MatrixTranslate(transform.x, transform.y, transform.z));
+        m_boundingBox = GetMeshBoundingBox(m_model.meshes[0]);
     } catch (std::exception) {
         return;
     }
@@ -96,6 +97,7 @@ bool RLMesh::doLoad()
         CONSOLE::warn << "No asset directory specified in config, using current directory" << std::endl;
         assetRoot = "./";
     }
+    std::cout << "got asset root: " << assetRoot << std::endl;
     std::string pathStr = assetRoot + m_path;
     while (pathStr[pathStr.size() - 1] == '\n' or pathStr[pathStr.size() - 1] == ' ')
         pathStr = pathStr.substr(0, pathStr.size() - 1);
@@ -104,25 +106,14 @@ bool RLMesh::doLoad()
         CONSOLE::err << "Asset [" << path << "] not found" << std::endl;
         return false;
     }
+    std::cout << "loading model from path: " << path << std::endl;
     withLocation(path)
     {
-        std::cout << "in location " << path << std::endl;
-        std::cout << "filename: " << path.filename() << std::endl;
-        // m_model = LoadModel(("./" + path.filename().string()).c_str());
-        std::cout << "loading model " << pathStr << std::endl;
-        std::cout << "file exists? " << std::filesystem::exists(("./" + path.filename().string())) << std::endl;
-        // m_model = LoadModel(pathStr.c_str());
         m_model = LoadModel((std::string("./") + path.filename().string()).c_str());
     }
+    std::cout << "quiche" << std::endl;
     m_boundingBox = GetMeshBoundingBox(m_model.meshes[0]);
-    if (errno != 0) {
-        CONSOLE::err << "Failed to load model " << path << std::endl;
-        m_path = "";
-        perror("Error: ");
-        m_path = "";
-        return false;
-    }
-    m_model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = m_texture;
+    std::cout << "poireau" << std::endl;
     m_modelIsLoaded = true;
     return true;
 }

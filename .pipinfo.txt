@@ -1,16 +1,18 @@
-/home/amour/Documents/epitech/safe/ecs/src/Engine.cpp setupPipeline 64 (-1000) [&]() { SYS.GetInputManager().PollEvents(); for (auto& observer : m_observers) { observer->Poll(); } }
-/home/amour/Documents/epitech/safe/ecs/src/GraphicalRayLib.cpp ModPipeline 26 (-999) [&]() { if (WindowShouldClose()) { CONSOLE::info << "Window closed" << std::endl; SYS.Exit(); } }
-/home/amour/Documents/epitech/safe/ecs/include/Components.Vanilla/Collider2D.cpp OnLoad 22 (-600) []() { SYS.ForEach<Collider2D>([](Collider2D& collider) { collider.recalculateEdgesAndNormals(); }); }
-/home/amour/Documents/epitech/safe/ecs/src/GraphicalRayLib.cpp ModPipeline 33 (-500) [&]() { BeginDrawing(); ClearBackground(DARKGRAY); }
-/home/amour/Documents/epitech/safe/ecs/include/Components.Vanilla/RigidBody2D.cpp OnLoad 20 (-500) [engine]() { if (not engine->PlayMode()) return; SYS.ForEach<RigidBody2D>([](RigidBody2D& r) { r._acceleration = { 0, 0 }; }); }
-/home/amour/Documents/epitech/safe/ecs/include/Components.Vanilla/RigidBody2D.cpp OnLoad 29 (-499) [engine]() { if (not engine->PlayMode()) return; SYS.ForEach<RigidBody2D>([](RigidBody2D& r) { if (r.SimulateGravity()) r._acceleration.y += 9.81; }); }
-/home/amour/Documents/epitech/safe/.tmpCompileSrc/RLCamera3D/RLCamera3D.cpp OnLoad 41 (-400) [&]() { BeginMode3D(m_camera); m_mode3DEnabled = true; }
-/home/amour/Documents/epitech/safe/.tmpCompileSrc/RLCamera3D/RLCamera3D.cpp OnLoad 41 (-400) [&]() { BeginMode3D(m_camera); m_mode3DEnabled = true; }
-/home/amour/Documents/epitech/safe/ecs/src/GraphicalRayLib.cpp ModPipeline 39 (-10) [&]() { DisplayBuffer(); }
+/home/gxby/Dev/Epitech/tek3/R-Type/RTypeV0.0/ecs/src/Engine.cpp setupPipeline 64 (-1000) [&]() { SYS.GetInputManager().PollEvents(); for (auto& observer : m_observers) { observer->Poll(); } }
+/home/gxby/Dev/Epitech/tek3/R-Type/RTypeV0.0/ecs/src/Engine.cpp setupPipeline 64 (-1000) [&]() { SYS.GetInputManager().PollEvents(); for (auto& observer : m_observers) { observer->Poll(); } }
+/home/gxby/Dev/Epitech/tek3/R-Type/RTypeV0.0/ecs/src/GraphicalRayLib.cpp ModPipeline 26 (-999) [&]() { if (WindowShouldClose()) { CONSOLE::info << "Window closed" << std::endl; SYS.Exit(); } }
+/home/gxby/Dev/Epitech/tek3/R-Type/RTypeV0.0/ecs/src/GraphicalRayLib.cpp ModPipeline 26 (-999) [&]() { if (WindowShouldClose()) { CONSOLE::info << "Window closed" << std::endl; SYS.Exit(); } }
+/home/gxby/Dev/Epitech/tek3/R-Type/RTypeV0.0/ecs/include/Components.Vanilla/Collider2D.cpp OnLoad 22 (-600) []() { SYS.ForEach<Collider2D>([](Collider2D& collider) { collider.recalculateEdgesAndNormals(); }); }
+/home/gxby/Dev/Epitech/tek3/R-Type/RTypeV0.0/ecs/src/GraphicalRayLib.cpp ModPipeline 33 (-500) [&]() { BeginDrawing(); ClearBackground(DARKGRAY); }
+/home/gxby/Dev/Epitech/tek3/R-Type/RTypeV0.0/ecs/include/Components.Vanilla/RigidBody2D.cpp OnLoad 20 (-500) [engine]() { if (not engine->PlayMode()) return; SYS.ForEach<RigidBody2D>([](RigidBody2D& r) { r._acceleration = { 0, 0 }; }); }
+/home/gxby/Dev/Epitech/tek3/R-Type/RTypeV0.0/ecs/src/GraphicalRayLib.cpp ModPipeline 33 (-500) [&]() { BeginDrawing(); ClearBackground(DARKGRAY); }
+/home/gxby/Dev/Epitech/tek3/R-Type/RTypeV0.0/ecs/include/Components.Vanilla/RigidBody2D.cpp OnLoad 29 (-499) [engine]() { if (not engine->PlayMode()) return; SYS.ForEach<RigidBody2D>([](RigidBody2D& r) { if (r.SimulateGravity()) r._acceleration.y += 9.81; }); }
+/home/gxby/Dev/Epitech/tek3/R-Type/RTypeV0.0/ecs/src/GraphicalRayLib.cpp ModPipeline 39 (-10) [&]() { DisplayBuffer(); }
+/home/gxby/Dev/Epitech/tek3/R-Type/RTypeV0.0/ecs/src/GraphicalRayLib.cpp ModPipeline 39 (-10) [&]() { DisplayBuffer(); }
 --- Update() ---
-/home/amour/Documents/epitech/safe/ecs/include/Components.Vanilla/RigidBody2D.cpp OnLoad 39 (100) [engine]() { if (not engine->PlayMode()) return; auto deltaTime = SYS.GetDeltaTime(); SYS.ForEach<RigidBody2D>([deltaTime](RigidBody2D& r) { r._velocity.x += r._acceleration.x * deltaTime; r._velocity.y += r._acceleration.y * deltaTime; }); }
-/home/amour/Documents/epitech/safe/ecs/include/Components.Vanilla/RigidBody2D.cpp OnLoad 50 (101) [engine]() { if (not engine->PlayMode()) return; auto deltaTime = SYS.GetDeltaTime(); SYS.ForEach<RigidBody2D>([deltaTime](RigidBody2D& r) { try { auto& transform = SYS.GetComponent<CoreTransform>(r._entityID); r.OverridePrevPosition({ transform.x, transform.y }); transform.x += r._velocity.x * deltaTime; transform.y += r._velocity.y * deltaTime; } catch (std::exception& e) { } }); }
-/home/amour/Documents/epitech/safe/.tmpCompileSrc/RLCamera3D/RLCamera3D.cpp OnLoad 46 (400) [&]() { EndMode3D(); m_mode3DEnabled = false; }
-/home/amour/Documents/epitech/safe/.tmpCompileSrc/RLCamera3D/RLCamera3D.cpp OnLoad 46 (400) [&]() { EndMode3D(); m_mode3DEnabled = false; }
-/home/amour/Documents/epitech/safe/ecs/src/UIManager.cpp ModPipeline 118 (499) [&]() { Draw(); }
-/home/amour/Documents/epitech/safe/ecs/src/GraphicalRayLib.cpp ModPipeline 44 (500) [&]() { EndDrawing(); }
+/home/gxby/Dev/Epitech/tek3/R-Type/RTypeV0.0/ecs/include/Components.Vanilla/RigidBody2D.cpp OnLoad 39 (100) [engine]() { if (not engine->PlayMode()) return; auto deltaTime = SYS.GetDeltaTime(); SYS.ForEach<RigidBody2D>([deltaTime](RigidBody2D& r) { r._velocity.x += r._acceleration.x * deltaTime; r._velocity.y += r._acceleration.y * deltaTime; }); }
+/home/gxby/Dev/Epitech/tek3/R-Type/RTypeV0.0/ecs/include/Components.Vanilla/RigidBody2D.cpp OnLoad 50 (101) [engine]() { if (not engine->PlayMode()) return; auto deltaTime = SYS.GetDeltaTime(); SYS.ForEach<RigidBody2D>([deltaTime](RigidBody2D& r) { try { auto& transform = SYS.GetComponent<CoreTransform>(r._entityID); r.OverridePrevPosition({ transform.x, transform.y }); transform.x += r._velocity.x * deltaTime; transform.y += r._velocity.y * deltaTime; } catch (std::exception& e) { } }); }
+/home/gxby/Dev/Epitech/tek3/R-Type/RTypeV0.0/ecs/src/UIManager.cpp ModPipeline 118 (499) [&]() { Draw(); }
+/home/gxby/Dev/Epitech/tek3/R-Type/RTypeV0.0/ecs/src/UIManager.cpp ModPipeline 118 (499) [&]() { Draw(); }
+/home/gxby/Dev/Epitech/tek3/R-Type/RTypeV0.0/ecs/src/GraphicalRayLib.cpp ModPipeline 44 (500) [&]() { EndDrawing(); }
+/home/gxby/Dev/Epitech/tek3/R-Type/RTypeV0.0/ecs/src/GraphicalRayLib.cpp ModPipeline 44 (500) [&]() { EndDrawing(); }

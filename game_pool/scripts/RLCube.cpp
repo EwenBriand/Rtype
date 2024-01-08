@@ -16,7 +16,6 @@ MANAGED_RESOURCE(RLCube)
 
 RLCube::~RLCube()
 {
-    // TODO: Implement destructor
 }
 
 void RLCube::Update(int e)
@@ -43,17 +42,14 @@ void RLCube::OnAddComponent(int e)
 
 void RLCube::Start()
 {
-    // TODO: Implement Start
 }
 
 void RLCube::OnLoad()
 {
-    // TODO: Implement OnLoad
 }
 
 void RLCube::updateMeshFromTransform()
 {
-    // TODO: Implement updateMeshFromTransform
 }
 
 void RLCube::loadTexture()

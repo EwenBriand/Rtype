@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2023
 ** safe
 ** File description:
-** GameBowling.hpp
+** GamePool.hpp
 */
 
 #include "ClientUDP.hpp"
@@ -17,7 +17,7 @@ namespace eng {
     struct SessionData {
     };
 
-    class GameBowling : public eng::IGame {
+    class GamePool : public eng::IGame {
 
         void Init(Engine* engine) override;
         void Cleanup(Engine*) override;

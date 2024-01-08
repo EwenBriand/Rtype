@@ -2,17 +2,17 @@
 ** EPITECH PROJECT, 2023
 ** safe
 ** File description:
-** GameBowling.cpp
+** GamePool.cpp
 */
 
-#include "GameBowling.hpp"
+#include "GamePool.hpp"
 #include "Engine.hpp"
 
 extern "C" {
 std::shared_ptr<eng::IGame> create()
 {
-    std::cout << "Loading game_bowling" << std::endl;
-    return std::make_shared<eng::GameBowling>();
+    std::cout << "Loading game_pool" << std::endl;
+    return std::make_shared<eng::GamePool>();
 }
 }
 
@@ -22,35 +22,35 @@ namespace eng {
     // =============================================== PUBLIC ==================================================== //
     // =========================================================================================================== //
 
-    void GameBowling::Init(Engine* engine)
+    void GamePool::Init(Engine* engine)
     {
         _engine = engine;
     }
 
-    void GameBowling::Cleanup(Engine*)
+    void GamePool::Cleanup(Engine*)
     {
     }
 
-    bool GameBowling::IsOnLine(Engine*)
+    bool GamePool::IsOnLine(Engine*)
     {
         bool returnValue;
         return returnValue;
     }
 
-    void GameBowling::WaitConnect(Engine*)
+    void GamePool::WaitConnect(Engine*)
     {
         initNetwork();
     }
 
-    void GameBowling::LoadFirstScene(Engine*)
+    void GamePool::LoadFirstScene(Engine*)
     {
     }
 
-    void GameBowling::PreSceneInstantiationHook(Engine*, const std::string& sceneName)
+    void GamePool::PreSceneInstantiationHook(Engine*, const std::string& sceneName)
     {
     }
 
-    void GameBowling::ModPipeline(Engine*)
+    void GamePool::ModPipeline(Engine*)
     {
     }
 
@@ -58,7 +58,7 @@ namespace eng {
     // ============================================== PRIVATE ==================================================== //
     // =========================================================================================================== //
 
-    void GameBowling::initNetwork()
+    void GamePool::initNetwork()
     {
         if (_engine->IsServer())
             initServer();
@@ -66,14 +66,14 @@ namespace eng {
             initClient();
     }
 
-    void GameBowling::initServer()
+    void GamePool::initServer()
     {
         _server = &_engine->GetServer();
         // start states for server here
         // init coroutines, etc...
     }
 
-    void GameBowling::initClient()
+    void GamePool::initClient()
     {
         _client = &_engine->GetClient();
         // start states for client here

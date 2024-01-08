@@ -2,9 +2,10 @@
 ** EPITECH PROJECT, 2023
 ** safe
 ** File description:
-** RLCube.hpp
+** RLSphere.hpp
 */
 
+#pragma once
 #include "Components.Vanilla/UserComponentWrapper.hpp"
 #include "IGraphicalModule.hpp"
 #include "metadata.hpp"
@@ -14,11 +15,11 @@
  * @brief A Component that draws a 3D cube on the screen.
  *
  */
-serialize class RLCube : public AUserComponent {
+serialize class RLSphere : public AUserComponent {
 public:
-    GENERATE_METADATA(RLCube)
+    GENERATE_METADATA(RLSphere)
 
-    ~RLCube();
+    ~RLSphere();
 
     void Update(int e) override;
     void OnAddComponent(int e) override;
