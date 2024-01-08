@@ -43,12 +43,9 @@ void MenuScript::Update(int entityID)
                 .position = { 100, 100 },
                 .fontSize = 70,
                 .callback = [this]() {
-                    std::cout << "before remove group" << std::endl;
                     ui::UIManager::Get().RemoveGroup(_menuUIHandle);
                     _menuUIHandle = -1;
-                    std::cout << "before switch scene" << std::endl;
                     eng::Engine::GetEngine()->GetSceneManager().SwitchScene("lobby");
-                    std::cout << "callback done" << std::endl;
                 } });
     } catch (const std::exception& e) {
         std::cerr << e.what() << std::endl;
