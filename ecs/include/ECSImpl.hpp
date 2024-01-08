@@ -24,7 +24,11 @@
 #include "Components.Vanilla/RigidBody2D.hpp"
 #include "Components.Vanilla/SplashIcon.hpp"
 #include "Components.Vanilla/Tag.hpp"
+
 #include "Components.Vanilla/TextField.hpp"
+#include "Components.Vanilla/InputField.hpp"
+#include "Components.Vanilla/Text.hpp"
+
 #include "Components.Vanilla/UIButton.hpp"
 #include "Components.Vanilla/UIDiv.hpp"
 #include "Components.Vanilla/UIMenu.hpp"
@@ -44,6 +48,8 @@ namespace ecs {
         UIButton,
         UIMenu,
         TextField,
+        InputField, 
+        Text,
         EditorMouseManager,
         EntityExplorer,
         Animator,

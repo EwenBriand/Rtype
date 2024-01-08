@@ -32,7 +32,7 @@ void TextField::Draw()
     graph::vec2f divPos = m_hoverDiv->GetPosition();
 
     graph::graphRect_t rectInfo = { .pos = { divPos.x + m_x + 11.0f * m_label.size(), divPos.y + m_y },
-        .dimensions = { 100, 20 },
+        .dimensions = _dimension,
         .bgColor = { 255, 255, 255, 255 },
         .borderColor = { 255, 255, 255, 255 },
         .borderSize = 0 };
@@ -125,22 +125,32 @@ void TextField::collectInput()
 {
     auto inputManager = SYS.GetInputManager();
     std::vector<std::shared_ptr<InputManager::EventInfo>> inputs = inputManager.GetPolledEvents();
+
     for (size_t i = 0; i < inputs.size(); ++i) {
+        if (inputs[i]->key_code == KEY_ENTER)
+            std::cout << "enter has been pressed" << std::endl;
         auto evtName = inputs[i]->key_code;
         if (inputs[i]->type == inputManager.KEYBOARD && evtName == KEY_BACKSPACE && inputManager.isDown(inputManager.KeyCodeTOName(evtName))) {
             if (m_text.size() > 0) {
                 m_text.pop_back();
             }
-        } else if (inputs[i]->type == inputManager.KEYBOARD && evtName == KEY_ENTER && inputManager.isReleased(inputManager.KeyCodeTOName(evtName))) {
+        // } else if (inputs[i]->type == inputManager.KEYBOARD && evtName == KEY_ENTER && inputManager.isReleased(inputManager.KeyCodeTOName(evtName))) {
+        } else if (inputs[i]->key_code == KEY_ENTER) {
+            std::cout << "in textfield, enter was pressed" << std::endl;
             if (m_onEnterCallback) {
                 m_onEnterCallback();
-            }
+            } else CONSOLE::warn << "no callback set to textfield" << std::endl;
             Focusable::UnFocus(m_isFocused);
         } else if (inputs[i]->type == inputManager.KEYBOARD && inputManager.isReleased(inputManager.KeyCodeTOName(evtName))) {
             std::cout << "text: " << m_text << std::endl;
             m_text += inputManager.GetLastCharPressed();
         }
     }
+}
+
+void TextField::SetSize(graph::vec2f dim)
+{
+    _dimension = dim;
 }
 
 void TextField::SetLabel(std::string label)
@@ -160,6 +170,7 @@ void TextField::SetText(std::string text)
 
 std::string TextField::GetText() const
 {
+    std::cout << "TextField::text: " << m_text << std::endl;
     return m_text;
 }
 

@@ -48,3 +48,8 @@ target_link_libraries(Enemy game_target)
 add_library(Enemy2 SHARED scripts/Enemy2.cpp ../.metadata/Enemy2Meta.cpp)
 set_target_properties(Enemy2 PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/metabuild)
 target_link_libraries(Enemy2 game_target)
+
+
+add_library(Chat SHARED scripts/Chat.cpp ../.metadata/ChatMeta.cpp)
+set_target_properties(Chat PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/metabuild)
+target_link_libraries(game_target Chat)
