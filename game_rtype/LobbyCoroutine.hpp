@@ -33,7 +33,7 @@ namespace rtype {
          */
         bool lobbyIsFull();
 
-        unsigned int _nbPlayers;
+        unsigned int _nbPlayers = -1;
 
         serv::Coroutine _routine;
         eng::Engine& _engine;

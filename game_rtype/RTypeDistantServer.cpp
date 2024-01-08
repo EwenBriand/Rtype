@@ -329,20 +329,41 @@ namespace rtype {
         int id = 0;
         int x = 0;
         int y = 0;
-        if (instruction.data.size() < 3 * sizeof(int)) {
+        if (instruction.data.size() < 3 * sizeof(int))
             throw std::runtime_error("Enemy moves instruction has wrong data size.");
-        }
         instruction.data.Deserialize(id, x, y);
 
-        if (_enemies.find(id) == _enemies.end()) {
+        if (_enemies.find(id) == _enemies.end())
             return;
-        }
+
         int entityID = _enemies[id];
         try {
             auto& tr = _engine->GetECS().GetComponent<CoreTransform>(entityID);
             tr.x = x;
             tr.y = y;
-            std::cout << "player moved to " << x << ", " << y << std::endl;
+            std::cout << "player " << id << " moved to " << x << ", " << y << std::endl;
+        } catch (std::exception& e) {
+            std::cerr << "\r" << e.what() << std::endl;
+        }
+    }
+
+    void RTypeDistantServer::handleEnemyVelocity(serv::Instruction& instruction)
+    {
+        int id = 0;
+        int x = 0;
+        int y = 0;
+        if (instruction.data.size() < 3 * sizeof(int))
+            throw std::runtime_error("Enemy moves instruction has wrong data size.");
+        instruction.data.Deserialize(id, x, y);
+
+        if (_enemies.find(id) == _enemies.end())
+            return;
+
+        int entityID = _enemies[id];
+        try {
+            auto& tr = _engine->GetECS().GetComponent<RigidBody2D>(entityID);
+            tr.SetVelocity({ (float)x, (float)y });
+            std::cout << "player " << id << " velocity to " << _engine->GetECS().GetComponent<RigidBody2D>(entityID).GetVelocity().x << ", " << y << std::endl;
         } catch (std::exception& e) {
             std::cerr << "\r" << e.what() << std::endl;
         }
@@ -360,6 +381,27 @@ namespace rtype {
 
         try {
             int laser = SYS.GetResourceManager().LoadPrefab("Laser");
+            auto& transform = SYS.GetComponent<CoreTransform>(laser);
+            transform.x = x;
+            transform.y = y;
+        } catch (const std::exception& e) {
+            CONSOLE::err << "Failed to spawn laser: " << e.what() << std::endl;
+        }
+    }
+
+    void RTypeDistantServer::handleBonusSpawn(serv::Instruction& instruction)
+    {
+        if (instruction.data.size() != 3 * sizeof(int)) {
+            throw serv::MalformedInstructionException("Player shoots instruction malformed");
+        }
+        int id = 0;
+        int x = 0;
+        int y = 0;
+        instruction.data.Deserialize(id, x, y);
+
+        try {
+            std::vector<std::string> prefabNames = { "Heal", "Tcemort", "X2", "X3" };
+            int laser = SYS.GetResourceManager().LoadPrefab(prefabNames[id]);
             auto& transform = SYS.GetComponent<CoreTransform>(laser);
             transform.x = x;
             transform.y = y;

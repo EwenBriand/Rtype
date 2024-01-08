@@ -13,6 +13,7 @@ set(SRC
     RTypeDistantServer.cpp
     scripts/Ship.cpp
     scripts/Laser.cpp
+    scripts/Heal.cpp
     scripts/Enemy.cpp
     scripts/Enemy2.cpp
     GameRoutine.cpp
@@ -22,6 +23,7 @@ set(SRC
 
 set(META_SRC
     ../.metadata/LaserMeta.cpp
+    ../.metadata/HealMeta.cpp
     ../.metadata/ShipMeta.cpp
     ../.metadata/EnemyMeta.cpp
     ../.metadata/Enemy2Meta.cpp

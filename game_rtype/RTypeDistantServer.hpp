@@ -116,8 +116,11 @@ namespace rtype {
         void handleEnemySpawn(serv::Instruction& instruction);
         void handleEnemySpawn2(serv::Instruction& instruction);
         void handleEnemyMoves(serv::Instruction& instruction);
+        void handleEnemyVelocity(serv::Instruction& instruction);
         void handleEnemyShoots(serv::Instruction& instruction);
         void handleEnemyDies(serv::Instruction& instruction);
+
+        void handleBonusSpawn(serv::Instruction& instruction);
 
         void handleResetSignal(serv::Instruction& instruction);
 
@@ -179,8 +182,11 @@ namespace rtype {
                 { eng::RType::I_ENEMY_SPAWN, &RTypeDistantServer::handleEnemySpawn },
                 { eng::RType::I_ENEMY_SPAWN2, &RTypeDistantServer::handleEnemySpawn2 },
                 { eng::RType::I_ENEMY_MOVES, &RTypeDistantServer::handleEnemyMoves },
+                { eng::RType::I_ENEMY_VELOCITY, &RTypeDistantServer::handleEnemyVelocity },
                 { eng::RType::I_ENEMY_DIES, &RTypeDistantServer::handleEnemyDies },
                 { eng::RType::I_ENEMY_SHOOTS, &RTypeDistantServer::handleEnemyShoots },
+
+                { eng::RType::I_BONUS_SPAWN, &RTypeDistantServer::handleBonusSpawn },
 
                 { eng::RType::I_RESET_CLIENT, &RTypeDistantServer::handleResetSignal },
 

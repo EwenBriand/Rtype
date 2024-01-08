@@ -29,6 +29,7 @@ const std::string Enemy::COMMAND_DOWN = "down";
 void Enemy::OnAddComponent(int entityID)
 {
     _timer.Start();
+    _broadcastTimer.Start();
     _entity = entityID;
 }
 
@@ -42,7 +43,7 @@ void Enemy::Start()
     _textField->SetText((std::to_string(_health) + " HP"));
 
     _speed = 100.0f;
-    _rb->SetVelocity({ _speed, _rb->GetVelocity().y });
+    _rb->SetVelocity({ -_speed, 0 });
 
     _collider = &SYS.SafeGet<Collider2D>(_entity);
     _collider->SetTag("enemy");
@@ -58,6 +59,28 @@ void Enemy::Start()
             std::cerr << "Ship::Start(): " << e.what() << std::endl;
         }
     });
+
+    _directivesBonus = [this](int bonusNum) {
+        try {
+            if (bonusNum == -1)
+                return;
+            std::cout << "bonus " << bonusNum << std::endl;
+            std::vector<std::string> prefabNames = { "Heal", "Tcemort", "X2", "X3" };
+            unsigned int e = SYS.GetResourceManager().LoadPrefab(prefabNames[bonusNum]);
+            auto& enemy = SYS.GetComponent<CoreTransform>(e);
+            enemy.x = _core->x;
+            enemy.y = _core->y;
+
+            serv::bytes args(std::vector<int>({ bonusNum,
+                static_cast<int>(enemy.x),
+                static_cast<int>(enemy.y) }));
+            auto instruction = serv::Instruction(eng::RType::I_BONUS_SPAWN, 0, args);
+            eng::Engine::GetEngine()->GetServer().Broadcast(instruction);
+
+        } catch (std::exception& e) {
+            std::cerr << "Ship::Start(): " << e.what() << std::endl;
+        }
+    };
 }
 
 void Enemy::Update(int entityID)
@@ -75,12 +98,12 @@ void Enemy::Update(int entityID)
         return;
     }
 
+    // if (not eng::Engine::GetEngine()->IsServer())
+    //     return;
+
     _controller->PollDirectives();
-    if (_core->y > 1080 - 100 || _core->y < 50)
-        _rb->SetVelocity({ 0, (_rb->GetVelocity().y >= 0) ? -_speed : _speed });
-    else
-        _rb->SetVelocity({ 0, _rb->GetVelocity().y });
     applyDirectives();
+    // broadcastPosition();
 }
 
 // ===========================================================================================================
@@ -92,15 +115,57 @@ void Enemy::SetID(int id)
     _id = id;
 }
 
+void Enemy::SetBonusOnDeath(int bonus)
+{
+    _bonusOnDeath = bonus;
+}
+
 // ===========================================================================================================
 // Private methods
 // ===========================================================================================================
 
-void Enemy::applyDirectives()
+void Enemy::broadcastPosition()
 {
-    if (not eng::Engine::GetEngine()->PlayMode()) {
+    if (eng::Engine::GetEngine()->IsClient() or _broadcastTimer.GetElapsedTime() < 0.5f) {
         return;
     }
+    _broadcastTimer.Restart();
+    try {
+        serv::bytes args(std::vector<int>({ _id,
+            static_cast<int>(_core->x),
+            static_cast<int>(_core->y) }));
+        auto instruction = serv::Instruction(eng::RType::I_ENEMY_MOVES, 0, args);
+        std::cout << "broadcast position " << _id << " at " << _core->x << ", " << _core->y << std::endl;
+        eng::Engine::GetEngine()->GetServer().Broadcast(instruction.ToBytes() + serv::SEPARATOR);
+    } catch (const std::exception& e) {
+        std::cerr << "AIController::broadcastPosition(): " << e.what() << std::endl;
+    }
+}
+
+void Enemy::broadcastVelocity()
+{
+    if (eng::Engine::GetEngine()->IsClient())
+        return;
+
+    _broadcastTimer.Restart();
+    try {
+        auto rb = _rb->GetVelocity();
+        serv::bytes args(std::vector<int>({ _id,
+            static_cast<int>(rb.x),
+            static_cast<int>(rb.y) }));
+        auto instruction = serv::Instruction(eng::RType::I_ENEMY_VELOCITY, 0, args);
+        std::cout << "broadcast velocity " << _id << " at " << rb.x << ", " << rb.y << std::endl;
+        eng::Engine::GetEngine()->GetServer().Broadcast(instruction.ToBytes() + serv::SEPARATOR);
+    } catch (const std::exception& e) {
+        std::cerr << "AIController::broadcastPosition(): " << e.what() << std::endl;
+    }
+}
+
+void Enemy::applyDirectives()
+{
+    if (not eng::Engine::GetEngine()->PlayMode())
+        return;
+
     std::vector<std::string>& directives = _controller->GetDirectives();
     for (auto& directive : directives) {
         if (_actions.find(directive) != _actions.end()) {
@@ -119,6 +184,7 @@ void Enemy::checkDeath()
         broadcastDeath();
         try {
             _collider->SetDestroyMe(true);
+            _directivesBonus(_bonusOnDeath);
             SYS.UnregisterEntity(_entity);
         } catch (std::exception& e) {
             std::cerr << "Enemy::checkDeath(): " << e.what() << std::endl;
@@ -130,9 +196,9 @@ void Enemy::broadcastDeath()
 {
     eng::Engine::GetEngine()->SetGlobal<int>("killCount", eng::Engine::GetEngine()->GetGlobal<int>("killCount") + 1);
     serv::Instruction instruction(eng::RType::I_ENEMY_DIES, 0, serv::bytes(std::vector<int>({ _id, eng::Engine::GetEngine()->GetGlobal<int>("killCount") })));
-    // serv::Instruction instruction(eng::RType::I_ENEMY_DIES, 0, serv::bytes(std::vector<int>({ _id })));
     eng::Engine::GetEngine()->GetServer().Broadcast(instruction);
 }
+
 // ===========================================================================================================
 // Directives
 // ===========================================================================================================
@@ -145,7 +211,12 @@ void Enemy::shoot()
 
 void Enemy::moveLeft()
 {
-    _rb->SetVelocity({ -_speed, _rb->GetVelocity().y });
+    if (_first) {
+        _first = false;
+        std::cout << _id << std::endl;
+        _rb->SetVelocity({ -_speed, _rb->GetVelocity().y });
+        // broadcastVelocity();
+    }
 }
 
 void Enemy::moveUp()

@@ -59,6 +59,12 @@ private:
      */
     void checkForDeath();
 
+    /**
+     * @brief Setup all collisions lambda.
+     *
+     */
+    void SetupCollisions();
+
     RigidBody2D* _rb = nullptr;
     Collider2D* _collider = nullptr;
     AudioSource* _audio = nullptr;

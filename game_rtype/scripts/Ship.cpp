@@ -41,6 +41,13 @@ void Ship::Start()
     std::cout << "player id " << _entity << std::endl;
 
     _collider = &SYS.SafeGet<Collider2D>(_entity);
+    SetupCollisions();
+
+    _audio->AddSoundName("Muse/laser_gun.ogg");
+}
+
+void Ship::SetupCollisions()
+{
     _collider->SetTag("player");
     _collider->SetOnCollisionEnter([this](int entityID, int otherID) {
         try {
@@ -48,13 +55,15 @@ void Ship::Start()
             if (tag.compare(0, 11, "Enemy laser") == 0) {
                 this->_health -= 1;
                 _textField->SetText((std::to_string(_health) + " HP"));
+            } else if (tag.compare(0, 4, "Heal") == 0) {
+                if (this->_health < 10)
+                    this->_health += 1;
+                _textField->SetText((std::to_string(_health) + " HP"));
             }
         } catch (std::exception& e) {
             std::cerr << "Ship::Start(): " << e.what() << std::endl;
         }
     });
-
-    _audio->AddSoundName("Muse/laser_gun.ogg");
 }
 
 void Ship::Update(int entityID)

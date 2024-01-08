@@ -16,10 +16,10 @@
 namespace rtype {
     AIController::AIController()
     {
-        srand(time(NULL));
-        _shootTimer.Restart();
-        _UpTimer.Restart();
-        _DownTimer.Restart();
+        _shootTimer.Start();
+        _UpTimer.Start();
+        _DownTimer.Start();
+        _broadcastTimer.Start();
     }
 
     std::vector<std::string>& AIController::GetDirectives()
@@ -43,7 +43,6 @@ namespace rtype {
             if ((this->*test)())
                 _directives.push_back(directive);
         }
-        broadcastPosition();
     }
 
     bool AIController::testLeft()
@@ -51,26 +50,24 @@ namespace rtype {
         return true;
     }
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> distrib(0, 1);
-
     bool AIController::testUp()
     {
-        if (_UpTimer.GetElapsedTime() > _directivesInterval) {
-            _directivesInterval = 3.5f;
+        if (_UpTimer.GetElapsedTime() > _directivesInterval && _status != 0) {
+            _directivesInterval = 5.0f;
             _UpTimer.Restart();
-            return distrib(gen);
+            _status = 0;
+            return true;
         }
         return false;
     }
 
     bool AIController::testDown()
     {
-        if (_DownTimer.GetElapsedTime() > _directivesInterval) {
-            _directivesInterval = 3.5f;
+        if (_DownTimer.GetElapsedTime() > _directivesInterval && _status != 1) {
+            _directivesInterval = 5.0f;
             _DownTimer.Restart();
-            return distrib(gen);
+            _status = 1;
+            return true;
         }
         return false;
     }
@@ -99,25 +96,6 @@ namespace rtype {
     void AIController::SetObserver(std::shared_ptr<eng::Observer> observer)
     {
         _observer = observer;
-    }
-
-    void AIController::broadcastPosition()
-    {
-        if (eng::Engine::GetEngine()->IsClient() or _broadcastTimer.GetElapsedTime() < 0.5f) {
-            return;
-        }
-        _broadcastTimer.Restart();
-
-        try {
-            auto& transform = SYS.GetComponent<CoreTransform>(_entity);
-            serv::bytes args(std::vector<int>({ _id,
-                static_cast<int>(transform.x),
-                static_cast<int>(transform.y) }));
-            auto instruction = serv::Instruction(eng::RType::I_ENEMY_MOVES, 0, args);
-            eng::Engine::GetEngine()->GetServer().Broadcast(instruction.ToBytes() + serv::SEPARATOR);
-        } catch (const std::exception& e) {
-            std::cerr << "AIController::broadcastPosition(): " << e.what() << std::endl;
-        }
     }
 
     void AIController::broadcastShoot()
