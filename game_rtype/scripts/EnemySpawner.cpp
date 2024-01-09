@@ -24,7 +24,7 @@ unsigned int EnemySpawner::id = 1000;
 
 std::random_device rd; // Random device engine, usually based on /dev/urandom on UNIX-like systems
 std::mt19937 gen(rd()); // Initialize Mersenne Twister random number generator with rd
-std::uniform_int_distribution<> distrib(0, 1); // Define the distribution, inclusive.
+std::uniform_int_distribution<> distrib(0, 100); // Define the distribution, inclusive.
 std::uniform_int_distribution<> distrib2(0, 3); // Define the distribution, inclusive.
 
 EnemySpawner::~EnemySpawner()
@@ -56,10 +56,7 @@ void EnemySpawner::Update(int e)
                 spawnEnemy1();
             } else {
                 _spawnDelay = 10.0f;
-                std::random_device rd;
-                std::mt19937 gen(rd());
-                std::uniform_int_distribution<> distrib(0, 1);
-                (distrib(gen) == 0) ? spawnEnemy1() : spawnEnemy2();
+                (distrib(gen) <= _e_percentage) ? spawnEnemy1() : spawnEnemy2();
             }
         } catch (const std::exception& e) {
             CONSOLE::err << "\rCould not spawn enemy: \n\r\t" << e.what() << std::endl;

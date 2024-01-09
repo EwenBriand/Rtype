@@ -48,4 +48,6 @@ private:
     std::mt19937 _rng;
     std::vector<int> _wave_enemy = { 10, 20, 30, 40, 50 };
     int _wave = 0;
+
+    int _e_percentage = 50;
 };
