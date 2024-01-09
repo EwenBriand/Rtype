@@ -41,6 +41,7 @@ public:
     void Update(int entityID) override;
 
     void SetID(int id);
+    void SetBonusOnDeath(int bonus);
 
 private:
     /**
@@ -60,7 +61,7 @@ private:
      *
      */
     void broadcastVelocity();
-    
+
     /**
      * @brief Checks if the Enemy2 should die, and if so, kills it and
      * notifies the game and clients.
@@ -91,6 +92,8 @@ private:
     int _id = -1;
     bool _first = true;
 
+    int _bonusOnDeath = -1;
+
     eng::Timer _broadcastTimer;
 
     std::map<std::string, void (Enemy2::*)()> _actions = {
@@ -104,4 +107,6 @@ private:
     void moveLeft();
     void moveUp();
     void moveDown();
+
+    std::function<void(int bonus)> _directivesBonus;
 };

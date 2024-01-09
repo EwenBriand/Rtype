@@ -63,6 +63,28 @@ void Enemy2::Start()
             std::cerr << "Ship::Start(): " << e.what() << std::endl;
         }
     });
+
+    _directivesBonus = [this](int bonusNum) {
+        try {
+            if (bonusNum == -1)
+                return;
+            std::cout << "bonus " << bonusNum << std::endl;
+            std::vector<std::string> prefabNames = { "Force_ic" };
+            unsigned int e = SYS.GetResourceManager().LoadPrefab(prefabNames[bonusNum]);
+            auto& enemy = SYS.GetComponent<CoreTransform>(e);
+            enemy.x = _core->x;
+            enemy.y = _core->y;
+
+            serv::bytes args(std::vector<int>({ bonusNum + 4,
+                static_cast<int>(enemy.x),
+                static_cast<int>(enemy.y) }));
+            auto instruction = serv::Instruction(eng::RType::I_BONUS_SPAWN, 0, args);
+            eng::Engine::GetEngine()->GetServer().Broadcast(instruction);
+
+        } catch (std::exception& e) {
+            std::cerr << "Ship::Start(): " << e.what() << std::endl;
+        }
+    };
 }
 
 void Enemy2::Update(int entityID)
@@ -101,6 +123,11 @@ void Enemy2::Update(int entityID)
 void Enemy2::SetID(int id)
 {
     _id = id;
+}
+
+void Enemy2::SetBonusOnDeath(int bonus)
+{
+    _bonusOnDeath = bonus;
 }
 
 // ===========================================================================================================
@@ -167,6 +194,7 @@ void Enemy2::checkDeath()
         broadcastDeath();
         try {
             _collider->SetDestroyMe(true);
+            _directivesBonus(_bonusOnDeath);
             SYS.UnregisterEntity(_entity);
         } catch (std::exception& e) {
             std::cerr << "Enemy2::checkDeath(): " << e.what() << std::endl;
@@ -196,7 +224,6 @@ void Enemy2::moveLeft()
 {
     if (_first) {
         _first = false;
-        std::cout << _id << std::endl;
         _rb->SetVelocity({ -_speed, _rb->GetVelocity().y });
         // broadcastVelocity();
     }

@@ -20,6 +20,7 @@ set(SRC
     scripts/Tcemort.cpp
     scripts/Speed.cpp
     scripts/Nuke.cpp
+    scripts/Force_ic.cpp
     scripts/Enemy.cpp
     scripts/Enemy2.cpp
     GameRoutine.cpp
@@ -36,6 +37,7 @@ set(META_SRC
     ../.metadata/TcemortMeta.cpp
     ../.metadata/SpeedMeta.cpp
     ../.metadata/NukeMeta.cpp
+    ../.metadata/Force_icMeta.cpp
     ../.metadata/ShipMeta.cpp
     ../.metadata/EnemyMeta.cpp
     ../.metadata/Enemy2Meta.cpp

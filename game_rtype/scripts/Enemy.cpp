@@ -69,7 +69,7 @@ void Enemy::Start()
             if (bonusNum == -1)
                 return;
             std::cout << "bonus " << bonusNum << std::endl;
-            std::vector<std::string> prefabNames = { "Heal", "Tcemort", "X2", "X3" };
+            std::vector<std::string> prefabNames = { "Heal", "X2", "X3", "Tcemort" };
             unsigned int e = SYS.GetResourceManager().LoadPrefab(prefabNames[bonusNum]);
             auto& enemy = SYS.GetComponent<CoreTransform>(e);
             enemy.x = _core->x;
@@ -217,7 +217,6 @@ void Enemy::moveLeft()
 {
     if (_first) {
         _first = false;
-        std::cout << _id << std::endl;
         _rb->SetVelocity({ -_speed, _rb->GetVelocity().y });
         // broadcastVelocity();
     }
