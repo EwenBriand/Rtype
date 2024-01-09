@@ -11,6 +11,7 @@
 
 class LocalPlayerController : public ecs::AController {
 public:
+    LocalPlayerController();
     // ====================================================================
     // IController methods
     // ====================================================================
@@ -45,11 +46,15 @@ private:
     bool testLeft();
     bool testRight();
     bool testShoot();
+    bool testTcemort();
 
     // ====================================================================
     // properties
     // ====================================================================
     int _playerId = -1;
+
+    eng::Timer _shootTimer;
+    int _shootInterval = 5.0f;
 
     std::vector<std::string> _directives;
     std::map<std::string, bool (LocalPlayerController::*)()> _directivesTests = {
@@ -57,6 +62,7 @@ private:
         { Ship::COMMAND_DOWN, &LocalPlayerController::testDown },
         { Ship::COMMAND_LEFT, &LocalPlayerController::testLeft },
         { Ship::COMMAND_RIGHT, &LocalPlayerController::testRight },
-        { Ship::COMMAND_SHOOT, &LocalPlayerController::testShoot }
+        { Ship::COMMAND_SHOOT, &LocalPlayerController::testShoot },
+        { Ship::COMMAND_SHOOT_TCEMORT, &LocalPlayerController::testTcemort }
     };
 };

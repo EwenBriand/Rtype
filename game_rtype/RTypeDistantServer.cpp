@@ -389,6 +389,26 @@ namespace rtype {
         }
     }
 
+    void RTypeDistantServer::handlePlayerShootsTcemort(serv::Instruction& instruction)
+    {
+        if (instruction.data.size() != 3 * sizeof(int)) {
+            throw serv::MalformedInstructionException("Player shoots instruction malformed");
+        }
+        int id = 0;
+        int x = 0;
+        int y = 0;
+        instruction.data.Deserialize(id, x, y);
+
+        try {
+            int laser = SYS.GetResourceManager().LoadPrefab("LaserTcemort");
+            auto& transform = SYS.GetComponent<CoreTransform>(laser);
+            transform.x = x;
+            transform.y = y;
+        } catch (const std::exception& e) {
+            CONSOLE::err << "Failed to spawn laser: " << e.what() << std::endl;
+        }
+    }
+
     void RTypeDistantServer::handleBonusSpawn(serv::Instruction& instruction)
     {
         if (instruction.data.size() != 3 * sizeof(int)) {

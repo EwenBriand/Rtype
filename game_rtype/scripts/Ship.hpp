@@ -34,6 +34,7 @@ public:
     static const std::string COMMAND_LEFT;
     static const std::string COMMAND_RIGHT;
     static const std::string COMMAND_SHOOT;
+    static const std::string COMMAND_SHOOT_TCEMORT;
 
     void Start() override;
     void OnAddComponent(int entityID) override;
@@ -103,13 +104,14 @@ private:
     eng::Observer _observer;
     int _id = -1;
     int _nb_laser = 1;
-    bool _tcemort = true;
+    bool _tcemort = false;
 
     void moveUp();
     void moveDown();
     void moveLeft();
     void moveRight();
     void shoot();
+    void shootTcemort();
 
     std::map<std::string, void (Ship::*)()> _actions = {
         { COMMAND_UP, &Ship::moveUp },
@@ -117,5 +119,6 @@ private:
         { COMMAND_LEFT, &Ship::moveLeft },
         { COMMAND_RIGHT, &Ship::moveRight },
         { COMMAND_SHOOT, &Ship::shoot },
+        { COMMAND_SHOOT_TCEMORT, &Ship::shootTcemort },
     };
 };

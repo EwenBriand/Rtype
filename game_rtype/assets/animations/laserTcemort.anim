@@ -1,8 +1,8 @@
-name: red-laser
+name: laser-tcemort
 sprite path: sprites/red-laser.png
 fps: 1
-scale: 0.03
-priority: 4
+scale: 0.5
+priority: 5
 paralax: false
 loop: true
 flipX: true

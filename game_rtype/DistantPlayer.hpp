@@ -79,6 +79,7 @@ private:
     void handleOK(serv::Instruction&);
     void handlePlayerMoves(serv::Instruction&);
     void handlePlayerShoots(serv::Instruction&);
+    void handlePlayerShootsTcemort(serv::Instruction&);
     void handleDisconnect(serv::Instruction&);
 
     int _playerId;
@@ -92,6 +93,7 @@ private:
         { serv::I_CONNECT, nullptr },
         { serv::I_AM_ALIVE, nullptr },
         { eng::RType::I_PLAYER_SHOOTS, &DistantPlayer::handlePlayerShoots },
+        { eng::RType::I_PLAYER_SHOOTS_TCEMORT, &DistantPlayer::handlePlayerShootsTcemort },
         { serv::I_DISCONNECT, &DistantPlayer::handleDisconnect },
     };
 };

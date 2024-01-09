@@ -101,6 +101,12 @@ namespace eng {
         static constexpr int I_BONUS_SPAWN = 5011;
 
         /**
+         * @brief args: {int id, int x, int y}
+         *
+         */
+        static constexpr int I_PLAYER_SHOOTS_TCEMORT = 5012;
+
+        /**
          * @brief The number of enemies to kill for the game to end
          *
          */

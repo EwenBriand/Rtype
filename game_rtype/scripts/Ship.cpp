@@ -18,6 +18,7 @@ const std::string Ship::COMMAND_DOWN = "down";
 const std::string Ship::COMMAND_LEFT = "left";
 const std::string Ship::COMMAND_RIGHT = "right";
 const std::string Ship::COMMAND_SHOOT = "shoot";
+const std::string Ship::COMMAND_SHOOT_TCEMORT = "shootTcemort";
 
 // ===========================================================================================================
 // Component
@@ -52,20 +53,20 @@ void Ship::SetupCollisions()
     _collider->SetOnCollisionEnter([this](int entityID, int otherID) {
         try {
             std::string tag = (_entity == entityID) ? SYS.GetComponent<Collider2D>(otherID).GetTag() : SYS.GetComponent<Collider2D>(entityID).GetTag();
-            if (tag.compare(0, 11, "Enemy laser") == 0) {
+            if (tag.compare(0, 12, "Enemy laser ") == 0) {
                 this->_health -= 1;
                 _textField->SetText((std::to_string(_health) + " HP"));
             } else if (tag.compare(0, 4, "Heal") == 0) {
                 if (this->_health < 10)
                     this->_health += 1;
                 _textField->SetText((std::to_string(_health) + " HP"));
-            } else if (tag.compare(0, 4, "X2") == 0) {
+            } else if (tag.compare(0, 2, "X2") == 0) {
                 if (_nb_laser < 2)
                     _nb_laser += 1;
-            } else if (tag.compare(0, 4, "X3") == 0) {
+            } else if (tag.compare(0, 2, "X3") == 0) {
                 if (_nb_laser < 3)
                     _nb_laser += 1;
-            } else if (tag.compare(0, 4, "Tcemort") == 0) {
+            } else if (tag.compare(0, 7, "Tcemort") == 0) {
                 _tcemort = true;
             }
         } catch (std::exception& e) {
@@ -251,6 +252,30 @@ void Ship::SendShoot(int x, int y)
             };
             std::cout << "\rplayer " << _id << " shoots at " << x << ", " << y << std::endl;
             engine->GetClient().Send(serv::Instruction(eng::RType::I_PLAYER_SHOOTS, 0, serv::bytes(data)));
+        } catch (const std::exception& e) {
+            CONSOLE::err << "\rFailed to send shoot instruction to server." << std::endl;
+        };
+    }
+}
+
+void Ship::shootTcemort()
+{
+    auto* engine = eng::Engine::GetEngine();
+
+    if (engine->IsClient() && _tcemort) {
+        try {
+            int laser = SYS.GetResourceManager().LoadPrefab("LaserTcemort");
+            auto& laserTransform = SYS.GetComponent<CoreTransform>(laser);
+            laserTransform.x = _core->x;
+            laserTransform.y = _core->y - 15;
+
+            std::vector<int> data = {
+                _id,
+                static_cast<int>(laserTransform.x),
+                static_cast<int>(laserTransform.y)
+            };
+            std::cout << "\rplayer " << _id << " shoots a TCEMORT at " << laserTransform.x << ", " << laserTransform.y << std::endl;
+            engine->GetClient().Send(serv::Instruction(eng::RType::I_PLAYER_SHOOTS_TCEMORT, 0, serv::bytes(data)));
         } catch (const std::exception& e) {
             CONSOLE::err << "\rFailed to send shoot instruction to server." << std::endl;
         };

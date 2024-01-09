@@ -50,8 +50,12 @@ void Enemy2::Start()
     _collider->SetOnCollisionEnter([this](int entityID, int otherID) {
         try {
             std::string tag = (_entity == entityID) ? SYS.GetComponent<Collider2D>(otherID).GetTag() : SYS.GetComponent<Collider2D>(entityID).GetTag();
-            if (tag.compare(0, 12, "Player laser") == 0) {
+            if (tag.compare(0, 13, "Player laser ") == 0) {
                 this->_health -= 1;
+                _textField->SetText((std::to_string(_health) + " HP"));
+                checkDeath();
+            } else if (tag.compare(0, 21, "Player LaserTcemort n") == 0) {
+                this->_health = 0;
                 _textField->SetText((std::to_string(_health) + " HP"));
                 checkDeath();
             }
