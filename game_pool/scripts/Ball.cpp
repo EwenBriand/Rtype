@@ -72,12 +72,17 @@ void Ball::setupCollider()
         auto& collider = SYS.GetComponent<SphereCollider3D>(_entityID);
 
         collider.SetOnCollisionCallback([this](int thisE, int otherE) {
-            auto& tag = SYS.GetComponent<Tag>(otherE);
-            std::cout << "Collision with " << tag.Get() << std::endl;
-            if (tag.Get() != "car") {
-                return;
+            try {
+                auto& tag = SYS.GetComponent<Tag>(otherE);
+                if (tag.Get() == "goal") {
+                    handleGoal();
+                    return;
+                } else if (tag.Get() != "car") {
+                    return;
+                }
+                doCollisionPhysics(thisE, otherE);
+            } catch (const std::exception& e) {
             }
-            doCollisionPhysics(thisE, otherE);
         });
         _isSetup = true;
     } catch (const std::exception& e) {
@@ -134,6 +139,20 @@ void Ball::checkMapBoundariesBounce()
             auto velocity = SYS.GetComponent<RigidBody3D>(_entityID).GetVelocity();
             SYS.GetComponent<RigidBody3D>(_entityID).SetVelocity({ velocity.x, velocity.y, -velocity.z * 0.9f });
         }
+    } catch (const std::exception& e) {
+        CONSOLE::err << e.what() << std::endl;
+    }
+}
+
+void Ball::handleGoal()
+{
+    try {
+        auto& transform = SYS.GetComponent<CoreTransform>(_entityID);
+        transform.x = 0;
+        transform.y = 10;
+        transform.z = 0;
+        auto& rigidBody = SYS.GetComponent<RigidBody3D>(_entityID);
+        rigidBody.SetVelocity({ 0, 0, 0 });
     } catch (const std::exception& e) {
         CONSOLE::err << e.what() << std::endl;
     }

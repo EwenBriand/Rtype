@@ -30,6 +30,8 @@ private:
     void setupCollider();
     void doCollisionPhysics(int thisE, int otherE);
     void checkMapBoundariesBounce();
+    void handleGoal();
+    void addRotationOnBounce();
 
     graph::vec3f _prevPos;
     int _entityID;

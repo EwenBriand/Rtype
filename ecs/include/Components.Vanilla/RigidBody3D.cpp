@@ -127,6 +127,12 @@ void RigidBody3D::OnLoad()
                 transform.x += r._velocity.x * deltaTime;
                 transform.y += r._velocity.y * deltaTime;
                 transform.z += r._velocity.z * deltaTime;
+                if (not r._lockRotX)
+                    transform.rotationX += r._angularVelocity.x * deltaTime;
+                if (not r._lockRotY)
+                    transform.rotationY += r._angularVelocity.y * deltaTime;
+                if (not r._lockRotZ)
+                    transform.rotationZ += r._angularVelocity.z * deltaTime;
             } catch (std::exception& e) {
                 std::cerr << e.what() << std::endl;
             }

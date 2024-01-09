@@ -38,6 +38,7 @@ private:
     bool testForward();
     bool testBackward();
     bool testBrake();
+    bool testJump();
 
     // ====================================================================
     // properties
@@ -51,6 +52,7 @@ private:
         { "right", &LocalCarController::testRight },
         { "forward", &LocalCarController::testForward },
         { "backward", &LocalCarController::testBackward },
-        { "brake", &LocalCarController::testBrake }
+        { "brake", &LocalCarController::testBrake },
+        { "jump", &LocalCarController::testJump },
     };
 };

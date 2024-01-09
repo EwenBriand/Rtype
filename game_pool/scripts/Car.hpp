@@ -40,6 +40,7 @@ private:
     void commandForward();
     void commandBackward();
     void commandBrake();
+    void commandJump();
 
     serialize float _maxSpeed = 10.0f;
     serialize float _acceleration = 0.5f;
@@ -61,5 +62,6 @@ private:
         { "forward", &Car::commandForward },
         { "backward", &Car::commandBackward },
         { "brake", &Car::commandBrake },
+        { "jump", &Car::commandJump }
     };
 };

@@ -55,8 +55,12 @@ void Car::correctAltitude()
 {
     try {
         auto& transform = SYS.GetComponent<CoreTransform>(_parentID);
-        if (transform.y < 0) {
-            transform.y = 0;
+        if (transform.y < 0.2) {
+            transform.y = 0.2;
+        }
+        if (transform.y > 0.2) {
+            auto& rbd = SYS.GetComponent<RigidBody3D>(_parentID);
+            rbd.AddForce({ 0, -0.3f, 0 });
         }
     } catch (std::exception& e) {
         std::cerr << e.what() << std::endl;
@@ -147,12 +151,17 @@ void Car::commandForward()
 void Car::commandBrake()
 {
     auto& rbd = SYS.GetComponent<RigidBody3D>(_parentID);
-    if (rbd.GetVelocity().magnitude() < 0.1f) {
-        rbd.SetVelocity({ 0, 0, 0 });
-        return;
+    try {
+        auto& transform = SYS.GetComponent<CoreTransform>(_parentID);
+        auto& rbd = SYS.GetComponent<RigidBody3D>(_parentID);
+        graph::vec3f rotation = { transform.rotationX, transform.rotationY, transform.rotationZ };
+        graph::RotationMatrix3D rotationMatrix(rotation);
+        graph::vec3f velocity = rotationMatrix * graph::vec3f { 0.0f, 0.0f, -_maxSpeed };
+
+        rbd.SetVelocity(velocity);
+    } catch (std::exception& e) {
+        std::cerr << e.what() << std::endl;
     }
-    graph::vec3f force = rbd.GetVelocity().normalized() * -_deceleration;
-    rbd.AddForce(force);
 }
 
 void Car::commandBackward()
@@ -198,6 +207,22 @@ void Car::correctMapBounds()
             auto velocity = SYS.GetComponent<RigidBody3D>(_parentID).GetVelocity();
             SYS.GetComponent<RigidBody3D>(_parentID).SetVelocity({ velocity.x, velocity.y, 0 });
         }
+    } catch (const std::exception& e) {
+        std::cerr << e.what() << std::endl;
+    }
+}
+
+void Car::commandJump()
+{
+    try {
+        auto& transform = SYS.GetComponent<CoreTransform>(_parentID);
+        if (transform.y > 0.3f) {
+            return;
+        }
+        auto& rbd = SYS.GetComponent<RigidBody3D>(_parentID);
+        auto velocity = rbd.GetVelocity();
+        velocity.y = _maxSpeed / 2.0f;
+        rbd.SetVelocity(velocity);
     } catch (const std::exception& e) {
         std::cerr << e.what() << std::endl;
     }

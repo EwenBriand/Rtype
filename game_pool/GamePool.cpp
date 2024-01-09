@@ -95,6 +95,8 @@ namespace eng {
                 camera.SetTarget(carID);
                 camera.SetTargetOffset(0, 2, 5);
             }
+
+            SYS.GetResourceManager().LoadPrefab("ball");
         } catch (std::exception& e) {
             std::cout << "Error while starting race: " << e.what() << std::endl;
         }

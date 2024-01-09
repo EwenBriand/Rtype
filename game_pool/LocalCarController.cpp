@@ -57,5 +57,10 @@ bool LocalCarController::testBackward()
 
 bool LocalCarController::testBrake()
 {
+    return SYS.GetInputManager().isDown(KEY_LEFT_SHIFT);
+}
+
+bool LocalCarController::testJump()
+{
     return SYS.GetInputManager().isDown(KEY_SPACE);
 }
