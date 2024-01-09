@@ -321,6 +321,12 @@ namespace eng {
             }
         }
 
+        /**
+         * @brief Manually call the pipeline sorting
+         *
+         */
+        void SortPipeline();
+
     private:
         /**
          * @brief Discovers the configuration in the .engine folder and

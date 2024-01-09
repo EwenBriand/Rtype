@@ -73,6 +73,7 @@ set(VANILLA
     ${VANILLA_SRC}/EditorMouseManager.cpp
     ${VANILLA_SRC}/EntityExplorer.cpp
     ${VANILLA_SRC}/RigidBody2D.cpp
+    ${VANILLA_SRC}/RigidBody3D.cpp
     ${VANILLA_SRC}/TextField.cpp
     ${VANILLA_SRC}/Text.cpp
     ${VANILLA_SRC}/InputField.cpp
@@ -84,8 +85,7 @@ set(VANILLA
     ${VANILLA_SRC}/Tag.cpp
     ${VANILLA_SRC}/SplashIcon.cpp
     ${VANILLA_SRC}/LuaScript.cpp
-    ${VANILLA_SRC}/Deleteme.cpp
-
+    ${VANILLA_SRC}/SphereCollider3D.cpp
 )
 
 set(META_VANILLA_SRC
@@ -105,12 +105,13 @@ set(META_VANILLA
     ${META_VANILLA_SRC}/CoreTransformMeta.cpp
     ${META_VANILLA_SRC}/NodePrintStrMeta.cpp
     ${META_VANILLA_SRC}/RigidBody2DMeta.cpp
+    ${META_VANILLA_SRC}/RigidBody3DMeta.cpp
     ${META_VANILLA_SRC}/UIButtonMeta.cpp
     ${META_VANILLA_SRC}/UIMenuMeta.cpp
     ${META_VANILLA_SRC}/TagMeta.cpp
     ${META_VANILLA_SRC}/SplashIconMeta.cpp
     ${META_VANILLA_SRC}/LuaScriptMeta.cpp
-    ${META_VANILLA_SRC}/DeletemeMeta.cpp
+    ${META_VANILLA_SRC}/SphereCollider3DMeta.cpp
 )
 
 add_library(lengine SHARED

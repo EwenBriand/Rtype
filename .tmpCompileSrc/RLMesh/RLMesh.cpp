@@ -50,6 +50,8 @@ void RLMesh::updatePosition(int entityID)
         m_model.transform = MatrixRotateXYZ({ transform.rotationX, transform.rotationY, transform.rotationZ });
         m_model.transform = MatrixMultiply(m_model.transform, MatrixScale(transform.scaleX, transform.scaleY, transform.scaleZ));
         m_model.transform = MatrixMultiply(m_model.transform, MatrixTranslate(transform.x, transform.y, transform.z));
+        m_boundingBox = GetMeshBoundingBox(m_model.meshes[0]);
+
     } catch (std::exception) {
         return;
     }
@@ -79,10 +81,9 @@ void RLMesh::OnAddComponent(int e)
 void RLMesh::internalLoadObject()
 {
     if (m_path == "" or m_modelIsLoaded) {
-        std::cout << "not loading" << std::endl;
         return;
     }
-    // loadModelAsync();
+
     doLoad();
 }
 
@@ -105,18 +106,15 @@ bool RLMesh::doLoad()
         CONSOLE::err << "Asset [" << path << "] not found" << std::endl;
         return false;
     }
+    std::cout << "loading model from path: " << path << std::endl;
     withLocation(path)
     {
-        m_model = LoadModel(("./" + path.filename().string()).c_str());
+        m_model = LoadModel((std::string("./") + path.filename().string()).c_str());
     }
+    std::cout << "quiche" << std::endl;
     m_boundingBox = GetMeshBoundingBox(m_model.meshes[0]);
-    if (errno != 0) {
-        CONSOLE::err << "Failed to load model " << path << std::endl;
-        perror("Error: ");
-        m_path = "";
-        return false;
-    }
-    m_model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = m_texture;
+    std::cout << "poireau" << std::endl;
+
     m_modelIsLoaded = true;
     return true;
 }
@@ -124,7 +122,6 @@ bool RLMesh::doLoad()
 void RLMesh::loadModelAsync()
 {
     m_modelLoader = std::async(std::launch::async, [this]() {
-        std::cout << "launched" << std::endl;
         doLoad();
         while (m_modelLoader.valid() && m_modelLoader.wait_for(std::chrono::milliseconds(1)) != std::future_status::ready)
             ;

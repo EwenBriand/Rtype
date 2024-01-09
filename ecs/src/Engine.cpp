@@ -52,6 +52,7 @@ namespace eng {
         m_postUpdatePipeline = std::make_shared<std::vector<Action>>();
         m_unsortedPipeline = std::make_shared<std::vector<std::tuple<int, std::tuple<std::string, Action>>>>();
         m_sceneManager = std::make_shared<eng::SceneManager>(*this);
+        std::cout << "engine pointer is " << this << std::endl;
     }
 
     Engine::~Engine()
@@ -124,6 +125,7 @@ namespace eng {
 
     void Engine::AddToPipeline(Action action, int priority, const std::string& name)
     {
+        std::cout << "\radd to pipeline: engine pointer " << eng::Engine::GetEngine() << " prio " << priority << std::endl;
         m_unsortedPipeline->push_back(std::make_tuple(priority, std::make_tuple(name, action)));
         m_pipelineChanged = true;
     }
@@ -135,7 +137,13 @@ namespace eng {
         m_postUpdatePipeline->clear();
         m_observers.clear();
         m_pipelineChanged = true;
+        std::cout << "PIPELINE CLEARED" << std::endl;
         setupPipeline();
+    }
+
+    void Engine::SortPipeline()
+    {
+        sortPipeline();
     }
 
     std::shared_ptr<graph::IGraphicalModule> Engine::GetGraphicalModule() const

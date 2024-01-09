@@ -22,6 +22,8 @@
 #include "Components.Vanilla/NodePrintStr.hpp"
 #include "Components.Vanilla/NodeStr.hpp"
 #include "Components.Vanilla/RigidBody2D.hpp"
+#include "Components.Vanilla/RigidBody3D.hpp"
+#include "Components.Vanilla/SphereCollider3D.hpp"
 #include "Components.Vanilla/SplashIcon.hpp"
 #include "Components.Vanilla/Tag.hpp"
 
@@ -54,8 +56,10 @@ namespace ecs {
         EntityExplorer,
         Animator,
         Collider2D,
+        SphereCollider3D,
         AudioSource,
         RigidBody2D,
+        RigidBody3D,
         Tag,
         SplashIcon,
         LuaScript>;

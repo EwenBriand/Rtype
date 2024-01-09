@@ -1,3 +1,4 @@
+
 cmake_minimum_required(VERSION 3.5)
 project(autogen)
 
@@ -9,3 +10,4 @@ link_directories(
 )
 add_library(Ship SHARED /home/clement_t/Rtype/2Rtype/.tmpCompileSrc/Ship/Ship.hpp .././.metadata/ShipMeta.cpp /home/clement_t/Rtype/2Rtype/.tmpCompileSrc/Ship/Ship.cpp)
 add_compile_options(-g3)
+
