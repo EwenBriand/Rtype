@@ -221,3 +221,11 @@ void DistantPlayer::handleDisconnect(serv::Instruction&)
 {
     OnDisconnect();
 }
+
+
+void DistantPlayer::handleMessage(serv::Instruction& message)
+{
+    // get the server and broadcast the message to all players
+    auto& server = eng::Engine::GetEngine()->GetServer();
+    server.Broadcast(serv::Instruction(serv::I_MESSAGE, 0, message.data));
+}

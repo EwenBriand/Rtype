@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2023
 ** metadata
 ** File description:
-** TextField.hpp
+** InputField.hpp
 */
 
 #pragma once
@@ -21,9 +21,9 @@
  * UIMenu class and unfocus all other menus.
  *
  */
-serialize class TextField : public ecs::Component<TextField>, public graph::Clickable {
+serialize class InputField : public ecs::Component<InputField>, public graph::Clickable {
 public:
-    GENERATE_METADATA(TextField)
+    GENERATE_METADATA(InputField)
 
     /**
      * @brief Draws the input field and, if focused, reads the inputs from the
@@ -89,7 +89,7 @@ public:
     /**
      * @brief This function sets up the callbacks for the click and backspace
      * in order to focus the input field and delete the last character.
-     * This function is public so that components that use a textfield without adding
+     * This function is public so that components that use a InputField without adding
      * it as a component can still use it. It is otherwise called in
      * OnAddComponent.
      *

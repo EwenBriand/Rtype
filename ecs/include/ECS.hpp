@@ -1010,6 +1010,17 @@ namespace ecs {
 
         float GetDeltaTime() const;
 
+        std::vector<std::string> GetVanillaList() {
+            std::vector<std::string> result;
+
+            for (auto i = 0; i < cloneBase.size(); ++i) {
+                std::visit([&](auto &cpt) {
+                    result.push_back(cpt.GetClassName());
+                }, cloneBase[i]);
+            }
+            return result;
+        }
+
     private:
         std::shared_ptr<graph::IGraphicalModule> _graphicalModule
             = nullptr;

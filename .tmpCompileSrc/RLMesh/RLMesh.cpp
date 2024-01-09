@@ -51,6 +51,7 @@ void RLMesh::updatePosition(int entityID)
         m_model.transform = MatrixMultiply(m_model.transform, MatrixScale(transform.scaleX, transform.scaleY, transform.scaleZ));
         m_model.transform = MatrixMultiply(m_model.transform, MatrixTranslate(transform.x, transform.y, transform.z));
         m_boundingBox = GetMeshBoundingBox(m_model.meshes[0]);
+
     } catch (std::exception) {
         return;
     }
@@ -82,12 +83,12 @@ void RLMesh::internalLoadObject()
     if (m_path == "" or m_modelIsLoaded) {
         return;
     }
+
     doLoad();
 }
 
 bool RLMesh::doLoad()
 {
-    std::cout << "loading model" << std::endl;
     std::string assetRoot = "";
     try {
         assetRoot = eng::Engine::GetEngine()->GetConfigValue("assetRoot");
@@ -97,7 +98,6 @@ bool RLMesh::doLoad()
         CONSOLE::warn << "No asset directory specified in config, using current directory" << std::endl;
         assetRoot = "./";
     }
-    std::cout << "got asset root: " << assetRoot << std::endl;
     std::string pathStr = assetRoot + m_path;
     while (pathStr[pathStr.size() - 1] == '\n' or pathStr[pathStr.size() - 1] == ' ')
         pathStr = pathStr.substr(0, pathStr.size() - 1);
@@ -114,6 +114,7 @@ bool RLMesh::doLoad()
     std::cout << "quiche" << std::endl;
     m_boundingBox = GetMeshBoundingBox(m_model.meshes[0]);
     std::cout << "poireau" << std::endl;
+
     m_modelIsLoaded = true;
     return true;
 }

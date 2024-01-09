@@ -2,17 +2,17 @@
 ** EPITECH PROJECT, 2023
 ** metadata
 ** File description:
-** TextField.cpp
+** InputField.cpp
 */
 
-#include "TextField.hpp"
+#include "InputField.hpp"
 #include "../ECSImpl.hpp"
 #include "../Hoverable.hpp"
 #include "../IGraphicalModule.hpp"
 #include <algorithm>
 #include <functional>
 
-void TextField::Update(int entityID)
+void InputField::Update(int entityID)
 {
     TestClick();
     if (Focusable::IsFocused(m_isFocused)) {
@@ -21,18 +21,18 @@ void TextField::Update(int entityID)
     Draw();
 }
 
-void TextField::SetParent(UIDiv& parent)
+void InputField::SetParent(UIDiv& parent)
 {
     m_hoverDiv = &parent;
 }
 
-void TextField::Draw()
+void InputField::Draw()
 {
     std::shared_ptr<graph::IGraphicalModule> graphics = SYS.GetGraphicalModule();
     graph::vec2f divPos = m_hoverDiv->GetPosition();
 
     graph::graphRect_t rectInfo = { .pos = { divPos.x + m_x + 11.0f * m_label.size(), divPos.y + m_y },
-        .dimensions = _dimension,
+        .dimensions = { 100, 20 },
         .bgColor = { 255, 255, 255, 255 },
         .borderColor = { 255, 255, 255, 255 },
         .borderSize = 0 };
@@ -70,7 +70,7 @@ void TextField::Draw()
     });
 }
 
-void TextField::SetupCallbacks()
+void InputField::SetupCallbacks()
 {
     auto graphics = SYS.GetGraphicalModule().get();
     if (graphics == nullptr)
@@ -96,7 +96,7 @@ void TextField::SetupCallbacks()
     });
 }
 
-void TextField::OnAddComponent(int entityID)
+void InputField::OnAddComponent(int entityID)
 {
     UIDiv* div = nullptr;
     try {
@@ -109,37 +109,32 @@ void TextField::OnAddComponent(int entityID)
     SetupCallbacks();
 }
 
-void TextField::RegisterOnEnterCallback(std::function<void()> callback)
+void InputField::RegisterOnEnterCallback(std::function<void()> callback)
 {
     m_onEnterCallback = callback;
 }
 
-void TextField::SetPosition(graph::vec2f pos)
+void InputField::SetPosition(graph::vec2f pos)
 {
     m_x = pos.x;
     m_y = pos.y;
 }
 
 // need to remake it with the new input manager
-void TextField::collectInput()
+void InputField::collectInput()
 {
     auto inputManager = SYS.GetInputManager();
     std::vector<std::shared_ptr<InputManager::EventInfo>> inputs = inputManager.GetPolledEvents();
-
     for (size_t i = 0; i < inputs.size(); ++i) {
-        if (inputs[i]->key_code == KEY_ENTER)
-            std::cout << "enter has been pressed" << std::endl;
         auto evtName = inputs[i]->key_code;
         if (inputs[i]->type == inputManager.KEYBOARD && evtName == KEY_BACKSPACE && inputManager.isDown(inputManager.KeyCodeTOName(evtName))) {
             if (m_text.size() > 0) {
                 m_text.pop_back();
             }
-        // } else if (inputs[i]->type == inputManager.KEYBOARD && evtName == KEY_ENTER && inputManager.isReleased(inputManager.KeyCodeTOName(evtName))) {
-        } else if (inputs[i]->key_code == KEY_ENTER) {
-            std::cout << "in textfield, enter was pressed" << std::endl;
+        } else if (inputs[i]->type == inputManager.KEYBOARD && evtName == KEY_ENTER && inputManager.isReleased(inputManager.KeyCodeTOName(evtName))) {
             if (m_onEnterCallback) {
                 m_onEnterCallback();
-            } else CONSOLE::warn << "no callback set to textfield" << std::endl;
+            }
             Focusable::UnFocus(m_isFocused);
         } else if (inputs[i]->type == inputManager.KEYBOARD && inputManager.isReleased(inputManager.KeyCodeTOName(evtName))) {
             std::cout << "text: " << m_text << std::endl;
@@ -148,43 +143,42 @@ void TextField::collectInput()
     }
 }
 
-void TextField::SetSize(graph::vec2f dim)
+void InputField::SetSize(graph::vec2f dim)
 {
     _dimension = dim;
 }
 
-void TextField::SetLabel(std::string label)
+void InputField::SetLabel(std::string label)
 {
     m_label = label;
 }
 
-void TextField::SetPlaceholder(std::string placeholder)
+void InputField::SetPlaceholder(std::string placeholder)
 {
     m_placeholder = placeholder;
 }
 
-void TextField::SetText(std::string text)
+void InputField::SetText(std::string text)
 {
     m_text = text;
 }
 
-std::string TextField::GetText() const
+std::string InputField::GetText() const
 {
-    std::cout << "TextField::text: " << m_text << std::endl;
     return m_text;
 }
 
-bool TextField::IsFocused() const
+bool InputField::IsFocused() const
 {
     return m_isFocused;
 }
 
-void TextField::Focus()
+void InputField::Focus()
 {
     Focusable::Focus(m_isFocused);
 }
 
-void TextField::UnFocus()
+void InputField::UnFocus()
 {
     Focusable::UnFocus(m_isFocused);
 }
