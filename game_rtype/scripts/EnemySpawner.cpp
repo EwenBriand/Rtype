@@ -22,6 +22,11 @@ MANAGED_RESOURCE(EnemySpawner);
 
 unsigned int EnemySpawner::id = 1000;
 
+std::random_device rd; // Random device engine, usually based on /dev/urandom on UNIX-like systems
+std::mt19937 gen(rd()); // Initialize Mersenne Twister random number generator with rd
+std::uniform_int_distribution<> distrib(0, 100); // Define the distribution, inclusive.
+std::uniform_int_distribution<> distrib2(0, 3); // Define the distribution, inclusive.
+
 EnemySpawner::~EnemySpawner()
 {
 }
@@ -44,17 +49,14 @@ void EnemySpawner::Update(int e)
         _wave--;
         try {
             graph::vec2i size = SYS.GetGraphicalModule()->GetScreenSize();
-            std::uniform_int_distribution<int> dist(0, size.y);
+            std::uniform_int_distribution<int> dist(50, size.y - 100);
             _transform->y = dist(_rng);
 
             if (eng::Engine::GetEngine()->GetGlobal<int>("killCount") < 5) {
                 spawnEnemy1();
             } else {
                 _spawnDelay = 10.0f;
-                std::random_device rd;
-                std::mt19937 gen(rd());
-                std::uniform_int_distribution<> distrib(0, 1);
-                (distrib(gen) == 0) ? spawnEnemy1() : spawnEnemy2();
+                (distrib(gen) <= _e_percentage) ? spawnEnemy1() : spawnEnemy2();
             }
         } catch (const std::exception& e) {
             CONSOLE::err << "\rCould not spawn enemy: \n\r\t" << e.what() << std::endl;
@@ -76,6 +78,8 @@ void EnemySpawner::spawnEnemy1()
         throw std::runtime_error("Could not create AIController");
     controller->SetID(id++);
     ship.SetID(controller->GetID());
+    if (distrib(gen))
+        ship.SetBonusOnDeath(distrib2(gen));
     ship.Possess(e, controller);
     setupObserver(controller, e);
     broadcastSpawn(*controller, transform.x, transform.y, _prefabName);

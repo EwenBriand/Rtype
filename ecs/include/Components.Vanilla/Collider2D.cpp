@@ -275,6 +275,9 @@ void Collider2D::checkCollision(Collider2D& other)
 
 bool Collider2D::isAxisSeparating(const graph::vec2f& axis, const Collider2D& a, const Collider2D& b) const noexcept
 {
+    // std::cout << "in AxisSpe" << std::endl;
+    // std::cout << a.GetTag() << std::endl;
+    // std::cout << b.GetTag() << std::endl;
     auto [minA, maxA] = projectPolygon(axis, a);
     auto [minB, maxB] = projectPolygon(axis, b);
 
@@ -283,10 +286,17 @@ bool Collider2D::isAxisSeparating(const graph::vec2f& axis, const Collider2D& a,
 
 std::pair<float, float> Collider2D::projectPolygon(const graph::vec2f& axis, const Collider2D& collider) const noexcept
 {
+    // std::cout << "in projectPolygon" << std::endl;
     std::vector<float> vertices = collider.GetVerticesWithPosition();
+    // std::cout << vertices.size() << std::endl;
+    if (vertices.size() < 2)
+        std::cerr << "Cannot project a polygon with less than 2 vertices" << std::endl;
+
+    // std::cout << "in projectPolygon 1" << std::endl;
     float min = axis.x * vertices[0] + axis.y * vertices[1];
     float max = min;
 
+    // std::cout << "in projectPolygon 2" << std::endl;
     for (int i = 2; i < vertices.size(); i += 2) {
         float p = axis.x * vertices[i] + axis.y * vertices[i + 1];
         if (p < min) {
@@ -295,5 +305,6 @@ std::pair<float, float> Collider2D::projectPolygon(const graph::vec2f& axis, con
             max = p;
         }
     }
+    // std::cout << "in projectPolygon 3" << std::endl;
     return { min, max };
 }

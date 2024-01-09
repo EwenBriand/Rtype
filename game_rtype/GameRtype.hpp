@@ -13,6 +13,13 @@ namespace eng {
 
     class RType : public eng::IGame {
     public:
+        enum class BonusType {
+            HEAL,
+            TCEMORT,
+            X2,
+            X3,
+        };
+
         /**
          * @brief Resets the client and returns it to the menu.
          *
@@ -82,10 +89,28 @@ namespace eng {
         static constexpr int I_ENEMY_SPAWN2 = 5009;
 
         /**
+         * @brief args: {int id, int x, int y}
+         *
+         */
+        static constexpr int I_ENEMY_VELOCITY = 5010;
+
+        /**
+         * @brief a bonus spawn at a specific position args: {int bonusType, int x, int y}
+         *
+         */
+        static constexpr int I_BONUS_SPAWN = 5011;
+
+        /**
+         * @brief args: {int id, int x, int y}
+         *
+         */
+        static constexpr int I_PLAYER_SHOOTS_TCEMORT = 5012;
+
+        /**
          * @brief The number of enemies to kill for the game to end
          *
          */
-        static constexpr int KILL_COUNT_TO_END = 10;
+        static constexpr int KILL_COUNT_TO_END = 30;
 
         RType() = default;
         ~RType() = default;

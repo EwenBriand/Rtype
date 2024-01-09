@@ -1,0 +1,9 @@
+name: heal
+sprite path: sprites/sprites/health.png
+fps: 12
+scale: 0.15
+priority: 5
+paralax: false
+flipX: false
+loop: true
+auto: 6000 500 12

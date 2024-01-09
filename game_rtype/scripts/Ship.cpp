@@ -18,6 +18,7 @@ const std::string Ship::COMMAND_DOWN = "down";
 const std::string Ship::COMMAND_LEFT = "left";
 const std::string Ship::COMMAND_RIGHT = "right";
 const std::string Ship::COMMAND_SHOOT = "shoot";
+const std::string Ship::COMMAND_SHOOT_TCEMORT = "shootTcemort";
 
 // ===========================================================================================================
 // Component
@@ -41,20 +42,37 @@ void Ship::Start()
     std::cout << "player id " << _entity << std::endl;
 
     _collider = &SYS.SafeGet<Collider2D>(_entity);
+    SetupCollisions();
+
+    _audio->AddSoundName("Muse/laser_gun.ogg");
+}
+
+void Ship::SetupCollisions()
+{
     _collider->SetTag("player");
     _collider->SetOnCollisionEnter([this](int entityID, int otherID) {
         try {
             std::string tag = (_entity == entityID) ? SYS.GetComponent<Collider2D>(otherID).GetTag() : SYS.GetComponent<Collider2D>(entityID).GetTag();
-            if (tag.compare(0, 11, "Enemy laser") == 0) {
+            if (tag.compare(0, 12, "Enemy laser ") == 0) {
                 this->_health -= 1;
                 _textField->SetText((std::to_string(_health) + " HP"));
+            } else if (tag.compare(0, 4, "Heal") == 0) {
+                if (this->_health < 10)
+                    this->_health += 1;
+                _textField->SetText((std::to_string(_health) + " HP"));
+            } else if (tag.compare(0, 2, "X2") == 0) {
+                if (_nb_laser < 2)
+                    _nb_laser += 1;
+            } else if (tag.compare(0, 2, "X3") == 0) {
+                if (_nb_laser < 3)
+                    _nb_laser += 1;
+            } else if (tag.compare(0, 7, "Tcemort") == 0) {
+                _tcemort = true;
             }
         } catch (std::exception& e) {
             std::cerr << "Ship::Start(): " << e.what() << std::endl;
         }
     });
-
-    _audio->AddSoundName("Muse/laser_gun.ogg");
 }
 
 void Ship::Update(int entityID)
@@ -82,6 +100,16 @@ void Ship::SetID(int id)
 int Ship::GetID() const
 {
     return _id;
+}
+
+int Ship::GetNbLaser() const
+{
+    return _nb_laser;
+}
+
+CoreTransform* Ship::GetCore() const
+{
+    return _core;
 }
 
 // ===========================================================================================================
@@ -133,16 +161,124 @@ void Ship::moveRight()
 void Ship::shoot()
 {
     std::cout << "Ship::shoot()" << std::endl;
-    int laser = SYS.GetResourceManager().LoadPrefab("Laser");
     if (_audio->IsPlaying<Sound>("Muse/laser_gun.ogg"))
         _audio->Stop<Sound>("Muse/laser_gun.ogg");
     _audio->Play<Sound>("Muse/laser_gun.ogg");
+
+    switch (_nb_laser) {
+    case 1:
+        creatOneLaser();
+        break;
+    case 2:
+        creatTwoLaser();
+        break;
+    case 3:
+        creatThreeLaser();
+        break;
+    };
+}
+
+void Ship::creatOneLaser()
+{
     try {
+        int laser = SYS.GetResourceManager().LoadPrefab("Laser");
         auto& laserTransform = SYS.GetComponent<CoreTransform>(laser);
         laserTransform.x = _core->x;
         laserTransform.y = _core->y;
+
+        SendShoot(laserTransform.x, laserTransform.y);
     } catch (std::exception& e) {
         return;
+    }
+}
+
+void Ship::creatTwoLaser()
+{
+    try {
+        int laser = SYS.GetResourceManager().LoadPrefab("Laser");
+        auto& laserTransform = SYS.GetComponent<CoreTransform>(laser);
+        laserTransform.x = _core->x;
+        laserTransform.y = _core->y - 10;
+
+        int laser1 = SYS.GetResourceManager().LoadPrefab("Laser");
+        auto& laserTransform1 = SYS.GetComponent<CoreTransform>(laser1);
+        laserTransform1.x = _core->x;
+        laserTransform1.y = _core->y + 10;
+
+        SendShoot(laserTransform.x, laserTransform.y);
+        SendShoot(laserTransform1.x, laserTransform1.y);
+    } catch (std::exception& e) {
+        return;
+    }
+}
+
+void Ship::creatThreeLaser()
+{
+    try {
+        int laser = SYS.GetResourceManager().LoadPrefab("Laser");
+        auto& laserTransform = SYS.GetComponent<CoreTransform>(laser);
+        laserTransform.x = _core->x;
+        laserTransform.y = _core->y - 15;
+
+        int laser1 = SYS.GetResourceManager().LoadPrefab("Laser");
+        auto& laserTransform1 = SYS.GetComponent<CoreTransform>(laser1);
+        laserTransform1.x = _core->x;
+        laserTransform1.y = _core->y + 15;
+
+        int laser2 = SYS.GetResourceManager().LoadPrefab("Laser");
+        auto& laserTransform2 = SYS.GetComponent<CoreTransform>(laser2);
+        laserTransform2.x = _core->x;
+        laserTransform2.y = _core->y;
+
+        SendShoot(laserTransform.x, laserTransform.y);
+        SendShoot(laserTransform1.x, laserTransform1.y);
+        SendShoot(laserTransform2.x, laserTransform2.y);
+    } catch (std::exception& e) {
+        return;
+    }
+}
+
+void Ship::SendShoot(int x, int y)
+{
+    auto* engine = eng::Engine::GetEngine();
+
+    if (engine->IsClient()) {
+        try {
+            auto& transform = SYS.GetComponent<CoreTransform>(_entity);
+            std::vector<int> data = {
+                _id,
+                static_cast<int>(x),
+                static_cast<int>(y)
+            };
+            std::cout << "\rplayer " << _id << " shoots at " << x << ", " << y << std::endl;
+            engine->GetClient().Send(serv::Instruction(eng::RType::I_PLAYER_SHOOTS, 0, serv::bytes(data)));
+        } catch (const std::exception& e) {
+            CONSOLE::err << "\rFailed to send shoot instruction to server." << std::endl;
+        };
+    }
+}
+
+void Ship::shootTcemort()
+{
+    auto* engine = eng::Engine::GetEngine();
+
+    if (engine->IsClient() && _tcemort) {
+        try {
+            int laser = SYS.GetResourceManager().LoadPrefab("LaserTcemort");
+            auto& laserTransform = SYS.GetComponent<CoreTransform>(laser);
+            laserTransform.x = _core->x;
+            laserTransform.y = _core->y - 15;
+
+            std::vector<int> data = {
+                _id,
+                static_cast<int>(laserTransform.x),
+                static_cast<int>(laserTransform.y)
+            };
+            std::cout << "\rplayer " << _id << " shoots a TCEMORT at " << laserTransform.x << ", " << laserTransform.y << std::endl;
+            engine->GetClient().Send(serv::Instruction(eng::RType::I_PLAYER_SHOOTS_TCEMORT, 0, serv::bytes(data)));
+        } catch (const std::exception& e) {
+            CONSOLE::err << "\rFailed to send shoot instruction to server." << std::endl;
+        };
     }
 }
 
