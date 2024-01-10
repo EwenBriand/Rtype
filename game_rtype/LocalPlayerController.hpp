@@ -51,6 +51,7 @@ private:
     bool testRight();
     bool testShoot();
     bool testTcemort();
+    bool testLaunch();
 
     // ====================================================================
     // properties
@@ -67,6 +68,7 @@ private:
         { Ship::COMMAND_LEFT, &LocalPlayerController::testLeft },
         { Ship::COMMAND_RIGHT, &LocalPlayerController::testRight },
         { Ship::COMMAND_SHOOT, &LocalPlayerController::testShoot },
-        { Ship::COMMAND_SHOOT_TCEMORT, &LocalPlayerController::testTcemort }
+        { Ship::COMMAND_SHOOT_TCEMORT, &LocalPlayerController::testTcemort },
+        { Ship::COMMAND_LAUNCH, &LocalPlayerController::testLaunch },
     };
 };

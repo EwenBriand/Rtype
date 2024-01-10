@@ -69,6 +69,8 @@ private:
     int _clientCreator = -1;
     bool _attached = false;
     int _shipID = -1;
+    int _prevX = 0;
+    int _prevY = 0;
 
     eng::Timer _broadcastTimer;
     eng::Timer _shootTimer;

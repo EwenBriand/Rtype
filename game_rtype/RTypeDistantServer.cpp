@@ -490,6 +490,7 @@ namespace rtype {
             transform.x = x;
             transform.y = y;
             eng::Engine::GetEngine()->SetGlobal("ForceID " + std::to_string(id), laser);
+            eng::Engine::GetEngine()->SetGlobal("ForceAttached " + std::to_string(id), true);
 
         } catch (const std::exception& e) {
             CONSOLE::err << "Failed to spawn laser: " << e.what() << std::endl;

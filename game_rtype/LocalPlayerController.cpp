@@ -82,3 +82,8 @@ bool LocalPlayerController::testTcemort()
     }
     return false;
 }
+
+bool LocalPlayerController::testLaunch()
+{
+    return SYS.GetInputManager().MouseButtonPressed(MOUSE_BUTTON_RIGHT);
+}

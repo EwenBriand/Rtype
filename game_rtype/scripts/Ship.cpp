@@ -19,6 +19,7 @@ const std::string Ship::COMMAND_LEFT = "left";
 const std::string Ship::COMMAND_RIGHT = "right";
 const std::string Ship::COMMAND_SHOOT = "shoot";
 const std::string Ship::COMMAND_SHOOT_TCEMORT = "shootTcemort";
+const std::string Ship::COMMAND_LAUNCH = "launch";
 
 // ===========================================================================================================
 // Component
@@ -80,6 +81,7 @@ void Ship::SetupCollisions()
                 _force_existing = true;
 
                 eng::Engine::GetEngine()->SetGlobal("ForceID " + std::to_string(_entity), laser);
+                eng::Engine::GetEngine()->SetGlobal("ForceAttached " + std::to_string(_entity), true);
 
                 std::cout << "ForceID " + _entity << "|" << eng::Engine::GetEngine()->GetGlobal<int>("ForceID " + std::to_string(_entity)) << std::endl;
 
@@ -89,13 +91,14 @@ void Ship::SetupCollisions()
                 auto instruction = serv::Instruction(eng::RType::I_FORCE_SPAWN, 0, args);
                 eng::Engine::GetEngine()->GetServer().Broadcast(instruction);
             } else if (tag.compare(0, 5, "Force") == 0) {
+                eng::Engine::GetEngine()->SetGlobal("ForceAttached " + std::to_string(_entity), true);
                 _forceID = (_entity == entityID) ? otherID : entityID;
             } else if (tag == "boss") {
-                this->_health -= 10;
+                // this->_health -= 10;
                 _textField->SetText((std::to_string(_health) + " HP"));
             } else if (tag == "boss-laser") {
                 std::cout << "health minus two" << std::endl;
-                this->_health -= 2;
+                // this->_health -= 2;
                 _textField->SetText((std::to_string(_health) + " HP"));
             }
         } catch (std::exception& e) {
@@ -316,5 +319,13 @@ void Ship::checkForDeath()
     if (_health <= 0) {
         SYS.UnregisterEntity(_entity);
         eng::Engine::GetEngine()->GetServer().Broadcast(serv::Instruction(eng::RType::I_PLAYER_DIES, 0, serv::bytes(std::vector<int> { _id })));
+    }
+}
+
+void Ship::launch()
+{
+    if (_forceID != -1) {
+        eng::Engine::GetEngine()->SetGlobal("ForceAttached " + std::to_string(_entity), false);
+        _forceID = -1;
     }
 }

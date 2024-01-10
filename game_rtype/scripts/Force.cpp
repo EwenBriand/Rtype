@@ -67,13 +67,8 @@ void Force::Update(int entityID)
     }
 
     int ent = eng::Engine::GetEngine()->GetGlobal<int>("PlayerID");
-    // std::cout << "Force::Update(): " << _shipID << " " << ent << std::endl;
-    // std::cout << "pos " << _core->x << ", " << _core->y << std::endl;
     if (_shipID == ent && _attached) {
-        if (_shootTimer.GetElapsedTime() > 5.0f) {
-            shootTcemort();
-            _shootTimer.Restart();
-        }
+
         try {
             auto pos = SYS.GetInputManager().MousePosition();
             auto shipPos = SYS.GetComponent<CoreTransform>(_shipID);
@@ -86,16 +81,46 @@ void Force::Update(int entityID)
             else
                 _core->y = pos.y;
 
+            if (_prevX != _core->x or _prevY != _core->y) {
+                _prevX = _core->x;
+                _prevY = _core->y;
+                std::vector<int> data = {
+                    _shipID,
+                    static_cast<int>(_core->x),
+                    static_cast<int>(_core->y)
+                };
+                if (not eng::Engine::GetEngine()->IsServer())
+                    eng::Engine::GetEngine()->GetClient().Send(serv::Instruction(eng::RType::I_FORCE_MOVES, 0, serv::bytes(data)));
+            }
+            _attached = eng::Engine::GetEngine()->GetGlobal<bool>("ForceAttached " + std::to_string(_shipID));
+        } catch (std::exception& e) {
+            std::cerr << "Force::Update(): " << e.what() << std::endl;
+        }
+    } else if (_shipID == ent) {
+
+        if (_prevX != _core->x or _prevY != _core->y) {
+            _prevX = _core->x;
+            _prevY = _core->y;
             std::vector<int> data = {
                 _shipID,
                 static_cast<int>(_core->x),
                 static_cast<int>(_core->y)
             };
-            eng::Engine::GetEngine()->GetClient().Send(serv::Instruction(eng::RType::I_FORCE_MOVES, 0, serv::bytes(data)));
-        } catch (std::exception& e) {
-            std::cerr << "Force::Update(): " << e.what() << std::endl;
+            if (not eng::Engine::GetEngine()->IsServer())
+                eng::Engine::GetEngine()->GetClient().Send(serv::Instruction(eng::RType::I_FORCE_MOVES, 0, serv::bytes(data)));
         }
+
+        _shipID = -1;
     }
+
+    if (_attached && _shootTimer.GetElapsedTime() > 5.0f) {
+        shootTcemort();
+        _shootTimer.Restart();
+    } else if (_shootTimer.GetElapsedTime() > 5.0f) {
+        shootTcemort();
+        _shootTimer.Restart();
+    }
+
     // if (not eng::Engine::GetEngine()->IsServer())
     //     return;
 

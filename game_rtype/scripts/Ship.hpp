@@ -35,6 +35,7 @@ public:
     static const std::string COMMAND_RIGHT;
     static const std::string COMMAND_SHOOT;
     static const std::string COMMAND_SHOOT_TCEMORT;
+    static const std::string COMMAND_LAUNCH;
 
     void Start() override;
     void OnAddComponent(int entityID) override;
@@ -114,6 +115,7 @@ private:
     void moveRight();
     void shoot();
     void shootTcemort();
+    void launch();
 
     std::map<std::string, void (Ship::*)()> _actions = {
         { COMMAND_UP, &Ship::moveUp },
@@ -122,5 +124,6 @@ private:
         { COMMAND_RIGHT, &Ship::moveRight },
         { COMMAND_SHOOT, &Ship::shoot },
         { COMMAND_SHOOT_TCEMORT, &Ship::shootTcemort },
+        { COMMAND_LAUNCH, &Ship::launch }
     };
 };
