@@ -62,3 +62,15 @@ target_link_libraries(Enemy game_target)
 add_library(Enemy2 SHARED scripts/Enemy2.cpp ../.metadata/Enemy2Meta.cpp)
 set_target_properties(Enemy2 PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/metabuild)
 target_link_libraries(Enemy2 game_target)
+
+add_library(BossBody SHARED scripts/BossBody.cpp ../.metadata/BossBodyMeta.cpp)
+set_target_properties(BossBody PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/metabuild)
+target_link_libraries(BossBody game_target)
+
+add_library(BossLaser SHARED scripts/BossLaser.cpp ../.metadata/BossLaserMeta.cpp)
+set_target_properties(BossLaser PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/metabuild)
+target_link_libraries(BossLaser game_target)
+
+add_library(Boss SHARED scripts/Boss.cpp ../.metadata/BossMeta.cpp BossController.cpp)
+set_target_properties(Boss PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/metabuild)
+target_link_libraries(Boss game_target BossBody BossLaser)

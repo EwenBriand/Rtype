@@ -11,6 +11,7 @@
 #include "Enemy.hpp"
 #include "Enemy2.hpp"
 #include "GameRtype.hpp"
+#include "IGraphicalModule.hpp"
 #include "LocalPlayerController.hpp"
 #include "NetworkExceptions.hpp"
 #include "PlayerFromServerController.hpp"
@@ -532,4 +533,27 @@ namespace rtype {
     {
         Reset();
     }
+
+    void RTypeDistantServer::handleBossMoves(serv::Instruction& instruction)
+    {
+        try {
+            int x = 0;
+            int y = 0;
+            instruction.data.Deserialize(x, y);
+            eng::Engine::GetEngine()->SetGlobal<graph::vec2i>("bossTargetPosition", graph::vec2i { x, y });
+        } catch (const std::exception& e) {
+            std::cerr << e.what() << std::endl;
+        }
+    }
+
+    void RTypeDistantServer::handleBossSpawns(serv::Instruction& instruction)
+    {
+        try {
+            SYS.GetResourceManager().LoadPrefab("boss");
+            eng::Engine::GetEngine()->SetGlobal<graph::vec2i>("bossTargetPosition", graph::vec2i { 0, 0 });
+        } catch (const std::exception& e) {
+            std::cerr << e.what() << std::endl;
+        }
+    }
+
 } // namespace rtype

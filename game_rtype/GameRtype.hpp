@@ -112,6 +112,19 @@ namespace eng {
          */
         static constexpr int KILL_COUNT_TO_END = 30;
 
+        /**
+         * @brief Indicates a new position for the boss to move to.
+         * args: {int x, int y}
+         *
+         */
+        static constexpr int I_BOSS_MOVES = 5013;
+
+        /**
+         * @brief Indicates that the boss has spawned.
+         *
+         */
+        static constexpr int I_BOSS_SPAWNS = 5014;
+
         RType() = default;
         ~RType() = default;
 

@@ -47,6 +47,7 @@ namespace rtype {
 
     serv::Coroutine LobbyRoutineServer::run()
     {
+        eng::Engine::GetEngine()->SetGlobal<int>("killCount", 0);
         eng::Engine::GetEngine()->GetSceneManager().UnloadScene("menu");
         eng::Engine::GetEngine()->GetSceneManager().UnloadScene("level1");
         eng::Engine::GetEngine()->GetServer().Log("Entering Lobby, now waiting for players to join");
@@ -115,6 +116,7 @@ namespace rtype {
     serv::Coroutine LobbyRoutineClient::run()
     {
         std::cout << "Enter lobby routine" << std::endl;
+        eng::Engine::GetEngine()->SetGlobal<int>("killCount", 0);
         auto serverHandle = RTypeDistantServer::GetInstance();
         eng::Engine::GetEngine()->GetSceneManager().UnloadScene("menu");
         eng::Engine::GetEngine()->GetSceneManager().UnloadScene("level1");
