@@ -107,6 +107,24 @@ namespace eng {
         static constexpr int I_PLAYER_SHOOTS_TCEMORT = 5012;
 
         /**
+         * @brief args: {int id, int x, int y}
+         *
+         */
+        static constexpr int I_FORCE_SHOOTS_TCEMORT = 5014;
+
+        /**
+         * @brief args: {int id, int x, int y}
+         *
+         */
+        static constexpr int I_FORCE_SPAWN = 5013;
+
+        /**
+         * @brief args: {int entity, int x, int y}
+         *
+         */
+        static constexpr int I_FORCE_MOVES = 5015;
+
+        /**
          * @brief The number of enemies to kill for the game to end
          *
          */

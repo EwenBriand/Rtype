@@ -43,7 +43,7 @@ void Laser::Start()
         collider.SetOnCollisionEnter([this](int entityID, int otherID) {
             try {
                 std::string tag = (_entity == entityID) ? SYS.GetComponent<Collider2D>(otherID).GetTag() : SYS.GetComponent<Collider2D>(entityID).GetTag();
-                if (tag == "player") {
+                if (tag == "player" || tag == "Force") {
                     SYS.GetComponent<Collider2D>(_entity).SetDestroyMe(true);
                     SYS.UnregisterEntity(_entity);
                 }

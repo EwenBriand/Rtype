@@ -105,6 +105,8 @@ private:
     int _id = -1;
     int _nb_laser = 1;
     bool _tcemort = false;
+    int _forceID = -1;
+    bool _force_existing = false;
 
     void moveUp();
     void moveDown();

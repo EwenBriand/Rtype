@@ -78,6 +78,7 @@ public:
 private:
     void handleOK(serv::Instruction&);
     void handlePlayerMoves(serv::Instruction&);
+    void handleForceMoves(serv::Instruction&);
     void handlePlayerShoots(serv::Instruction&);
     void handlePlayerShootsTcemort(serv::Instruction&);
     void handleDisconnect(serv::Instruction&);
@@ -90,6 +91,7 @@ private:
     std::map<int, void (DistantPlayer::*)(serv::Instruction&)> _requestCallbacks = {
         { serv::I_OK, &DistantPlayer::handleOK },
         { eng::RType::I_PLAYER_MOVES, &DistantPlayer::handlePlayerMoves },
+        { eng::RType::I_FORCE_MOVES, &DistantPlayer::handleForceMoves },
         { serv::I_CONNECT, nullptr },
         { serv::I_AM_ALIVE, nullptr },
         { eng::RType::I_PLAYER_SHOOTS, &DistantPlayer::handlePlayerShoots },

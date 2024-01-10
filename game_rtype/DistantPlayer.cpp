@@ -189,6 +189,43 @@ void DistantPlayer::handlePlayerMoves(serv::Instruction& instruction)
     }
 }
 
+void DistantPlayer::handleForceMoves(serv::Instruction& instruction)
+{
+    if (instruction.data.size() < 3 * sizeof(int)) {
+        std::cout << "\rinstruction size: " << instruction.data.size() << std::endl;
+        throw serv::MalformedInstructionException("Player moves instruction malformed");
+    }
+    int id = 0;
+    int x = 0;
+    int y = 0;
+    instruction.data.Deserialize(id, x, y);
+
+    std::string name = "ForceID " + std::to_string(id);
+    std::cout << "\rforce moves: " << name << " " << x << " " << y << std::endl;
+    if (eng::Engine::GetEngine()->IsServer()) {
+        std::cout << "\ris server" << std::endl;
+    } else {
+        std::cout << "\ris client" << std::endl;
+    }
+    int entity = eng::Engine::GetEngine()->GetGlobal<int>(name);
+    try {
+        auto& transform = SYS.GetComponent<CoreTransform>(entity);
+        // todo anticheat goes here
+        transform.x = x;
+        transform.y = y;
+    } catch (const std::exception& e) {
+        return; // player died and will be removed
+    } catch (...) {
+        return;
+    }
+    for (auto& player : Instances) {
+        if (player->GetID() == _playerId) {
+            continue;
+        }
+        player->Send(serv::Instruction(eng::RType::I_FORCE_MOVES, 0, instruction.data));
+    }
+}
+
 void DistantPlayer::handlePlayerShoots(serv::Instruction& instruction)
 {
     eng::Engine::GetEngine()->GetServer().Log("Player shoots handler for player " + std::to_string(_playerId) + " called");

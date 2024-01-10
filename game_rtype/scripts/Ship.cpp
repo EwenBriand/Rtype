@@ -69,7 +69,26 @@ void Ship::SetupCollisions()
             } else if (tag.compare(0, 7, "Tcemort") == 0) {
                 _tcemort = true;
             } else if (tag.compare(0, 8, "Force_ic") == 0) {
-                _tcemort = true;
+                if (_force_existing || not eng::Engine::GetEngine()->IsServer())
+                    return;
+                auto laser = SYS.GetResourceManager().LoadPrefab("Force");
+                auto& laserTransform = SYS.GetComponent<CoreTransform>(laser);
+                laserTransform.x = _core->x + 100;
+                laserTransform.y = _core->y;
+                _forceID = laser;
+                _force_existing = true;
+
+                eng::Engine::GetEngine()->SetGlobal("ForceID " + std::to_string(_entity), laser);
+
+                std::cout << "ForceID " + _entity << "|" << eng::Engine::GetEngine()->GetGlobal<int>("ForceID " + std::to_string(_entity)) << std::endl;
+
+                serv::bytes args(std::vector<int>({ _entity,
+                    static_cast<int>(laserTransform.x),
+                    static_cast<int>(laserTransform.y) }));
+                auto instruction = serv::Instruction(eng::RType::I_FORCE_SPAWN, 0, args);
+                eng::Engine::GetEngine()->GetServer().Broadcast(instruction);
+            } else if (tag.compare(0, 5, "Force") == 0) {
+                _forceID = (_entity == entityID) ? otherID : entityID;
             }
         } catch (std::exception& e) {
             std::cerr << "Ship::Start(): " << e.what() << std::endl;

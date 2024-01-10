@@ -7,6 +7,7 @@
 
 #pragma once
 #include "./Ship.hpp"
+#include "Engine.hpp"
 #include "IController.hpp"
 
 class LocalPlayerController : public ecs::AController {
@@ -23,7 +24,10 @@ public:
     // public methods
     // ====================================================================
 
-    inline void SetPlayerId(int id) { _playerId = id; }
+    inline void SetPlayerId(int id)
+    {
+        _playerId = id;
+    }
 
     /**
      * @brief Send a shoot to the server.

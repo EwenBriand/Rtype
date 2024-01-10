@@ -54,7 +54,7 @@ void Enemy2::Start()
                 this->_health -= 1;
                 _textField->SetText((std::to_string(_health) + " HP"));
                 checkDeath();
-            } else if (tag.compare(0, 21, "Player LaserTcemort n") == 0) {
+            } else if (tag.compare(0, 21, "Player LaserTcemort n") == 0 || tag == "Force") {
                 this->_health = 0;
                 _textField->SetText((std::to_string(_health) + " HP"));
                 checkDeath();

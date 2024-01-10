@@ -23,6 +23,8 @@ namespace rtype {
         : _engine(engine)
         , _routine(run())
     {
+        _engine.SetGlobal("PlayerID", -1);
+        _engine.SetGlobal("ForceID", std::vector<int> {});
     }
 
     GameRoutineServer::~GameRoutineServer()
