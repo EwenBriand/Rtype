@@ -561,13 +561,15 @@ namespace rtype {
 
     void RTypeDistantServer::handleBossShoots(serv::Instruction& instruction)
     {
+        int id = 0;
         int x = 0;
         int y = 0;
 
-        if (instruction.data.size() != 2 * sizeof(int))
+        if (instruction.data.size() != 3 * sizeof(int))
             throw std::runtime_error("Boss shoots instruction has wrong data size, expected 8 bytes, got " + std::to_string(instruction.data.size()) + " bytes.");
-        instruction.data.Deserialize(x, y);
-        eng::Engine::GetEngine()->SetGlobal<graph::vec2i>("bossShoot", graph::vec2i { x, y });
+        instruction.data.Deserialize(id, x, y);
+        std::string globName = "bossShoot" + std::to_string(id);
+        eng::Engine::GetEngine()->SetGlobal<graph::vec2i>(globName, graph::vec2i { x, y });
     }
 
 } // namespace rtype

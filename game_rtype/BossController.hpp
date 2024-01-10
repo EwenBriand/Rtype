@@ -40,7 +40,7 @@ namespace rtype {
             { "down", &BossController::moveDown },
             { "left", &BossController::moveLeft },
             { "right", &BossController::moveRight },
-            { "shoot", &BossController::shoot }
+            // { "shoot", &BossController::shoot }
         };
         graph::vec2i _targetPosition;
         graph::vec2i _currentPosition;
