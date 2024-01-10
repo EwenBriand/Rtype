@@ -7,7 +7,7 @@
 set engine_path=build\ecs\run_engine.exe
 
 @REM set the path to the config directory
-set config_dir=game_rtype/.engine/config
+set config_dir=game_rtype\.engine\config_win
 
 @REM set editor mode
 set editor_mode=--editor

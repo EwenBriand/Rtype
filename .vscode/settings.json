@@ -108,6 +108,7 @@
         "shared_mutex": "cpp",
         "span": "cpp",
         "stack": "cpp",
-        "syncstream": "cpp"
+        "syncstream": "cpp",
+        "*.rh": "cpp"
     }
 }

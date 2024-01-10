@@ -381,15 +381,21 @@ namespace eng {
 
     void Engine::loadNetworkModules()
     {
+        std::cout << "Loading network modules" << std::endl;
         if (IsOptionSet(eng::Engine::Options::SERVER_MODE) && IsOptionSet(eng::Engine::Options::SERVER_PORT)) {
+            std::cout << "Starting in server mode" << std::endl;
             std::string port = GetOptionValue(eng::Engine::Options::SERVER_PORT);
+            std::cout << "Port: " << port << std::endl;
             if (port.find_first_not_of("0123456789") != std::string::npos) {
                 throw EngineException("Invalid port number", __FILE__, __FUNCTION__, __LINE__);
             }
+            std::cout << "Starting server" << std::endl;
             m_server = std::make_shared<serv::ServerUDP>(std::stoi(port));
             CONSOLE::warn << "Server listening on port " << port << std::endl;
         } else if (IsOptionSet(eng::Engine::Options::SERVER_IP)) {
+            std::cout << "Starting in client mode" << std::endl;
             m_client = std::make_shared<serv::ClientUDP>();
+            std::cout << "Connecting to server" << std::endl;
         } else {
             CONSOLE::warn << "Starting in single player mode" << std::endl;
         }

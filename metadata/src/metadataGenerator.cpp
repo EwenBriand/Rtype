@@ -331,7 +331,11 @@ namespace meta {
     {
         if (noCMake)
             return;
+        #ifdef _WIN32
+        std::string command = "cd " + _outputDirectory + " && cmake \"-GMinGW Makefiles\" . && mingw32-make.exe -j 8";
+        #else
         std::string command = "cd " + _outputDirectory + " && cmake . && make -j 8";
+        #endif
         int out = system(command.c_str());
         if (out != 0) {
             std::cerr << "Error: could not build metadata" << std::endl;

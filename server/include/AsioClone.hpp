@@ -8,6 +8,8 @@
 #pragma once
 
 #include <boost/asio.hpp>
+#include <iostream>
+#include "Bytes.hpp"
 
 namespace serv {
     struct EndpointWrapper {
@@ -22,10 +24,9 @@ namespace serv {
     };
 
     class AsioClone {
-        friend class AClient;
         private:
+            std::shared_ptr<boost::asio::io_service> _ioService;
             boost::asio::ip::udp::socket _socket;
-            boost::asio::io_service _ioService;
         public:
             typedef boost::asio::ip::udp udp;
             typedef boost::asio::ip::udp::socket socket;
@@ -33,11 +34,11 @@ namespace serv {
             typedef boost::system::error_code error_code;
             typedef boost::asio::io_service io_service;
             typedef boost::asio::mutable_buffers_1 mutable_buffer;
-            typedef std::vector<boost::asio::detail::buffered_stream_storage::byte_type> bytes;
+            // typedef std::vector<boost::asio::detail::buffered_stream_storage::byte_type> bytes_t;
 
             // typedef boost::asio::error
 
-            AsioClone() : _socket(_ioService) {};
+            AsioClone() : _ioService(std::make_shared<boost::asio::io_service>()), _socket(*_ioService) {}
 
             AsioClone(io_service &io) : _socket(io) {}
 
@@ -63,7 +64,7 @@ namespace serv {
             }
 
             inline void stop() {
-                _ioService.stop();
+                _ioService->stop();
             }
 
             inline void run(io_service &io) {
@@ -71,15 +72,20 @@ namespace serv {
             }
 
             inline void run() {
-                _ioService.run();
+                _ioService->run();
             }
 
-            inline size_t receive_from(const mutable_buffer &buffer, endpoint &ep) {
-                return _socket.receive_from(buffer, ep.endpoint);
+            inline size_t receive_from(std::array<char, 1024> buffer, boost::asio::ip::udp::endpoint ep) {
+                std::cout << "receive_from std::array<char, 1024>" << std::endl;
+                return _socket.receive_from(boost::asio::buffer(buffer), ep);
             }
 
-            inline size_t send_to(const mutable_buffer &buffer, endpoint &ep) {
-                return _socket.send_to(buffer, ep.endpoint);
+            inline size_t receive_from(std::vector<unsigned char> buffer, boost::asio::ip::udp::endpoint ep) {
+                return _socket.receive_from(boost::asio::buffer(buffer), ep);
+            }
+
+            inline size_t send_to(std::vector<unsigned char> buffer, boost::asio::ip::udp::endpoint ep) {
+                return _socket.send_to(boost::asio::buffer(buffer), ep);
             }
 
             inline error_code get_message_size_error() {

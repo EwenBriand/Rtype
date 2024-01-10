@@ -38,6 +38,10 @@ namespace lib {
         if (path.size() > 2 and path.substr(0, 2) == "./")
             path_copy = std::filesystem::current_path().string() + path.substr(1);
 #ifdef _WIN32
+        for (auto& c : path_copy)
+            if (c == '/')
+                c = '\\';
+        std::cout << "path_copy : " << path_copy << std::endl;
         LIBHANDLE handle = LOADLIB(path_copy.c_str());
 #else
         LIBHANDLE handle = LOADLIB(path_copy.c_str(), RTLD_LAZY);

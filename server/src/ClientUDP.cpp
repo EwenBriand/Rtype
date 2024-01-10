@@ -56,7 +56,7 @@ namespace serv {
                 bytes data = _sendQueue.Pop();
                 Instruction instruction(data);
                 EndpointWrapper endpoint(boost::asio::ip::address::from_string(_serverIp), _serverPort);
-                _socket->send_to(boost::asio::buffer(data._data), endpoint);
+                _socket->send_to(data._data, endpoint.endpoint);
             } catch (std::exception& e) {
                 // empty queue
             }
@@ -71,7 +71,7 @@ namespace serv {
                 EndpointWrapper senderEndpoint;
                 bytes data;
                 data.resize(1024);
-                std::size_t bytesTransferred = _socket->receive_from(boost::asio::buffer(data._data), senderEndpoint);
+                std::size_t bytesTransferred = _socket->receive_from(data._data, senderEndpoint.endpoint);
                 data.resize(bytesTransferred);
                 {
                     std::lock_guard<std::mutex> lock(*_mutex);

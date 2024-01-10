@@ -125,7 +125,6 @@ namespace serv {
         void OnDisconnect();
 
     private:
-        std::shared_ptr<AsioClone> _asio;
         std::shared_ptr<EndpointWrapper> _endpoint;
         std::function<void()> _requestHook;
         std::shared_ptr<IClient> _clientHandler;
@@ -241,7 +240,7 @@ namespace serv {
         std::shared_ptr<EndpointWrapper> _endpoint;
         std::shared_ptr<EndpointWrapper> _remoteEndpoint;
 
-        std::string endpointToString(EndpointWrapper endpoint);
+        std::string endpointToString(std::shared_ptr<EndpointWrapper> endpoint);
 
         std::array<char, BUFF_SIZE> _buffer;
 
