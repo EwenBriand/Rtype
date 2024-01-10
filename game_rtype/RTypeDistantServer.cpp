@@ -421,7 +421,7 @@ namespace rtype {
         instruction.data.Deserialize(id, x, y);
 
         try {
-            std::vector<std::string> prefabNames = { "Heal", "Tcemort", "X2", "X3" };
+            std::vector<std::string> prefabNames = { "Heal", "X2", "X3", "Tcemort", "Force_ic" };
             int laser = SYS.GetResourceManager().LoadPrefab(prefabNames[id]);
             auto& transform = SYS.GetComponent<CoreTransform>(laser);
             transform.x = x;

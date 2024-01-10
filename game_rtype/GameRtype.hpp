@@ -15,9 +15,9 @@ namespace eng {
     public:
         enum class BonusType {
             HEAL,
-            TCEMORT,
             X2,
             X3,
+            TCEMORT,
         };
 
         /**
@@ -95,7 +95,7 @@ namespace eng {
         static constexpr int I_ENEMY_VELOCITY = 5010;
 
         /**
-         * @brief a bonus spawn at a specific position args: {int bonusType, int x, int y}
+         * @brief a bonus spawn at a specific position args: {int type enemy, int bonusType, int x, int y}
          *
          */
         static constexpr int I_BONUS_SPAWN = 5011;

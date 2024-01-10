@@ -68,6 +68,8 @@ void Ship::SetupCollisions()
                     _nb_laser += 1;
             } else if (tag.compare(0, 7, "Tcemort") == 0) {
                 _tcemort = true;
+            } else if (tag.compare(0, 8, "Force_ic") == 0) {
+                _tcemort = true;
             }
         } catch (std::exception& e) {
             std::cerr << "Ship::Start(): " << e.what() << std::endl;
