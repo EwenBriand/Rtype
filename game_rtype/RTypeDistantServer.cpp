@@ -539,6 +539,8 @@ namespace rtype {
         try {
             int x = 0;
             int y = 0;
+            if (instruction.data.size() != 2 * sizeof(int))
+                throw std::runtime_error("Boss moves instruction has wrong data size, expected 8 bytes, got " + std::to_string(instruction.data.size()) + " bytes.");
             instruction.data.Deserialize(x, y);
             eng::Engine::GetEngine()->SetGlobal<graph::vec2i>("bossTargetPosition", graph::vec2i { x, y });
         } catch (const std::exception& e) {
@@ -549,11 +551,23 @@ namespace rtype {
     void RTypeDistantServer::handleBossSpawns(serv::Instruction& instruction)
     {
         try {
-            SYS.GetResourceManager().LoadPrefab("boss");
+            SYS.GetResourceManager().LoadPrefab("boss-head");
             eng::Engine::GetEngine()->SetGlobal<graph::vec2i>("bossTargetPosition", graph::vec2i { 0, 0 });
+            eng::Engine::GetEngine()->SetGlobal<graph::vec2i>("bossShoot", graph::vec2i { -1, -1 });
         } catch (const std::exception& e) {
             std::cerr << e.what() << std::endl;
         }
+    }
+
+    void RTypeDistantServer::handleBossShoots(serv::Instruction& instruction)
+    {
+        int x = 0;
+        int y = 0;
+
+        if (instruction.data.size() != 2 * sizeof(int))
+            throw std::runtime_error("Boss shoots instruction has wrong data size, expected 8 bytes, got " + std::to_string(instruction.data.size()) + " bytes.");
+        instruction.data.Deserialize(x, y);
+        eng::Engine::GetEngine()->SetGlobal<graph::vec2i>("bossShoot", graph::vec2i { x, y });
     }
 
 } // namespace rtype

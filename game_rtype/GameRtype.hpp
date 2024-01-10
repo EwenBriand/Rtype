@@ -125,7 +125,14 @@ namespace eng {
          */
         static constexpr int I_BOSS_SPAWNS = 5014;
 
-        RType() = default;
+        /**
+         * @brief Indicates that the boss just shot from coordinates (x, y)
+         *
+         */
+        static constexpr int I_BOSS_SHOOTS = 85236;
+
+        RType()
+            = default;
         ~RType() = default;
 
         void Init(Engine*) override;

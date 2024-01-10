@@ -129,6 +129,7 @@ namespace rtype {
 
         void handleBossMoves(serv::Instruction& instruction);
         void handleBossSpawns(serv::Instruction& instruction);
+        void handleBossShoots(serv::Instruction& instruction);
 
         /**
          * @brief Sens the I_PLAYER_MOVES instruction to the server
@@ -197,8 +198,9 @@ namespace rtype {
 
                 { serv::I_DISCONNECT, &RTypeDistantServer::handleDisconnect },
 
-                { eng::RType::I_BOSS_MOVES, &RTypeDistantServer::handleBossSpawns },
-                { eng::RType::I_BOSS_SPAWNS, &RTypeDistantServer::handleBossMoves },
+                { eng::RType::I_BOSS_SPAWNS, &RTypeDistantServer::handleBossSpawns },
+                { eng::RType::I_BOSS_MOVES, &RTypeDistantServer::handleBossMoves },
+                { eng::RType::I_BOSS_SHOOTS, &RTypeDistantServer::handleBossShoots },
 
             };
 

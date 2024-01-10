@@ -53,6 +53,7 @@ void Ship::SetupCollisions()
     _collider->SetOnCollisionEnter([this](int entityID, int otherID) {
         try {
             std::string tag = (_entity == entityID) ? SYS.GetComponent<Collider2D>(otherID).GetTag() : SYS.GetComponent<Collider2D>(entityID).GetTag();
+            std::cout << "collision with " << tag << std::endl;
             if (tag.compare(0, 12, "Enemy laser ") == 0) {
                 this->_health -= 1;
                 _textField->SetText((std::to_string(_health) + " HP"));
@@ -70,6 +71,13 @@ void Ship::SetupCollisions()
                 _tcemort = true;
             } else if (tag.compare(0, 8, "Force_ic") == 0) {
                 _tcemort = true;
+            } else if (tag == "boss") {
+                this->_health -= 10;
+                _textField->SetText((std::to_string(_health) + " HP"));
+            } else if (tag == "boss-laser") {
+                std::cout << "health minus two" << std::endl;
+                this->_health -= 2;
+                _textField->SetText((std::to_string(_health) + " HP"));
             }
         } catch (std::exception& e) {
             std::cerr << "Ship::Start(): " << e.what() << std::endl;

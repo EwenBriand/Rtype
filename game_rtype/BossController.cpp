@@ -109,10 +109,17 @@ namespace rtype {
 
     bool BossController::shoot()
     {
-        if (_shootTimer.GetElapsedTime() > 2) {
-            _shootTimer.Restart();
+        if (eng::Engine::GetEngine()->IsClient()) {
+            auto shootCoord = eng::Engine::GetEngine()->GetGlobal<graph::vec2i>("bossShoot");
+            if (shootCoord.x == -1 && shootCoord.y == -1)
+                return false;
             return true;
+        } else {
+            if (_shootTimer.GetElapsedTime() > 2) {
+                _shootTimer.Restart();
+                return true;
+            }
+            return false;
         }
-        return false;
     }
 }

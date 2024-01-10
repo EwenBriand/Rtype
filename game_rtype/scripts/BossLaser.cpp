@@ -6,12 +6,30 @@
 */
 
 #include "BossLaser.hpp"
+#include "Components.Vanilla/Collider2D.hpp"
 #include "Engine.hpp"
 
 MANAGED_RESOURCE(BossLaser)
 
 void BossLaser::Start()
 {
+    try {
+        auto& collider = SYS.GetComponent<Collider2D>(_entityID);
+        collider.SetOnCollisionEnter([this](int entityID, int otherID) {
+            try {
+                auto& collider = SYS.GetComponent<Collider2D>(_entityID);
+                auto& otherCollider = SYS.GetComponent<Collider2D>(otherID);
+                if (otherCollider.GetTag() == "player") {
+                    collider.SetDestroyMe(true);
+                    SYS.UnregisterEntity(_entityID);
+                }
+            } catch (std::exception& e) {
+                std::cerr << "BossLaser::OnCollisionEnter(): " << e.what() << std::endl;
+            }
+        });
+    } catch (std::exception& e) {
+        std::cerr << e.what() << std::endl;
+    }
 }
 
 void BossLaser::OnAddComponent(int entityID)

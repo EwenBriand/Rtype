@@ -16,6 +16,7 @@
 #include <memory>
 
 MANAGED_RESOURCE(Boss)
+#define BOSS_SHOOT 85236 // normally in a header file GameRType.hpp but circular dll dependencies on windows so we put it here
 
 // ===========================================================================================================
 // Component
@@ -129,6 +130,12 @@ void Boss::shoot()
 {
     try {
         auto& transform = SYS.GetComponent<CoreTransform>(_entityID);
+        graph::vec2i from = { static_cast<int>(transform.x), static_cast<int>(transform.y) };
+
+        if (eng::Engine::GetEngine()->IsClient()) {
+            from = eng::Engine::GetEngine()->GetGlobal<graph::vec2i>("bossShoot");
+            eng::Engine::GetEngine()->SetGlobal<graph::vec2i>("bossShoot", graph::vec2i { -1, -1 });
+        }
 
         for (int i = 0; i < 10; i++) {
             int laser = SYS.GetResourceManager().LoadPrefab("boss-laser");
@@ -136,9 +143,11 @@ void Boss::shoot()
             auto& laserTransform = SYS.GetComponent<CoreTransform>(laser);
 
             laserComponent.SetDirection({ cosf(i * 2 * M_PI / 10), sinf(i * 2 * M_PI / 10) });
-            laserTransform.x = transform.x;
-            laserTransform.y = transform.y;
-            std::cout << "\rshoot, spawned laser at " << transform.x << ", " << transform.y << std::endl;
+            laserTransform.x = from.x;
+            laserTransform.y = from.y;
+        }
+        if (eng::Engine::GetEngine()->IsServer()) {
+            eng::Engine::GetEngine()->GetServer().Broadcast(serv::Instruction(BOSS_SHOOT, 0, serv::bytes(std::vector<int> { static_cast<int>(from.x), static_cast<int>(from.y) })));
         }
     } catch (std::exception& e) {
         std::cerr << e.what() << std::endl;
