@@ -55,6 +55,12 @@ private:
      */
     void shootTcemort();
 
+    /**
+     * @brief Shoot a rocket
+     *
+     */
+    void shootRocket();
+
     serialize float _speed = 60.0f;
 
     RigidBody2D* _rb = nullptr;

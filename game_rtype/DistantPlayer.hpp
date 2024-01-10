@@ -79,6 +79,8 @@ private:
     void handleOK(serv::Instruction&);
     void handlePlayerMoves(serv::Instruction&);
     void handleForceMoves(serv::Instruction&);
+    void handleForceShoots(serv::Instruction&);
+    void handleForceShootsTcemort(serv::Instruction&);
     void handlePlayerShoots(serv::Instruction&);
     void handlePlayerShootsTcemort(serv::Instruction&);
     void handleDisconnect(serv::Instruction&);
@@ -92,6 +94,8 @@ private:
         { serv::I_OK, &DistantPlayer::handleOK },
         { eng::RType::I_PLAYER_MOVES, &DistantPlayer::handlePlayerMoves },
         { eng::RType::I_FORCE_MOVES, &DistantPlayer::handleForceMoves },
+        { eng::RType::I_FORCE_SHOOTS, &DistantPlayer::handleForceShoots },
+        { eng::RType::I_FORCE_SHOOTS_TCEMORT, &DistantPlayer::handleForceShootsTcemort },
         { serv::I_CONNECT, nullptr },
         { serv::I_AM_ALIVE, nullptr },
         { eng::RType::I_PLAYER_SHOOTS, &DistantPlayer::handlePlayerShoots },

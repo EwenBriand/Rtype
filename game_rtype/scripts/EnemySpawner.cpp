@@ -100,9 +100,9 @@ void EnemySpawner::spawnEnemy2()
         throw std::runtime_error("Could not create AIController");
     controller->SetID(id++);
     ship.SetID(controller->GetID());
-    // ship.SetBonusOnDeath((distrib(gen) < 70) ? 0 : 0);
-    if (distrib(gen) <= 49)
-        ship.SetBonusOnDeath((distrib(gen) < 70) ? -1 : 0);
+    ship.SetBonusOnDeath((distrib(gen) < 70) ? 0 : 0);
+    // if (distrib(gen) <= 49)
+    // ship.SetBonusOnDeath((distrib(gen) < 70) ? -1 : 0);
     ship.Possess(e, controller);
     setupObserver(controller, e);
     broadcastSpawn(*controller, transform.x, transform.y, "dual-ship2");

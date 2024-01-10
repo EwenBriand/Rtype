@@ -58,6 +58,10 @@ void Enemy2::Start()
                 this->_health = 0;
                 _textField->SetText((std::to_string(_health) + " HP"));
                 checkDeath();
+            } else if (tag.compare(0, 15, "Player Rocket n") == 0) {
+                this->_health -= 2;
+                _textField->SetText((std::to_string(_health) + " HP"));
+                checkDeath();
             }
         } catch (std::exception& e) {
             std::cerr << "Ship::Start(): " << e.what() << std::endl;

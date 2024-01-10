@@ -50,15 +50,15 @@ namespace rtype {
 
     static void debugSpawnBoss()
     {
-        try {
-            std::cout << "\rspawning boss" << std::endl;
-            SYS.GetResourceManager().LoadPrefab("boss-head");
-            eng::Engine::GetEngine()->SetGlobal<graph::vec2i>("bossTargetPosition", graph::vec2i { 0, 0 });
-            eng::Engine::GetEngine()->SetGlobal<graph::vec2i>("bossShoot", graph::vec2i { -1, -1 });
-            eng::Engine::GetEngine()->GetServer().Broadcast(serv::Instruction(eng::RType::I_BOSS_SPAWNS, 0, serv::bytes()));
-        } catch (const std::exception& e) {
-            std::cerr << e.what() << std::endl;
-        }
+        // try {
+        //     std::cout << "\rspawning boss" << std::endl;
+        //     SYS.GetResourceManager().LoadPrefab("boss-head");
+        //     eng::Engine::GetEngine()->SetGlobal<graph::vec2i>("bossTargetPosition", graph::vec2i { 0, 0 });
+        //     eng::Engine::GetEngine()->SetGlobal<graph::vec2i>("bossShoot", graph::vec2i { -1, -1 });
+        //     eng::Engine::GetEngine()->GetServer().Broadcast(serv::Instruction(eng::RType::I_BOSS_SPAWNS, 0, serv::bytes()));
+        // } catch (const std::exception& e) {
+        //     std::cerr << e.what() << std::endl;
+        // }
     }
 
     serv::Coroutine

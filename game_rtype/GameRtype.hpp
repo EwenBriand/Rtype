@@ -125,6 +125,12 @@ namespace eng {
         static constexpr int I_FORCE_MOVES = 5015;
 
         /**
+         * @brief args: {int entity, int x, int y}
+         *
+         */
+        static constexpr int I_FORCE_SHOOTS = 5016;
+
+        /**
          * @brief The number of enemies to kill for the game to end
          *
          */
@@ -135,13 +141,13 @@ namespace eng {
          * args: {int x, int y}
          *
          */
-        static constexpr int I_BOSS_MOVES = 5013;
+        static constexpr int I_BOSS_MOVES = 6013;
 
         /**
          * @brief Indicates that the boss has spawned.
          *
          */
-        static constexpr int I_BOSS_SPAWNS = 5014;
+        static constexpr int I_BOSS_SPAWNS = 6014;
 
         /**
          * @brief Indicates that the boss just shot from coordinates (x, y)

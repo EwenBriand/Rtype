@@ -68,7 +68,12 @@ void Force::Update(int entityID)
 
     int ent = eng::Engine::GetEngine()->GetGlobal<int>("PlayerID");
     if (_shipID == ent && _attached) {
-
+        std::cout << "Force::Update(): shipID == ent && attached" << std::endl;
+        if (_attached && _shootTimer.GetElapsedTime() > 5.0f) {
+            std::cout << "Force::Update(): shoot" << std::endl;
+            shootTcemort();
+            _shootTimer.Restart();
+        }
         try {
             auto pos = SYS.GetInputManager().MousePosition();
             auto shipPos = SYS.GetComponent<CoreTransform>(_shipID);
@@ -96,8 +101,9 @@ void Force::Update(int entityID)
         } catch (std::exception& e) {
             std::cerr << "Force::Update(): " << e.what() << std::endl;
         }
-    } else if (_shipID == ent) {
 
+    } else if (_shipID == ent) {
+        std::cout << "Force::Update(): shipID == ent" << std::endl;
         if (_prevX != _core->x or _prevY != _core->y) {
             _prevX = _core->x;
             _prevY = _core->y;
@@ -110,15 +116,11 @@ void Force::Update(int entityID)
                 eng::Engine::GetEngine()->GetClient().Send(serv::Instruction(eng::RType::I_FORCE_MOVES, 0, serv::bytes(data)));
         }
 
-        _shipID = -1;
-    }
-
-    if (_attached && _shootTimer.GetElapsedTime() > 5.0f) {
-        shootTcemort();
-        _shootTimer.Restart();
-    } else if (_shootTimer.GetElapsedTime() > 5.0f) {
-        shootTcemort();
-        _shootTimer.Restart();
+        if (_shootTimer.GetElapsedTime() > 2.0f) {
+            std::cout << "Force::Update(): shoot2" << std::endl;
+            shootRocket();
+            _shootTimer.Restart();
+        }
     }
 
     // if (not eng::Engine::GetEngine()->IsServer())
@@ -174,7 +176,7 @@ void Force::shootTcemort()
 {
     auto* engine = eng::Engine::GetEngine();
 
-    if (engine->IsServer() && _attached) {
+    if (!engine->IsServer() && _attached) {
         try {
             int laser = SYS.GetResourceManager().LoadPrefab("LaserTcemort");
             auto& laserTransform = SYS.GetComponent<CoreTransform>(laser);
@@ -187,8 +189,31 @@ void Force::shootTcemort()
                 static_cast<int>(laserTransform.y)
             };
             std::cout << "\rplayer " << _id << " shoots a TCEMORT at " << laserTransform.x << ", " << laserTransform.y << std::endl;
-            auto instruction = serv::Instruction(eng::RType::I_FORCE_SHOOTS_TCEMORT, 0, serv::bytes(data));
-            eng::Engine::GetEngine()->GetServer().Broadcast(instruction);
+            eng::Engine::GetEngine()->GetClient().Send(serv::Instruction(eng::RType::I_FORCE_SHOOTS_TCEMORT, 0, serv::bytes(data)));
+        } catch (const std::exception& e) {
+            CONSOLE::err << "\rFailed to send shoot instruction to server." << std::endl;
+        };
+    }
+}
+
+void Force::shootRocket()
+{
+    auto* engine = eng::Engine::GetEngine();
+
+    if (!engine->IsServer() && !_attached) {
+        try {
+            int laser = SYS.GetResourceManager().LoadPrefab("Rocket");
+            auto& laserTransform = SYS.GetComponent<CoreTransform>(laser);
+            laserTransform.x = _core->x;
+            laserTransform.y = _core->y;
+
+            std::vector<int> data = {
+                _id,
+                static_cast<int>(laserTransform.x),
+                static_cast<int>(laserTransform.y)
+            };
+            std::cout << "\rplayer " << _id << " shoots a Rocket at " << laserTransform.x << ", " << laserTransform.y << std::endl;
+            eng::Engine::GetEngine()->GetClient().Send(serv::Instruction(eng::RType::I_FORCE_SHOOTS, 0, serv::bytes(data)));
         } catch (const std::exception& e) {
             CONSOLE::err << "\rFailed to send shoot instruction to server." << std::endl;
         };
