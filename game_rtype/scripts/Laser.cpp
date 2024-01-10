@@ -61,6 +61,12 @@ void Laser::Start()
                     SYS.GetComponent<Collider2D>(_entity).SetDestroyMe(true);
                     SYS.UnregisterEntity(_entity);
                 }
+                if (tag == "boss") {
+                    eng::Engine::GetEngine()->SetGlobal("bossHp", eng::Engine::GetEngine()->GetGlobal<int>("bossHp") - _damage);
+                    SYS.GetComponent<Collider2D>(_entity).SetDestroyMe(true);
+                    SYS.UnregisterEntity(_entity);
+                    std::cout << "hit boss" << std::endl;
+                }
             } catch (std::exception& e) {
                 std::cerr << "Laser::OnCollisionEnter: " << e.what() << std::endl;
             }

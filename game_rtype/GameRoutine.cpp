@@ -48,7 +48,21 @@ namespace rtype {
         return nullptr;
     }
 
-    serv::Coroutine GameRoutineServer::run()
+    static void debugSpawnBoss()
+    {
+        try {
+            std::cout << "\rspawning boss" << std::endl;
+            SYS.GetResourceManager().LoadPrefab("boss-head");
+            eng::Engine::GetEngine()->SetGlobal<graph::vec2i>("bossTargetPosition", graph::vec2i { 0, 0 });
+            eng::Engine::GetEngine()->SetGlobal<graph::vec2i>("bossShoot", graph::vec2i { -1, -1 });
+            eng::Engine::GetEngine()->GetServer().Broadcast(serv::Instruction(eng::RType::I_BOSS_SPAWNS, 0, serv::bytes()));
+        } catch (const std::exception& e) {
+            std::cerr << e.what() << std::endl;
+        }
+    }
+
+    serv::Coroutine
+    GameRoutineServer::run()
     {
         co_await std::suspend_always {};
         eng::Engine::GetEngine()->GetSceneManager().UnloadScene("lobby");
@@ -63,6 +77,8 @@ namespace rtype {
         for (auto& player : DistantPlayer::Instances)
             player->SendClientStartGame();
         server.Log("Game started");
+
+        debugSpawnBoss();
 
         while (true) {
             if (DistantPlayer::Instances.size() < RTYPE_NB_PLAYERS)

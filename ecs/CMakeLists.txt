@@ -81,6 +81,9 @@ set(VANILLA
     ${VANILLA_SRC}/UserComponentWrapper.cpp
     ${VANILLA_SRC}/Tag.cpp
     ${VANILLA_SRC}/SplashIcon.cpp
+    ${VANILLA_SRC}/LuaScript.cpp
+    ${VANILLA_SRC}/Deleteme.cpp
+
 )
 
 set(META_VANILLA_SRC
@@ -102,6 +105,8 @@ set(META_VANILLA
     ${META_VANILLA_SRC}/UIMenuMeta.cpp
     ${META_VANILLA_SRC}/TagMeta.cpp
     ${META_VANILLA_SRC}/SplashIconMeta.cpp
+    ${META_VANILLA_SRC}/LuaScriptMeta.cpp
+    ${META_VANILLA_SRC}/DeletemeMeta.cpp
 )
 
 add_library(lengine SHARED
@@ -115,6 +120,8 @@ target_link_libraries(lengine
     metadatagen
     raylib
     server_udp
+    lua
+    luaEngine
 )
 
 add_dependencies(lengine
