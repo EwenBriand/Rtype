@@ -50,6 +50,7 @@ namespace rtype {
 
     static void debugSpawnBoss()
     {
+        // EWEN BOSS
         // try {
         //     std::cout << "\rspawning boss" << std::endl;
         //     SYS.GetResourceManager().LoadPrefab("boss-head");
