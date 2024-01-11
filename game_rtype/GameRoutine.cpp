@@ -50,6 +50,7 @@ namespace rtype {
 
     static void debugSpawnBoss()
     {
+        // EWEN BOSS
         // try {
         //     std::cout << "\rspawning boss" << std::endl;
         //     SYS.GetResourceManager().LoadPrefab("boss-head");
@@ -189,7 +190,7 @@ namespace rtype {
             if (rtype->GetSessionData().killCount >= eng::RType::KILL_COUNT_TO_END) {
                 // TODO ewen: uncomment after you merged with branch game 1
                 eng::Engine::GetEngine()->GetClient().Send(serv::Instruction(
-                    serv::I_DISCONNECT, 0, serv::bytes()));
+                    eng::RType::I_LEVEL2, 0, serv::bytes()));
             }
         } catch (std::exception& e) {
             return;

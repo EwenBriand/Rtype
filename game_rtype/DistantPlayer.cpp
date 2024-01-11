@@ -326,3 +326,16 @@ void DistantPlayer::handleDisconnect(serv::Instruction&)
 {
     OnDisconnect();
 }
+
+void DistantPlayer::handleLevel2(serv::Instruction&)
+{
+    std::cout << "\rClient level2" << std::endl;
+
+    auto eng = eng::Engine::GetEngine();
+
+    eng->GetSceneManager().SwitchScene("level2");
+
+    _server.Broadcast(serv::Instruction(eng::RType::I_LEVEL2, 0, serv::bytes()));
+
+    eng::Engine::GetEngine()->GetServer().ResetClients();
+}

@@ -155,6 +155,9 @@ namespace eng {
          */
         static constexpr int I_BOSS_SHOOTS = 85236;
 
+        /*  */
+        static constexpr int I_LEVEL2 = 8000;
+
         RType()
             = default;
         ~RType() = default;

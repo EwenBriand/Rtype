@@ -147,6 +147,13 @@ namespace rtype {
         _startGame = false;
     }
 
+    void RTypeDistantServer::handleLevel2(serv::Instruction& instruction)
+    {
+        eng::Engine::GetEngine()->GetSceneManager().LoadSceneAsync("level2");
+        _currSceneName = "level2";
+        _startGame = false;
+    }
+
     void RTypeDistantServer::handleStartGame(serv::Instruction& instruction)
     {
         _startGame = true;
