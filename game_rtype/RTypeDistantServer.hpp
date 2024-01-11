@@ -119,6 +119,8 @@ namespace rtype {
         void handleEnemyShoots(serv::Instruction& instruction);
         void handleEnemyDies(serv::Instruction& instruction);
 
+        void handleBlockSpawn(serv::Instruction& instruction);
+
         void handleResetSignal(serv::Instruction& instruction);
 
         void handleDisconnect(serv::Instruction& instruction);
@@ -181,6 +183,8 @@ namespace rtype {
                 { eng::RType::I_ENEMY_MOVES, &RTypeDistantServer::handleEnemyMoves },
                 { eng::RType::I_ENEMY_DIES, &RTypeDistantServer::handleEnemyDies },
                 { eng::RType::I_ENEMY_SHOOTS, &RTypeDistantServer::handleEnemyShoots },
+
+                { eng::RType::I_BLOCK_SPAWN, &RTypeDistantServer::handleBlockSpawn },
 
                 { eng::RType::I_RESET_CLIENT, &RTypeDistantServer::handleResetSignal },
 

@@ -87,6 +87,9 @@ namespace eng {
          */
         static constexpr int KILL_COUNT_TO_END = 10;
 
+
+        static constexpr int I_BLOCK_SPAWN = 6969;
+
         RType() = default;
         ~RType() = default;
 
