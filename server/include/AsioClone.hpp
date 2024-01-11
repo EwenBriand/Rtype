@@ -25,7 +25,7 @@ namespace serv {
 
     class AsioClone {
         private:
-            std::shared_ptr<boost::asio::io_service> _ioService;
+            boost::asio::io_service _ioService;
             boost::asio::ip::udp::socket _socket;
         public:
             typedef boost::asio::ip::udp udp;
@@ -38,7 +38,7 @@ namespace serv {
 
             // typedef boost::asio::error
 
-            AsioClone() : _ioService(std::make_shared<boost::asio::io_service>()), _socket(*_ioService) {}
+            AsioClone() : _socket(_ioService) {}
 
             AsioClone(io_service &io) : _socket(io) {}
 
@@ -64,7 +64,7 @@ namespace serv {
             }
 
             inline void stop() {
-                _ioService->stop();
+                _ioService.stop();
             }
 
             inline void run(io_service &io) {
@@ -72,19 +72,18 @@ namespace serv {
             }
 
             inline void run() {
-                _ioService->run();
+                _ioService.run();
             }
 
-            inline size_t receive_from(std::array<char, 1024> buffer, boost::asio::ip::udp::endpoint ep) {
-                std::cout << "receive_from std::array<char, 1024>" << std::endl;
+            inline size_t receive_from(std::array<char, 1024> &buffer, boost::asio::ip::udp::endpoint &ep) {
                 return _socket.receive_from(boost::asio::buffer(buffer), ep);
             }
 
-            inline size_t receive_from(std::vector<unsigned char> buffer, boost::asio::ip::udp::endpoint ep) {
+            inline size_t receive_from(std::vector<unsigned char> &buffer, boost::asio::ip::udp::endpoint &ep) {
                 return _socket.receive_from(boost::asio::buffer(buffer), ep);
             }
 
-            inline size_t send_to(std::vector<unsigned char> buffer, boost::asio::ip::udp::endpoint ep) {
+            inline size_t send_to(std::vector<unsigned char> &buffer, boost::asio::ip::udp::endpoint ep) {
                 return _socket.send_to(boost::asio::buffer(buffer), ep);
             }
 

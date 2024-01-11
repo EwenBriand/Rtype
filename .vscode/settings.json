@@ -109,6 +109,13 @@
         "span": "cpp",
         "stack": "cpp",
         "syncstream": "cpp",
-        "*.rh": "cpp"
+        "*.rh": "cpp",
+        "*.ipp": "cpp",
+        "expected": "cpp",
+        "slist": "cpp",
+        "spanstream": "cpp",
+        "stacktrace": "cpp",
+        "stdfloat": "cpp",
+        "*.m": "cpp"
     }
 }

@@ -123,6 +123,7 @@ namespace rtype {
             return;
         try {
             auto& transform = SYS.GetComponent<CoreTransform>(_entity);
+            // std::cout << "entity " << _entity << " shoots at " << transform.x << ", " << transform.y << std::endl;
             serv::bytes args(std::vector<int>({ _id,
                 static_cast<int>(transform.x),
                 static_cast<int>(transform.y) }));

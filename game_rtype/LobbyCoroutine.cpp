@@ -120,7 +120,9 @@ namespace rtype {
         eng::Engine::GetEngine()->GetSceneManager().UnloadScene("level1");
         eng::Timer timer;
         timer.Start();
+        std::cout << "before try connect" << std::endl;
         serverHandle->TryConnect();
+        std::cout << "before while" << std::endl;
         while (not serverHandle->IsConnected()) {
             if (timer.GetElapsedTime() > 1) {
                 timer.Restart();
@@ -132,11 +134,14 @@ namespace rtype {
             }
             co_await std::suspend_always {};
         }
+        std::cout << "before send load scene" << std::endl;
         while (not serverHandle->SceneIsReady()) {
             std::cout << ".";
             co_await std::suspend_always {};
         }
+        std::cout << "before instantiate scene" << std::endl;
         serverHandle->InstantiateScene();
+        std::cout << "after instantiate scene" << std::endl;
         _engine.GetClient().Send(serv::Instruction(serv::I_OK, 0, serv::bytes()));
         std::cout << "\rScene is ready, waiting for server..." << std::endl;
         while (not serverHandle->ShouldStartGame())

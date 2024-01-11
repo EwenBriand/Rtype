@@ -75,7 +75,7 @@ bool LocalPlayerController::testShoot()
                 static_cast<int>(transform.x),
                 static_cast<int>(transform.y)
             };
-            std::cout << "\rplayer " << _playerId << " shoots at " << transform.x << ", " << transform.y << std::endl;
+            // std::cout << "\rplayer " << _playerId << " shoots at " << transform.x << ", " << transform.y << std::endl;
             engine->GetClient().Send(serv::Instruction(eng::RType::I_PLAYER_SHOOTS, 0, serv::bytes(data)));
         } catch (const std::exception& e) {
             CONSOLE::err << "\rFailed to send shoot instruction to server." << std::endl;

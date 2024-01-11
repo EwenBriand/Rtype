@@ -20,7 +20,10 @@
 #include <iterator>
 #include <type_traits>
 #include <unistd.h>
+
+#ifdef _WIN32
 #include <processthreadsapi.h>
+#endif
 
 namespace ecs {
     ResourceManager::~ResourceManager()

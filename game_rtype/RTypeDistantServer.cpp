@@ -105,6 +105,7 @@ namespace rtype {
     bool RTypeDistantServer::SceneIsReady()
     {
         if (_currSceneName == "") {
+            // std::cout << "oui oui baguette" << std::endl;
             return false;
         }
         return _engine->GetSceneManager().IsSceneReady(_currSceneName);
@@ -126,7 +127,7 @@ namespace rtype {
     {
         if (_pingThread.joinable())
             _pingThread.join();
-
+        std::cout << "\rConnected to server." << std::endl;
         _isConnected = true;
         _pingThread = std::thread(&RTypeDistantServer::pingServerForAlive, this);
     }
@@ -139,6 +140,7 @@ namespace rtype {
 
     void RTypeDistantServer::handleLoadScene(serv::Instruction& instruction)
     {
+        std::cout << "\rLoading scene: " << instruction.data.toString() << std::endl;
         std::string sceneName = instruction.data.toString();
         _engine->GetSceneManager().LoadSceneAsync(sceneName);
         _currSceneName = sceneName;
@@ -147,6 +149,7 @@ namespace rtype {
 
     void RTypeDistantServer::handleStartGame(serv::Instruction& instruction)
     {
+        std::cout << "\rStarting game." << std::endl;
         _startGame = true;
     }
 
@@ -181,6 +184,7 @@ namespace rtype {
         if (instruction.data.size() != 3 * sizeof(int)) {
             throw std::runtime_error("Player spawn instruction has wrong data size.");
         }
+        std::cout << "Spawn player" << std::endl;
         std::memcpy(&id, instruction.data.data(), sizeof(int));
 
         if (_players.find(id) != _players.end()) {
@@ -239,6 +243,7 @@ namespace rtype {
         int id = 0;
         int x = 0;
         int y = 0;
+        std::cout << "Player moves" << std::endl;
         std::memcpy(&id, instruction.data.data(), sizeof(int));
         std::memcpy(&x, instruction.data.data() + sizeof(int), sizeof(int));
         std::memcpy(&y, instruction.data.data() + 2 * sizeof(int), sizeof(int));
@@ -266,6 +271,7 @@ namespace rtype {
         int y = 0;
         std::string prefabName = "";
 
+        std::cout << "Enemy spawn" << std::endl;
         std::memcpy(&id, instruction.data.data(), sizeof(int));
         std::memcpy(&x, instruction.data.data() + sizeof(int), sizeof(int));
         std::memcpy(&y, instruction.data.data() + 2 * sizeof(int), sizeof(int));
@@ -294,6 +300,7 @@ namespace rtype {
         int id = 0;
         int x = 0;
         int y = 0;
+        std::cout << "Enemy moves" << std::endl;
         if (instruction.data.size() < 3 * sizeof(int)) {
             throw std::runtime_error("Enemy moves instruction has wrong data size.");
         }
@@ -322,7 +329,7 @@ namespace rtype {
         int x = 0;
         int y = 0;
         instruction.data.Deserialize(id, x, y);
-
+        std::cout << "Player shoots" << std::endl;
         try {
             int laser = SYS.GetResourceManager().LoadPrefab("Laser");
             auto& transform = SYS.GetComponent<CoreTransform>(laser);
@@ -338,7 +345,7 @@ namespace rtype {
         try {
             int id, x, y;
             instruction.data.Deserialize(id, x, y);
-
+            std::cout << "Enemy shoots" << std::endl;
             int laser = SYS.GetResourceManager().LoadPrefab("red-laser");
             auto& transform = SYS.GetComponent<CoreTransform>(laser);
             transform.x = x;
@@ -355,6 +362,7 @@ namespace rtype {
         }
         int id = 0;
         instruction.data.Deserialize(id);
+        std::cout << "Enemy dies" << std::endl;
 
         if (_enemies.find(id) == _enemies.end()) {
             return;
@@ -405,7 +413,6 @@ namespace rtype {
 
     void RTypeDistantServer::handlePlayerDies(serv::Instruction& instruction)
     {
-
         std::cout << "player died!!!" << std::endl;
         eng::Engine::GetEngine()->GetClient().Send(serv::Instruction(serv::I_DISCONNECT, 0, serv::bytes()));
     }
@@ -422,12 +429,14 @@ namespace rtype {
 
     void RTypeDistantServer::handleResetSignal(serv::Instruction& instruction)
     {
+        std::cout << "Resetting distant server" << std::endl;
         if (RTypeDistantServer::GetInstance() != nullptr)
             RTypeDistantServer::GetInstance()->Reset();
     }
 
     void RTypeDistantServer::handleDisconnect(serv::Instruction& instruction)
     {
+        std::cout << "Disconnecting from server" << std::endl;
         Reset();
     }
 } // namespace rtype

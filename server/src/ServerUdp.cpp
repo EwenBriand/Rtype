@@ -14,6 +14,7 @@
 #include <iostream>
 #include <sstream>
 #include <filesystem>
+#include <memory>
 
 namespace serv {
 
@@ -22,7 +23,7 @@ namespace serv {
     // ============================================================================
 
     AClient::AClient(ServerUDP& server)
-        : _server(server)
+        : _server(server), _endpoint(std::make_shared<EndpointWrapper>())
     {
     }
 
@@ -46,7 +47,7 @@ namespace serv {
     // ============================================================================
 
     ClientBucketUDP::ClientBucketUDP(std::shared_ptr<EndpointWrapper> endpoint)
-        : _endpoint(endpoint)
+        : _endpoint(new EndpointWrapper(*endpoint))
         , _clientHandler(nullptr)
         // , _buffer(2 * BUFF_SIZE)
         , _mutex(std::make_shared<std::mutex>())
@@ -134,7 +135,7 @@ namespace serv {
         , _clientsMutex(std::make_shared<std::mutex>())
     {
         _endpoint = std::make_shared<EndpointWrapper>(boost::asio::ip::udp::v4(), port);
-
+        _remoteEndpoint = std::make_shared<EndpointWrapper>();
         AsioClone::error_code error;
         _asio->open(_endpoint->endpoint.protocol(), error);
         if (error)
@@ -185,21 +186,17 @@ namespace serv {
 
     void ServerUDP::receiveWorker()
     {
-        std::cout << "Receive worker started" << std::endl;
         while (_running) {
-            std::cout << "Waiting for data" << std::endl;
             _asio->receive_from(_buffer, _remoteEndpoint->endpoint);
-            std::cout << "Received data" << std::endl;
+            // std::cout << "Received from endpoint: " << endpointToString(_remoteEndpoint) << std::endl;
             std::size_t bytesTransferred = bytes::find_last_of(_buffer, [](unsigned char c) {
                 return c != 0;
             });
             bytesTransferred += 1;
             int opcode = Instruction(bytes(_buffer.data(), bytesTransferred)).opcode;
-            std::cout << "Received opcode " << opcode << std::endl;
             if (opcode != I_AM_ALIVE)
                 Log("Received opcode " + std::to_string(opcode) + " from " + endpointToString(_remoteEndpoint) + " (" + std::to_string(bytesTransferred) + " bytes) " + bytes(_buffer.data(), bytesTransferred).toString());
             HandleRequest(bytesTransferred);
-            std::cout << "Handled request" << std::endl;
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
     }
@@ -269,6 +266,7 @@ namespace serv {
                 try {
                     Message message = _sendQueue.Pop();
                     _asio->send_to(message.data._data, message.endpointW->endpoint);
+                    // std::cout << "Send to endpoint " << endpointToString(message.endpointW) << " with opcode " << std::to_string(Instruction(message.data).opcode) << std::endl;
                     Log("Sent opcode " + std::to_string(Instruction(message.data).opcode) + " to " + endpointToString(message.endpointW));
                 } catch (std::exception& e) {
                     std::cerr << e.what() << std::endl;
