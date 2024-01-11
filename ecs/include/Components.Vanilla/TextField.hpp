@@ -121,6 +121,12 @@ public:
      */
     void UnFocus();
 
+    /**
+     * @brief Set the rectangle dimension.
+     *
+     */
+    void SetSize(graph::vec2f dim);
+
 private:
     void collectInput();
 
@@ -129,7 +135,7 @@ private:
 
     serialize float m_x;
     serialize float m_y;
-
+    graph::vec2f _dimension = { 100, 20 };
     bool m_isFocused = false;
     std::string m_text;
     std::function<void()> m_onEnterCallback;

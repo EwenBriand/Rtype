@@ -16,6 +16,7 @@
 #include "NetworkExceptions.hpp"
 #include "PlayerFromServerController.hpp"
 #include "Ship.hpp"
+#include "Chat.hpp"
 
 namespace rtype {
     const std::vector<std::string> RTypeDistantServer::PlayerPrefabs = {
@@ -159,10 +160,10 @@ namespace rtype {
         _startGame = true;
     }
 
-    void RTypeDistantServer::handleMessage(serv::Instruction& instruction)
-    {
-        std::cout << "\rMessage from server: " << instruction.data.toString() << std::endl;
-    }
+    // void RTypeDistantServer::handleMessage(serv::Instruction& instruction)
+    // {
+    //     std::cout << "\rMessage from server: " << instruction.data.toString() << std::endl;
+    // }
 
     void RTypeDistantServer::pingServerForAlive()
     {
@@ -662,5 +663,17 @@ namespace rtype {
         instruction.data.Deserialize(x, y);
         eng::Engine::GetEngine()->SetGlobal<graph::vec2i>("bossShoot", graph::vec2i { x, y });
     }
-
+    void RTypeDistantServer::handleMessage(serv::Instruction& instruction)
+    {
+        try {
+            std::string message = instruction.data.toString();
+            int chatEntity = _engine->GetGlobal<int>("chatEntity");
+            auto& transform = SYS.GetComponent<Chat>(chatEntity, "Chat");
+            transform.AddMessage(message);
+        } catch (const std::exception& e) {
+            std::cerr << e.what() << std::endl;
+        }    
+        // int laser = SYS.GetResourceManager().LoadPrefab("Laser");
+        // auto& transform = SYS.GetComponent<CoreTransform>(laser);
+    }
 } // namespace rtype

@@ -91,6 +91,23 @@ endif()
 include_directories(${luabridge_SOURCE_DIR}/Source)
 
 
+FetchContent_Declare(
+  yaml-cpp
+  GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
+  GIT_TAG master
+)
+FetchContent_GetProperties(yaml-cpp)
+
+if(NOT yaml-cpp_POPULATED)
+  message(STATUS "Fetching yaml-cpp...")
+
+  FetchContent_Populate(yaml-cpp)
+  set(YAML_BUILD_SHARED_LIBS ON CACHE BOOL "Enable compilation of shared libraries")
+  add_subdirectory(${yaml-cpp_SOURCE_DIR} ${yaml-cpp_BINARY_DIR})
+endif()
+FetchContent_MakeAvailable(yaml-cpp)
+
+
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(BUILD_SHARED_LIBS ON)
 set(CMAKE_BUILD_TYPE Release)
@@ -150,4 +167,5 @@ add_custom_target(doc
 
 add_subdirectory(ecs)
 add_subdirectory(game_rtype)
-add_subdirectory(tests)
+
+add_subdirectory(game_rtype/plugins/LagChecker)
