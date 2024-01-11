@@ -836,7 +836,7 @@ namespace ecs {
         void ReloadEntities()
         {
             std::vector<Entity> entities = GetEntities();
-
+            std::cout << "save path: " << m_savePath << std::endl;
             RequestEngineClearPipeline();
             for (auto& e : entities) {
                 if (e == _systemHolder)

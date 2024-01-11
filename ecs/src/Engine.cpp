@@ -185,7 +185,7 @@ namespace eng {
         }
 
         SYS.GetResourceManager().CheckHotReload();
-
+        std::cout << "Starting game" << std::endl;
         for (auto e : SYS.GetEntities()) {
             SYS.ForEachComponent(e, [&](ecs::ECSImpl::AnyCpt& cpt) {
                 std::visit([&](auto&& arg) {
@@ -194,14 +194,19 @@ namespace eng {
                     cpt);
             });
         }
+        std::cout << "Game started" << std::endl;
 
         m_graphicalModule->Start();
+        std::cout << "Graphical module started" << std::endl;
         if (m_game && m_game->IsOnLine(this)) {
             m_game->WaitConnect(this);
         }
+        std::cout << "Starting main loop" << std::endl;
 
         setupPipeline();
+        std::cout << "Pipeline setup" << std::endl;
         sortPipeline();
+        std::cout << "Pipeline sorted" << std::endl;
 
         SYS.CallStart();
         if (m_game)

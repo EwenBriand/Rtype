@@ -158,7 +158,11 @@ namespace ecs {
 
     private:
         unsigned int m_changesNbr = 0;
+        #ifdef _WIN32
+        std::string m_userComponentsPath = ".\\build\\game_rtype\\";
+        #else
         std::string m_userComponentsPath = "./metabuild/";
+        #endif
         std::vector<std::shared_ptr<AUserComponent>> _instances;
         std::unordered_map<std::string, void*> _handles;
 

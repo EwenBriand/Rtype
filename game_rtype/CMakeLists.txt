@@ -81,18 +81,30 @@ add_library(Level1Manager SHARED scripts/Level1Manager.cpp ../.metadata/Level1Ma
 set_target_properties(Level1Manager PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/metabuild)
 target_link_libraries(Level1Manager game_target)
 
-# add_library(LevelUI SHARED scripts/LevelUI.cpp ../.metadata/LevelUIMeta.cpp)
-# set_target_properties(LevelUI PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/metabuild)
-# target_link_libraries(LevelUI game_target)
-
-# add_library(RLCamera3D SHARED scripts/RLCamera3D.cpp ../.metadata/RLCamera3DMeta.cpp)
-# set_target_properties(RLCamera3D PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/metabuild)
-# target_link_libraries(RLCamera3D game_target)
-
-# add_library(RLMesh SHARED scripts/RLMesh.cpp ../.metadata/RLMeshMeta.cpp)
-# set_target_properties(RLMesh PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/metabuild)
-# target_link_libraries(RLMesh game_target)
-
 add_library(Ship SHARED scripts/Ship.cpp ../.metadata/ShipMeta.cpp)
 set_target_properties(Ship PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/metabuild)
 target_link_libraries(Ship game_target)
+
+if (WIN32)
+
+# add_library(LevelUI SHARED scripts/LevelUI.cpp ../.metadata/LevelUIMeta.cpp)
+# set_target_properties(LevelUI PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/metabuild)
+# target_link_libraries(LevelUI
+#     lengine)
+
+# add_library(RLCamera3D SHARED scripts/RLCamera3D.cpp ../.metadata/RLCamera3DMeta.cpp)
+# set_target_properties(RLCamera3D PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/metabuild)
+# target_link_libraries(RLCamera3D
+#     lengine)
+
+# add_library(RLMesh SHARED scripts/RLMesh.cpp ../.metadata/RLMeshMeta.cpp)
+# set_target_properties(RLMesh PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/metabuild)
+# target_link_libraries(RLMesh
+#     lengine)
+
+add_library(MenuScript SHARED scripts/MenuScript.cpp ../.metadata/MenuScriptMeta.cpp)
+set_target_properties(MenuScript PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/metabuild)
+target_link_libraries(MenuScript
+    lengine)
+
+endif()

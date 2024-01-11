@@ -71,7 +71,7 @@ namespace ecs {
         }
         #ifdef _WIN32
         std::string rawPath = path.substr(0, path.find_last_of('.'));
-        std::string copyPath = tmpCopyDirectory + "/" + rawPath.substr(rawPath.find_last_of('/') + 1);
+        std::string copyPath = tmpCopyDirectory + "\\" + rawPath.substr(rawPath.find_last_of('\\') + 1);
         // std::string command = "mkdir " + copyPath + " && copy " + rawPath + ".cpp " +  copyPath + " && copy " + rawPath + ".hpp " + copyPath;
         std::string command = "rmdir /s /q " + copyPath + " && mkdir " + copyPath + " && copy " + rawPath + ".cpp " +  copyPath + " && copy " + rawPath + ".hpp " + copyPath;
         std::cout << "Executing command : " << command << std::endl;

@@ -106,9 +106,13 @@ namespace eng {
     void SceneBuffer::load(const std::string& sceneName, Engine& engine)
     {
         try {
-
+            #ifdef _WIN32
+            std::string path = engine.GetConfigValue("scenesSavePath")
+                + "\\" + sceneName;
+            #else
             std::string path = engine.GetConfigValue("scenesSavePath")
                 + "/" + sceneName;
+            #endif
             _components = engine.GetECS().PrepareScene(path);
             int entityNumber = _components[0].size();
             _isReady = true;
