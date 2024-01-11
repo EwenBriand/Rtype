@@ -84,7 +84,8 @@ private:
     void handlePlayerShoots(serv::Instruction&);
     void handlePlayerShootsTcemort(serv::Instruction&);
     void handleDisconnect(serv::Instruction&);
-
+    void handleMessage(serv::Instruction&);
+    
     int _playerId;
     int _kill_count;
     int _entityID;
@@ -101,5 +102,6 @@ private:
         { eng::RType::I_PLAYER_SHOOTS, &DistantPlayer::handlePlayerShoots },
         { eng::RType::I_PLAYER_SHOOTS_TCEMORT, &DistantPlayer::handlePlayerShootsTcemort },
         { serv::I_DISCONNECT, &DistantPlayer::handleDisconnect },
+        { serv::I_MESSAGE, &DistantPlayer::handleMessage },
     };
 };

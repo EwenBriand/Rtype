@@ -76,3 +76,7 @@ target_link_libraries(BossLaser game_target)
 add_library(Boss SHARED scripts/Boss.cpp ../.metadata/BossMeta.cpp BossController.cpp)
 set_target_properties(Boss PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/metabuild)
 target_link_libraries(Boss game_target BossBody BossLaser)
+
+add_library(Chat SHARED scripts/Chat.cpp ../.metadata/ChatMeta.cpp)
+set_target_properties(Chat PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/metabuild)
+target_link_libraries(game_target Chat)

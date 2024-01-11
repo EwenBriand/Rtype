@@ -19,6 +19,171 @@ namespace graph {
         T x = 0;
         T y = 0;
         T z = 0;
+
+        vec3<T> operator+(const vec3<T>& other) const
+        {
+            return { x + other.x, y + other.y, z + other.z };
+        }
+
+        vec3<T> operator-(const vec3<T>& other) const
+        {
+            return { x - other.x, y - other.y, z - other.z };
+        }
+
+        vec3<T> operator*(const vec3<T>& other) const
+        {
+            return { x * other.x, y * other.y, z * other.z };
+        }
+
+        vec3<T> operator/(const vec3<T>& other) const
+        {
+            return { x / other.x, y / other.y, z / other.z };
+        }
+
+        vec3<T> operator+(const T& other) const
+        {
+            return { x + other, y + other, z + other };
+        }
+
+        vec3<T> operator-(const T& other) const
+        {
+            return { x - other, y - other, z - other };
+        }
+
+        vec3<T> operator*(const T& other) const
+        {
+            return { x * other, y * other, z * other };
+        }
+
+        vec3<T> operator/(const T& other) const
+        {
+            return { x / other, y / other, z / other };
+        }
+
+        vec3<T>& operator+=(const vec3<T>& other)
+        {
+            x += other.x;
+            y += other.y;
+            z += other.z;
+            return *this;
+        }
+
+        vec3<T>& operator-=(const vec3<T>& other)
+        {
+            x -= other.x;
+            y -= other.y;
+            z -= other.z;
+            return *this;
+        }
+
+        vec3<T>& operator*=(const vec3<T>& other)
+        {
+            x *= other.x;
+            y *= other.y;
+            z *= other.z;
+            return *this;
+        }
+
+        vec3<T>& operator/=(const vec3<T>& other)
+        {
+            x /= other.x;
+            y /= other.y;
+            z /= other.z;
+            return *this;
+        }
+
+        vec3<T>& operator+=(const T& other)
+        {
+            x += other;
+            y += other;
+            z += other;
+            return *this;
+        }
+
+        vec3<T>& operator-=(const T& other)
+        {
+            x -= other;
+            y -= other;
+            z -= other;
+            return *this;
+        }
+
+        vec3<T>& operator*=(const T& other)
+        {
+            x *= other;
+            y *= other;
+            z *= other;
+            return *this;
+        }
+
+        vec3<T>& operator/=(const T& other)
+        {
+            x /= other;
+            y /= other;
+            z /= other;
+            return *this;
+        }
+
+        bool operator==(const vec3<T>& other) const
+        {
+            return x == other.x && y == other.y && z == other.z;
+        }
+
+        bool operator!=(const vec3<T>& other) const
+        {
+            return x != other.x || y != other.y || z != other.z;
+        }
+
+        bool operator==(const T& other) const
+        {
+            return x == other && y == other && z == other;
+        }
+
+        bool operator!=(const T& other) const
+        {
+            return x != other || y != other || z != other;
+        }
+
+        float magnitude() const
+        {
+            return sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
+        }
+
+        vec3<T> normalized() const
+        {
+            float mag = magnitude();
+            return { x / mag, y / mag, z / mag };
+        }
+
+        float dot(const vec3<T>& other) const
+        {
+            return x * other.x + y * other.y + z * other.z;
+        }
+
+        vec3<T> cross(const vec3<T>& other) const
+        {
+            return { y * other.z - z * other.y, z * other.x - x * other.z, x * other.y - y * other.x };
+        }
+
+        float distance(const vec3<T>& other) const
+        {
+            return sqrt(pow(other.x - x, 2) + pow(other.y - y, 2) + pow(other.z - z, 2));
+        }
+
+        vec3<T> lerp(const vec3<T>& other, float t) const
+        {
+            return { x + (other.x - x) * t, y + (other.y - y) * t, z + (other.z - z) * t };
+        }
+
+        vec3<T> reflect(const vec3<T>& normal) const
+        {
+            return *this - normal * 2 * dot(normal);
+        }
+
+        vec3<T> project(const vec3<T>& other) const
+        {
+            return other * (dot(other) / pow(other.magnitude(), 2));
+        }
     };
 
     template <typename T>
@@ -303,6 +468,63 @@ namespace graph {
         vec4uc color = { 0, 0, 0, 0 };
         float fontSize = 0;
     } graphText_t;
+
+    /**
+     * @brief RotationMatrix3D is a class that handles the rotation of an object in 3D
+     * space. the matrixes actually have 4 rows and 4 columns, but the last row and
+     * column are always 0, 0, 0, 1 and 0, 0, 0, 1 respectively.
+     *
+     */
+    class RotationMatrix3D {
+    public:
+        RotationMatrix3D() = default;
+        ~RotationMatrix3D() = default;
+        RotationMatrix3D(graph::vec3f rotation)
+        {
+            float x = rotation.x;
+            float y = rotation.y;
+            float z = rotation.z;
+            _coefficients[0][0] = cos(y) * cos(z);
+            _coefficients[0][1] = cos(z) * sin(x) * sin(y) - cos(x) * sin(z);
+            _coefficients[0][2] = cos(x) * cos(z) * sin(y) + sin(x) * sin(z);
+            _coefficients[1][0] = cos(y) * sin(z);
+            _coefficients[1][1] = cos(x) * cos(z) + sin(x) * sin(y) * sin(z);
+            _coefficients[1][2] = -cos(z) * sin(x) + cos(x) * sin(y) * sin(z);
+            _coefficients[2][0] = -sin(y);
+            _coefficients[2][1] = cos(y) * sin(x);
+            _coefficients[2][2] = cos(x) * cos(y);
+        }
+
+        graph::vec3f operator*(graph::vec3f vec) const
+        {
+            return {
+                _coefficients[0][0] * vec.x + _coefficients[0][1] * vec.y + _coefficients[0][2] * vec.z,
+                _coefficients[1][0] * vec.x + _coefficients[1][1] * vec.y + _coefficients[1][2] * vec.z,
+                _coefficients[2][0] * vec.x + _coefficients[2][1] * vec.y + _coefficients[2][2] * vec.z
+            };
+        }
+        RotationMatrix3D operator*(const RotationMatrix3D& other) const
+        {
+            RotationMatrix3D result;
+            for (int i = 0; i < 4; i++) {
+                for (int j = 0; j < 3; ++j) {
+                    result._coefficients[i][j] = 0;
+                    for (int k = 0; k < 4; ++k) {
+                        result._coefficients[i][j] += _coefficients[i][k] * other._coefficients[k][j];
+                    }
+                }
+            }
+            return result;
+        }
+
+    private:
+        float _coefficients[4][4] = {
+            { 0, 0, 0, 0 },
+            { 0, 0, 0, 0 },
+            { 0, 0, 0, 0 },
+            { 0, 0, 0, 1 }
+        };
+    };
 
     /**
      * @brief This class is the base class for all graphical modules.
