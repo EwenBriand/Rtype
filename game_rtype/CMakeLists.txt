@@ -42,6 +42,7 @@ set(META_SRC
     ../.metadata/ShipMeta.cpp
     ../.metadata/EnemyMeta.cpp
     ../.metadata/Enemy2Meta.cpp
+
 )
 
 add_library(game_target SHARED
@@ -80,3 +81,12 @@ target_link_libraries(Boss game_target BossBody BossLaser)
 add_library(Chat SHARED scripts/Chat.cpp ../.metadata/ChatMeta.cpp)
 set_target_properties(Chat PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/metabuild)
 target_link_libraries(game_target Chat)
+
+add_library(Block SHARED scripts/Block.cpp ../.metadata/BlockMeta.cpp)
+set_target_properties(Block PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/metabuild)
+target_link_libraries(Block game_target)
+
+add_library(BlockSpawner SHARED scripts/BlockSpawner.cpp ../.metadata/BlockSpawnerMeta.cpp)
+set_target_properties(BlockSpawner PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/metabuild)
+target_link_libraries(BlockSpawner game_target)
+target_link_libraries(BlockSpawner Block)

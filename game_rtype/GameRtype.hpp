@@ -158,8 +158,11 @@ namespace eng {
         /*  */
         static constexpr int I_LEVEL2 = 8000;
 
-        RType()
-            = default;
+
+        static constexpr int I_BLOCK_SPAWN = 6969;
+
+        RType() = default;
+
         ~RType() = default;
 
         void Init(Engine*) override;

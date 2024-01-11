@@ -53,7 +53,7 @@ void Chat::checkSizeOldText()
         }
         // while (_text->GetText()[i] != '\n')
         //     i++;
-        _text->UpdateText(_text->GetText().substr(i + 1));
+        // _text->UpdateText(_text->GetText().substr(i + 1));
     }
 
 }
@@ -86,15 +86,16 @@ void Chat::Start()
                 std::cout << "chat InputField::text:" << _inputField->GetText() << std::endl;
                 // _text->UpdateText("Chat: \n" + _textBuffer + "\n");
                 if (_textBuffer != "") {
-                    _text->UpdateText(_textBuffer + "\n");
-                    std::cout << "Chat::MESSAGE SENT:" << _text->GetText() << std::endl;
+                    // _text->UpdateText(_textBuffer + "\n");
+                    std::cout << "Chat::MESSAGE SENT:" << _textBuffer << std::endl;
                     auto &client = eng::Engine::GetEngine()->GetClient();
-                    client.Send(serv::Instruction(serv::I_MESSAGE, 0, serv::bytes(_text->GetText())));
+                    client.Send(serv::Instruction(serv::I_MESSAGE, 0, serv::bytes(_textBuffer)));
+                    _text->UpdateText("");
                 }
                 _inputField->SetText("");
                 _textField->SetText("");
                 _textBuffer = "";
-                checkSizeOldText();
+                // checkSizeOldText();
                 // get client from engine and send message
 
             }
@@ -136,6 +137,27 @@ void Chat::Update(int e)
 
 void Chat::AddMessage(std::string message)
 {
+
+    serv::bytes bytes = message;
+    std::string str = bytes.toString();
+    std::cout << "Chat::AddMessage: str is : [" << str << "]" << std::endl;
+    if (str != "" && str != "\n")
+        _text->UpdateText(str);
+    std::cout << "Chat::RECIEVED: " << _text->GetText() << std::endl;
+    // remove all the \n in the string
+    int i = 0;
+    // while (i < _text->GetText().size()) {
+    //     if (_text->GetText()[i] == '\n')
+    //         _text->UpdateText(_text->GetText().substr(0, i) + _text->GetText().substr(i + 1));
+    //     i++;
+    // }
+    // _inputField->SetText("");
+    // _textField->SetText("");
+    // _textBuffer = "";
+    checkSizeOldText();
+}
+
+
     // std::cout << "Chat::AddMessage: message is : [" << message << "]" << std::endl;
     // _textBuffer += message;
     // std::cout << "Chat::_textBuffer:" << _textBuffer << std::endl;
@@ -145,14 +167,3 @@ void Chat::AddMessage(std::string message)
     // convert message to string
     // bytes::ToBytes toBytes;
     // std::string str = toBytes.toString(message);
-    serv::bytes bytes = message;
-    std::string str = bytes.toString();
-    std::cout << "Chat::AddMessage: str is : [" << str << "]" << std::endl;
-    if (str != "" && str != "\n")
-        _text->UpdateText(str);
-    std::cout << "Chat::RECIEVED: " << _text->GetText() << std::endl;
-    // _inputField->SetText("");
-    // _textField->SetText("");
-    // _textBuffer = "";
-    checkSizeOldText();
-}
