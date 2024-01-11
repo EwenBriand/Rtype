@@ -111,17 +111,30 @@ namespace rtype {
         void handlePlayerSpawn(serv::Instruction& instruction);
         void handlePlayerMoves(serv::Instruction& instruction);
         void handlePlayerShoots(serv::Instruction& instruction);
+        void handlePlayerShootsTcemort(serv::Instruction& instruction);
         void handlePlayerDies(serv::Instruction& instruction);
 
         void handleEnemySpawn(serv::Instruction& instruction);
         void handleEnemySpawn2(serv::Instruction& instruction);
         void handleEnemyMoves(serv::Instruction& instruction);
+        void handleEnemyVelocity(serv::Instruction& instruction);
         void handleEnemyShoots(serv::Instruction& instruction);
         void handleEnemyDies(serv::Instruction& instruction);
+
+        void handleBonusSpawn(serv::Instruction& instruction);
+        void handleForceSpawn(serv::Instruction& instruction);
+        void handleForceShoots(serv::Instruction& instruction);
+        void handleForceShootsTcemort(serv::Instruction& instruction);
+        void handleForceMoves(serv::Instruction& instruction);
 
         void handleResetSignal(serv::Instruction& instruction);
 
         void handleDisconnect(serv::Instruction& instruction);
+        void handleLevel2(serv::Instruction& instruction);
+
+        void handleBossMoves(serv::Instruction& instruction);
+        void handleBossSpawns(serv::Instruction& instruction);
+        void handleBossShoots(serv::Instruction& instruction);
 
         /**
          * @brief Sens the I_PLAYER_MOVES instruction to the server
@@ -175,16 +188,30 @@ namespace rtype {
                 { eng::RType::I_PLAYER_MOVES, &RTypeDistantServer::handlePlayerMoves },
                 { eng::RType::I_PLAYER_DIES, &RTypeDistantServer::handlePlayerDies },
                 { eng::RType::I_PLAYER_SHOOTS, &RTypeDistantServer::handlePlayerShoots },
+                { eng::RType::I_PLAYER_SHOOTS_TCEMORT, &RTypeDistantServer::handlePlayerShootsTcemort },
 
                 { eng::RType::I_ENEMY_SPAWN, &RTypeDistantServer::handleEnemySpawn },
                 { eng::RType::I_ENEMY_SPAWN2, &RTypeDistantServer::handleEnemySpawn2 },
                 { eng::RType::I_ENEMY_MOVES, &RTypeDistantServer::handleEnemyMoves },
+                { eng::RType::I_ENEMY_VELOCITY, &RTypeDistantServer::handleEnemyVelocity },
                 { eng::RType::I_ENEMY_DIES, &RTypeDistantServer::handleEnemyDies },
                 { eng::RType::I_ENEMY_SHOOTS, &RTypeDistantServer::handleEnemyShoots },
+
+                { eng::RType::I_BONUS_SPAWN, &RTypeDistantServer::handleBonusSpawn },
+                { eng::RType::I_FORCE_SPAWN, &RTypeDistantServer::handleForceSpawn },
+                { eng::RType::I_FORCE_SHOOTS_TCEMORT, &RTypeDistantServer::handleForceShootsTcemort },
+                { eng::RType::I_FORCE_MOVES, &RTypeDistantServer::handleForceMoves },
+                { eng::RType::I_FORCE_SHOOTS, &RTypeDistantServer::handleForceShoots },
 
                 { eng::RType::I_RESET_CLIENT, &RTypeDistantServer::handleResetSignal },
 
                 { serv::I_DISCONNECT, &RTypeDistantServer::handleDisconnect },
+                { eng::RType::I_LEVEL2, &RTypeDistantServer::handleLevel2 },
+
+                { eng::RType::I_BOSS_SPAWNS, &RTypeDistantServer::handleBossSpawns },
+                { eng::RType::I_BOSS_MOVES, &RTypeDistantServer::handleBossMoves },
+                { eng::RType::I_BOSS_SHOOTS, &RTypeDistantServer::handleBossShoots },
+
             };
 
         int _killCount = 0;

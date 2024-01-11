@@ -1,0 +1,6 @@
+name: boss-laser
+sprite path: sprites/boss-body.png
+fps: 22
+scale: 0.2
+loop: true
+auto: 4224 192 22

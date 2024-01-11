@@ -41,6 +41,7 @@ public:
     void Update(int entityID) override;
 
     void SetID(int id);
+    void SetBonusOnDeath(int bonus);
 
 private:
     /**
@@ -48,6 +49,18 @@ private:
      *
      */
     void applyDirectives();
+
+    /**
+     * @brief broadcast the new position to all clients
+     *
+     */
+    void broadcastPosition();
+
+    /**
+     * @brief broadcast the new velocity to all clients
+     *
+     */
+    void broadcastVelocity();
 
     /**
      * @brief Checks if the Enemy2 should die, and if so, kills it and
@@ -77,6 +90,11 @@ private:
     int _entity;
     eng::Observer _observer;
     int _id = -1;
+    bool _first = true;
+
+    int _bonusOnDeath = -1;
+
+    eng::Timer _broadcastTimer;
 
     std::map<std::string, void (Enemy2::*)()> _actions = {
         { COMMAND_LEFT, &Enemy2::moveLeft },
@@ -89,4 +107,6 @@ private:
     void moveLeft();
     void moveUp();
     void moveDown();
+
+    std::function<void(int bonus)> _directivesBonus;
 };

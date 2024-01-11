@@ -26,6 +26,6 @@ namespace ecs {
         void Possess(int entity, std::shared_ptr<IController> controller) override;
 
     protected:
-        std::shared_ptr<IController> _controller;
+        std::shared_ptr<IController> _controller = nullptr;
     };
 }

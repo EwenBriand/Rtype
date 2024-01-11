@@ -23,6 +23,8 @@ namespace rtype {
         : _engine(engine)
         , _routine(run())
     {
+        _engine.SetGlobal("PlayerID", -1);
+        _engine.SetGlobal("ForceID", std::vector<int> {});
     }
 
     GameRoutineServer::~GameRoutineServer()
@@ -46,7 +48,22 @@ namespace rtype {
         return nullptr;
     }
 
-    serv::Coroutine GameRoutineServer::run()
+    static void debugSpawnBoss()
+    {
+        // EWEN BOSS
+        // try {
+        //     std::cout << "\rspawning boss" << std::endl;
+        //     SYS.GetResourceManager().LoadPrefab("boss-head");
+        //     eng::Engine::GetEngine()->SetGlobal<graph::vec2i>("bossTargetPosition", graph::vec2i { 0, 0 });
+        //     eng::Engine::GetEngine()->SetGlobal<graph::vec2i>("bossShoot", graph::vec2i { -1, -1 });
+        //     eng::Engine::GetEngine()->GetServer().Broadcast(serv::Instruction(eng::RType::I_BOSS_SPAWNS, 0, serv::bytes()));
+        // } catch (const std::exception& e) {
+        //     std::cerr << e.what() << std::endl;
+        // }
+    }
+
+    serv::Coroutine
+    GameRoutineServer::run()
     {
         co_await std::suspend_always {};
         eng::Engine::GetEngine()->GetSceneManager().UnloadScene("lobby");
@@ -61,6 +78,8 @@ namespace rtype {
         for (auto& player : DistantPlayer::Instances)
             player->SendClientStartGame();
         server.Log("Game started");
+
+        debugSpawnBoss();
 
         while (true) {
             if (DistantPlayer::Instances.size() < RTYPE_NB_PLAYERS)
@@ -171,7 +190,7 @@ namespace rtype {
             if (rtype->GetSessionData().killCount >= eng::RType::KILL_COUNT_TO_END) {
                 // TODO ewen: uncomment after you merged with branch game 1
                 eng::Engine::GetEngine()->GetClient().Send(serv::Instruction(
-                    serv::I_DISCONNECT, 0, serv::bytes()));
+                    eng::RType::I_LEVEL2, 0, serv::bytes()));
             }
         } catch (std::exception& e) {
             return;

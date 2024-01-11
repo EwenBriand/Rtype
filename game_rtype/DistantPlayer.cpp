@@ -190,6 +190,43 @@ void DistantPlayer::handlePlayerMoves(serv::Instruction& instruction)
     }
 }
 
+void DistantPlayer::handleForceMoves(serv::Instruction& instruction)
+{
+    if (instruction.data.size() < 3 * sizeof(int)) {
+        std::cout << "\rinstruction size: " << instruction.data.size() << std::endl;
+        throw serv::MalformedInstructionException("Player moves instruction malformed");
+    }
+    int id = 0;
+    int x = 0;
+    int y = 0;
+    instruction.data.Deserialize(id, x, y);
+
+    std::string name = "ForceID " + std::to_string(id);
+    std::cout << "\rforce moves: " << name << " " << x << " " << y << std::endl;
+    if (eng::Engine::GetEngine()->IsServer()) {
+        std::cout << "\ris server" << std::endl;
+    } else {
+        std::cout << "\ris client" << std::endl;
+    }
+    int entity = eng::Engine::GetEngine()->GetGlobal<int>(name);
+    try {
+        auto& transform = SYS.GetComponent<CoreTransform>(entity);
+        // todo anticheat goes here
+        transform.x = x;
+        transform.y = y;
+    } catch (const std::exception& e) {
+        return; // player died and will be removed
+    } catch (...) {
+        return;
+    }
+    for (auto& player : Instances) {
+        if (player->GetID() == _playerId) {
+            continue;
+        }
+        player->Send(serv::Instruction(eng::RType::I_FORCE_MOVES, 0, instruction.data));
+    }
+}
+
 void DistantPlayer::handlePlayerShoots(serv::Instruction& instruction)
 {
     eng::Engine::GetEngine()->GetServer().Log("Player shoots handler for player " + std::to_string(_playerId) + " called");
@@ -217,11 +254,92 @@ void DistantPlayer::handlePlayerShoots(serv::Instruction& instruction)
     }
 }
 
+void DistantPlayer::handleForceShoots(serv::Instruction& instruction)
+{
+    eng::Engine::GetEngine()->GetServer().Log("Player shoots handler for player " + std::to_string(_playerId) + " called");
+    if (instruction.data.size() != 3 * sizeof(int)) {
+        throw serv::MalformedInstructionException("\rPlayer shoots instruction malformed: got " + std::to_string(instruction.data.size()) + " bytes, expected " + std::to_string(3 * sizeof(int)) + " bytes");
+    }
+    int id = 0;
+    int x = 0;
+    int y = 0;
+    instruction.data.Deserialize(id, x, y);
+    try {
+        int laser = SYS.GetResourceManager().LoadPrefab("Rocket");
+        auto& transform = SYS.GetComponent<CoreTransform>(laser);
+        transform.x = x;
+        transform.y = y;
+        for (auto& player : Instances) {
+            if (player->GetID() == _playerId) {
+                continue;
+            }
+            std::cout << "\rsending shoot instruction to player " << player->GetID() << std::endl;
+            player->Send(serv::Instruction(eng::RType::I_FORCE_SHOOTS, 0, serv::bytes(std::vector<int> { id, x, y })).ToBytes() + serv::SEPARATOR);
+        }
+    } catch (const std::exception& e) {
+        CONSOLE::err << "\rFailed to send shoot instruction to clients." << std::endl;
+    }
+}
+
+void DistantPlayer::handlePlayerShootsTcemort(serv::Instruction& instruction)
+{
+    eng::Engine::GetEngine()->GetServer().Log("Player shoots handler for player " + std::to_string(_playerId) + " called");
+    if (instruction.data.size() != 3 * sizeof(int)) {
+        throw serv::MalformedInstructionException("\rPlayer shoots instruction malformed: got " + std::to_string(instruction.data.size()) + " bytes, expected " + std::to_string(3 * sizeof(int)) + " bytes");
+    }
+    int id = 0;
+    int x = 0;
+    int y = 0;
+    instruction.data.Deserialize(id, x, y);
+    try {
+        int laser = SYS.GetResourceManager().LoadPrefab("LaserTcemort");
+        auto& transform = SYS.GetComponent<CoreTransform>(laser);
+        transform.x = x;
+        transform.y = y;
+        eng::Engine::GetEngine()->GetServer().Broadcast(serv::Instruction(eng::RType::I_PLAYER_SHOOTS_TCEMORT, 0, serv::bytes(std::vector<int> { id, x, y })).ToBytes() + serv::SEPARATOR);
+    } catch (const std::exception& e) {
+        CONSOLE::err << "\rFailed to send shoot instruction to clients." << std::endl;
+    }
+}
+
+void DistantPlayer::handleForceShootsTcemort(serv::Instruction& instruction)
+{
+    eng::Engine::GetEngine()->GetServer().Log("Player shoots handler for player " + std::to_string(_playerId) + " called");
+    if (instruction.data.size() != 3 * sizeof(int)) {
+        throw serv::MalformedInstructionException("\rPlayer shoots instruction malformed: got " + std::to_string(instruction.data.size()) + " bytes, expected " + std::to_string(3 * sizeof(int)) + " bytes");
+    }
+    int id = 0;
+    int x = 0;
+    int y = 0;
+    instruction.data.Deserialize(id, x, y);
+    try {
+        int laser = SYS.GetResourceManager().LoadPrefab("LaserTcemort");
+        auto& transform = SYS.GetComponent<CoreTransform>(laser);
+        transform.x = x;
+        transform.y = y;
+        eng::Engine::GetEngine()->GetServer().Broadcast(serv::Instruction(eng::RType::I_FORCE_SHOOTS_TCEMORT, 0, serv::bytes(std::vector<int> { id, x, y })).ToBytes() + serv::SEPARATOR);
+    } catch (const std::exception& e) {
+        CONSOLE::err << "\rFailed to send shoot instruction to clients." << std::endl;
+    }
+}
+
 void DistantPlayer::handleDisconnect(serv::Instruction&)
 {
     OnDisconnect();
 }
 
+void DistantPlayer::handleLevel2(serv::Instruction&)
+{
+    std::cout << "\rClient level2" << std::endl;
+
+    auto eng = eng::Engine::GetEngine();
+
+    eng->GetSceneManager().SwitchScene("level2");
+
+    _server.Broadcast(serv::Instruction(eng::RType::I_LEVEL2, 0, serv::bytes()));
+
+    eng::Engine::GetEngine()->GetServer().ResetClients();
+}
 
 void DistantPlayer::handleMessage(serv::Instruction& message)
 {
