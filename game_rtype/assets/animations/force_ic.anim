@@ -1,0 +1,9 @@
+name: force_ic
+sprite path: sprites/force_ic.png
+fps: 12
+scale: 2.0
+priority: 3
+paralax: false
+flipX: true
+loop: true
+auto: 240 30 12

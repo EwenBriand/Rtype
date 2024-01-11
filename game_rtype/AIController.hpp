@@ -45,12 +45,6 @@ namespace rtype {
         bool testShoot();
 
         /**
-         * @brief Broadcasts the entity's position to all clients
-         *
-         */
-        void broadcastPosition();
-
-        /**
          * @brief Broadcasts the fact that the enemy shot to all clients
          *
          */
@@ -72,6 +66,7 @@ namespace rtype {
         eng::Timer _DownTimer;
         float _shootInterval = 1.5f;
         float _directivesInterval = 0.0f;
+        int _status = -1;
         int _id;
         std::shared_ptr<eng::Observer> _observer;
         std::vector<std::string> _directives;

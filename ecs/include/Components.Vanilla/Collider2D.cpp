@@ -284,6 +284,9 @@ bool Collider2D::isAxisSeparating(const graph::vec2f& axis, const Collider2D& a,
 std::pair<float, float> Collider2D::projectPolygon(const graph::vec2f& axis, const Collider2D& collider) const noexcept
 {
     std::vector<float> vertices = collider.GetVerticesWithPosition();
+    if (vertices.size() < 2)
+        std::cerr << "Cannot project a polygon with less than 2 vertices" << std::endl;
+
     float min = axis.x * vertices[0] + axis.y * vertices[1];
     float max = min;
 

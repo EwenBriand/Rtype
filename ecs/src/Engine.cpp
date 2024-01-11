@@ -73,6 +73,7 @@ namespace eng {
         m_graphicalModule->ModPipeline();
         if (m_game)
             m_game->ModPipeline(this);
+        SYS.GetResourceManager().ReloadPlugins();
     }
 
     void Engine::sortPipeline()

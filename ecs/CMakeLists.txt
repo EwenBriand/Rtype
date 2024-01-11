@@ -127,6 +127,7 @@ target_link_libraries(lengine
     server_udp
     lua
     luaEngine
+    yaml-cpp::yaml-cpp
 )
 
 add_dependencies(lengine

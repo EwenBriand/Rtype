@@ -21,27 +21,11 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-set(CMAKE_THREAD_LIBS_INIT "-lpthread")
-set(CMAKE_HAVE_THREADS_LIBRARY 1)
-set(CMAKE_USE_WIN32_THREADS_INIT 0)
-set(CMAKE_USE_PTHREADS_INIT 1)
-set(THREADS_PREFER_PTHREAD_FLAG ON)
-
 find_program(CCACHE_PROGRAM ccache)
 if(CCACHE_PROGRAM)
     message(STATUS "Using ccache")
     set(CMAKE_CXX_COMPILER_LAUNCHER ccache)
     set(CMAKE_C_COMPILER_LAUNCHER ccache)
-    find_program(DISTCC_PROGRAM distcc)
-
-      # if(DISTCC_PROGRAM)
-      #     message(STATUS "Using distcc")
-      #     set(CMAKE_CXX_COMPILER_LAUNCHER "distcc ccache")
-      #     set(CMAKE_C_COMPILER_LAUNCHER "distcc ccache")
-      #     set(ENV{CCACHE_PREFIX} "distcc")
-      # else()
-      #     message(WARNING "distcc not found; build may be slower. Install distcc for faster builds.")
-      # endif()
 else()
     message(WARNING "ccache not found; build may be slower. Install ccache for faster builds.")
 endif()
@@ -107,6 +91,23 @@ endif()
 include_directories(${luabridge_SOURCE_DIR}/Source)
 
 
+FetchContent_Declare(
+  yaml-cpp
+  GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
+  GIT_TAG master
+)
+FetchContent_GetProperties(yaml-cpp)
+
+if(NOT yaml-cpp_POPULATED)
+  message(STATUS "Fetching yaml-cpp...")
+
+  FetchContent_Populate(yaml-cpp)
+  set(YAML_BUILD_SHARED_LIBS ON CACHE BOOL "Enable compilation of shared libraries")
+  add_subdirectory(${yaml-cpp_SOURCE_DIR} ${yaml-cpp_BINARY_DIR})
+endif()
+FetchContent_MakeAvailable(yaml-cpp)
+
+
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(BUILD_SHARED_LIBS ON)
 set(CMAKE_BUILD_TYPE Release)
@@ -166,5 +167,5 @@ add_custom_target(doc
 
 add_subdirectory(ecs)
 add_subdirectory(game_rtype)
-add_subdirectory(tests)
-add_subdirectory(game_pool)
+
+add_subdirectory(game_rtype/plugins/LagChecker)

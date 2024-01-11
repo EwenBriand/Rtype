@@ -43,7 +43,7 @@ void Laser::Start()
         collider.SetOnCollisionEnter([this](int entityID, int otherID) {
             try {
                 std::string tag = (_entity == entityID) ? SYS.GetComponent<Collider2D>(otherID).GetTag() : SYS.GetComponent<Collider2D>(entityID).GetTag();
-                if (tag == "player") {
+                if (tag == "player" || tag == "Force") {
                     SYS.GetComponent<Collider2D>(_entity).SetDestroyMe(true);
                     SYS.UnregisterEntity(_entity);
                 } else if (tag == "Block") {
@@ -60,9 +60,15 @@ void Laser::Start()
         collider.SetOnCollisionEnter([this](int entityID, int otherID) {
             try {
                 std::string tag = (_entity == entityID) ? SYS.GetComponent<Collider2D>(otherID).GetTag() : SYS.GetComponent<Collider2D>(entityID).GetTag();
-                if (tag == "enemy") {
+                if (tag == "Enemy" || tag == "Enemy2") {
                     SYS.GetComponent<Collider2D>(_entity).SetDestroyMe(true);
                     SYS.UnregisterEntity(_entity);
+                }
+                if (tag == "boss") {
+                    eng::Engine::GetEngine()->SetGlobal("bossHp", eng::Engine::GetEngine()->GetGlobal<int>("bossHp") - _damage);
+                    SYS.GetComponent<Collider2D>(_entity).SetDestroyMe(true);
+                    SYS.UnregisterEntity(_entity);
+                    std::cout << "hit boss" << std::endl;
                 }
             } catch (std::exception& e) {
                 std::cerr << "Laser::OnCollisionEnter: " << e.what() << std::endl;

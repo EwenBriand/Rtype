@@ -14,6 +14,14 @@ set(SRC
     RTypeDistantServer.cpp
     scripts/Ship.cpp
     scripts/Laser.cpp
+    scripts/LaserTcemort.cpp
+    scripts/Heal.cpp
+    scripts/X2.cpp
+    scripts/X3.cpp
+    scripts/Tcemort.cpp
+    scripts/Speed.cpp
+    scripts/Nuke.cpp
+    scripts/Force_ic.cpp
     scripts/Enemy.cpp
     scripts/Enemy2.cpp
     GameRoutine.cpp
@@ -23,6 +31,14 @@ set(SRC
 
 set(META_SRC
     ../.metadata/LaserMeta.cpp
+    ../.metadata/LaserTcemortMeta.cpp
+    ../.metadata/HealMeta.cpp
+    ../.metadata/X2Meta.cpp
+    ../.metadata/X3Meta.cpp
+    ../.metadata/TcemortMeta.cpp
+    ../.metadata/SpeedMeta.cpp
+    ../.metadata/NukeMeta.cpp
+    ../.metadata/Force_icMeta.cpp
     ../.metadata/ShipMeta.cpp
     ../.metadata/EnemyMeta.cpp
     ../.metadata/Enemy2Meta.cpp
@@ -50,6 +66,17 @@ add_library(Enemy2 SHARED scripts/Enemy2.cpp ../.metadata/Enemy2Meta.cpp)
 set_target_properties(Enemy2 PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/metabuild)
 target_link_libraries(Enemy2 game_target)
 
+add_library(BossBody SHARED scripts/BossBody.cpp ../.metadata/BossBodyMeta.cpp)
+set_target_properties(BossBody PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/metabuild)
+target_link_libraries(BossBody game_target)
+
+add_library(BossLaser SHARED scripts/BossLaser.cpp ../.metadata/BossLaserMeta.cpp)
+set_target_properties(BossLaser PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/metabuild)
+target_link_libraries(BossLaser game_target)
+
+add_library(Boss SHARED scripts/Boss.cpp ../.metadata/BossMeta.cpp BossController.cpp)
+set_target_properties(Boss PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/metabuild)
+target_link_libraries(Boss game_target BossBody BossLaser)
 
 add_library(Chat SHARED scripts/Chat.cpp ../.metadata/ChatMeta.cpp)
 set_target_properties(Chat PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/metabuild)
