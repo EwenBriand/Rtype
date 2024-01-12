@@ -2,6 +2,7 @@
 
 import sys
 import os
+import shutil
 
 def main():
     relative_path = [
@@ -18,12 +19,36 @@ def main():
         "../.metadata/UIButtonMeta.cpp",
         "../.metadata/UIMenuMeta.cpp",
         "../.metadata/TagMeta.cpp",
-        "../.metadata/SplashIconMeta.cpp"
+        "../.metadata/SplashIconMeta.cpp",
+
+        "../.metadata/AudioManagerMeta.cpp",
+        "../.metadata/ChatMeta.cpp",
+        "../.metadata/DeletemeMeta.cpp",
+        "../.metadata/Enemy2Meta.cpp",
+        "../.metadata/EnemyMeta.cpp",
+        "../.metadata/EnemyShipControllerMeta.cpp",
+        "../.metadata/EnemySpawnerMeta.cpp",
+        "../.metadata/InputFieldMeta.cpp",
+        "../.metadata/LaserMeta.cpp",
+        "../.metadata/Level1ManagerMeta.cpp",
+        "../.metadata/LevelUIMeta.cpp",
+        "../.metadata/LocalPlayerControllerMeta.cpp",
+        "../.metadata/LuaScriptMeta.cpp",
+        "../.metadata/MenuScriptMeta.cpp",
+        "../.metadata/PoolMenuScriptMeta.cpp",
+        "../.metadata/RigidBody3DMeta.cpp",
+        "../.metadata/RLCamera3DMeta.cpp",
+        "../.metadata/RLCubeMeta.cpp",
+        "../.metadata/RLMeshMeta.cpp",
+        "../.metadata/RLSphereMeta.cpp",
+        "../.metadata/ShipMeta.cpp",
+        "../.metadata/SphereCollider3DMeta.cpp",
+        "../.metadata/TextMeta.cpp"
     ]
     if not os.path.exists("../build/.metadata"):
         os.makedirs("../build/.metadata")
     for path in relative_path:
-        os.rename(path, "../build/" + path[3:])
+        shutil.copy(path, "../build/" + path[3:])
 
 if __name__ == "__main__":
     main()
