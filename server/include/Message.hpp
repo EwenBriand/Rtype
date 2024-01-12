@@ -7,19 +7,33 @@
 
 #pragma once
 #include "CircularBuffer.hpp"
-#include <utility>
-#include <boost/asio.hpp>
+#include <cstdint>
+#include <memory>
 
 namespace serv {
+    struct EndpointWrapper;
 
     struct Message {
         bytes data;
-        boost::asio::ip::udp::endpoint endpoint;
+        std::shared_ptr<EndpointWrapper> endpointW;
+
+        Message(bytes data, std::shared_ptr<EndpointWrapper> endpointW)
+            : data(data), endpointW(endpointW) {}
+        Message(const Message& other)
+            : data(other.data), endpointW(other.endpointW) {}
 
         bytes& operator<<(bytes& data)
         {
             this->data = data;
             return data;
+        }
+        Message& operator=(const Message& other)
+        {
+            if (this != &other) {
+                data = other.data;
+                endpointW = other.endpointW;
+            }
+            return *this;
         }
     };
 
@@ -56,7 +70,7 @@ namespace serv {
 
         bytes ToBytes() const;
 
-        Message ToMessage(boost::asio::ip::udp::endpoint endpoint) const;
+        Message ToMessage(EndpointWrapper endpointW) const;
 
         static Instruction FromMessage(const Message& message);
     };

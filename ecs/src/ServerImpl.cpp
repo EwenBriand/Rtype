@@ -17,9 +17,9 @@
 
 #define DEBUG
 #ifdef _WIN32
-#define SOCKET_OPTIONS SO_EXCLUSIVEADDRUSE
-#include <winsock2.h>
-#include <ws2tcpip.h>
+// #define SOCKET_OPTIONS SO_EXCLUSIVEADDRUSE
+// #include <winsock2.h>
+// #include <ws2tcpip.h>
 #else
 #define SOCKET_OPTIONS SO_REUSEADDR | SO_REUSEPORT
 #include <netinet/in.h>

@@ -112,6 +112,11 @@ namespace serv {
             return bytes(*this) += other;
         }
 
+        inline bytes operator=(const bytes& other) const
+        {
+            return other;
+        }
+
         inline void resize(int size) { _data.resize(size); }
 
         inline std::vector<unsigned char>::iterator begin() { return _data.begin(); }

@@ -63,7 +63,7 @@ void DistantPlayer::HandleRequest(const serv::bytes& data)
     }
 }
 
-std::shared_ptr<serv::IClient> DistantPlayer::Clone(boost::asio::ip::udp::endpoint endpoint)
+std::shared_ptr<serv::IClient> DistantPlayer::Clone(std::shared_ptr<serv::EndpointWrapper> endpoint)
 {
     if (Instances.size() >= rtype::RTYPE_NB_PLAYERS) {
         throw serv::NetworkException(_server, serv::E_SERVER_FULL, "Server is full", endpoint);
@@ -130,6 +130,7 @@ int DistantPlayer::GetID() const
 
 void DistantPlayer::handleOK(serv::Instruction&)
 {
+    std::cout << "\rClient OK" << std::endl;
     _answerFlag = true;
 }
 
@@ -158,6 +159,7 @@ void DistantPlayer::SetEntity(int entityID)
 
 void DistantPlayer::handlePlayerMoves(serv::Instruction& instruction)
 {
+    std::cout << "\rPlayer moves handler for player " << _playerId << " called" << std::endl;
     if (instruction.data.size() < 3 * sizeof(int)) {
         std::cout << "\rinstruction size: " << instruction.data.size() << std::endl;
         throw serv::MalformedInstructionException("Player moves instruction malformed");
@@ -229,6 +231,7 @@ void DistantPlayer::handleForceMoves(serv::Instruction& instruction)
 
 void DistantPlayer::handlePlayerShoots(serv::Instruction& instruction)
 {
+    std::cout << "\rPlayer shoots handler for player " << _playerId << " called" << std::endl;
     eng::Engine::GetEngine()->GetServer().Log("Player shoots handler for player " + std::to_string(_playerId) + " called");
     if (instruction.data.size() != 3 * sizeof(int)) {
         throw serv::MalformedInstructionException("\rPlayer shoots instruction malformed: got " + std::to_string(instruction.data.size()) + " bytes, expected " + std::to_string(3 * sizeof(int)) + " bytes");

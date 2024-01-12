@@ -189,12 +189,14 @@ namespace eng {
         }
 
         SYS.LoadVanilla();
+        std::cout << "Vanilla loaded" << std::endl;
         if (m_game != nullptr) {
             m_game->Init(this);
+            std::cout << "Game initialized" << std::endl;
         }
 
         SYS.GetResourceManager().CheckHotReload();
-
+        std::cout << "Starting game" << std::endl;
         for (auto e : SYS.GetEntities()) {
             SYS.ForEachComponent(e, [&](ecs::ECSImpl::AnyCpt& cpt) {
                 std::visit([&](auto&& arg) {
@@ -203,14 +205,20 @@ namespace eng {
                     cpt);
             });
         }
+        std::cout << "Game started" << std::endl;
 
         m_graphicalModule->Start();
+        std::cout << "Graphical module started" << std::endl;
         if (m_game && m_game->IsOnLine(this)) {
+            std::cout << "Waiting for connection" << std::endl;
             m_game->WaitConnect(this);
         }
+        std::cout << "Starting main loop" << std::endl;
 
         setupPipeline();
+        std::cout << "Pipeline setup" << std::endl;
         sortPipeline();
+        std::cout << "Pipeline sorted" << std::endl;
 
         SYS.CallStart();
         if (m_game)
@@ -268,6 +276,11 @@ namespace eng {
                 value = std::filesystem::canonical(configDir + value.substr(2)).string();
             }
         }
+        #ifdef _WIN32
+        for (auto& [key, value] : m_config) {
+            std::replace(value.begin(), value.end(), '/', '\\');
+        }
+        #endif
     }
 
     void Engine::discoverConfig(const std::string& configDir)
@@ -385,15 +398,21 @@ namespace eng {
 
     void Engine::loadNetworkModules()
     {
+        std::cout << "Loading network modules" << std::endl;
         if (IsOptionSet(eng::Engine::Options::SERVER_MODE) && IsOptionSet(eng::Engine::Options::SERVER_PORT)) {
+            std::cout << "Starting in server mode" << std::endl;
             std::string port = GetOptionValue(eng::Engine::Options::SERVER_PORT);
+            std::cout << "Port: " << port << std::endl;
             if (port.find_first_not_of("0123456789") != std::string::npos) {
                 throw EngineException("Invalid port number", __FILE__, __FUNCTION__, __LINE__);
             }
+            std::cout << "Starting server" << std::endl;
             m_server = std::make_shared<serv::ServerUDP>(std::stoi(port));
             CONSOLE::warn << "Server listening on port " << port << std::endl;
         } else if (IsOptionSet(eng::Engine::Options::SERVER_IP)) {
+            std::cout << "Starting in client mode" << std::endl;
             m_client = std::make_shared<serv::ClientUDP>();
+            std::cout << "Connecting to server" << std::endl;
         } else {
             CONSOLE::warn << "Starting in single player mode" << std::endl;
         }

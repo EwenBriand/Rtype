@@ -267,17 +267,23 @@ namespace ecs {
         template <typename T>
         T& SafeGet(Entity e)
         {
+            std::cout << ">>>>>>>>> SafeGet" << std::endl;
             T* result = nullptr;
             if (e == GetSystemHolder()) {
                 throw std::runtime_error("Can't add " + std::string(typeid(T).name()) + " to the system holder");
             }
             try {
+                std::cout << "Trying to get " << typeid(T).name() << " from entity " << e << std::endl;
                 result = &GetComponent<T>(e);
+                std::cout << "Getting " << typeid(T).name() << " from entity " << e << std::endl;
             } catch (std::exception& except) {
+                std::cout << "Failed to get " << typeid(T).name() << " from entity " << e << std::endl;
                 result = &AddComponent<T>(e);
+                std::cout << "Adding " << typeid(T).name() << " to entity " << e << std::endl;
             }
             if (result == nullptr)
                 throw std::runtime_error("Can't add " + std::string(typeid(T).name()) + " to the system holder");
+            std::cout << "<<<<<<<< SafeGet" << std::endl;
             return *result;
         }
 
@@ -306,6 +312,7 @@ namespace ecs {
         template <typename T>
         T& GetComponent(Entity e, const std::string& cptTypeName)
         {
+            std::cout << ">>>>>>>>> GetComponent " << cptTypeName << std::endl;
             std::type_index type = std::type_index(typeid(T));
             size_t idx = 0;
 
@@ -314,19 +321,24 @@ namespace ecs {
             } catch (std::exception& e) {
                 idx = _cptTypesIndexes.at(std::type_index(typeid(UserComponentWrapper)));
             }
+            std::cout << "idx: " << idx << std::endl;
 
             bool found = false;
             for (auto& cpt : _components[idx][e]) {
+                std::cout << "cpt: " << cptTypeName << std::endl;
                 std::visit([&](auto&& arg) {
                     if (arg.GetClassName() == cptTypeName) {
                         found = true;
                     }
                 },
                     cpt);
+                std::cout << "found: " << found << std::endl;
                 if (found) {
                     T* tmp = dynamic_cast<T*>(std::get<UserComponentWrapper>(cpt).GetInternalComponent().get());
+                    std::cout << "tmp: " << tmp << std::endl;
                     if (tmp == nullptr)
                         throw std::runtime_error("Component found uninitialized : " + cptTypeName);
+                    std::cout << "<<<<<<<< GetComponent " << cptTypeName << std::endl;
                     return *tmp;
                 }
             }
@@ -363,12 +375,19 @@ namespace ecs {
         template <typename T>
         T& GetComponent(Entity e)
         {
+            std::cout << ">>>>>>>>> GetComponent" << std::endl;
             size_t idx = _cptTypesIndexes[std::type_index(typeid(T))];
             if (_components[idx].size() < e)
                 throw std::runtime_error("entity not exist : " + std::to_string(e));
             if (_components[idx][e].empty())
                 throw std::runtime_error("Component not found : " + std::string(typeid(T).name()));
-
+            }
+            std::cout << "idx: " << idx << std::endl;
+            std::cout << "components.size(): " << _components.size() << std::endl;
+            std::cout << "components[idx].size(): " << _components[idx].size() << std::endl;
+            std::cout << "components[idx][e].size(): " << _components[idx][e].size() << std::endl;
+            std::cout << "components[idx][e][0].index(): " << _components[idx][e][0].index() << std::endl;
+            std::cout << "<<<<<<<< GetComponent" << std::endl;
             return std::get<T>(_components[idx][e].back());
         }
 
@@ -643,7 +662,11 @@ namespace ecs {
 
             if (path == "") {
                 std::filesystem::create_directory(m_savePath);
+                #ifdef _WIN32
+                thisPath = m_savePath + "\\" + std::to_string(e);
+                #else
                 thisPath = m_savePath + "/" + std::to_string(e);
+                #endif
             } else {
                 thisPath = path;
             }
@@ -656,7 +679,11 @@ namespace ecs {
                     continue;
                 for (size_t j = 0; j < cpt[e].size(); ++j) {
                     std::visit([&](auto&& arg) {
+                        #ifdef _WIN32
+                        arg.Save(thisPath + "\\" + std::to_string(i) + "_" + std::to_string(j));
+                        #else
                         arg.Save(thisPath + "/" + std::to_string(i) + "_" + std::to_string(j));
+                        #endif
                         if (typeid(arg) == typeid(UserComponentWrapper)) {
                             cptTypes.push_back("UserComponentWrapper");
                         } else {
@@ -666,7 +693,11 @@ namespace ecs {
                         cpt[e][j]);
                 }
             }
+            #ifdef _WIN32
+            std::ofstream file(thisPath + "\\cptTypes");
+            #else
             std::ofstream file(thisPath + "/cptTypes");
+            #endif
             for (auto& cptType : cptTypes)
                 file << cptType << std::endl;
             file.close();
@@ -679,19 +710,36 @@ namespace ecs {
          */
         Entity LoadEntity(const std::string& path)
         {
+            std::cout << ">>>>>>>>> LoadEntity" << std::endl;
+            #ifdef _WIN32
+            if (path.substr(path.find_last_of("\\"), path.size()) == "\\" + std::to_string(_systemHolder))
+                return -1;
+            #else
             if (path.substr(path.find_last_of("/"), path.size()) == std::to_string(_systemHolder))
                 return -1;
+            #endif
             Entity e = RegisterEntity();
+            std::cout << "e: " << e << std::endl;
+            #ifdef _WIN32
+            std::ifstream cptTypes(path + "\\cptTypes");
+            #else
             std::ifstream cptTypes(path + "/cptTypes");
+            #endif
             std::string type = "";
 
             std::vector<std::string> filesAlphabetical;
             for (auto& p : std::filesystem::directory_iterator(path)) {
                 filesAlphabetical.push_back(p.path().string());
             }
+            std::cout << "filesAlphabetical.size(): " << filesAlphabetical.size() << std::endl;
             std::sort(filesAlphabetical.begin(), filesAlphabetical.end(), [](const std::string& a, const std::string& b) {
+                #ifdef _WIN32
+                std::string aNumStr = a.substr(a.find_last_of("\\") + 1, a.find_first_of("_") - a.find_last_of("\\") - 1);
+                std::string bNumStr = b.substr(b.find_last_of("\\") + 1, b.find_first_of("_") - b.find_last_of("\\") - 1);
+                #else
                 std::string aNumStr = a.substr(a.find_last_of("/") + 1, a.find_first_of("_") - a.find_last_of("/") - 1);
                 std::string bNumStr = b.substr(b.find_last_of("/") + 1, b.find_first_of("_") - b.find_last_of("/") - 1);
+                #endif
                 if (a.find("cptTypes") != std::string::npos || a.find("_internal") != std::string::npos) {
                     return false;
                 } else if (b.find("cptTypes") != std::string::npos || b.find("_internal") != std::string::npos) {
@@ -699,29 +747,48 @@ namespace ecs {
                 }
                 return std::stoi(aNumStr) < std::stoi(bNumStr);
             });
+            std::cout << "filesAlphabetical.size(): " << filesAlphabetical.size() << std::endl;
 
             for (auto& p : filesAlphabetical) {
+                std::cout << "______________________" << std::endl;
+                std::cout << "p: " << p << std::endl;
+                #ifdef _WIN32
+                if (p.substr(p.find_last_of("\\"), p.size()) == "\\cptTypes")
+                    continue;
+                #else
                 if (p.substr(p.find_last_of("/"), p.size()) == "/cptTypes")
                     continue;
+                #endif
                 if (p.substr(p.find_last_of("_"), p.size()) == "_internal")
                     continue;
                 std::getline(cptTypes, type);
+                std::cout << "type: " << type << std::endl;
 
                 for (size_t i = 0; i < sizeof...(VanillaComponents); ++i) {
+                    std::cout << "i: " << i << std::endl;
                     std::visit([&](auto&& arg) {
+                        std::cout << "arg.GetClassName(): " << arg.GetClassName() << std::endl;
                         if (arg.GetClassName() == type) {
                             _components[i][e].emplace_back(arg);
+                            std::cout << "emplace_back" << std::endl;
                             std::visit([&](auto&& tmp) {
+                                std::cout << "tmp.Load" << std::endl;
                                 tmp.Load(p);
+                                std::cout << "tmp.OnAddComponent" << std::endl;
                                 tmp.OnAddComponent(e);
+                                std::cout << "tmp.OnAddComponent done" << std::endl;
                             },
                                 _components[i][e].back());
+                            std::cout << "emplace_back done" << std::endl;
                         }
                     },
                         cloneBase[i]);
+                    std::cout << "i done" << std::endl;
                 }
+                std::cout << "p done" << std::endl;
             }
             cptTypes.close();
+            std::cout << "<<<<<<<< LoadEntity" << std::endl;
             return e;
         }
 
@@ -734,9 +801,18 @@ namespace ecs {
          */
         void DumpEntity(const std::string& path, AllCpt& storage)
         {
+            #ifdef _WIN32
+            if (path.substr(path.find_last_of("\\"), path.size()) == "\\" + std::to_string(_systemHolder))
+                return;
+            #else
             if (path.substr(path.find_last_of("/"), path.size()) == std::to_string(_systemHolder))
                 return;
+            #endif
+            #ifdef _WIN32
+            std::ifstream cptTypes(path + "\\cptTypes");
+            #else
             std::ifstream cptTypes(path + "/cptTypes");
+            #endif
             std::string type = "";
 
             std::vector<std::string> filesAlphabetical;
@@ -744,8 +820,13 @@ namespace ecs {
                 filesAlphabetical.push_back(p.path().string());
             }
             std::sort(filesAlphabetical.begin(), filesAlphabetical.end(), [](const std::string& a, const std::string& b) {
+                #ifdef _WIN32
+                std::string aNumStr = a.substr(a.find_last_of("\\") + 1, a.find_first_of("_") - a.find_last_of("\\") - 1);
+                std::string bNumStr = b.substr(b.find_last_of("\\") + 1, b.find_first_of("_") - b.find_last_of("\\") - 1);
+                #else
                 std::string aNumStr = a.substr(a.find_last_of("/") + 1, a.find_first_of("_") - a.find_last_of("/") - 1);
                 std::string bNumStr = b.substr(b.find_last_of("/") + 1, b.find_first_of("_") - b.find_last_of("/") - 1);
+                #endif
                 if (a.find("cptTypes") != std::string::npos || a.find("_internal") != std::string::npos) {
                     return false;
                 } else if (b.find("cptTypes") != std::string::npos || b.find("_internal") != std::string::npos) {
@@ -758,8 +839,13 @@ namespace ecs {
             }
 
             for (auto& p : filesAlphabetical) {
+                #ifdef _WIN32
+                if (p.substr(p.find_last_of("\\"), p.size()) == "\\cptTypes")
+                    continue;
+                #else
                 if (p.substr(p.find_last_of("/"), p.size()) == "/cptTypes")
                     continue;
+                #endif
                 if (p.substr(p.find_last_of("_"), p.size()) == "_internal")
                     continue;
                 std::getline(cptTypes, type);
@@ -788,7 +874,7 @@ namespace ecs {
         void ReloadEntities()
         {
             std::vector<Entity> entities = GetEntities();
-
+            std::cout << "save path: " << m_savePath << std::endl;
             RequestEngineClearPipeline();
             for (auto& e : entities) {
                 if (e == _systemHolder)

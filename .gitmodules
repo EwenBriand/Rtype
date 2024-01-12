@@ -1,0 +1,84 @@
+[submodule "server/asio"]
+	path = server/asio
+	url = https://github.com/boostorg/asio.git
+	ignore = dirty
+[submodule "server/config"]
+	path = server/config
+	url = https://github.com/boostorg/config.git
+	ignore = dirty
+[submodule "server/assert"]
+	path = server/assert
+	url = https://github.com/boostorg/assert.git
+	ignore = dirty
+[submodule "server/throw_exception"]
+	path = server/throw_exception
+	url = https://github.com/boostorg/throw_exception.git
+	ignore = dirty
+[submodule "server/align"]
+	path = server/align
+	url = https://github.com/boostorg/align.git
+	ignore = dirty
+[submodule "server/system"]
+	path = server/system
+	url = https://github.com/boostorg/system.git
+	ignore = dirty
+[submodule "server/winapi"]
+	path = server/winapi
+	url = https://github.com/boostorg/winapi.git
+	ignore = dirty
+[submodule "server/predef"]
+	path = server/predef
+	url = https://github.com/boostorg/predef.git
+	ignore = dirty
+[submodule "server/date_time"]
+	path = server/date_time
+	url = https://github.com/boostorg/date_time.git
+	ignore = dirty
+[submodule "server/smart_ptr"]
+	path = server/smart_ptr
+	url = https://github.com/boostorg/smart_ptr.git
+	ignore = dirty
+[submodule "server/core"]
+	path = server/core
+	url = https://github.com/boostorg/core.git
+	ignore = dirty
+[submodule "server/utility"]
+	path = server/utility
+	url = https://github.com/boostorg/utility.git
+	ignore = dirty
+[submodule "server/static_assert"]
+	path = server/static_assert
+	url = https://github.com/boostorg/static_assert.git
+	ignore = dirty
+[submodule "server/type_traits"]
+	path = server/type_traits
+	url = https://github.com/boostorg/type_traits.git
+	ignore = dirty
+[submodule "server/numeric/conversion"]
+	path = server/numeric/conversion
+	url = https://github.com/boostorg/conversion.git
+	ignore = dirty
+[submodule "server/numeric_conversion"]
+	path = server/numeric_conversion
+	url = https://github.com/boostorg/numeric_conversion.git
+	ignore = dirty
+[submodule "server/conversion"]
+	path = server/conversion
+	url = https://github.com/boostorg/conversion.git
+	ignore = dirty
+[submodule "ecs/linenoise"]
+	path = ecs/linenoise
+	url = https://github.com/antirez/linenoise.git
+	ignore = dirty
+[submodule "ecs/raylib"]
+	path = ecs/raylib
+	url = git@github.com:raysan5/raylib.git
+	ignore = dirty
+[submodule "server/mpl"]
+	path = server/mpl
+	url = https://github.com/boostorg/mpl.git
+	ignore = dirty
+[submodule "server/preprocessor"]
+	path = server/preprocessor
+	url = https://github.com/boostorg/preprocessor.git
+	ignore = dirty

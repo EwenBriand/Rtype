@@ -7,11 +7,12 @@
 
 #include "ClientUDP.hpp"
 #include "ServerUdp.hpp"
+#include "AsioClone.hpp"
 #include <iostream>
 
 namespace serv {
     ClientUDP::ClientUDP()
-        : _socket(_ioService)
+        : _socket(std::make_shared<AsioClone>())
         , _inBuffer(BUFF_SIZE)
         , _mutex(std::make_shared<std::mutex>())
         , _running(false)
@@ -54,7 +55,9 @@ namespace serv {
             try {
                 bytes data = _sendQueue.Pop();
                 Instruction instruction(data);
-                _socket.send_to(boost::asio::buffer(data._data), boost::asio::ip::udp::endpoint(boost::asio::ip::address::from_string(_serverIp), _serverPort));
+                EndpointWrapper endpoint(boost::asio::ip::address::from_string(_serverIp), _serverPort);
+                // std::cout << _serverIp << ":" << _serverPort << std::endl;
+                _socket->send_to(data._data, endpoint.endpoint);
             } catch (std::exception& e) {
                 // empty queue
             }
@@ -66,14 +69,19 @@ namespace serv {
     {
         while (_running) {
             try {
-                boost::asio::ip::udp::endpoint senderEndpoint;
+                EndpointWrapper senderEndpoint;
                 bytes data;
                 data.resize(1024);
-                std::size_t bytesTransferred = _socket.receive_from(boost::asio::buffer(data._data), senderEndpoint);
+                std::size_t bytesTransferred = _socket->receive_from(data._data, senderEndpoint.endpoint);
+                std::cout << "Received from endpoint " << senderEndpoint.endpoint.address().to_string() << ":" << senderEndpoint.endpoint.port() << std::endl;
                 data.resize(bytesTransferred);
                 {
                     std::lock_guard<std::mutex> lock(*_mutex);
                     _inBuffer.Write(data);
+                    { // debug
+                        Instruction tmp(data);
+                        std::cout << "\rReceived: " << tmp.opcode << std::endl;
+                    }
                 }
 
             } catch (std::exception& e) {
@@ -88,7 +96,7 @@ namespace serv {
         if (_requestHandler == nullptr)
             throw std::runtime_error("Request handler not set");
         _running = true;
-        _socket.open(boost::asio::ip::udp::v4());
+        _socket->open(boost::asio::ip::udp::v4());
         _sendThread = std::thread(&ClientUDP::sendWorker, this);
         _receiveThread = std::thread(&ClientUDP::receiveWorker, this);
     }

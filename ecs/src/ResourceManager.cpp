@@ -23,6 +23,10 @@
 #include <unistd.h>
 #include <yaml-cpp/yaml.h>
 
+#ifdef _WIN32
+#include <processthreadsapi.h>
+#endif
+
 namespace ecs {
     ResourceManager::~ResourceManager()
     {
@@ -45,7 +49,12 @@ namespace ecs {
             _instances.emplace_back(create());
             return _instances.back();
         }
+        #ifdef _WIN32
+        std::string libName = m_userComponentsPath + "lib" + resourceID + ".dll";
+        #else
         std::string libName = m_userComponentsPath + "lib" + resourceID + ".so";
+        #endif
+        std::cout << "Loading " << libName << std::endl;
         void* handle = lib::LibUtils::getLibHandle(libName.c_str());
         _handles[resourceID] = handle;
         AUserComponent* (*create)() = reinterpret_cast<AUserComponent* (*)()>(lib::LibUtils::getSymHandle(handle, "create_" + resourceID));
@@ -66,17 +75,28 @@ namespace ecs {
             CONSOLE::warn << "Error: " << e.what() << std::endl;
             CONSOLE::warn << "Could not find tmpBuildDir in config, using default value" << std::endl;
         }
+        #ifdef _WIN32
+        std::string rawPath = path.substr(0, path.find_last_of('.'));
+        std::string copyPath = tmpCopyDirectory + "\\" + rawPath.substr(rawPath.find_last_of('\\') + 1);
+        // std::string command = "mkdir " + copyPath + " && copy " + rawPath + ".cpp " +  copyPath + " && copy " + rawPath + ".hpp " + copyPath;
+        std::string command = "rmdir /s /q " + copyPath + " && mkdir " + copyPath + " && copy " + rawPath + ".cpp " +  copyPath + " && copy " + rawPath + ".hpp " + copyPath;
+        std::cout << "Executing command : " << command << std::endl;
+        system(command.c_str());
+        #else
         std::string rawPath = path.substr(0, path.find_last_of('.'));
         std::string rawFolder = path.substr(0, path.find_last_of('/'));
         std::string copyPath = rootDir + "/" + tmpCopyDirectory + "/" + rawPath.substr(rawPath.find_last_of('/') + 1);
         std::string luaLibs = eng::Engine::GetEngine()->GetConfigValue("luaHeaders");
         std::string luabridge = eng::Engine::GetEngine()->GetConfigValue("luaBridge");
-        std::string command = "mkdir -p " + copyPath + " && cp " + rawPath + ".cpp " + rawPath + ".hpp " + copyPath; // todo windows
+        std::string command = "mkdir -p " + copyPath + " && cp " + rawPath + ".cpp " + rawPath + ".hpp " + copyPath;
         system(command.c_str());
+        #endif
         try {
+            #ifndef _WIN32 
             auto metagen = meta::MetadataGenerator();
             metagen.generateMetadata(copyPath, "./metabuild", rootDir, { userScriptDir, MakePath({ userScriptDir, ".." }), luaLibs, luabridge }, userScriptDir);
             metagen.buildCMake();
+            #endif
         } catch (std::exception& e) {
             CONSOLE::err << "Build failed: " << path << std::endl;
             std::ofstream checksumPath(rawPath + ".checksum", std::ios::trunc | std::ios::out);
@@ -302,7 +322,11 @@ namespace ecs {
 
         ManageUpdate(srcCpp);
         ManageUpdate(srcHpp);
+        #ifdef _WIN32
+        std::string libName = m_userComponentsPath + "lib" + path + ".dll";
+        #else
         std::string libName = m_userComponentsPath + "lib" + path + ".so";
+        #endif
         void* handle = lib::LibUtils::getLibHandle(libName.c_str());
         std::cout << "done" << std::endl;
         _handles[path] = handle;

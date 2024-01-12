@@ -40,6 +40,7 @@ namespace eng {
 
     void RType::WaitConnect(eng::Engine* e)
     {
+        std::cout << "Waiting for connection" << std::endl;
         initServerConnection(e);
     }
 
@@ -73,6 +74,7 @@ namespace eng {
         } else {
             std::cout << "Starting in single player mode" << std::endl;
         }
+        std::cout << "======================" << std::endl;
     }
 
     void RType::startServer(Engine* e)
@@ -89,8 +91,11 @@ namespace eng {
 
     void RType::connectToServer(Engine* e)
     {
+        std::cout << "Connecting to server" << std::endl;
         std::string rawIP = e->GetOptionValue(eng::Engine::Options::SERVER_IP);
+        std::cout << "IP: " << rawIP << std::endl;
         std::string rawPort = e->GetOptionValue(eng::Engine::Options::SERVER_PORT);
+        std::cout << "Port: " << rawPort << std::endl;
 
         if (rawIP.empty() || rawPort.empty()) {
             std::cerr << "Invalid IP address, format is <ip>:<port>" << std::endl;
@@ -100,14 +105,21 @@ namespace eng {
             std::cerr << "Invalid port number" << std::endl;
             exit(84);
         }
+        std::cout << "Connecting to " << rawIP << ":" << rawPort << std::endl;
         try {
             e->GetClient().SetServerAddress(rawIP, std::stoi(rawPort));
+            std::cout << "Server address set" << std::endl;
             std::shared_ptr<rtype::RTypeDistantServer> serverHandle = std::make_shared<rtype::RTypeDistantServer>(e->GetClient());
             serverHandle->SetAsInstance();
+            std::cout << "Server handle set" << std::endl;
             serverHandle->SetEngine(e);
+            std::cout << "Engine set" << std::endl;
             e->GetClient().SetRequestHandler(serverHandle);
+            std::cout << "Request handler set" << std::endl;
             e->GetClient().Start();
+            std::cout << "Client started" << std::endl;
             _stateMachine = ecs::States(nullptr);
+            std::cout << "State machine set" << std::endl;
         } catch (const std::exception& e) {
             std::cerr << e.what() << std::endl;
             exit(84);

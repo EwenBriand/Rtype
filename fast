@@ -55,22 +55,44 @@ def exec_system_command(command):
 
 def deep_clean_impl(args):
     cd_gitroot()
-    clean_commands = [
-        "cd build && make clean",
-        "find . -name \"*.o\" -type f -delete",
-        "find . -name \"core.*\" -type f -delete",
-        "find . -name \"*.so*\" -type f -delete",
-        "find . -name \"*.a\" -type f -delete",
-        "find . -name \"*.out*\" -type f -delete",
-        "find . -name \"*.log*\" -type f -delete",
-        "find . -type d -name \"CmakeFiles\" -exec rm -rf {} +",
-        "find . -type d -name \"build\" -exec rm -rf {} +",
-        "find . -type d -name \"build.tmpCompileSrc\" -exec rm -rf {} +",
-        "find . -name \"CMakeCache.txt\" -type f -delete",
-        "find . -name \"cmake_install.cmake\" -type f -delete",
-        "find . -name \"Makefile\" -type f -delete",
-        "find . -name \"*.checksum\" -type f -delete",
-    ]
+    clean_commands = []
+    if os.name == "nt":
+        clean_commands = [
+            "cd build && del /s /q *",
+            "cd build && rmdir /s /q *",
+            "cd metadata && cd build && del /s /q *",
+            "cd metadata && cd build && rmdir /s /q *",
+            "cd metadata && rmdir /s /q build",
+            "del /s /q *.o",
+            "del /s /q *.so*",
+            "del /s /q *.a",
+            "del /s /q *.out*",
+            "del /s /q *.log*",
+            "rmdir /s /q CmakeFiles",
+            "rmdir /s /q build",
+            "rmdir /s /q build.tmpCompileSrc",
+            "del /s /q CMakeCache.txt",
+            "del /s /q cmake_install.cmake",
+            "del /s /q Makefile",
+            "del /s /q *.checksum",
+        ]
+    else:
+        clean_commands = [
+            "cd build && make clean",
+            "find . -name \"*.o\" -type f -delete",
+            "find . -name \"core.*\" -type f -delete",
+            "find . -name \"*.so*\" -type f -delete",
+            "find . -name \"*.a\" -type f -delete",
+            "find . -name \"*.out*\" -type f -delete",
+            "find . -name \"*.log*\" -type f -delete",
+            "find . -type d -name \"CmakeFiles\" -exec rm -rf {} +",
+            "find . -type d -name \"build\" -exec rm -rf {} +",
+            "find . -type d -name \"build.tmpCompileSrc\" -exec rm -rf {} +",
+            "find . -name \"CMakeCache.txt\" -type f -delete",
+            "find . -name \"cmake_install.cmake\" -type f -delete",
+            "find . -name \"Makefile\" -type f -delete",
+            "find . -name \"*.checksum\" -type f -delete",
+        ]
     for command in clean_commands:
         print("Executing: " + command)
         os.system(command)
@@ -84,8 +106,16 @@ def build_root(args):
         if arg != "-j":
             targets += arg + " "
     if os.name == "nt":
-        fail = os.system(
-            'mkdir build && cd build && cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release .. && make')
+        fail = os.system('cd metadata && mkdir build && cd build && cmake -G "Unix Makefiles" .. && make')
+        if fail:
+            print_color("red", "Build failed")
+            exit(1)
+        print_color("yellow", f"Generating metadata for vanilla components")
+        fail = os.system("mkdir build && metadata\\build\\generate_metadata.exe ecs\\include\\Components.Vanilla")
+        if fail:
+            print_color("red", "Build failed")
+            exit(1)
+        fail = os.system('cd build && cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release .. && make && cd .. && copy build\\server\\*.dll* build\\ecs')
         if fail:
             print_color("red", "Build failed")
             exit(1)
@@ -114,8 +144,9 @@ def debug_root(args):
     cd_gitroot()
     j_option = "-j" if "-j" in args else ""
     if os.name == "nt":
-        os.system(
-            'mkdir build && cd build && cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release .. && make')
+        os.system('cd metadata && mkdir build && cd build && cmake -G "Unix Makefiles" .. && make && cd ../..')
+        os.system(f"mkdir build && pwd && cd build && ../metadata/build/generate_metadata ../ecs/include/Components.Vanilla")
+        os.system('cd build && cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release .. && make')
     else:
         print_color("yellow", "Building metadata generator")
         os.system("cd metadata && mkdir -p build && cd build && cmake .. && make")
@@ -337,22 +368,34 @@ def create_cfg(args):
 
 def run_client(args):
     cd_gitroot()
-    os.system(".shortcuts/client")
+    if os.name == "nt":
+        subprocess.run([".shortcuts\client.bat"])
+    else:
+        os.system(".shortcuts/client")
 
 
 def run_gclient(args):
     cd_gitroot()
-    os.system(".shortcuts/gclient")
+    if os.name == "nt":
+        subprocess.run([".shortcuts\gclient.bat"])
+    else:
+        os.system(".shortcuts/gclient")
 
 
 def run_server(args):
     cd_gitroot()
-    os.system(".shortcuts/server")
+    if os.name == "nt":
+        subprocess.run([".shortcuts\server.bat"])
+    else:
+        os.system(".shortcuts/server")
 
 
 def run_edit(args):
     cd_gitroot()
-    os.system(".shortcuts/edit")
+    if os.name == "nt":
+        subprocess.run([".shortcuts\edit.bat"])
+    else:
+        os.system(".shortcuts/edit")
 
 
 commands = {

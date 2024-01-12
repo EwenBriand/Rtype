@@ -81,6 +81,7 @@ void feedVector(std::vector<std::string>& vector, std::vector<std::string>& file
     }
 }
 
+#ifndef _WIN32
 void SetCompletion(const char* buf, linenoiseCompletions* lc)
 {
     static std::vector<std::string> commands;
@@ -108,6 +109,7 @@ void SetCompletion(const char* buf, linenoiseCompletions* lc)
         if (file.compare(0, fileName.length(), fileName) == 0)
             linenoiseAddCompletion(lc, (bufStr + file.c_str()).c_str());
 }
+#endif
 
 void CLI::OnLoad()
 {
@@ -120,12 +122,14 @@ void CLI::OnLoad()
     UIButton::RegisterCallback("cli::hotreload", [&] {
         hotReload({});
     });
-
+#ifndef _WIN32
     linenoiseSetCompletionCallback(SetCompletion);
+#endif
 }
 
 std::string CLI::consoleGetLine()
 {
+#ifndef _WIN32
     char* line = linenoise("CLI _> ");
     if (line == nullptr) {
         return "";
@@ -133,6 +137,13 @@ std::string CLI::consoleGetLine()
     std::string result(line);
     free(line);
     return result;
+#else
+    std::string line;
+
+    CONSOLE::prompt << "CLI _> " << std::flush;
+    std::getline(std::cin, line);
+    return line;
+#endif
 }
 
 void CLI::Update(int entityID)
@@ -150,7 +161,9 @@ void CLI::Update(int entityID)
     if (m_future.wait_for(m_timeOut) == std::future_status::ready) {
         command = m_future.get();
         m_prompted = false;
+        #ifndef _WIN32
         linenoiseHistoryAdd(command.c_str());
+        #endif
         m_history.push_back(command);
         parseCommand(command);
     }

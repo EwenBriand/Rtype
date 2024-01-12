@@ -10,7 +10,6 @@
 #include "Message.hpp"
 #include "ThreadSafeQueue.hpp"
 #include <atomic>
-#include <boost/asio.hpp>
 #include <functional>
 #include <map>
 #include <memory>
@@ -20,6 +19,7 @@
 
 namespace serv {
     class ClientUDP;
+    class AsioClone;
     class IClientRequestHandler {
     public:
         virtual ~IClientRequestHandler() = default;
@@ -86,8 +86,7 @@ namespace serv {
         void receiveWorker();
         std::thread _sendThread;
         std::thread _receiveThread;
-        boost::asio::io_service _ioService;
-        boost::asio::ip::udp::socket _socket;
+        std::shared_ptr<AsioClone> _socket;
 
         ThreadSafeQueue<bytes> _sendQueue;
         CircularBuffer _inBuffer;

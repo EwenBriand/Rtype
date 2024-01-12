@@ -11,11 +11,17 @@ add_compile_options(
 include_directories(
     ./include
     ../metadata/include/
+    ../server/asio/include/
     ../include/
     ../graph/lightgraph/include/
     ../graph/glad/include/glad/
-    ./linenoise
 )
+
+if (NOT WIN32)
+    include_directories(
+        ./linenoise
+    )
+endif()
 
 set(CMAKE_LIBRARY_PATH
     ${CMAKE_LIBRARY_PATH}
@@ -37,8 +43,11 @@ set(ECS_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-set(ECS
+file(GLOB LINENOISE
     ${ECS_SRC}/../linenoise/linenoise.c
+)
+
+file(GLOB ECS
     ${ECS_SRC}/ECS.cpp
     ${ECS_SRC}/LibUtils.cpp
     ${ECS_SRC}/ResourceManager.cpp
@@ -56,7 +65,7 @@ set(ECS
     ${ECS_SRC}/Observer.cpp
 )
 
-set(ENGINE
+file(GLOB ENGINE
     ${ECS_SRC}/Engine.cpp
     ${ECS_SRC}/ScopeLocation.cpp
 )
@@ -64,7 +73,7 @@ set(ENGINE
 set(VANILLA_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/include/Components.Vanilla)
 
-set(VANILLA
+file(GLOB VANILLA
     ${VANILLA_SRC}/Animator.cpp
     ${VANILLA_SRC}/AudioSource.cpp
     ${VANILLA_SRC}/CLI.cpp
@@ -114,12 +123,28 @@ set(META_VANILLA
     ${META_VANILLA_SRC}/SphereCollider3DMeta.cpp
 )
 
-add_library(lengine SHARED
-    ${ECS}
-    ${ENGINE}
-    ${VANILLA}
-    ${META_VANILLA}
-)
+add_library(meta_vanilla_lib STATIC ${META_VANILLA})
+
+if (WIN32)
+    execute_process(
+        COMMAND python3 ../move_metadata
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    )
+    add_library(lengine SHARED
+        $<TARGET_OBJECTS:meta_vanilla_lib>
+        ${ECS}
+        ${ENGINE}
+        ${VANILLA}
+    )
+else()
+    add_library(lengine SHARED
+        $<TARGET_OBJECTS:meta_vanilla_lib>
+        ${ECS}
+        ${LINENOISE}
+        ${ENGINE}
+        ${VANILLA}
+    )
+endif()
 
 target_link_libraries(lengine
     metadatagen

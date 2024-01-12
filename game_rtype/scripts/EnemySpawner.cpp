@@ -110,15 +110,20 @@ void EnemySpawner::spawnEnemy2()
 
 void EnemySpawner::OnAddComponent(int e)
 {
-    std::cout << "add enemy spawner" << std::endl;
+    std::cout << "====================" << std::endl;
     if (not eng::Engine::GetEngine()->IsServer())
         return;
     try {
+        std::cout << "add enemy spawner" << std::endl;
         _rng = std::mt19937 { std::random_device {}() };
+        std::cout << "rng: " << _rng() << std::endl;
         _transform = &SYS.SafeGet<CoreTransform>(e);
+        std::cout << "transform: " << _transform->x << ", " << _transform->y << std::endl;
         std::uniform_real_distribution<float> dist(-_maxRandomDelayVariation, _maxRandomDelayVariation);
         _randomDelayVariation = dist(_rng);
+        std::cout << "random delay variation: " << _randomDelayVariation << std::endl;
         _timer.Start();
+        std::cout << "====================" << std::endl;
     } catch (const std::exception& e) {
         CONSOLE::err << "Could not get transform\n\r\t" << e.what() << std::endl;
     }
