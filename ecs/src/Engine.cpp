@@ -180,8 +180,10 @@ namespace eng {
         }
 
         SYS.LoadVanilla();
+        std::cout << "Vanilla loaded" << std::endl;
         if (m_game != nullptr) {
             m_game->Init(this);
+            std::cout << "Game initialized" << std::endl;
         }
 
         SYS.GetResourceManager().CheckHotReload();
@@ -199,6 +201,7 @@ namespace eng {
         m_graphicalModule->Start();
         std::cout << "Graphical module started" << std::endl;
         if (m_game && m_game->IsOnLine(this)) {
+            std::cout << "Waiting for connection" << std::endl;
             m_game->WaitConnect(this);
         }
         std::cout << "Starting main loop" << std::endl;

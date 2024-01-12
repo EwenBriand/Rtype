@@ -73,7 +73,7 @@ namespace serv {
                 bytes data;
                 data.resize(1024);
                 std::size_t bytesTransferred = _socket->receive_from(data._data, senderEndpoint.endpoint);
-                // std::cout << "Received from endpoint " << senderEndpoint.endpoint.address().to_string() << ":" << senderEndpoint.endpoint.port() << std::endl;
+                std::cout << "Received from endpoint " << senderEndpoint.endpoint.address().to_string() << ":" << senderEndpoint.endpoint.port() << std::endl;
                 data.resize(bytesTransferred);
                 {
                     std::lock_guard<std::mutex> lock(*_mutex);

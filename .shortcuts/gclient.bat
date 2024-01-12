@@ -13,4 +13,4 @@ set config_dir=game_rtype\.engine\config_win
 set port=8080
 
 @REM run the engine
-%engine_path% --config-dir=%config_dir% --server-port=%port% --server_ip=127.0.0.1
+%engine_path% --config-dir=%config_dir% --server-port=%port% --server-ip=127.0.0.1

@@ -188,7 +188,7 @@ namespace serv {
     {
         while (_running) {
             _asio->receive_from(_buffer, _remoteEndpoint->endpoint);
-            // std::cout << "Received from endpoint: " << endpointToString(_remoteEndpoint) << std::endl;
+            std::cout << "Received from endpoint: " << endpointToString(_remoteEndpoint) << std::endl;
             std::size_t bytesTransferred = bytes::find_last_of(_buffer, [](unsigned char c) {
                 return c != 0;
             });
@@ -266,7 +266,7 @@ namespace serv {
                 try {
                     Message message = _sendQueue.Pop();
                     _asio->send_to(message.data._data, message.endpointW->endpoint);
-                    // std::cout << "Send to endpoint " << endpointToString(message.endpointW) << " with opcode " << std::to_string(Instruction(message.data).opcode) << std::endl;
+                    std::cout << "Send to endpoint " << endpointToString(message.endpointW) << " with opcode " << std::to_string(Instruction(message.data).opcode) << std::endl;
                     Log("Sent opcode " + std::to_string(Instruction(message.data).opcode) + " to " + endpointToString(message.endpointW));
                 } catch (std::exception& e) {
                     std::cerr << e.what() << std::endl;

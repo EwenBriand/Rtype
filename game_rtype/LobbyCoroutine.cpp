@@ -116,8 +116,11 @@ namespace rtype {
     {
         std::cout << "Enter lobby routine" << std::endl;
         auto serverHandle = RTypeDistantServer::GetInstance();
+        std::cout << "before unload scene menu" << std::endl;
         eng::Engine::GetEngine()->GetSceneManager().UnloadScene("menu");
+        std::cout << "before unload scene level1" << std::endl;
         eng::Engine::GetEngine()->GetSceneManager().UnloadScene("level1");
+        std::cout << "before timer" << std::endl;
         eng::Timer timer;
         timer.Start();
         std::cout << "before try connect" << std::endl;
