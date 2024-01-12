@@ -80,6 +80,7 @@ def deep_clean_impl(args):
         clean_commands = [
             "cd build && make clean",
             "find . -name \"*.o\" -type f -delete",
+            "find . -name \"core.*\" -type f -delete",
             "find . -name \"*.so*\" -type f -delete",
             "find . -name \"*.a\" -type f -delete",
             "find . -name \"*.out*\" -type f -delete",
@@ -120,21 +121,23 @@ def build_root(args):
             exit(1)
     else:
         print_color("yellow", "Building metadata generator")
-        fail = os.system("cd metadata && mkdir -p build && cd build && cmake .. && make")
+        fail = os.system(
+            "cd metadata && mkdir -p build && cd build && cmake .. && make")
         if fail:
             print_color("red", "Metadata generation failed")
             exit(1)
         print_color("yellow", "Generating metadata for vanilla components")
-        fail = os.system(f"mkdir -p build && pwd && cd build && ../metadata/build/generate_metadata ../ecs/include/Components.Vanilla")
+        fail = os.system(
+            f"mkdir -p build && pwd && cd build && ../metadata/build/generate_metadata ../ecs/include/Components.Vanilla")
         if fail:
             print_color("red", "Metadata generation failed")
             exit(1)
         print_color("yellow", "Building engine")
-        fail = os.system("mkdir -p build && cd build && cmake -DWITH_PIC=on -DBUILD_SHARED_LIBS=on -DCMAKE_BUILD_TYPE=Release .. && make " + targets + j_option)
+        fail = os.system(
+            "mkdir -p build && cd build && cmake -DWITH_PIC=on -DBUILD_SHARED_LIBS=on -DCMAKE_BUILD_TYPE=Release .. && make " + targets + j_option)
         if fail:
             print_color("red", "Build failed")
             exit(1)
-
 
 
 def debug_root(args):
@@ -148,7 +151,8 @@ def debug_root(args):
         print_color("yellow", "Building metadata generator")
         os.system("cd metadata && mkdir -p build && cd build && cmake .. && make")
         print_color("yellow", "Generating metadata for vanilla components")
-        os.system(f"mkdir -p build && pwd && cd build && ../metadata/build/generate_metadata ../ecs/include/Components.Vanilla")
+        os.system(
+            f"mkdir -p build && pwd && cd build && ../metadata/build/generate_metadata ../ecs/include/Components.Vanilla")
         print_color("yellow", "Building engine")
         os.system("mkdir -p build && cd build && cmake -DWITH_PIC=on -DBUILD_SHARED_LIBS=on -DCMAKE_BUILD_TYPE=Debug .. && make " + j_option)
 
@@ -361,12 +365,14 @@ def create_cfg(args):
         f.write(base_cfg_template.format(
             os.getcwd(), os.getcwd(), os.getcwd()))
 
+
 def run_client(args):
     cd_gitroot()
     if os.name == "nt":
         subprocess.run([".shortcuts\client.bat"])
     else:
         os.system(".shortcuts/client")
+
 
 def run_gclient(args):
     cd_gitroot()
@@ -375,6 +381,7 @@ def run_gclient(args):
     else:
         os.system(".shortcuts/gclient")
 
+
 def run_server(args):
     cd_gitroot()
     if os.name == "nt":
@@ -382,12 +389,14 @@ def run_server(args):
     else:
         os.system(".shortcuts/server")
 
+
 def run_edit(args):
     cd_gitroot()
     if os.name == "nt":
         subprocess.run([".shortcuts\edit.bat"])
     else:
         os.system(".shortcuts/edit")
+
 
 commands = {
     "clean": ("performs a deep clean of the repository", lambda args: deep_clean_impl(args)),

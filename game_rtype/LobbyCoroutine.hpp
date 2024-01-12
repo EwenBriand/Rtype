@@ -13,7 +13,7 @@
 #include <memory>
 
 namespace rtype {
-    static constexpr unsigned int RTYPE_NB_PLAYERS = 2;
+    static constexpr unsigned int RTYPE_NB_PLAYERS = 3;
 
     class LobbyRoutineServer : public ecs::IState, public std::enable_shared_from_this<LobbyRoutineServer> {
     public:
@@ -33,7 +33,7 @@ namespace rtype {
          */
         bool lobbyIsFull();
 
-        unsigned int _nbPlayers;
+        unsigned int _nbPlayers = -1;
 
         serv::Coroutine _routine;
         eng::Engine& _engine;

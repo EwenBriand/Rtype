@@ -44,6 +44,7 @@ std::map<std::string, std::function<void(CLI&, std::vector<std::string>)>> CLI::
     { "csend", [](CLI& cli, std::vector<std::string> args) { cli.sendMessageToClients(args); } },
     { "play", [](CLI& cli, std::vector<std::string> args) { cli.play(args); } },
     { "pause", [](CLI& cli, std::vector<std::string> args) { cli.pause(args); } },
+    { "lv", [](CLI &cli, std::vector<std::string> args) {cli.listVanilla(args);}}
 };
 
 const std::map<std::string, std::function<void(CLI&, std::vector<std::string>)>> CLI::getM_commands()
@@ -572,4 +573,12 @@ void CLI::play(std::vector<std::string> args)
 void CLI::pause(std::vector<std::string> args)
 {
     eng::Engine::GetEngine()->SetPlayMode(false);
+}
+
+void CLI::listVanilla(std::vector<std::string> args)
+{
+    auto displayMe = SYS.GetVanillaList();
+    for (auto name : displayMe) {
+        std::cout << "\r\t" << name << std::endl;
+    }
 }

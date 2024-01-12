@@ -34,6 +34,8 @@ public:
     static const std::string COMMAND_LEFT;
     static const std::string COMMAND_RIGHT;
     static const std::string COMMAND_SHOOT;
+    static const std::string COMMAND_SHOOT_TCEMORT;
+    static const std::string COMMAND_LAUNCH;
 
     void Start() override;
     void OnAddComponent(int entityID) override;
@@ -41,6 +43,8 @@ public:
 
     void SetID(int id);
     int GetID() const;
+    int GetNbLaser() const;
+    CoreTransform* GetCore() const;
 
 private:
     serialize float _speed = 1.0f;
@@ -59,19 +63,59 @@ private:
      */
     void checkForDeath();
 
+    /**
+     * @brief Setup all collisions lambda.
+     *
+     */
+    void SetupCollisions();
+
+    /**
+     * @brief Send a shoot to the server.
+     *
+     * @param x The x position of the shoot.
+     * @param y The y position of the shoot.
+     */
+    void SendShoot(int x, int y);
+
+    /**
+     * @brief create 1 laser
+     *
+     */
+    void creatOneLaser();
+
+    /**
+     * @brief create 2 laser
+     *
+     */
+    void creatTwoLaser();
+
+    /**
+     * @brief create 3 laser
+     *
+     */
+    void creatThreeLaser();
+
     RigidBody2D* _rb = nullptr;
     Collider2D* _collider = nullptr;
     AudioSource* _audio = nullptr;
     CoreTransform* _core = nullptr;
+    TextField* _textField = nullptr;
+
     int _entity;
     eng::Observer _observer;
     int _id = -1;
+    int _nb_laser = 1;
+    bool _tcemort = false;
+    int _forceID = -1;
+    bool _force_existing = false;
 
     void moveUp();
     void moveDown();
     void moveLeft();
     void moveRight();
     void shoot();
+    void shootTcemort();
+    void launch();
 
     std::map<std::string, void (Ship::*)()> _actions = {
         { COMMAND_UP, &Ship::moveUp },
@@ -79,5 +123,7 @@ private:
         { COMMAND_LEFT, &Ship::moveLeft },
         { COMMAND_RIGHT, &Ship::moveRight },
         { COMMAND_SHOOT, &Ship::shoot },
+        { COMMAND_SHOOT_TCEMORT, &Ship::shootTcemort },
+        { COMMAND_LAUNCH, &Ship::launch }
     };
 };

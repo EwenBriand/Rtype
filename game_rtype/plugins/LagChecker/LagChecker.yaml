@@ -1,0 +1,7 @@
+name: LagChecker
+status: enable
+entryPoint: updateStats
+deltaTime:
+  client: 0
+  server: 2000
+pipelinePosition: 500

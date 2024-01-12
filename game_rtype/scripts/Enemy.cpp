@@ -29,29 +29,66 @@ const std::string Enemy::COMMAND_DOWN = "down";
 void Enemy::OnAddComponent(int entityID)
 {
     _timer.Start();
+    _broadcastTimer.Start();
     _entity = entityID;
 }
 
 void Enemy::Start()
 {
     _rb = &SYS.SafeGet<RigidBody2D>(_entity);
-    _collider = &SYS.SafeGet<Collider2D>(_entity);
     _core = &SYS.SafeGet<CoreTransform>(_entity);
-    _collider->SetTag("enemy");
-    _speed = 100.0f;
-    _rb->SetVelocity({ _speed, _rb->GetVelocity().y });
 
+    _textField = &SYS.SafeGet<TextField>(_entity);
+    _textField->SetPosition({ -80, -80 });
+    _textField->SetText((std::to_string(_health) + " HP"));
+
+    _speed = 100.0f;
+    _rb->SetVelocity({ -_speed, 0 });
+
+    _collider = &SYS.SafeGet<Collider2D>(_entity);
+    _collider->SetTag("Enemy");
     _collider->SetOnCollisionEnter([this](int entityID, int otherID) {
         try {
             std::string tag = (_entity == entityID) ? SYS.GetComponent<Collider2D>(otherID).GetTag() : SYS.GetComponent<Collider2D>(entityID).GetTag();
-            if (tag.compare(0, 12, "Player laser") == 0) {
+            if (tag.compare(0, 13, "Player laser ") == 0) {
                 this->_health -= 1;
+                _textField->SetText((std::to_string(_health) + " HP"));
+                checkDeath();
+            } else if (tag.compare(0, 21, "Player LaserTcemort n") == 0 || tag == "Force") {
+                this->_health = 0;
+                _textField->SetText((std::to_string(_health) + " HP"));
+                checkDeath();
+            } else if (tag.compare(0, 15, "Player Rocket n") == 0) {
+                this->_health -= 2;
+                _textField->SetText((std::to_string(_health) + " HP"));
                 checkDeath();
             }
         } catch (std::exception& e) {
             std::cerr << "Ship::Start(): " << e.what() << std::endl;
         }
     });
+
+    _directivesBonus = [this](int bonusNum) {
+        try {
+            if (bonusNum == -1)
+                return;
+            std::cout << "bonus " << bonusNum << std::endl;
+            std::vector<std::string> prefabNames = { "Heal", "X2", "X3", "Tcemort" };
+            unsigned int e = SYS.GetResourceManager().LoadPrefab(prefabNames[bonusNum]);
+            auto& enemy = SYS.GetComponent<CoreTransform>(e);
+            enemy.x = _core->x;
+            enemy.y = _core->y;
+
+            serv::bytes args(std::vector<int>({ bonusNum,
+                static_cast<int>(enemy.x),
+                static_cast<int>(enemy.y) }));
+            auto instruction = serv::Instruction(eng::RType::I_BONUS_SPAWN, 0, args);
+            eng::Engine::GetEngine()->GetServer().Broadcast(instruction);
+
+        } catch (std::exception& e) {
+            std::cerr << "Ship::Start(): " << e.what() << std::endl;
+        }
+    };
 }
 
 void Enemy::Update(int entityID)
@@ -68,12 +105,13 @@ void Enemy::Update(int entityID)
     if (!_controller) {
         return;
     }
+
+    // if (not eng::Engine::GetEngine()->IsServer())
+    //     return;
+
     _controller->PollDirectives();
-    if (_core->y > 1080 - 100 || _core->y < 50)
-        _rb->SetVelocity({ 0, (_rb->GetVelocity().y >= 0) ? -_speed : _speed });
-    else
-        _rb->SetVelocity({ 0, _rb->GetVelocity().y });
     applyDirectives();
+    // broadcastPosition();
 }
 
 // ===========================================================================================================
@@ -85,15 +123,57 @@ void Enemy::SetID(int id)
     _id = id;
 }
 
+void Enemy::SetBonusOnDeath(int bonus)
+{
+    _bonusOnDeath = bonus;
+}
+
 // ===========================================================================================================
 // Private methods
 // ===========================================================================================================
 
-void Enemy::applyDirectives()
+void Enemy::broadcastPosition()
 {
-    if (not eng::Engine::GetEngine()->PlayMode()) {
+    if (eng::Engine::GetEngine()->IsClient() or _broadcastTimer.GetElapsedTime() < 0.5f) {
         return;
     }
+    _broadcastTimer.Restart();
+    try {
+        serv::bytes args(std::vector<int>({ _id,
+            static_cast<int>(_core->x),
+            static_cast<int>(_core->y) }));
+        auto instruction = serv::Instruction(eng::RType::I_ENEMY_MOVES, 0, args);
+        std::cout << "broadcast position " << _id << " at " << _core->x << ", " << _core->y << std::endl;
+        eng::Engine::GetEngine()->GetServer().Broadcast(instruction.ToBytes() + serv::SEPARATOR);
+    } catch (const std::exception& e) {
+        std::cerr << "AIController::broadcastPosition(): " << e.what() << std::endl;
+    }
+}
+
+void Enemy::broadcastVelocity()
+{
+    if (eng::Engine::GetEngine()->IsClient())
+        return;
+
+    _broadcastTimer.Restart();
+    try {
+        auto rb = _rb->GetVelocity();
+        serv::bytes args(std::vector<int>({ _id,
+            static_cast<int>(rb.x),
+            static_cast<int>(rb.y) }));
+        auto instruction = serv::Instruction(eng::RType::I_ENEMY_VELOCITY, 0, args);
+        std::cout << "broadcast velocity " << _id << " at " << rb.x << ", " << rb.y << std::endl;
+        eng::Engine::GetEngine()->GetServer().Broadcast(instruction.ToBytes() + serv::SEPARATOR);
+    } catch (const std::exception& e) {
+        std::cerr << "AIController::broadcastPosition(): " << e.what() << std::endl;
+    }
+}
+
+void Enemy::applyDirectives()
+{
+    if (not eng::Engine::GetEngine()->PlayMode())
+        return;
+
     std::vector<std::string>& directives = _controller->GetDirectives();
     for (auto& directive : directives) {
         if (_actions.find(directive) != _actions.end()) {
@@ -112,6 +192,7 @@ void Enemy::checkDeath()
         broadcastDeath();
         try {
             _collider->SetDestroyMe(true);
+            _directivesBonus(_bonusOnDeath);
             SYS.UnregisterEntity(_entity);
         } catch (std::exception& e) {
             std::cerr << "Enemy::checkDeath(): " << e.what() << std::endl;
@@ -121,37 +202,64 @@ void Enemy::checkDeath()
 
 void Enemy::broadcastDeath()
 {
-    serv::Instruction instruction(eng::RType::I_ENEMY_DIES, 0, serv::bytes(std::vector<int>({ _id })));
+    eng::Engine::GetEngine()->SetGlobal<int>("killCount", eng::Engine::GetEngine()->GetGlobal<int>("killCount") + 1);
+    serv::Instruction instruction(eng::RType::I_ENEMY_DIES, 0, serv::bytes(std::vector<int>({ _id, eng::Engine::GetEngine()->GetGlobal<int>("killCount") })));
     eng::Engine::GetEngine()->GetServer().Broadcast(instruction);
 }
+
 // ===========================================================================================================
 // Directives
 // ===========================================================================================================
 
 void Enemy::shoot()
 {
-    int laser = SYS.GetResourceManager().LoadPrefab("Laser-Enemy");
-    try {
-        auto& laserTransform = SYS.GetComponent<CoreTransform>(laser);
-        laserTransform.x = _core->x;
-        laserTransform.y = _core->y;
-    } catch (std::exception& e) {
-        return;
-    }
+    broadcastShoot();
+    instantiateRedLaser();
 }
 
 void Enemy::moveLeft()
 {
-    _rb->SetVelocity({ -_speed, _rb->GetVelocity().y });
+    if (_first) {
+        _first = false;
+        _rb->SetVelocity({ -_speed, _rb->GetVelocity().y });
+        // broadcastVelocity();
+    }
 }
 
 void Enemy::moveUp()
 {
-    if (_core->y > 50)
-        _rb->SetVelocity({ _rb->GetVelocity().x, _speed });
 }
 
 void Enemy::moveDown()
 {
-    _rb->SetVelocity({ _rb->GetVelocity().x, _speed });
+}
+
+void Enemy::broadcastShoot()
+{
+    if (not eng::Engine::GetEngine()->IsServer()) // only server can broadcast
+        return;
+    try {
+        auto& transform = SYS.GetComponent<CoreTransform>(_entity);
+        serv::bytes args(std::vector<int>({ _id,
+            static_cast<int>(transform.x),
+            static_cast<int>(transform.y) }));
+        auto instruction = serv::Instruction(eng::RType::I_ENEMY_SHOOTS, 0, args);
+        eng::Engine::GetEngine()->GetServer().Broadcast(instruction);
+
+    } catch (const std::exception& e) {
+        std::cerr << "AIController::broadcastShoot(): " << e.what() << std::endl;
+    }
+}
+
+void Enemy::instantiateRedLaser()
+{
+    try {
+        auto laser = SYS.GetResourceManager().LoadPrefab("red-laser");
+        auto& transform = SYS.GetComponent<CoreTransform>(_entity);
+        auto& laserTransform = SYS.GetComponent<CoreTransform>(laser);
+        laserTransform.x = transform.x;
+        laserTransform.y = transform.y;
+    } catch (const std::exception& e) {
+        std::cerr << "AIController::instantiateRedLaser(): " << e.what() << std::endl;
+    }
 }

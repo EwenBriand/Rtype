@@ -105,6 +105,13 @@ namespace serv {
 
         while (not data.empty()) {
             data.resize(data.size() - SEPARATOR.size());
+            Instruction instruction(data);
+            if (server.GetInterceptors().find(instruction.opcode) != server.GetInterceptors().end()) {
+                server.GetInterceptors().at(instruction.opcode)(instruction, _endpoint);
+                std::cout << "instruction intercepted" << std::endl;
+                data = Read();
+                continue;
+            }
             // std::cout << "\rHandleRequest: " << data.toString() << std::endl;
             _clientHandler->HandleRequest(data);
             data = Read();
@@ -209,20 +216,25 @@ namespace serv {
         bytes data(_buffer.data(), bytesTransferred);
 
         try {
-            std::string clientKey = endpointToString(_remoteEndpoint);
-            std::scoped_lock lock(*_clientsMutex);
-            if (_clients.find(clientKey) == _clients.end()) {
-                _clients.insert({ clientKey, std::make_shared<ClientBucketUDP>(_remoteEndpoint) });
-                _clients.at(clientKey)->SetHandleRequest(_clientHandlerCopyBase->Clone(_remoteEndpoint));
-                Log("New client connected: " + clientKey);
-            }
-            _clients.at(clientKey)->UpdateLastRequestTime();
-            _clients.at(clientKey)->Write(data);
+            passToClient(data);
         } catch (const std::exception& e) {
             Log(e.what());
             if (_clients.find(endpointToString(_remoteEndpoint)) != _clients.end())
                 _clients.erase(endpointToString(_remoteEndpoint));
         }
+    }
+
+    void ServerUDP::passToClient(bytes& data)
+    {
+        std::string clientKey = endpointToString(_remoteEndpoint);
+        std::scoped_lock lock(*_clientsMutex);
+        if (_clients.find(clientKey) == _clients.end()) {
+            _clients.insert({ clientKey, std::make_shared<ClientBucketUDP>(_remoteEndpoint) });
+            _clients.at(clientKey)->SetHandleRequest(_clientHandlerCopyBase->Clone(_remoteEndpoint));
+            Log("New client connected: " + clientKey);
+        }
+        _clients.at(clientKey)->UpdateLastRequestTime();
+        _clients.at(clientKey)->Write(data);
     }
 
     void ServerUDP::checkForDisconnections()
@@ -352,5 +364,21 @@ namespace serv {
         for (auto& client : _clients) {
             Send(instruction, client.second->GetEndpoint());
         }
+    }
+
+    void ServerUDP::Intercept(int opcode, std::function<void(const Instruction&, boost::asio::ip::udp::endpoint& endpoint)> callback)
+    {
+        _interceptors.insert({ opcode, callback });
+    }
+
+    void ServerUDP::FeedMessage(Message& message)
+    {
+        _remoteEndpoint = message.endpoint;
+        passToClient(message.data);
+    }
+
+    std::map<int, std::function<void(const Instruction&, boost::asio::ip::udp::endpoint& endpoint)>>& ServerUDP::GetInterceptors()
+    {
+        return _interceptors;
     }
 }

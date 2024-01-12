@@ -47,6 +47,7 @@ namespace rtype {
 
     serv::Coroutine LobbyRoutineServer::run()
     {
+        eng::Engine::GetEngine()->SetGlobal<int>("killCount", 0);
         eng::Engine::GetEngine()->GetSceneManager().UnloadScene("menu");
         eng::Engine::GetEngine()->GetSceneManager().UnloadScene("level1");
         eng::Engine::GetEngine()->GetServer().Log("Entering Lobby, now waiting for players to join");
@@ -115,6 +116,7 @@ namespace rtype {
     serv::Coroutine LobbyRoutineClient::run()
     {
         std::cout << "Enter lobby routine" << std::endl;
+        eng::Engine::GetEngine()->SetGlobal<int>("killCount", 0);
         auto serverHandle = RTypeDistantServer::GetInstance();
         std::cout << "before unload scene menu" << std::endl;
         eng::Engine::GetEngine()->GetSceneManager().UnloadScene("menu");
@@ -139,7 +141,6 @@ namespace rtype {
         }
         std::cout << "before send load scene" << std::endl;
         while (not serverHandle->SceneIsReady()) {
-            std::cout << ".";
             co_await std::suspend_always {};
         }
         std::cout << "before instantiate scene" << std::endl;

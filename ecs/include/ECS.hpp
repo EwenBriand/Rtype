@@ -377,7 +377,9 @@ namespace ecs {
         {
             std::cout << ">>>>>>>>> GetComponent" << std::endl;
             size_t idx = _cptTypesIndexes[std::type_index(typeid(T))];
-            if (_components[idx][e].empty()) {
+            if (_components[idx].size() < e)
+                throw std::runtime_error("entity not exist : " + std::to_string(e));
+            if (_components[idx][e].empty())
                 throw std::runtime_error("Component not found : " + std::string(typeid(T).name()));
             }
             std::cout << "idx: " << idx << std::endl;
@@ -1095,6 +1097,17 @@ namespace ecs {
         bool FrameIsSkipped() const { return _skipFrame; }
 
         float GetDeltaTime() const;
+
+        std::vector<std::string> GetVanillaList() {
+            std::vector<std::string> result;
+
+            for (auto i = 0; i < cloneBase.size(); ++i) {
+                std::visit([&](auto &cpt) {
+                    result.push_back(cpt.GetClassName());
+                }, cloneBase[i]);
+            }
+            return result;
+        }
 
     private:
         std::shared_ptr<graph::IGraphicalModule> _graphicalModule

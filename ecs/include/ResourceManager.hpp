@@ -30,6 +30,17 @@
 namespace ecs {
     class ResourceManager {
     public:
+        struct PluginInfo {
+            std::string name;
+            std::string path;
+            int checksum;
+            std::string entryPoint;
+            float deltaTime;
+            int pipelinePosition;
+            std::map<std::string, void (*)()> hooks;
+            void* handle;
+        };
+
         ~ResourceManager();
 
         /**
@@ -156,6 +167,18 @@ namespace ecs {
          */
         void HotLoadLibrary(const std::string& path);
 
+        void LoadPlugins();
+
+        void discoverPlugins(const std::string& path);
+
+        PluginInfo ParsePlugin(const std::string& path, const std::string& binaryPath);
+
+        int FileCheckSum(const std::string& path);
+
+        void PluginLoadPipeline();
+
+        void ReloadPlugins();
+
     private:
         unsigned int m_changesNbr = 0;
         #ifdef _WIN32
@@ -170,5 +193,6 @@ namespace ecs {
         std::tuple<void*, std::shared_ptr<graph::IGraphicalModule>> _graphicalModule = { nullptr, nullptr };
         std::shared_ptr<eng::IGame> _game = nullptr;
         void* _gameHandle = nullptr;
+        std::map<std::string, PluginInfo> _plugins;
     };
 }

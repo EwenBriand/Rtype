@@ -68,14 +68,15 @@ namespace serv {
         std::stringstream ss;
 
         for (auto& byte : _data) {
-            if (std::isalnum(byte))
-                ss << byte;
-            else {
-                ss << " \\x"
-                   << std::setfill('0') << std::setw(2)
-                   << std::hex << static_cast<int>(byte)
-                   << " ";
-            }
+            // if (std::isalnum(byte))
+            //     ss << byte;
+            // else {
+            //     ss << " \\x"
+            //        << std::setfill('0') << std::setw(2)
+            //        << std::hex << static_cast<int>(byte)
+            //        << " ";
+            // }
+            ss << byte;
         }
         return ss.str();
     }

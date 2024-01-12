@@ -114,8 +114,24 @@ namespace serv {
                 std::lock_guard<std::mutex> lock(*_mutex);
                 data = _inBuffer.ReadUntil(SEPARATOR);
             }
+            Instruction instruction(data);
+            if (_interceptors.find(instruction.opcode) != _interceptors.end()) {
+                std::cout << "intercepted opcode " << instruction.opcode << std::endl; // TODO: remove
+                _interceptors[instruction.opcode](instruction);
+                continue;
+            }
             if (_requestHandler != nullptr and !data.empty())
                 _requestHandler->HandleRequest(data);
         }
+    }
+
+    void ClientUDP::Intercept(int opcode, std::function<void(Instruction&)> callback)
+    {
+        _interceptors[opcode] = callback;
+    }
+
+    void ClientUDP::FeedMessage(const bytes& data)
+    {
+        _inBuffer.Write(data);
     }
 }

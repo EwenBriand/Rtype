@@ -12,6 +12,7 @@
 #include "IGraphicalModule.hpp"
 #include "LibUtils.hpp"
 #include "NoGraphics.hpp"
+#include "Timer.hpp"
 #include "metadataGenerator.hpp"
 #include <cstdio>
 #include <cstring>
@@ -20,6 +21,7 @@
 #include <iterator>
 #include <type_traits>
 #include <unistd.h>
+#include <yaml-cpp/yaml.h>
 
 #ifdef _WIN32
 #include <processthreadsapi.h>
@@ -33,6 +35,10 @@ namespace ecs {
         // if (_gameHandle) {
         //     lib::LibUtils::closeLibHandle(_gameHandle);
         // }
+        for (auto& plugin : _plugins) {
+            if (plugin.second.handle)
+                lib::LibUtils::closeLibHandle(plugin.second.handle);
+        }
     }
 
     std::shared_ptr<AUserComponent> ResourceManager::LoadUserComponent(
@@ -80,13 +86,15 @@ namespace ecs {
         std::string rawPath = path.substr(0, path.find_last_of('.'));
         std::string rawFolder = path.substr(0, path.find_last_of('/'));
         std::string copyPath = rootDir + "/" + tmpCopyDirectory + "/" + rawPath.substr(rawPath.find_last_of('/') + 1);
+        std::string luaLibs = eng::Engine::GetEngine()->GetConfigValue("luaHeaders");
+        std::string luabridge = eng::Engine::GetEngine()->GetConfigValue("luaBridge");
         std::string command = "mkdir -p " + copyPath + " && cp " + rawPath + ".cpp " + rawPath + ".hpp " + copyPath;
         system(command.c_str());
         #endif
         try {
             #ifndef _WIN32 
             auto metagen = meta::MetadataGenerator();
-            metagen.generateMetadata(copyPath, "./metabuild", rootDir, { userScriptDir, MakePath({ userScriptDir, ".." }) }, userScriptDir);
+            metagen.generateMetadata(copyPath, "./metabuild", rootDir, { userScriptDir, MakePath({ userScriptDir, ".." }), luaLibs, luabridge }, userScriptDir);
             metagen.buildCMake();
             #endif
         } catch (std::exception& e) {
@@ -322,5 +330,166 @@ namespace ecs {
         void* handle = lib::LibUtils::getLibHandle(libName.c_str());
         std::cout << "done" << std::endl;
         _handles[path] = handle;
+    }
+
+    void ResourceManager::LoadPlugins()
+    {
+        try {
+            std::string pluginPath = eng::Engine::GetEngine()->GetConfigValue("pluginPath");
+            discoverPlugins(pluginPath);
+        } catch (std::exception& e) {
+            CONSOLE::warn << "Error: " << e.what() << std::endl;
+            CONSOLE::warn << "Not loading any plugins" << std::endl;
+        }
+    }
+
+    void ResourceManager::discoverPlugins(const std::string& path)
+    {
+        for (const auto& entry : std::filesystem::recursive_directory_iterator(path)) {
+            if (entry.is_regular_file() && entry.path().extension() == ".so") {
+                std::string pluginName = entry.path().stem().string();
+                if (pluginName.substr(0, 3) == "lib") {
+                    pluginName = pluginName.substr(3);
+                }
+                std::string yamlFilePath = path + "/" + pluginName + "/" + pluginName + ".yaml";
+
+                if (std::filesystem::exists(yamlFilePath)) {
+                    try {
+                        PluginInfo plugin = ParsePlugin(yamlFilePath, entry.path().string());
+                        _plugins[pluginName] = plugin;
+                    } catch (std::exception& e) {
+                        CONSOLE::warn << e.what() << std::endl;
+                        CONSOLE::warn << "Skipping plugin " << pluginName << std::endl;
+                    }
+                }
+            }
+        }
+    }
+
+    ResourceManager::PluginInfo ResourceManager::ParsePlugin(const std::string& path, const std::string& binaryPath)
+    {
+        PluginInfo plugin;
+        YAML::Node node = YAML::LoadFile(path);
+
+        if (node["status"]) {
+            std::string status = node["status"].as<std::string>();
+            if (status == "disabled") {
+                throw std::runtime_error("Plugin " + path + " is disabled");
+            }
+        }
+        plugin.name = node["name"] ? node["name"].as<std::string>() : "Unknown";
+        plugin.path = path;
+        plugin.checksum = FileCheckSum(binaryPath);
+        plugin.entryPoint = node["entryPoint"] ? node["entryPoint"].as<std::string>() : "entry_point";
+        YAML::Node deltaTimeNode = node["deltaTime"];
+        if (deltaTimeNode.IsScalar()) {
+            long tmp = deltaTimeNode.as<long>();
+            plugin.deltaTime = tmp / 1000.0f;
+        } else if (deltaTimeNode.IsMap()) {
+            long tmp;
+            if (eng::Engine::GetEngine()->IsClient()) {
+                tmp = deltaTimeNode["client"] ? deltaTimeNode["client"].as<long>() : 0;
+            } else if (eng::Engine::GetEngine()->IsServer()) {
+                tmp = deltaTimeNode["server"] ? deltaTimeNode["server"].as<long>() : 0;
+            }
+            plugin.deltaTime = tmp / 1000.0f;
+        }
+        if (plugin.deltaTime < 0) {
+            throw std::runtime_error("DeltaTime must be positive, milliseconds");
+        }
+
+        plugin.pipelinePosition = node["pipelinePosition"] ? node["pipelinePosition"].as<int>() : 0;
+
+        plugin.handle = lib::LibUtils::getLibHandle(binaryPath);
+        if (not plugin.handle) {
+            throw std::runtime_error("Could not load plugin " + plugin.name + " at " + path);
+        }
+
+        if (node["hooks"]) {
+            for (const auto& hook : node["hooks"].as<std::vector<std::string>>()) {
+                void (*func)() = (void (*)())lib::LibUtils::getSymHandle(plugin.handle, hook);
+                if (func == nullptr) {
+                    throw std::runtime_error("Could not find hook " + hook + " in plugin " + plugin.name);
+                }
+                plugin.hooks[hook] = func;
+            }
+        }
+        plugin.hooks[plugin.entryPoint] = (void (*)())lib::LibUtils::getSymHandle(plugin.handle, plugin.entryPoint);
+        if (plugin.hooks[plugin.entryPoint] == nullptr) {
+            throw std::runtime_error("Could not find entry point " + plugin.entryPoint + " in plugin " + plugin.name);
+        }
+
+        return plugin;
+    }
+
+    int ResourceManager::FileCheckSum(const std::string& path)
+    {
+        std::ifstream file(path);
+        std::string line;
+        int checksum = 0;
+
+        if (!file.is_open())
+            return 0;
+        while (std::getline(file, line)) {
+            for (char& c : line) {
+                checksum *= 31;
+                checksum += c;
+            }
+        }
+        return checksum;
+    }
+
+    void ResourceManager::PluginLoadPipeline()
+    {
+        for (auto& plugin : _plugins) {
+            int deltaTime = plugin.second.deltaTime;
+            auto entryPoint = plugin.second.hooks[plugin.second.entryPoint];
+            std::shared_ptr<eng::Timer> timer = std::make_shared<eng::Timer>();
+            timer->Start();
+            eng::Engine::GetEngine()->AddToPipeline([deltaTime, entryPoint, timer]() {
+                if (timer->GetElapsedTime() > deltaTime) {
+                    entryPoint();
+                    timer->Restart();
+                }
+            },
+                plugin.second.pipelinePosition, plugin.second.name);
+        }
+    }
+
+    void ResourceManager::ReloadPlugins()
+    {
+        try {
+            std::string path = eng::Engine::GetEngine()->GetConfigValue("pluginPath");
+
+            for (const auto& entry : std::filesystem::recursive_directory_iterator(path)) {
+                if (entry.is_regular_file() && entry.path().extension() == ".so") {
+                    std::string pluginName = entry.path().stem().string();
+                    if (pluginName.substr(0, 3) == "lib") {
+                        pluginName = pluginName.substr(3);
+                    }
+                    std::string yamlFilePath = path + "/" + pluginName + "/" + pluginName + ".yaml";
+
+                    if (_plugins.find(pluginName) != _plugins.end()) {
+                        int checksum = FileCheckSum(entry.path().string());
+                        if (checksum != _plugins[pluginName].checksum) {
+                            CONSOLE::info << "Reloading plugin " << pluginName << std::endl;
+                            lib::LibUtils::closeLibHandle(_plugins[pluginName].handle);
+                            try {
+                                _plugins[pluginName] = ParsePlugin(yamlFilePath, entry.path().string());
+                            } catch (std::exception& e) {
+                                CONSOLE::warn << e.what() << std::endl;
+                                CONSOLE::warn << "Skipping plugin " << pluginName << std::endl;
+                            }
+                        }
+                    } else {
+                        CONSOLE::info << "Loading new plugin " << pluginName << std::endl;
+                        _plugins[pluginName] = ParsePlugin(yamlFilePath, entry.path().string());
+                    }
+                }
+            }
+            PluginLoadPipeline();
+        } catch (std::exception& e) {
+            CONSOLE::warn << e.what() << std::endl;
+        }
     }
 }

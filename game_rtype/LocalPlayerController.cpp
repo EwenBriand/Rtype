@@ -8,12 +8,17 @@
 #include "LocalPlayerController.hpp"
 #include "Components.Vanilla/CoreTransform.hpp"
 #include "ECSImpl.hpp"
-#include "Engine.hpp"
 #include "GameRtype.hpp"
+#include "scripts/Ship.hpp"
 
 // ====================================================================
 // IController methods
 // ====================================================================
+
+LocalPlayerController::LocalPlayerController()
+{
+    _shootTimer.Start();
+}
 
 std::vector<std::string>& LocalPlayerController::GetDirectives()
 {
@@ -82,4 +87,18 @@ bool LocalPlayerController::testShoot()
         };
     }
     return shot;
+}
+
+bool LocalPlayerController::testTcemort()
+{
+    if (_shootTimer.GetElapsedTime() > _shootInterval) {
+        _shootTimer.Restart();
+        return true;
+    }
+    return false;
+}
+
+bool LocalPlayerController::testLaunch()
+{
+    return SYS.GetInputManager().MouseButtonPressed(MOUSE_BUTTON_RIGHT);
 }

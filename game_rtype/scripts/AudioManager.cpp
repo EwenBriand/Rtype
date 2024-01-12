@@ -21,8 +21,14 @@ void AudioManager::Start()
     _audioSource->AddMusicName("Muse/gas_gas_gas.ogg");
     // _audioSource->Play<Music>("Muse/gas_gas_gas.ogg");
     std::cout << "AudioManager::Start()" << std::endl;
+
+    _textField = &SYS.GetComponent<TextField>(_entity);
+    _textField->SetPosition({ 800, 0 });
+    eng::Engine::GetEngine()->SetGlobal<int>("killCount", 0);
 }
 
 void AudioManager::Update(int e)
 {
+    int killcount = eng::Engine::GetEngine()->GetGlobal<int>("killCount");
+    _textField->SetText("Kill Count: " + std::to_string(killcount));
 }

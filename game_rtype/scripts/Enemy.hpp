@@ -11,6 +11,8 @@
 
 #include "Components.Vanilla/Collider2D.hpp"
 #include "Components.Vanilla/RigidBody2D.hpp"
+#include "Components.Vanilla/TextField.hpp"
+#include "Components.Vanilla/UIDiv.hpp"
 #include "Components.Vanilla/UserComponentWrapper.hpp"
 #include "IActor.hpp"
 #include "IController.hpp"
@@ -42,6 +44,8 @@ public:
 
     void SetID(int id);
 
+    void SetBonusOnDeath(int bonus);
+
 private:
     /**
      * @brief Applies the various directives to the Enemy.
@@ -50,12 +54,25 @@ private:
     void applyDirectives();
 
     /**
+     * @brief broadcast the new position to all clients
+     *
+     */
+    void broadcastPosition();
+
+    /**
+     * @brief broadcast the new velocity to all clients
+     *
+     */
+    void broadcastVelocity();
+
+    /**
      * @brief Checks if the enemy should die, and if so, kills it and
      * notifies the game and clients.
      *
      */
     void checkDeath();
-
+    void instantiateRedLaser();
+    void broadcastShoot();
     /**
      * @brief Sends the death message to all clients
      *
@@ -71,9 +88,15 @@ private:
     RigidBody2D* _rb = nullptr;
     Collider2D* _collider = nullptr;
     CoreTransform* _core = nullptr;
+    TextField* _textField = nullptr;
     int _entity;
     eng::Observer _observer;
     int _id = -1;
+    bool _first = true;
+
+    int _bonusOnDeath = -1;
+
+    eng::Timer _broadcastTimer;
 
     std::map<std::string, void (Enemy::*)()> _actions = {
         { COMMAND_LEFT, &Enemy::moveLeft },
@@ -86,6 +109,8 @@ private:
     void moveLeft();
     void moveUp();
     void moveDown();
+
+    std::function<void(int bonus)> _directivesBonus;
 };
 
 #endif /* E2359F7A_1BE1_4E6A_B3E0_981C71D03CB9 */

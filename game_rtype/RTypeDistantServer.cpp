@@ -9,11 +9,14 @@
 #include "AIController.hpp"
 #include "CoreTransform.hpp"
 #include "Enemy.hpp"
+#include "Enemy2.hpp"
 #include "GameRtype.hpp"
+#include "IGraphicalModule.hpp"
 #include "LocalPlayerController.hpp"
 #include "NetworkExceptions.hpp"
 #include "PlayerFromServerController.hpp"
 #include "Ship.hpp"
+#include "Chat.hpp"
 
 namespace rtype {
     const std::vector<std::string> RTypeDistantServer::PlayerPrefabs = {
@@ -147,16 +150,23 @@ namespace rtype {
         _startGame = false;
     }
 
+    void RTypeDistantServer::handleLevel2(serv::Instruction& instruction)
+    {
+        eng::Engine::GetEngine()->GetSceneManager().LoadSceneAsync("level2");
+        _currSceneName = "level2";
+        _startGame = false;
+    }
+
     void RTypeDistantServer::handleStartGame(serv::Instruction& instruction)
     {
         std::cout << "\rStarting game." << std::endl;
         _startGame = true;
     }
 
-    void RTypeDistantServer::handleMessage(serv::Instruction& instruction)
-    {
-        std::cout << "\rMessage from server: " << instruction.data.toString() << std::endl;
-    }
+    // void RTypeDistantServer::handleMessage(serv::Instruction& instruction)
+    // {
+    //     std::cout << "\rMessage from server: " << instruction.data.toString() << std::endl;
+    // }
 
     void RTypeDistantServer::pingServerForAlive()
     {
@@ -210,6 +220,7 @@ namespace rtype {
                 lpc->SetPlayerId(id);
                 // ship.SetID(id);
                 _entityID = entityID;
+                eng::Engine::GetEngine()->SetGlobal("PlayerID", entityID);
                 lpc->SetEntity(_entityID);
                 ship.Possess(_entityID, lpc);
                 _observer = _engine->RegisterObserver();
@@ -261,6 +272,28 @@ namespace rtype {
         }
     }
 
+    void RTypeDistantServer::handleForceMoves(serv::Instruction& instruction)
+    {
+        if (instruction.data.size() < 3 * sizeof(int)) {
+            throw serv::MalformedInstructionException("Player moves instruction malformed");
+        }
+        int id = 0;
+        int x = 0;
+        int y = 0;
+        std::memcpy(&id, instruction.data.data(), sizeof(int));
+        std::memcpy(&x, instruction.data.data() + sizeof(int), sizeof(int));
+        std::memcpy(&y, instruction.data.data() + 2 * sizeof(int), sizeof(int));
+
+        int entity = eng::Engine::GetEngine()->GetGlobal<int>("ForceID " + std::to_string(id));
+        try {
+            auto& transform = _engine->GetECS().GetComponent<CoreTransform>(entity);
+            transform.x = x;
+            transform.y = y;
+        } catch (std::exception& e) {
+            std::cerr << "\r" << e.what() << std::endl;
+        }
+    }
+
     void RTypeDistantServer::handleEnemySpawn(serv::Instruction& instruction)
     {
         if (instruction.data.size() < 3 * sizeof(int)) {
@@ -295,26 +328,80 @@ namespace rtype {
         }
     }
 
+    void RTypeDistantServer::handleEnemySpawn2(serv::Instruction& instruction)
+    {
+        std::cout << "enemy spawn 2" << std::endl;
+        if (instruction.data.size() < 3 * sizeof(int)) {
+            throw std::runtime_error("Enemy spawn instruction has wrong data size.");
+        }
+        int id = 0;
+        int x = 0;
+        int y = 0;
+        std::string prefabName = "";
+
+        std::memcpy(&id, instruction.data.data(), sizeof(int));
+        std::memcpy(&x, instruction.data.data() + sizeof(int), sizeof(int));
+        std::memcpy(&y, instruction.data.data() + 2 * sizeof(int), sizeof(int));
+        prefabName.resize(instruction.data.size() - 3 * sizeof(int));
+
+        std::memcpy(&prefabName[0], instruction.data.data() + 3 * sizeof(int), instruction.data.size() - 3 * sizeof(int));
+
+        try {
+            auto eid = _engine->GetECS().GetResourceManager().LoadPrefab(prefabName);
+            auto& transform = _engine->GetECS().GetComponent<CoreTransform>(eid);
+            transform.x = x;
+            transform.y = y;
+
+            auto& ship = _engine->GetECS().GetComponent<Enemy2>(eid, "Enemy2");
+            auto pfsc = std::make_shared<rtype::AIController>();
+            pfsc->SetID(id);
+            ship.Possess(eid, pfsc);
+            _enemies[id] = eid;
+        } catch (std::exception& e) {
+            std::cerr << "\r" << e.what() << std::endl;
+        }
+    }
+
     void RTypeDistantServer::handleEnemyMoves(serv::Instruction& instruction)
     {
         int id = 0;
         int x = 0;
         int y = 0;
-        std::cout << "Enemy moves" << std::endl;
-        if (instruction.data.size() < 3 * sizeof(int)) {
+        if (instruction.data.size() < 3 * sizeof(int))
             throw std::runtime_error("Enemy moves instruction has wrong data size.");
-        }
         instruction.data.Deserialize(id, x, y);
 
-        if (_enemies.find(id) == _enemies.end()) {
+        if (_enemies.find(id) == _enemies.end())
             return;
-        }
+
         int entityID = _enemies[id];
         try {
             auto& tr = _engine->GetECS().GetComponent<CoreTransform>(entityID);
             tr.x = x;
             tr.y = y;
-            std::cout << "player moved to " << x << ", " << y << std::endl;
+            std::cout << "player " << id << " moved to " << x << ", " << y << std::endl;
+        } catch (std::exception& e) {
+            std::cerr << "\r" << e.what() << std::endl;
+        }
+    }
+
+    void RTypeDistantServer::handleEnemyVelocity(serv::Instruction& instruction)
+    {
+        int id = 0;
+        int x = 0;
+        int y = 0;
+        if (instruction.data.size() < 3 * sizeof(int))
+            throw std::runtime_error("Enemy moves instruction has wrong data size.");
+        instruction.data.Deserialize(id, x, y);
+
+        if (_enemies.find(id) == _enemies.end())
+            return;
+
+        int entityID = _enemies[id];
+        try {
+            auto& tr = _engine->GetECS().GetComponent<RigidBody2D>(entityID);
+            tr.SetVelocity({ (float)x, (float)y });
+            std::cout << "player " << id << " velocity to " << _engine->GetECS().GetComponent<RigidBody2D>(entityID).GetVelocity().x << ", " << y << std::endl;
         } catch (std::exception& e) {
             std::cerr << "\r" << e.what() << std::endl;
         }
@@ -340,6 +427,110 @@ namespace rtype {
         }
     }
 
+    void RTypeDistantServer::handlePlayerShootsTcemort(serv::Instruction& instruction)
+    {
+        if (instruction.data.size() != 3 * sizeof(int)) {
+            throw serv::MalformedInstructionException("Player shoots instruction malformed");
+        }
+        int id = 0;
+        int x = 0;
+        int y = 0;
+        instruction.data.Deserialize(id, x, y);
+
+        try {
+            int laser = SYS.GetResourceManager().LoadPrefab("LaserTcemort");
+            auto& transform = SYS.GetComponent<CoreTransform>(laser);
+            transform.x = x;
+            transform.y = y;
+        } catch (const std::exception& e) {
+            CONSOLE::err << "Failed to spawn laser: " << e.what() << std::endl;
+        }
+    }
+
+    void RTypeDistantServer::handleForceShootsTcemort(serv::Instruction& instruction)
+    {
+        if (instruction.data.size() != 3 * sizeof(int)) {
+            throw serv::MalformedInstructionException("Player shoots instruction malformed");
+        }
+        int id = 0;
+        int x = 0;
+        int y = 0;
+        instruction.data.Deserialize(id, x, y);
+
+        try {
+            int laser = SYS.GetResourceManager().LoadPrefab("LaserTcemort");
+            auto& transform = SYS.GetComponent<CoreTransform>(laser);
+            transform.x = x;
+            transform.y = y;
+        } catch (const std::exception& e) {
+            CONSOLE::err << "Failed to spawn laser: " << e.what() << std::endl;
+        }
+    }
+
+    void RTypeDistantServer::handleForceShoots(serv::Instruction& instruction)
+    {
+        if (instruction.data.size() != 3 * sizeof(int)) {
+            throw serv::MalformedInstructionException("Player shoots instruction malformed");
+        }
+        int id = 0;
+        int x = 0;
+        int y = 0;
+        instruction.data.Deserialize(id, x, y);
+
+        try {
+            int laser = SYS.GetResourceManager().LoadPrefab("Rocket");
+            auto& transform = SYS.GetComponent<CoreTransform>(laser);
+            transform.x = x;
+            transform.y = y;
+        } catch (const std::exception& e) {
+            CONSOLE::err << "Failed to spawn laser: " << e.what() << std::endl;
+        }
+    }
+
+    void RTypeDistantServer::handleBonusSpawn(serv::Instruction& instruction)
+    {
+        if (instruction.data.size() != 3 * sizeof(int)) {
+            throw serv::MalformedInstructionException("Player shoots instruction malformed");
+        }
+        int id = 0;
+        int x = 0;
+        int y = 0;
+        instruction.data.Deserialize(id, x, y);
+
+        try {
+            std::vector<std::string> prefabNames = { "Heal", "X2", "X3", "Tcemort", "Force_ic" };
+            int laser = SYS.GetResourceManager().LoadPrefab(prefabNames[id]);
+            auto& transform = SYS.GetComponent<CoreTransform>(laser);
+            transform.x = x;
+            transform.y = y;
+        } catch (const std::exception& e) {
+            CONSOLE::err << "Failed to spawn laser: " << e.what() << std::endl;
+        }
+    }
+
+    void RTypeDistantServer::handleForceSpawn(serv::Instruction& instruction)
+    {
+        if (instruction.data.size() != 3 * sizeof(int)) {
+            throw serv::MalformedInstructionException("Player shoots instruction malformed");
+        }
+        int id = 0;
+        int x = 0;
+        int y = 0;
+        instruction.data.Deserialize(id, x, y);
+
+        try {
+            int laser = SYS.GetResourceManager().LoadPrefab("Force");
+            auto& transform = SYS.GetComponent<CoreTransform>(laser);
+            transform.x = x;
+            transform.y = y;
+            eng::Engine::GetEngine()->SetGlobal("ForceID " + std::to_string(id), laser);
+            eng::Engine::GetEngine()->SetGlobal("ForceAttached " + std::to_string(id), true);
+
+        } catch (const std::exception& e) {
+            CONSOLE::err << "Failed to spawn laser: " << e.what() << std::endl;
+        }
+    }
+
     void RTypeDistantServer::handleEnemyShoots(serv::Instruction& instruction)
     {
         try {
@@ -357,26 +548,30 @@ namespace rtype {
 
     void RTypeDistantServer::handleEnemyDies(serv::Instruction& instruction)
     {
-        if (instruction.data.size() != sizeof(int)) {
-            throw serv::MalformedInstructionException("Enemy dies instruction malformed");
-        }
-        int id = 0;
-        instruction.data.Deserialize(id);
-        std::cout << "Enemy dies" << std::endl;
-
-        if (_enemies.find(id) == _enemies.end()) {
-            return;
-        }
-        int entityID = _enemies[id];
+        std::cout << "enemy died" << std::endl;
         try {
-            SYS.UnregisterEntity(entityID);
-            _enemies.erase(id);
+            int id = 0;
+            int kcount = 0;
+            instruction.data.Deserialize(id, kcount);
+            // instruction.data.Deserialize(id);
+
+            if (_enemies.find(id) == _enemies.end()) {
+                return;
+            }
+            int entityID = _enemies[id];
+            try {
+                SYS.UnregisterEntity(entityID);
+                _enemies.erase(id);
+            } catch (const std::exception& e) {
+                CONSOLE::err << "\r" << e.what() << std::endl;
+            }
+            std::cout << "\rEnemy " << id << " died." << std::endl;
+            std::shared_ptr<eng::RType> game = std::dynamic_pointer_cast<eng::RType>(_engine->GetGame());
+            game->GetSessionData().killCount = kcount;
+            eng::Engine::GetEngine()->SetGlobal("killCount", kcount);
         } catch (const std::exception& e) {
             CONSOLE::err << "\r" << e.what() << std::endl;
         }
-        std::cout << "\rEnemy " << id << " died." << std::endl;
-        std::shared_ptr<eng::RType> game = std::dynamic_pointer_cast<eng::RType>(_engine->GetGame());
-        game->GetSessionData().killCount++;
     }
 
     void RTypeDistantServer::setPlayerAnimation(int id, int entity)
@@ -438,5 +633,54 @@ namespace rtype {
     {
         std::cout << "Disconnecting from server" << std::endl;
         Reset();
+    }
+
+    void RTypeDistantServer::handleBossMoves(serv::Instruction& instruction)
+    {
+        try {
+            int x = 0;
+            int y = 0;
+            if (instruction.data.size() != 2 * sizeof(int))
+                throw std::runtime_error("Boss moves instruction has wrong data size, expected 8 bytes, got " + std::to_string(instruction.data.size()) + " bytes.");
+            instruction.data.Deserialize(x, y);
+            eng::Engine::GetEngine()->SetGlobal<graph::vec2i>("bossTargetPosition", graph::vec2i { x, y });
+        } catch (const std::exception& e) {
+            std::cerr << e.what() << std::endl;
+        }
+    }
+
+    void RTypeDistantServer::handleBossSpawns(serv::Instruction& instruction)
+    {
+        try {
+            SYS.GetResourceManager().LoadPrefab("boss-head");
+            eng::Engine::GetEngine()->SetGlobal<graph::vec2i>("bossTargetPosition", graph::vec2i { 0, 0 });
+            eng::Engine::GetEngine()->SetGlobal<graph::vec2i>("bossShoot", graph::vec2i { -1, -1 });
+        } catch (const std::exception& e) {
+            std::cerr << e.what() << std::endl;
+        }
+    }
+
+    void RTypeDistantServer::handleBossShoots(serv::Instruction& instruction)
+    {
+        int x = 0;
+        int y = 0;
+
+        if (instruction.data.size() != 2 * sizeof(int))
+            throw std::runtime_error("Boss shoots instruction has wrong data size, expected 8 bytes, got " + std::to_string(instruction.data.size()) + " bytes.");
+        instruction.data.Deserialize(x, y);
+        eng::Engine::GetEngine()->SetGlobal<graph::vec2i>("bossShoot", graph::vec2i { x, y });
+    }
+    void RTypeDistantServer::handleMessage(serv::Instruction& instruction)
+    {
+        try {
+            std::string message = instruction.data.toString();
+            int chatEntity = _engine->GetGlobal<int>("chatEntity");
+            auto& transform = SYS.GetComponent<Chat>(chatEntity, "Chat");
+            transform.AddMessage(message);
+        } catch (const std::exception& e) {
+            std::cerr << e.what() << std::endl;
+        }    
+        // int laser = SYS.GetResourceManager().LoadPrefab("Laser");
+        // auto& transform = SYS.GetComponent<CoreTransform>(laser);
     }
 } // namespace rtype

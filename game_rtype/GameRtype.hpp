@@ -13,6 +13,13 @@ namespace eng {
 
     class RType : public eng::IGame {
     public:
+        enum class BonusType {
+            HEAL,
+            X2,
+            X3,
+            TCEMORT,
+        };
+
         /**
          * @brief Resets the client and returns it to the menu.
          *
@@ -76,12 +83,83 @@ namespace eng {
         static constexpr int I_PLAYER_DIES = 5008;
 
         /**
+         * @brief args: {int nameLen, string prefabName, int id, int x, int y}
+         *
+         */
+        static constexpr int I_ENEMY_SPAWN2 = 5009;
+
+        /**
+         * @brief args: {int id, int x, int y}
+         *
+         */
+        static constexpr int I_ENEMY_VELOCITY = 5010;
+
+        /**
+         * @brief a bonus spawn at a specific position args: {int type enemy, int bonusType, int x, int y}
+         *
+         */
+        static constexpr int I_BONUS_SPAWN = 5011;
+
+        /**
+         * @brief args: {int id, int x, int y}
+         *
+         */
+        static constexpr int I_PLAYER_SHOOTS_TCEMORT = 5012;
+
+        /**
+         * @brief args: {int id, int x, int y}
+         *
+         */
+        static constexpr int I_FORCE_SHOOTS_TCEMORT = 5014;
+
+        /**
+         * @brief args: {int id, int x, int y}
+         *
+         */
+        static constexpr int I_FORCE_SPAWN = 5013;
+
+        /**
+         * @brief args: {int entity, int x, int y}
+         *
+         */
+        static constexpr int I_FORCE_MOVES = 5015;
+
+        /**
+         * @brief args: {int entity, int x, int y}
+         *
+         */
+        static constexpr int I_FORCE_SHOOTS = 5016;
+
+        /**
          * @brief The number of enemies to kill for the game to end
          *
          */
-        static constexpr int KILL_COUNT_TO_END = 10;
+        static constexpr int KILL_COUNT_TO_END = 30;
 
-        RType() = default;
+        /**
+         * @brief Indicates a new position for the boss to move to.
+         * args: {int x, int y}
+         *
+         */
+        static constexpr int I_BOSS_MOVES = 6013;
+
+        /**
+         * @brief Indicates that the boss has spawned.
+         *
+         */
+        static constexpr int I_BOSS_SPAWNS = 6014;
+
+        /**
+         * @brief Indicates that the boss just shot from coordinates (x, y)
+         *
+         */
+        static constexpr int I_BOSS_SHOOTS = 85236;
+
+        /*  */
+        static constexpr int I_LEVEL2 = 8000;
+
+        RType()
+            = default;
         ~RType() = default;
 
         void Init(Engine*) override;

@@ -217,6 +217,26 @@ namespace serv {
          */
         void ResetClients();
 
+        /**
+         * @brief Registers a callback that will intercept a certain opcode instead of the default behaviour.
+         *
+         * @param opcode
+         * @param callback
+         */
+        void Intercept(int opcode, std::function<void(const Instruction&, boost::asio::ip::udp::endpoint& endpoint)> callback);
+
+        /**
+         * @brief Manually feeds a message to the server.
+         *
+         */
+        void FeedMessage(Message& message);
+
+        /**
+         * @brief Returns the map of all interceptor functions.
+         *
+         */
+        std::map<int, std::function<void(const Instruction&, boost::asio::ip::udp::endpoint& endpoint)>>& GetInterceptors();
+
     private:
         /**
          * @brief Receives strings and tries assigns them to client buckets asynchronously.
@@ -235,6 +255,20 @@ namespace serv {
          *
          */
         void checkForDisconnections();
+
+        /**
+         * @brief Assigns a message to the corresponding client bucket.
+         *
+         * @param data
+         */
+        void passToClient(bytes& data);
+
+        /**
+         * @brief Assigns a message to the corresponding client bucket.
+         *
+         * @param data
+         */
+        void passToClient(bytes& data);
 
         std::shared_ptr<AsioClone> _asio;
         std::shared_ptr<EndpointWrapper> _endpoint;
@@ -262,5 +296,7 @@ namespace serv {
 
         std::ofstream _logFile;
         std::shared_ptr<std::mutex> _logMutex;
+
+        std::map<int, std::function<void(const Instruction&, boost::asio::ip::udp::endpoint& endpoint)>> _interceptors;
     };
 }

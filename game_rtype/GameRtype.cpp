@@ -67,18 +67,9 @@ namespace eng {
 
     void RType::initServerConnection(Engine* e)
     {
-        std::cout << "======================" << std::endl;
-        if (e->IsOptionSet(eng::Engine::Options::SERVER_MODE))
-            std::cout << "Starting server mode" << std::endl;
-        if (e->IsOptionSet(eng::Engine::Options::SERVER_IP))
-            std::cout << "Server IP: " << e->GetOptionValue(eng::Engine::Options::SERVER_IP) << std::endl;
-        if (e->IsOptionSet(eng::Engine::Options::SERVER_PORT))
-            std::cout << "Server port: " << e->GetOptionValue(eng::Engine::Options::SERVER_PORT) << std::endl;
-        if (!e->IsOptionSet(eng::Engine::Options::SERVER_MODE) && e->IsOptionSet(eng::Engine::Options::SERVER_IP) && e->IsOptionSet(eng::Engine::Options::SERVER_PORT)) {
-            std::cout << "Connecting to server" << std::endl;
+        if (e->IsClient()) {
             connectToServer(e);
-            std::cout << "Connected to server" << std::endl;
-        } else if (e->IsOptionSet(eng::Engine::Options::SERVER_MODE) && e->IsOptionSet(eng::Engine::Options::SERVER_PORT)) {
+        } else if (e->IsServer()) {
             startServer(e);
         } else {
             std::cout << "Starting in single player mode" << std::endl;
