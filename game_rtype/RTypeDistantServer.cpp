@@ -120,6 +120,16 @@ namespace rtype {
             .SwitchScene(_currSceneName);
     }
 
+    bool RTypeDistantServer::SceneChangeFlag() const noexcept
+    {
+        return _sceneChanged;
+    }
+
+    void RTypeDistantServer::ResetSceneChangeFlag() noexcept
+    {
+        _sceneChanged = false;
+    }
+
     // ========================================================================
     // REQUEST HANDLING METHODS
     // ========================================================================
@@ -145,6 +155,7 @@ namespace rtype {
         _engine->GetSceneManager().LoadSceneAsync(sceneName);
         _currSceneName = sceneName;
         _startGame = false;
+        _sceneChanged = true;
     }
 
     void RTypeDistantServer::handleStartGame(serv::Instruction& instruction)
