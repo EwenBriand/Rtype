@@ -100,6 +100,18 @@ namespace rtype {
          */
         int GetKillCount() const noexcept;
 
+        /**
+         * @brief Returns true if the signal to change scene has been received. This flag should be manually reset using ResetSceneChangeFlag().
+         *
+         */
+        bool SceneChangeFlag() const noexcept;
+
+        /**
+         * @brief Resets the scene change flag.
+         *
+         */
+        void ResetSceneChangeFlag() noexcept;
+
     private:
         void handleConnectOk(serv::Instruction& instruction);
         void handleServerFull(serv::Instruction& instruction);
@@ -154,6 +166,7 @@ namespace rtype {
         void setPlayerAnimation(int id, int entity);
 
         std::thread _pingThread;
+        bool _sceneChanged = false;
 
         bool _isConnected = false;
         bool _startGame = false;

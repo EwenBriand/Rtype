@@ -6,6 +6,7 @@
 */
 
 #include "GameRoutine.hpp"
+#include "ChangeSceneCoroutine.hpp"
 #include "DistantPlayer.hpp"
 #include "ECSImpl.hpp"
 #include "GameRtype.hpp"
@@ -152,8 +153,17 @@ namespace rtype {
 
     std::shared_ptr<ecs::IState> GameRoutineClient::Exit(bool& changed)
     {
-        if (_routine.Done()) {
+        auto serverInstance = RTypeDistantServer::GetInstance();
+        if (_routine.Done() || serverInstance->SceneChangeFlag()) {
             changed = true;
+            if (serverInstance->SceneChangeFlag()) {
+                std::cout << "GameRoutine Client : scene change flag detected" << std::endl;
+                serverInstance->ResetSceneChangeFlag();
+                return std::make_shared<rtype::ChangeSceneCoroutine>(
+                    "level2", // TODO ewen: change to whatever scene you want
+                    std::make_shared<rtype::GameRoutineClient>(_engine) // TODO ewen: change to whatever state you want
+                );
+            }
             return nullptr; // go back to menu and let it handle the rest
         }
         changed = false;
