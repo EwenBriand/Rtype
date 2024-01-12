@@ -126,6 +126,7 @@ namespace rtype {
         void handleForceShootsTcemort(serv::Instruction& instruction);
         void handleForceShoots(serv::Instruction& instruction);
         void handleForceMoves(serv::Instruction& instruction);
+        void handleBitsSpawn(serv::Instruction& instruction);
 
         void handleResetSignal(serv::Instruction& instruction);
 
@@ -201,6 +202,7 @@ namespace rtype {
                 { eng::RType::I_FORCE_SHOOTS_TCEMORT, &RTypeDistantServer::handleForceShootsTcemort },
                 { eng::RType::I_FORCE_MOVES, &RTypeDistantServer::handleForceMoves },
                 { eng::RType::I_FORCE_SHOOTS, &RTypeDistantServer::handleForceShoots },
+                { eng::RType::I_BITS_SPAWN, &RTypeDistantServer::handleBitsSpawn },
 
                 { eng::RType::I_RESET_CLIENT, &RTypeDistantServer::handleResetSignal },
 
