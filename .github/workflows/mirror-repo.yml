@@ -18,6 +18,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: git config --global --add safe.directory '*'
+      # install doxygen
+      - run: sudo dnf -y install doxygen
       - run: ./fast build -j10
       - run: cd build ; ctest
       - run: cd build && make doc 
