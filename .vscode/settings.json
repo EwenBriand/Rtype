@@ -100,6 +100,7 @@
         "valarray": "cpp",
         "unordered_set": "cpp",
         "ranges": "cpp",
-        "span": "cpp"
+        "span": "cpp",
+        "*.ipp": "cpp"
     }
 }

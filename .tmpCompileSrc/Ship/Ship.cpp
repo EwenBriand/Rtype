@@ -49,6 +49,9 @@ void Ship::Start()
                 this->_health -= 1;
                 _textField->SetText((std::to_string(_health) + " HP"));
             }
+            if (tag == "Block") {
+                _rb->SetVelocity({ 0, 0 });
+            }
         } catch (std::exception& e) {
             std::cerr << "Ship::Start(): " << e.what() << std::endl;
         }
