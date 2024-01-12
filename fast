@@ -97,6 +97,10 @@ def build_root(args):
             print_color("red", "Metadata generation failed")
             exit(1)
         print_color("yellow", "Generating metadata for vanilla components")
+        os.system(
+            "./metadata/build/generate_metadata game_pool/scripts  &&  \
+            ./metadata/build/generate_metadata game_rtype/scripts && \
+            ./metadata/build/generate_metadata /Components.Vanilla")
         fail = os.system(
             f"mkdir -p build && pwd && cd build && ../metadata/build/generate_metadata .")
         if fail:
