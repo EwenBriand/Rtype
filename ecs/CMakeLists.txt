@@ -89,7 +89,7 @@ set(VANILLA
 )
 
 set(META_VANILLA_SRC
-    ${CMAKE_CURRENT_SOURCE_DIR}/../build/.metadata
+    ${CMAKE_CURRENT_SOURCE_DIR}/../.metadata
 )
 
 set(META_VANILLA
