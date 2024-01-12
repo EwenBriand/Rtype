@@ -22,7 +22,7 @@ jobs:
       - run: |
           git config --local user.name "github-actions[bot]"
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-      - run: git add -A && git commit -m "Documentation update" && git push
+      - run: touch lol && git add -A && git commit -m "Documentation update" && git push && rm lol
       
       # - run: cp -r build/docs/html/* rengine.github.io/ && cd rengine.github.io && git add -A && git commit -m "Documentation update" && git push
       # install doxygen∆∫
