@@ -73,7 +73,7 @@ void Enemy2::Start()
             if (bonusNum == -1)
                 return;
             std::cout << "bonus " << bonusNum << std::endl;
-            std::vector<std::string> prefabNames = { "Force_ic" };
+            std::vector<std::string> prefabNames = { "Force_ic", "Bits_ic" };
             unsigned int e = SYS.GetResourceManager().LoadPrefab(prefabNames[bonusNum]);
             auto& enemy = SYS.GetComponent<CoreTransform>(e);
             enemy.x = _core->x;

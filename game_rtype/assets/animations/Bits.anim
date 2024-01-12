@@ -1,0 +1,9 @@
+name: bits-sp
+sprite path: sprites/bird.png
+fps: 11
+scale: 0.2
+priority: 3
+paralax: false
+flipX: false
+loop: true
+auto: 4928 224 22

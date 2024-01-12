@@ -201,12 +201,8 @@ void DistantPlayer::handleForceMoves(serv::Instruction& instruction)
     instruction.data.Deserialize(id, x, y);
 
     std::string name = "ForceID " + std::to_string(id);
-    std::cout << "\rforce moves: " << name << " " << x << " " << y << std::endl;
-    if (eng::Engine::GetEngine()->IsServer()) {
-        std::cout << "\ris server" << std::endl;
-    } else {
-        std::cout << "\ris client" << std::endl;
-    }
+    // std::cout << "\rforce moves: " << name << " " << x << " " << y << std::endl;
+
     int entity = eng::Engine::GetEngine()->GetGlobal<int>(name);
     try {
         auto& transform = SYS.GetComponent<CoreTransform>(entity);
