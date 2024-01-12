@@ -18,13 +18,15 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: git config --global --add safe.directory '*'
-      # install doxygen
+      - run: sudo dnf install -y doxygen
+      - run: git add -A && git commit -m "Documentation update" && git push
+      # - run: cp -r build/docs/html/* rengine.github.io/ && cd rengine.github.io && git add -A && git commit -m "Documentation update" && git push
+      # install doxygen∆∫
       - run: ./fast build -j10
       - run: cd build ; ctest
-      - run: cd build && make doc 
+      - run: cd build && make doc
       # - run: cd build && cd docs && git clone git@github.com:EliotJanvier/rengine.github.io.git && mv html/* rengine.github.io/ && cd rengine.github.io
       # EPITECH_PRIVATE_SSH
-      - run: cp -r build/docs/html/* reingine.github.io/ && cd rengine.github.io && git add -A && git commit -m "Documentation update" && git push
       # - run: |
       #     cd build/docs/rengine.github.io
       #     git config --local user.name "github-actions[bot]"
