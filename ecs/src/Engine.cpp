@@ -126,7 +126,6 @@ namespace eng {
 
     void Engine::AddToPipeline(Action action, int priority, const std::string& name)
     {
-        std::cout << "\radd to pipeline: engine pointer " << eng::Engine::GetEngine() << " prio " << priority << std::endl;
         m_unsortedPipeline->push_back(std::make_tuple(priority, std::make_tuple(name, action)));
         m_pipelineChanged = true;
     }

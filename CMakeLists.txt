@@ -167,5 +167,6 @@ add_custom_target(doc
 
 add_subdirectory(ecs)
 add_subdirectory(game_rtype)
+add_subdirectory(game_pool)
 
 add_subdirectory(game_rtype/plugins/LagChecker)

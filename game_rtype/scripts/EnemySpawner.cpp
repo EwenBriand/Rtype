@@ -110,7 +110,6 @@ void EnemySpawner::spawnEnemy2()
 
 void EnemySpawner::OnAddComponent(int e)
 {
-    std::cout << "add enemy spawner" << std::endl;
     if (not eng::Engine::GetEngine()->IsServer())
         return;
     try {
