@@ -23,7 +23,12 @@ jobs:
       - run: ./fast build -j10
       - run: cd build ; ctest
       - run: cd build && make doc 
-      - run: cd build && cd docs && git clone git@github.com:EliotJanvier/rengine.github.io.git && mv html/* rengine.github.io/ && cd rengine.github.io
+      - name: Get SSH Key Fingerprint
+      - run: |
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          cat ~/.ssh/known_hosts
+
+      # - run: cd build && cd docs && git clone git@github.com:EliotJanvier/rengine.github.io.git && mv html/* rengine.github.io/ && cd rengine.github.io
       - run: |
           cd build/docs/rengine.github.io
           git config --local user.name "github-actions[bot]"
@@ -31,6 +36,8 @@ jobs:
           git add -A
           git commit -m "Documentation update"
           git push https::${{ secrets.GITHUB_TOKEN }}@github.com/EpitechPromo2026/B-CPP-500-BAR-5-2-rtype-eliot.janvier.git HEAD:main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build_windows:
     runs-on: windows-latest
