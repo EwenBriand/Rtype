@@ -38,7 +38,7 @@ public:
 
 private:
     serialize float _speed = 1.0f;
-    serialize int _damage = 1;
+    serialize int _damage = 2;
     bool _reverse = false;
 
     RigidBody2D* _rb = nullptr;

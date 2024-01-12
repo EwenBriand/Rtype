@@ -41,11 +41,21 @@ void EnemySpawner::Update(int e)
         or not eng::Engine::GetEngine()->PlayMode())
         return;
     _timer.Restart();
+
+    bool boss_spawn = eng::Engine::GetEngine()->GetGlobal<bool>("bossSpawn");
+
     if (_wave == 0 && _wave_enemy.size() > 0) {
         _wave = _wave_enemy[0];
         // _wave_enemy.erase(_wave_enemy.begin());
     }
-    if (_wave > 0) {
+    int nb_kill = 0;
+    try {
+        nb_kill = eng::Engine::GetEngine()->GetGlobal<int>("killCount");
+    } catch (const std::exception& e) {
+        std::cerr << e.what() << std::endl;
+    }
+    std::cout << "nb kill: " << nb_kill << "<" << eng::RType::KILL_COUNT_TO_END << std::endl;
+    if (_wave > 0 && nb_kill < eng::RType::KILL_COUNT_TO_END) {
         _wave--;
         try {
             graph::vec2i size = SYS.GetGraphicalModule()->GetScreenSize();
@@ -60,6 +70,17 @@ void EnemySpawner::Update(int e)
             }
         } catch (const std::exception& e) {
             CONSOLE::err << "\rCould not spawn enemy: \n\r\t" << e.what() << std::endl;
+        }
+    } else if (boss_spawn == false && nb_kill >= eng::RType::KILL_COUNT_TO_END) {
+        try {
+            eng::Engine::GetEngine()->SetGlobal("bossSpawn", true);
+            std::cout << "\rspawning boss" << std::endl;
+            SYS.GetResourceManager().LoadPrefab("boss-head");
+            eng::Engine::GetEngine()->SetGlobal<graph::vec2i>("bossTargetPosition", graph::vec2i { 0, 0 });
+            eng::Engine::GetEngine()->SetGlobal<graph::vec2i>("bossShoot", graph::vec2i { -1, -1 });
+            eng::Engine::GetEngine()->GetServer().Broadcast(serv::Instruction(eng::RType::I_BOSS_SPAWNS, 0, serv::bytes()));
+        } catch (const std::exception& e) {
+            std::cerr << e.what() << std::endl;
         }
     }
     std::cout << "kill count: " << eng::Engine::GetEngine()->GetGlobal<int>("killCount") << std::endl;

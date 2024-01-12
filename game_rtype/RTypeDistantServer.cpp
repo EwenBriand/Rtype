@@ -633,7 +633,6 @@ namespace rtype {
 
     void RTypeDistantServer::handlePlayerDies(serv::Instruction& instruction)
     {
-
         std::cout << "player died!!!" << std::endl;
         eng::Engine::GetEngine()->GetClient().Send(serv::Instruction(serv::I_DISCONNECT, 0, serv::bytes()));
     }
@@ -668,6 +667,8 @@ namespace rtype {
                 throw std::runtime_error("Boss moves instruction has wrong data size, expected 8 bytes, got " + std::to_string(instruction.data.size()) + " bytes.");
             instruction.data.Deserialize(x, y);
             eng::Engine::GetEngine()->SetGlobal<graph::vec2i>("bossTargetPosition", graph::vec2i { x, y });
+
+            std::cout << "boss moves to " << x << " | " << y << std::endl;
         } catch (const std::exception& e) {
             std::cerr << e.what() << std::endl;
         }
@@ -679,6 +680,7 @@ namespace rtype {
             SYS.GetResourceManager().LoadPrefab("boss-head");
             eng::Engine::GetEngine()->SetGlobal<graph::vec2i>("bossTargetPosition", graph::vec2i { 0, 0 });
             eng::Engine::GetEngine()->SetGlobal<graph::vec2i>("bossShoot", graph::vec2i { -1, -1 });
+            eng::Engine::GetEngine()->SetGlobal("bossSpawn", true);
         } catch (const std::exception& e) {
             std::cerr << e.what() << std::endl;
         }

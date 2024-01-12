@@ -60,14 +60,6 @@ void Bits::Update(int entityID)
 {
     if (not eng::Engine::GetEngine()->PlayMode())
         return;
-    try {
-        if ((_core->x < -100 or _core->x > 1920 + 100 or _core->y < -100 or _core->y > 1080 + 100)) {
-            SYS.UnregisterEntity(_entity);
-            std::cout << "Bits::Update(): out of bounds" << std::endl;
-        }
-    } catch (std::exception& e) {
-        std::cerr << "Laser::Update(): " << e.what() << std::endl;
-    }
 
     if (_attached) {
         if (eng::Engine::GetEngine()->IsServer() && _shootTimer.GetElapsedTime() > 5.0f) {

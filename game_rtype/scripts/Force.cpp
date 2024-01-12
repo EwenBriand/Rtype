@@ -57,18 +57,9 @@ void Force::Update(int entityID)
 {
     if (not eng::Engine::GetEngine()->PlayMode())
         return;
-    try {
-        if ((_core->x < -100 or _core->x > 1920 + 100 or _core->y < -100 or _core->y > 1080 + 100)) {
-            SYS.UnregisterEntity(_entity);
-            std::cout << "Force::Update(): out of bounds" << std::endl;
-        }
-    } catch (std::exception& e) {
-        std::cerr << "Laser::Update(): " << e.what() << std::endl;
-    }
 
     int ent = eng::Engine::GetEngine()->GetGlobal<int>("PlayerID");
     if (_shipID == ent && _attached) {
-        std::cout << "Force::Update(): shipID == ent && attached" << std::endl;
         if (_attached && _shootTimer.GetElapsedTime() > 5.0f) {
             std::cout << "Force::Update(): shoot" << std::endl;
             shootTcemort();

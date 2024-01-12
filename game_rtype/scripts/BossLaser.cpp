@@ -22,6 +22,9 @@ void BossLaser::Start()
                 if (otherCollider.GetTag() == "player") {
                     collider.SetDestroyMe(true);
                     SYS.UnregisterEntity(_entityID);
+                } else if (otherCollider.GetTag() == "Force") {
+                    collider.SetDestroyMe(true);
+                    SYS.UnregisterEntity(_entityID);
                 }
             } catch (std::exception& e) {
                 std::cerr << "BossLaser::OnCollisionEnter(): " << e.what() << std::endl;

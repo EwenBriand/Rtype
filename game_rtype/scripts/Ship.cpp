@@ -133,11 +133,11 @@ void Ship::SetupCollisions()
                 eng::Engine::GetEngine()->SetGlobal("ForceAttached " + std::to_string(_entity), true);
                 _forceID = (_entity == entityID) ? otherID : entityID;
             } else if (tag == "boss") {
-                // this->_health -= 10;
+                this->_health -= 10;
                 _textField->SetText((std::to_string(_health) + " HP"));
             } else if (tag == "boss-laser") {
                 std::cout << "health minus two" << std::endl;
-                // this->_health -= 2;
+                this->_health -= 2;
                 _textField->SetText((std::to_string(_health) + " HP"));
             }
         } catch (std::exception& e) {
