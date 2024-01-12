@@ -133,7 +133,7 @@ void Ship::SetupCollisions()
                 eng::Engine::GetEngine()->SetGlobal("ForceAttached " + std::to_string(_entity), true);
                 _forceID = (_entity == entityID) ? otherID : entityID;
             } else if (tag == "boss") {
-                this->_health -= 10;
+                // this->_health -= 10;
                 _textField->SetText((std::to_string(_health) + " HP"));
             } else if (tag == "boss-laser") {
                 std::cout << "health minus two" << std::endl;
@@ -356,6 +356,7 @@ void Ship::shootTcemort()
 void Ship::checkForDeath()
 {
     if (_health <= 0) {
+        std::cout << _core->x << " | " << _core->y << std::endl;
         SYS.UnregisterEntity(_entity);
         eng::Engine::GetEngine()->GetServer().Broadcast(serv::Instruction(eng::RType::I_PLAYER_DIES, 0, serv::bytes(std::vector<int> { _id })));
     }
