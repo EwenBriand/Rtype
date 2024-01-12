@@ -97,15 +97,15 @@ def build_root(args):
             print_color("red", "Metadata generation failed")
             exit(1)
         print_color("yellow", "Generating metadata for vanilla components")
-        os.system(
+        fail = os.system(
             "./metadata/build/generate_metadata game_pool/scripts  &&  \
             ./metadata/build/generate_metadata game_rtype/scripts && \
-            ./metadata/build/generate_metadata /Components.Vanilla")
-        fail = os.system(
-            f"mkdir -p build && pwd && cd build && ../metadata/build/generate_metadata .")
+            ./metadata/build/generate_metadata ecs/include/Components.Vanilla")
         if fail:
             print_color("red", "Metadata generation failed")
             exit(1)
+        else:
+            print_color("green", "Metadata generation succeeded")
         print_color("yellow", "Building engine")
         fail = os.system(
             "mkdir -p build && cd build && cmake -DWITH_PIC=on -DBUILD_SHARED_LIBS=on -DCMAKE_BUILD_TYPE=Release .. && make " + targets + j_option)
