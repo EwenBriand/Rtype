@@ -69,6 +69,7 @@ private:
     // ATTRIBUTES
     // ==============================================================
     int _rank = 0;
+    int _bossHPMax = 0;
     int _entityID = -1;
     CoreTransform* _parent = nullptr;
     graph::vec2f _previousParentPos = { 0, 0 };

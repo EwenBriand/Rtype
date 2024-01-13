@@ -140,7 +140,7 @@ namespace eng {
          * @brief The number of enemies to kill for the game to end
          *
          */
-        static constexpr int KILL_COUNT_TO_END = 3;
+        static constexpr int KILL_COUNT_TO_END = 30;
 
         /**
          * @brief Indicates a new position for the boss to move to.
@@ -163,7 +163,6 @@ namespace eng {
 
         /*  */
         static constexpr int I_LEVEL2 = 8000;
-
 
         static constexpr int I_BLOCK_SPAWN = 6969;
 

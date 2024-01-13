@@ -13,6 +13,11 @@ MANAGED_RESOURCE(BossBody)
 
 void BossBody::Start()
 {
+    try {
+        _bossHPMax = eng::Engine::GetEngine()->GetGlobal<int>("bossHp");
+    } catch (std::exception& e) {
+        std::cerr << e.what() << std::endl;
+    }
 }
 
 void BossBody::OnAddComponent(int entityID)
@@ -23,6 +28,14 @@ void BossBody::OnAddComponent(int entityID)
 void BossBody::Update(int entityID)
 {
     followParent();
+    try {
+        int bossHp = eng::Engine::GetEngine()->GetGlobal<int>("bossHp");
+        if (bossHp < _bossHPMax - _rank * 10) {
+            SYS.UnregisterEntity(_entityID);
+        }
+    } catch (std::exception& e) {
+        std::cerr << e.what() << std::endl;
+    }
 }
 
 // ===========================================================================================================
@@ -32,7 +45,7 @@ void BossBody::Update(int entityID)
 void BossBody::SetRank(int id)
 {
     _rank = id;
-    if (_rank <= 0)
+    if (_rank <= 1)
         return;
     if (_entityID == -1)
         throw std::runtime_error("BossBody::SetRank: entityID not set");
