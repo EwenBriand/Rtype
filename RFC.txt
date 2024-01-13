@@ -1,0 +1,68 @@
+RFC 0001: Server-Client Interface for Rengine Game Server
+1. Introduction
+This document describes the protocol for communication between the Rengine game server and its clients. The protocol is designed to be simple, efficient, and extensible to support a wide range of games.
+
+2. Author
+Eliot Janvier
+Rengine
+eliot.janvier@epitech.eu
+
+3. Specification
+3.1 Message Format
+All messages between the server and clients follow the format:
+
+The opcode represents the code of the instruction to execute. If a response is needed to a specific message, the messageID can be set to a value x on the request. The response should then have the same code so that it is possible to associate the two. Note that this behavior is not automatic and should be implemented by the user if needed. The data is any number of bytes holding the significant data for the request.
+
+3.2 Default Instructions
+The server handles the following default instructions:
+
+I_OK (0): Confirms that an action has been executed correctly.
+I_AM_ALIVE (1): All clients are required to ping the server with this opcode at least once every three seconds, else they will be considered disconnected.
+I_CONNECT (1001): A client's first interaction with the server, to connect to it.
+I_CONNECT_OK (1002): The server replies with this opcode when a client connects and is accepted.
+I_LOAD_SCENE (1003): The server can order a client to load a specific scene. The client then responds with I_SCENE_LOADED when the scene is ready.
+I_START_GAME (1005): Signals to all clients that the game is starting, the player can gain control of its controller.
+I_MESSAGE (1006): Sends a message from server to client. What to do with the message is up to the client.
+I_DISCONNECT (1007): A client sends this opcode to the server when it wants to disconnect.
+3.3 Error Codes
+The server sends the following error codes:
+
+E_SERVER_FULL (300): The server sends this opcode to a client when it tries to connect but the server is full.
+E_INVALID_OPCODE (301): The server sends this opcode to a client when it sends a message with an invalid opcode.
+E_SERVER_INTERNAL_ERROR (302): The server sends this opcode to a client when an internal error occurs.
+E_CHEATER (303): The server sends this opcode to a client when it detects cheating.
+3.4 Game-Specific Instructions
+The following opcodes are used in the RTYPE demo game:
+
+I_RESET_CLIENT (15000): Resets the client and returns it to the menu.
+I_PLAYER_ID (5000): Assigns an id to a player.
+I_ENEMY_SPAWN (5001): Spawns an enemy.
+I_ENEMY_MOVES (5002): Moves an enemy.
+I_ENEMY_DIES (5003): An enemy dies.
+I_ENEMY_SHOOTS (5004): An enemy shoots.
+I_PLAYER_SPAWN (5005): A player spawns.
+I_PLAYER_SHOOTS (5006): A player shoots.
+I_PLAYER_MOVES (5007): A player moves.
+I_PLAYER_DIES (5008): A player dies.
+4. Security Considerations
+There are no known security considerations related to this protocol.
+
+5. Acknowledgments
+There are no acknowledgments.
+
+6. References
+There are no references.
+
+7. Author's Address
+Eliot Janvier
+Rengine
+Email: eliot.janvier@epitech.eu
+
+8. Full Copyright Statement
+Copyright (C) The Internet Society (2023). All Rights Reserved.
+
+This document and translations of it may be copied and furnished to others, and derivative works that comment on or otherwise explain it or assist in its implementation may be prepared, copied, published and distributed, in whole or in part, without restriction of any kind, provided that the above copyright notice and this paragraph are included on all such copies and derivative works. However, this document itself may not be modified in any way, such as by removing the copyright notice or references to the Internet Society or other Internet organizations, except as needed for the purpose of developing Internet standards in which case the procedures for copyrights defined in the Internet Standards process must be followed, or as required to translate it into languages other than English.
+
+The limited permissions granted above are perpetual and will not be revoked by the Internet Society or its successors or assigns.
+
+This document and the information contained herein is provided on an "AS IS" basis and THE INTERNET SOCIETY AND THE INTERNET ENGINEERING TASK FORCE DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTY THAT THE USE OF THE INFORMATION HEREIN WILL NOT INFRINGE ANY RIGHTS OR ANY IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
