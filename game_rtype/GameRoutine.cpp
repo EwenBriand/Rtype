@@ -6,6 +6,7 @@
 */
 
 #include "GameRoutine.hpp"
+#include "ChangeSceneCoroutine.hpp"
 #include "DistantPlayer.hpp"
 #include "ECSImpl.hpp"
 #include "GameRtype.hpp"
@@ -25,6 +26,8 @@ namespace rtype {
     {
         _engine.SetGlobal("PlayerID", -1);
         _engine.SetGlobal("ForceID", std::vector<int> {});
+        _engine.SetGlobal("bossHp", 10);
+        _engine.SetGlobal("bossSpawn", false);
     }
 
     GameRoutineServer::~GameRoutineServer()
@@ -152,10 +155,19 @@ namespace rtype {
 
     std::shared_ptr<ecs::IState> GameRoutineClient::Exit(bool& changed)
     {
-        if (_routine.Done()) {
-            changed = true;
-            return nullptr; // go back to menu and let it handle the rest
-        }
+        // auto serverInstance = RTypeDistantServer::GetInstance();
+        // if (_routine.Done() || serverInstance->SceneChangeFlag()) {
+        //     changed = true;
+        //     if (serverInstance->SceneChangeFlag()) {
+        //         std::cout << "GameRoutine Client : scene change flag detected" << std::endl;
+        //         serverInstance->ResetSceneChangeFlag();
+        //         return std::make_shared<rtype::ChangeSceneCoroutine>(
+        //             "level2", // TODO ewen: change to whatever scene you want
+        //             std::make_shared<rtype::GameRoutineClient>(_engine) // TODO ewen: change to whatever state you want
+        //         );
+        //     }
+        //     return nullptr; // go back to menu and let it handle the rest
+        // }
         changed = false;
         return nullptr;
     }
@@ -186,11 +198,11 @@ namespace rtype {
             auto rtype = std::dynamic_pointer_cast<eng::RType>(eng::Engine::GetEngine()->GetGame());
             if (rtype == nullptr)
                 return;
-            // std::cout << "ewen le debug est la: killcount " << rtype->GetSessionData().killCount << std::endl;
-            if (rtype->GetSessionData().killCount >= eng::RType::KILL_COUNT_TO_END) {
-                // TODO ewen: uncomment after you merged with branch game 1
-                eng::Engine::GetEngine()->GetClient().Send(serv::Instruction(
-                    eng::RType::I_LEVEL2, 0, serv::bytes()));
+
+            int hpBoss = eng::Engine::GetEngine()->GetGlobal<int>("bossHp");
+            if (hpBoss <= 0) {
+                std::cout << "boss is dead" << std::endl;
+                eng::Engine::GetEngine()->GetClient().Send(serv::Instruction(serv::I_DISCONNECT, 0, serv::bytes()));
             }
         } catch (std::exception& e) {
             return;

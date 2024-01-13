@@ -10,8 +10,15 @@
 #include "ECSImpl.hpp"
 #include "Engine.hpp"
 #include "GameRtype.hpp"
+#include <random>
 
 MANAGED_RESOURCE(Ship)
+
+std::random_device rd;
+std::mt19937 gen(rd());
+std::uniform_int_distribution<> distrib(50, 150);
+std::uniform_int_distribution<> distrib2(50, 100);
+std::uniform_int_distribution<> distrib3(0, 1);
 
 const std::string Ship::COMMAND_UP = "up";
 const std::string Ship::COMMAND_DOWN = "down";
@@ -54,7 +61,7 @@ void Ship::SetupCollisions()
     _collider->SetOnCollisionEnter([this](int entityID, int otherID) {
         try {
             std::string tag = (_entity == entityID) ? SYS.GetComponent<Collider2D>(otherID).GetTag() : SYS.GetComponent<Collider2D>(entityID).GetTag();
-            std::cout << "collision with " << tag << std::endl;
+            // std::cout << "collision with " << tag << std::endl;
             if (tag.compare(0, 12, "Enemy laser ") == 0) {
                 this->_health -= 1;
                 _textField->SetText((std::to_string(_health) + " HP"));
@@ -90,6 +97,38 @@ void Ship::SetupCollisions()
                     static_cast<int>(laserTransform.y) }));
                 auto instruction = serv::Instruction(eng::RType::I_FORCE_SPAWN, 0, args);
                 eng::Engine::GetEngine()->GetServer().Broadcast(instruction);
+            } else if (tag == "Bits_ic") {
+                if (not eng::Engine::GetEngine()->IsServer())
+                    return;
+                int _x = 0;
+                int _y = 0;
+                auto laser = SYS.GetResourceManager().LoadPrefab("Bits");
+                auto& laserTransform = SYS.GetComponent<CoreTransform>(laser);
+                laserTransform.x = _core->x;
+                laserTransform.y = _core->y;
+
+                if (distrib3(gen))
+                    _x = distrib(gen);
+                else
+                    _x = -distrib(gen);
+                if (distrib3(gen))
+                    _y = distrib2(gen);
+                else
+                    _y = -distrib2(gen);
+
+                eng::Engine::GetEngine()->SetGlobal("BitsID X " + std::to_string(laser), _x);
+                eng::Engine::GetEngine()->SetGlobal("BitsID Y " + std::to_string(laser), _y);
+
+                std::cout << "BitsID " << _x << " | " << _y << std::endl;
+
+                serv::bytes args(std::vector<int>({
+                    ((_x < 0) ? -_x : _x) * 1000 + ((_y < 0) ? -_y : _y),
+                    static_cast<int>((_x < 0) ? -laserTransform.x : laserTransform.x),
+                    static_cast<int>((_y < 0) ? -laserTransform.y : laserTransform.y),
+                }));
+                auto instruction = serv::Instruction(eng::RType::I_BITS_SPAWN, 0, args);
+                eng::Engine::GetEngine()->GetServer().Broadcast(instruction);
+
             } else if (tag.compare(0, 5, "Force") == 0) {
                 eng::Engine::GetEngine()->SetGlobal("ForceAttached " + std::to_string(_entity), true);
                 _forceID = (_entity == entityID) ? otherID : entityID;
@@ -98,7 +137,7 @@ void Ship::SetupCollisions()
                 _textField->SetText((std::to_string(_health) + " HP"));
             } else if (tag == "boss-laser") {
                 std::cout << "health minus two" << std::endl;
-                // this->_health -= 2;
+                this->_health -= 2;
                 _textField->SetText((std::to_string(_health) + " HP"));
             }
             if (tag == "Block") {
@@ -320,6 +359,7 @@ void Ship::shootTcemort()
 void Ship::checkForDeath()
 {
     if (_health <= 0) {
+        std::cout << _core->x << " | " << _core->y << std::endl;
         SYS.UnregisterEntity(_entity);
         eng::Engine::GetEngine()->GetServer().Broadcast(serv::Instruction(eng::RType::I_PLAYER_DIES, 0, serv::bytes(std::vector<int> { _id })));
     }

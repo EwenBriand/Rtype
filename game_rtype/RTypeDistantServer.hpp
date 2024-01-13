@@ -100,6 +100,18 @@ namespace rtype {
          */
         int GetKillCount() const noexcept;
 
+        /**
+         * @brief Returns true if the signal to change scene has been received. This flag should be manually reset using ResetSceneChangeFlag().
+         *
+         */
+        bool SceneChangeFlag() const noexcept;
+
+        /**
+         * @brief Resets the scene change flag.
+         *
+         */
+        void ResetSceneChangeFlag() noexcept;
+
     private:
         void handleConnectOk(serv::Instruction& instruction);
         void handleServerFull(serv::Instruction& instruction);
@@ -129,6 +141,7 @@ namespace rtype {
         void handleForceShoots(serv::Instruction& instruction);
         void handleForceShootsTcemort(serv::Instruction& instruction);
         void handleForceMoves(serv::Instruction& instruction);
+        void handleBitsSpawn(serv::Instruction& instruction);
 
 
         void handleResetSignal(serv::Instruction& instruction);
@@ -159,6 +172,7 @@ namespace rtype {
         void setPlayerAnimation(int id, int entity);
 
         std::thread _pingThread;
+        bool _sceneChanged = false;
 
         bool _isConnected = false;
         bool _startGame = false;
@@ -208,6 +222,7 @@ namespace rtype {
                 { eng::RType::I_FORCE_SHOOTS_TCEMORT, &RTypeDistantServer::handleForceShootsTcemort },
                 { eng::RType::I_FORCE_MOVES, &RTypeDistantServer::handleForceMoves },
                 { eng::RType::I_FORCE_SHOOTS, &RTypeDistantServer::handleForceShoots },
+                { eng::RType::I_BITS_SPAWN, &RTypeDistantServer::handleBitsSpawn },
 
                 { eng::RType::I_RESET_CLIENT, &RTypeDistantServer::handleResetSignal },
 

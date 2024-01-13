@@ -365,7 +365,7 @@ namespace ecs {
         {
             size_t idx = _cptTypesIndexes[std::type_index(typeid(T))];
             if (_components[idx].size() < e)
-                throw std::runtime_error("entity not exist : " + std::to_string(e));
+                throw std::runtime_error("Entity not found : " + std::string(typeid(T).name()));
             if (_components[idx][e].empty())
                 throw std::runtime_error("Component not found : " + std::string(typeid(T).name()));
 

@@ -25,7 +25,7 @@ MANAGED_RESOURCE(Boss)
 void Boss::OnAddComponent(int entityID)
 {
     _entityID = entityID;
-    eng::Engine::GetEngine()->SetGlobal("bossHp", 250);
+    eng::Engine::GetEngine()->SetGlobal("bossHp", 10);
 
     try {
         int body1 = SYS.GetResourceManager().LoadPrefab("boss-body");

@@ -1,0 +1,9 @@
+name: bits
+sprite path: sprites/Skillicon4_24.png
+fps: 10
+scale: 1.5
+priority: 5
+paralax: false
+flipX: false
+loop: true
+auto: 32 32 1

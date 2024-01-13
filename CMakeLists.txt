@@ -9,6 +9,9 @@ if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
 message(FATAL_ERROR "In-source builds are not allowed. Please run cmake from the 'build' directory.")
 endif()
 
+# set(CMAKE_INSTALL_RPATH "$ORIGIN")
+# set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
@@ -168,4 +171,22 @@ add_custom_target(doc
 add_subdirectory(ecs)
 add_subdirectory(game_rtype)
 
+add_subdirectory(tests)
 add_subdirectory(game_rtype/plugins/LagChecker)
+
+# if(WIN32)
+#     set(CPACK_GENERATOR "NSIS")
+# endif()
+
+# install(TARGETS run_engine lengine server_udp metadatagen raylib lua yaml-cpp
+#         RUNTIME DESTINATION bin
+#         LIBRARY DESTINATION bin
+#         ARCHIVE DESTINATION bin)
+
+# include(CPack)
+# set(CPACK_PACKAGE_NAME "REngine")
+# set(CPACK_PACKAGE_VENDOR "OuiOuiCorp")
+# set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "REngine - A  CLI Game Engine")
+# set(CPACK_PACKAGE_VERSION "1.0.0")
+# set(CPACK_PACKAGE_INSTALLDIRECTORY "REngine${CPACK_PACKAGE_VERSION}")
+

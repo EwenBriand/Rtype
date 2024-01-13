@@ -142,5 +142,6 @@ namespace rtype {
         std::cout << "\rScene is ready, waiting for server..." << std::endl;
         while (not serverHandle->ShouldStartGame())
             co_await std::suspend_always {};
+        rtype::RTypeDistantServer::Instance->ResetSceneChangeFlag();
     }
 }

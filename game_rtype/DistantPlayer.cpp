@@ -202,12 +202,8 @@ void DistantPlayer::handleForceMoves(serv::Instruction& instruction)
     instruction.data.Deserialize(id, x, y);
 
     std::string name = "ForceID " + std::to_string(id);
-    std::cout << "\rforce moves: " << name << " " << x << " " << y << std::endl;
-    if (eng::Engine::GetEngine()->IsServer()) {
-        std::cout << "\ris server" << std::endl;
-    } else {
-        std::cout << "\ris client" << std::endl;
-    }
+    // std::cout << "\rforce moves: " << name << " " << x << " " << y << std::endl;
+
     int entity = eng::Engine::GetEngine()->GetGlobal<int>(name);
     try {
         auto& transform = SYS.GetComponent<CoreTransform>(entity);
@@ -278,6 +274,23 @@ void DistantPlayer::handleForceShoots(serv::Instruction& instruction)
         }
     } catch (const std::exception& e) {
         CONSOLE::err << "\rFailed to send shoot instruction to clients." << std::endl;
+    }
+}
+
+void DistantPlayer::handleBossSpawns(serv::Instruction& instruction)
+{
+    eng::Engine::GetEngine()->GetServer().Log("Player shoots handler for player " + std::to_string(_playerId) + " called");
+    if (eng::Engine::GetEngine()->IsClient())
+        return;
+
+    try {
+        std::cout << "\rspawning boss" << std::endl;
+        SYS.GetResourceManager().LoadPrefab("boss-head");
+        eng::Engine::GetEngine()->SetGlobal<graph::vec2i>("bossTargetPosition", graph::vec2i { 0, 0 });
+        eng::Engine::GetEngine()->SetGlobal<graph::vec2i>("bossShoot", graph::vec2i { -1, -1 });
+        eng::Engine::GetEngine()->GetServer().Broadcast(serv::Instruction(eng::RType::I_BOSS_SPAWNS, 0, serv::bytes()));
+    } catch (const std::exception& e) {
+        std::cerr << e.what() << std::endl;
     }
 }
 

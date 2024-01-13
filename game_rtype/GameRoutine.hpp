@@ -59,5 +59,6 @@ namespace rtype {
 
         serv::Coroutine _routine;
         eng::Engine& _engine;
+        bool boss_spawned = false;
     };
 } // namespace rtype

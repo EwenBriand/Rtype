@@ -121,6 +121,16 @@ namespace rtype {
             .SwitchScene(_currSceneName);
     }
 
+    bool RTypeDistantServer::SceneChangeFlag() const noexcept
+    {
+        return _sceneChanged;
+    }
+
+    void RTypeDistantServer::ResetSceneChangeFlag() noexcept
+    {
+        _sceneChanged = false;
+    }
+
     // ========================================================================
     // REQUEST HANDLING METHODS
     // ========================================================================
@@ -146,6 +156,7 @@ namespace rtype {
         _engine->GetSceneManager().LoadSceneAsync(sceneName);
         _currSceneName = sceneName;
         _startGame = false;
+        _sceneChanged = true;
     }
 
     void RTypeDistantServer::handleLevel2(serv::Instruction& instruction)
@@ -521,7 +532,7 @@ namespace rtype {
         instruction.data.Deserialize(id, x, y);
 
         try {
-            std::vector<std::string> prefabNames = { "Heal", "X2", "X3", "Tcemort", "Force_ic" };
+            std::vector<std::string> prefabNames = { "Heal", "X2", "X3", "Tcemort", "Force_ic", "Bits_ic" };
             int laser = SYS.GetResourceManager().LoadPrefab(prefabNames[id]);
             auto& transform = SYS.GetComponent<CoreTransform>(laser);
             transform.x = x;
@@ -551,6 +562,34 @@ namespace rtype {
 
         } catch (const std::exception& e) {
             CONSOLE::err << "Failed to spawn laser: " << e.what() << std::endl;
+        }
+    }
+
+    void RTypeDistantServer::handleBitsSpawn(serv::Instruction& instruction)
+    {
+        if (instruction.data.size() != 3 * sizeof(int)) {
+            throw serv::MalformedInstructionException("Player shoots instruction malformed");
+        }
+        int id = 0;
+        int x = 0;
+        int y = 0;
+        instruction.data.Deserialize(id, x, y);
+        int _x = id / 1000 * ((x < 0) ? -1 : 1);
+        int _y = id % 1000 * ((y < 0) ? -1 : 1);
+
+        try {
+            int laser = SYS.GetResourceManager().LoadPrefab("Bits");
+            auto& transform = SYS.GetComponent<CoreTransform>(laser);
+            transform.x = ((x < 0) ? -x : x);
+            transform.y = ((y < 0) ? -y : y);
+
+            eng::Engine::GetEngine()->SetGlobal("BitsID X " + std::to_string(laser), _x);
+            eng::Engine::GetEngine()->SetGlobal("BitsID Y " + std::to_string(laser), _y);
+
+            std::cout << "bits spawn with " << _x << " | " << _y << std::endl;
+
+        } catch (const std::exception& e) {
+            CONSOLE::err << "Failed to spawn bits: " << e.what() << std::endl;
         }
     }
 
@@ -631,7 +670,6 @@ namespace rtype {
 
     void RTypeDistantServer::handlePlayerDies(serv::Instruction& instruction)
     {
-
         std::cout << "player died!!!" << std::endl;
         eng::Engine::GetEngine()->GetClient().Send(serv::Instruction(serv::I_DISCONNECT, 0, serv::bytes()));
     }
@@ -666,6 +704,8 @@ namespace rtype {
                 throw std::runtime_error("Boss moves instruction has wrong data size, expected 8 bytes, got " + std::to_string(instruction.data.size()) + " bytes.");
             instruction.data.Deserialize(x, y);
             eng::Engine::GetEngine()->SetGlobal<graph::vec2i>("bossTargetPosition", graph::vec2i { x, y });
+
+            std::cout << "boss moves to " << x << " | " << y << std::endl;
         } catch (const std::exception& e) {
             std::cerr << e.what() << std::endl;
         }
@@ -677,6 +717,7 @@ namespace rtype {
             SYS.GetResourceManager().LoadPrefab("boss-head");
             eng::Engine::GetEngine()->SetGlobal<graph::vec2i>("bossTargetPosition", graph::vec2i { 0, 0 });
             eng::Engine::GetEngine()->SetGlobal<graph::vec2i>("bossShoot", graph::vec2i { -1, -1 });
+            eng::Engine::GetEngine()->SetGlobal("bossSpawn", true);
         } catch (const std::exception& e) {
             std::cerr << e.what() << std::endl;
         }

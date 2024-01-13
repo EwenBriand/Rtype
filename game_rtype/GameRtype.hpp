@@ -131,10 +131,16 @@ namespace eng {
         static constexpr int I_FORCE_SHOOTS = 5016;
 
         /**
+         * @brief args: {int entity, int x, int y}
+         *
+         */
+        static constexpr int I_BITS_SPAWN = 5017;
+
+        /**
          * @brief The number of enemies to kill for the game to end
          *
          */
-        static constexpr int KILL_COUNT_TO_END = 30;
+        static constexpr int KILL_COUNT_TO_END = 3;
 
         /**
          * @brief Indicates a new position for the boss to move to.

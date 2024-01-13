@@ -11,6 +11,7 @@ set(SRC
     LocalPlayerController.cpp
     DistantPlayer.cpp
     LobbyCoroutine.cpp
+    ChangeSceneCoroutine.cpp
     RTypeDistantServer.cpp
     scripts/Ship.cpp
     scripts/Laser.cpp
