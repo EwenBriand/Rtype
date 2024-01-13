@@ -25,7 +25,7 @@ MANAGED_RESOURCE(Boss)
 void Boss::OnAddComponent(int entityID)
 {
     _entityID = entityID;
-    eng::Engine::GetEngine()->SetGlobal("bossHp", 10);
+    eng::Engine::GetEngine()->SetGlobal("bossHp", 100);
 
     try {
         int body1 = SYS.GetResourceManager().LoadPrefab("boss-body");
@@ -33,6 +33,7 @@ void Boss::OnAddComponent(int entityID)
         auto& thisTransform = SYS.GetComponent<CoreTransform>(_entityID);
         auto& bodyTransform = SYS.GetComponent<CoreTransform>(body1);
 
+        _bodyParts = eng::Engine::GetEngine()->GetGlobal<int>("bossHp") / 10;
         body1Component.SetParent(&thisTransform);
         body1Component.SetRank(_bodyParts);
         bodyTransform.x = thisTransform.x;

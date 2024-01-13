@@ -244,16 +244,21 @@ namespace ecs {
         if (_gameHandle) {
             throw eng::EngineException("Game already loaded", __FILE__, __FUNCTION__, __LINE__);
         }
-
-        void* handle = lib::LibUtils::getLibHandle(path.c_str());
-        std::shared_ptr<eng::IGame> (*create)() = reinterpret_cast<std::shared_ptr<eng::IGame> (*)()>(lib::LibUtils::getSymHandle(handle, "create"));
-        _game = create();
-        if (!_game) {
-            throw eng::EngineException("Game creation failed", __FILE__, __FUNCTION__, __LINE__);
+        try {
+            void* handle = lib::LibUtils::getLibHandle(path.c_str());
+            std::shared_ptr<eng::IGame> (*create)() = reinterpret_cast<std::shared_ptr<eng::IGame> (*)()>(lib::LibUtils::getSymHandle(handle, "create"));
+            _game = create();
+            if (!_game) {
+                throw eng::EngineException("Game creation failed", __FILE__, __FUNCTION__, __LINE__);
+            }
+            _gameHandle = handle;
+            CONSOLE::info << "Game successfully loaded" << std::endl;
+            return _game;
+        } catch (std::exception& e) {
+            CONSOLE::err << "Error: " << e.what() << std::endl;
+            CONSOLE::err << "Could not load game" << std::endl;
+            return nullptr;
         }
-        _gameHandle = handle;
-        CONSOLE::info << "Game successfully loaded" << std::endl;
-        return _game;
     }
 
     int ResourceManager::LoadPrefab(const std::string& name)

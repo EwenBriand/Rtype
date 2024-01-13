@@ -7,6 +7,7 @@
 
 #include "RTypeDistantServer.hpp"
 #include "AIController.hpp"
+#include "Chat.hpp"
 #include "CoreTransform.hpp"
 #include "Enemy.hpp"
 #include "Enemy2.hpp"
@@ -16,7 +17,6 @@
 #include "NetworkExceptions.hpp"
 #include "PlayerFromServerController.hpp"
 #include "Ship.hpp"
-#include "Chat.hpp"
 
 namespace rtype {
     const std::vector<std::string> RTypeDistantServer::PlayerPrefabs = {
@@ -332,7 +332,6 @@ namespace rtype {
             std::cerr << "\r" << e.what() << std::endl;
         }
     }
-    
 
     void RTypeDistantServer::handleBlockSpawn(serv::Instruction& instruction)
     {
@@ -341,19 +340,12 @@ namespace rtype {
         }
         int x = 0;
         int y = 0;
-        std::string prefabName = "";
 
         std::memcpy(&x, instruction.data.data(), sizeof(int));
         std::memcpy(&y, instruction.data.data() + sizeof(int), sizeof(int));
-        prefabName.resize(instruction.data.size() - 2 * sizeof(int));
-
-        std::memcpy(&prefabName[0], instruction.data.data() + 2 * sizeof(int), instruction.data.size() - 2 * sizeof(int));
-
-        // display prefabName
-        std::cout << "prefabName: SERVER: " << prefabName << std::endl;
 
         try {
-            auto eid = _engine->GetECS().GetResourceManager().LoadPrefab(prefabName);
+            auto eid = _engine->GetECS().GetResourceManager().LoadPrefab("Block");
             auto& transform = _engine->GetECS().GetComponent<CoreTransform>(eid);
             transform.x = x;
             transform.y = y;
@@ -742,7 +734,7 @@ namespace rtype {
             transform.AddMessage(message);
         } catch (const std::exception& e) {
             std::cerr << e.what() << std::endl;
-        }    
+        }
         // int laser = SYS.GetResourceManager().LoadPrefab("Laser");
         // auto& transform = SYS.GetComponent<CoreTransform>(laser);
     }

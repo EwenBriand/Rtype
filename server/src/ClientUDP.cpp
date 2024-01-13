@@ -100,20 +100,24 @@ namespace serv {
 
     void ClientUDP::CallHook()
     {
-        while (!_inBuffer.IsEmpty()) {
-            bytes data;
-            {
-                std::lock_guard<std::mutex> lock(*_mutex);
-                data = _inBuffer.ReadUntil(SEPARATOR);
+        try {
+            while (!_inBuffer.IsEmpty()) {
+                bytes data;
+                {
+                    std::lock_guard<std::mutex> lock(*_mutex);
+                    data = _inBuffer.ReadUntil(SEPARATOR);
+                }
+                Instruction instruction(data);
+                if (_interceptors.find(instruction.opcode) != _interceptors.end()) {
+                    std::cout << "intercepted opcode " << instruction.opcode << std::endl; // TODO: remove
+                    _interceptors[instruction.opcode](instruction);
+                    continue;
+                }
+                if (_requestHandler != nullptr and !data.empty())
+                    _requestHandler->HandleRequest(data);
             }
-            Instruction instruction(data);
-            if (_interceptors.find(instruction.opcode) != _interceptors.end()) {
-                std::cout << "intercepted opcode " << instruction.opcode << std::endl; // TODO: remove
-                _interceptors[instruction.opcode](instruction);
-                continue;
-            }
-            if (_requestHandler != nullptr and !data.empty())
-                _requestHandler->HandleRequest(data);
+        } catch (std::exception& e) {
+            std::cerr << "ClientUDP::CallHook(): " << e.what() << std::endl;
         }
     }
 
