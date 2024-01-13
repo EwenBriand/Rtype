@@ -85,6 +85,8 @@ private:
     void handlePlayerShootsTcemort(serv::Instruction&);
     void handleDisconnect(serv::Instruction&);
     void handleBossSpawns(serv::Instruction&);
+    void handleLevel2(serv::Instruction&);
+    void handleMessage(serv::Instruction&);
 
     int _playerId;
     int _kill_count;
@@ -103,5 +105,7 @@ private:
         { eng::RType::I_PLAYER_SHOOTS_TCEMORT, &DistantPlayer::handlePlayerShootsTcemort },
         { serv::I_DISCONNECT, &DistantPlayer::handleDisconnect },
         { eng::RType::I_BOSS_SPAWNS, &DistantPlayer::handleBossSpawns },
+        { eng::RType::I_LEVEL2, &DistantPlayer::handleLevel2 },
+        { serv::I_MESSAGE, &DistantPlayer::handleMessage },
     };
 };

@@ -16,6 +16,7 @@
 #include "NetworkExceptions.hpp"
 #include "PlayerFromServerController.hpp"
 #include "Ship.hpp"
+#include "Chat.hpp"
 
 namespace rtype {
     const std::vector<std::string> RTypeDistantServer::PlayerPrefabs = {
@@ -158,15 +159,22 @@ namespace rtype {
         _sceneChanged = true;
     }
 
+    void RTypeDistantServer::handleLevel2(serv::Instruction& instruction)
+    {
+        eng::Engine::GetEngine()->GetSceneManager().LoadSceneAsync("level2");
+        _currSceneName = "level2";
+        _startGame = false;
+    }
+
     void RTypeDistantServer::handleStartGame(serv::Instruction& instruction)
     {
         _startGame = true;
     }
 
-    void RTypeDistantServer::handleMessage(serv::Instruction& instruction)
-    {
-        std::cout << "\rMessage from server: " << instruction.data.toString() << std::endl;
-    }
+    // void RTypeDistantServer::handleMessage(serv::Instruction& instruction)
+    // {
+    //     std::cout << "\rMessage from server: " << instruction.data.toString() << std::endl;
+    // }
 
     void RTypeDistantServer::pingServerForAlive()
     {
@@ -320,6 +328,35 @@ namespace rtype {
             pfsc->SetID(id);
             ship.Possess(eid, pfsc);
             _enemies[id] = eid;
+        } catch (std::exception& e) {
+            std::cerr << "\r" << e.what() << std::endl;
+        }
+    }
+    
+
+    void RTypeDistantServer::handleBlockSpawn(serv::Instruction& instruction)
+    {
+        if (instruction.data.size() < 3 * sizeof(int)) {
+            throw std::runtime_error("Enemy spawn instruction has wrong data size.");
+        }
+        int x = 0;
+        int y = 0;
+        std::string prefabName = "";
+
+        std::memcpy(&x, instruction.data.data(), sizeof(int));
+        std::memcpy(&y, instruction.data.data() + sizeof(int), sizeof(int));
+        prefabName.resize(instruction.data.size() - 2 * sizeof(int));
+
+        std::memcpy(&prefabName[0], instruction.data.data() + 2 * sizeof(int), instruction.data.size() - 2 * sizeof(int));
+
+        // display prefabName
+        std::cout << "prefabName: SERVER: " << prefabName << std::endl;
+
+        try {
+            auto eid = _engine->GetECS().GetResourceManager().LoadPrefab(prefabName);
+            auto& transform = _engine->GetECS().GetComponent<CoreTransform>(eid);
+            transform.x = x;
+            transform.y = y;
         } catch (std::exception& e) {
             std::cerr << "\r" << e.what() << std::endl;
         }
@@ -696,5 +733,17 @@ namespace rtype {
         instruction.data.Deserialize(x, y);
         eng::Engine::GetEngine()->SetGlobal<graph::vec2i>("bossShoot", graph::vec2i { x, y });
     }
-
+    void RTypeDistantServer::handleMessage(serv::Instruction& instruction)
+    {
+        try {
+            std::string message = instruction.data.toString();
+            int chatEntity = _engine->GetGlobal<int>("chatEntity");
+            auto& transform = SYS.GetComponent<Chat>(chatEntity, "Chat");
+            transform.AddMessage(message);
+        } catch (const std::exception& e) {
+            std::cerr << e.what() << std::endl;
+        }    
+        // int laser = SYS.GetResourceManager().LoadPrefab("Laser");
+        // auto& transform = SYS.GetComponent<CoreTransform>(laser);
+    }
 } // namespace rtype

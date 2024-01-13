@@ -1,3 +1,4 @@
 #!/bin/bash
 
 ./bin/run_engine --editor --config-dir=game_rtype/.engine/config
+

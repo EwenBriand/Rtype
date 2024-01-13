@@ -46,6 +46,9 @@ void Laser::Start()
                 if (tag == "player" || tag == "Force") {
                     SYS.GetComponent<Collider2D>(_entity).SetDestroyMe(true);
                     SYS.UnregisterEntity(_entity);
+                } else if (tag == "Block") {
+                    SYS.GetComponent<Collider2D>(_entity).SetDestroyMe(true);
+                    SYS.UnregisterEntity(_entity);
                 }
             } catch (std::exception& e) {
                 std::cerr << "Laser::OnCollisionEnter(): " << e.what() << std::endl;

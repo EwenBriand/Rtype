@@ -133,16 +133,21 @@ namespace rtype {
         void handleEnemyShoots(serv::Instruction& instruction);
         void handleEnemyDies(serv::Instruction& instruction);
 
+
+        void handleBlockSpawn(serv::Instruction& instruction);
+
         void handleBonusSpawn(serv::Instruction& instruction);
         void handleForceSpawn(serv::Instruction& instruction);
-        void handleForceShootsTcemort(serv::Instruction& instruction);
         void handleForceShoots(serv::Instruction& instruction);
+        void handleForceShootsTcemort(serv::Instruction& instruction);
         void handleForceMoves(serv::Instruction& instruction);
         void handleBitsSpawn(serv::Instruction& instruction);
+
 
         void handleResetSignal(serv::Instruction& instruction);
 
         void handleDisconnect(serv::Instruction& instruction);
+        void handleLevel2(serv::Instruction& instruction);
 
         void handleBossMoves(serv::Instruction& instruction);
         void handleBossSpawns(serv::Instruction& instruction);
@@ -210,6 +215,8 @@ namespace rtype {
                 { eng::RType::I_ENEMY_DIES, &RTypeDistantServer::handleEnemyDies },
                 { eng::RType::I_ENEMY_SHOOTS, &RTypeDistantServer::handleEnemyShoots },
 
+                { eng::RType::I_BLOCK_SPAWN, &RTypeDistantServer::handleBlockSpawn },
+
                 { eng::RType::I_BONUS_SPAWN, &RTypeDistantServer::handleBonusSpawn },
                 { eng::RType::I_FORCE_SPAWN, &RTypeDistantServer::handleForceSpawn },
                 { eng::RType::I_FORCE_SHOOTS_TCEMORT, &RTypeDistantServer::handleForceShootsTcemort },
@@ -220,6 +227,7 @@ namespace rtype {
                 { eng::RType::I_RESET_CLIENT, &RTypeDistantServer::handleResetSignal },
 
                 { serv::I_DISCONNECT, &RTypeDistantServer::handleDisconnect },
+                { eng::RType::I_LEVEL2, &RTypeDistantServer::handleLevel2 },
 
                 { eng::RType::I_BOSS_SPAWNS, &RTypeDistantServer::handleBossSpawns },
                 { eng::RType::I_BOSS_MOVES, &RTypeDistantServer::handleBossMoves },

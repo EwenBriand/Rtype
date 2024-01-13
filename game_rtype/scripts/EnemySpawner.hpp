@@ -39,7 +39,7 @@ private:
 
     serialize float _spawnDelay
         = 5.0f;
-    serialize std::string _prefabName = "dual-ship";
+    serialize std::string _prefabName = "Block";
 
     eng::Timer _timer;
     float _randomDelayVariation = 0.0f;

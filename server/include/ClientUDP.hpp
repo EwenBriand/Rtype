@@ -12,6 +12,7 @@
 #include <atomic>
 #include <boost/asio.hpp>
 #include <functional>
+#include <map>
 #include <memory>
 #include <mutex>
 #include <string>
@@ -62,6 +63,24 @@ namespace serv {
          */
         void CallHook();
 
+        /**
+         * @brief Intercept a specific opcode instead of using the
+         * request handler, and executes the callback function when the
+         * given opcode is received.
+         *
+         * @param opcode
+         * @param callback
+         */
+        void Intercept(int opcode, std::function<void(Instruction&)> callback);
+
+        /**
+         * @brief Manually feed the client with a message as if it was
+         * received from the network.
+         *
+         * @param data
+         */
+        void FeedMessage(const bytes& data);
+
     private:
         void sendWorker();
         void receiveWorker();
@@ -81,5 +100,7 @@ namespace serv {
         int _serverPort;
 
         std::shared_ptr<IClientRequestHandler> _requestHandler;
+
+        std::map<int, std::function<void(Instruction&)>> _interceptors;
     };
 }

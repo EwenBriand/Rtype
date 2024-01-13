@@ -368,6 +368,7 @@ namespace ecs {
                 throw std::runtime_error("Entity not found : " + std::string(typeid(T).name()));
             if (_components[idx][e].empty())
                 throw std::runtime_error("Component not found : " + std::string(typeid(T).name()));
+
             return std::get<T>(_components[idx][e].back());
         }
 
@@ -1010,6 +1011,17 @@ namespace ecs {
         bool FrameIsSkipped() const { return _skipFrame; }
 
         float GetDeltaTime() const;
+
+        std::vector<std::string> GetVanillaList() {
+            std::vector<std::string> result;
+
+            for (auto i = 0; i < cloneBase.size(); ++i) {
+                std::visit([&](auto &cpt) {
+                    result.push_back(cpt.GetClassName());
+                }, cloneBase[i]);
+            }
+            return result;
+        }
 
     private:
         std::shared_ptr<graph::IGraphicalModule> _graphicalModule

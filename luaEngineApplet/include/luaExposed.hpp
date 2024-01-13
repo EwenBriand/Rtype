@@ -10,6 +10,13 @@
 #include <LuaBridge/LuaBridge.h>
 
 
+#include "CoreTransform.hpp"
+
 static void lua_init_exposed(lua_State *L) {
+
+    luabridge::getGlobalNamespace(L)
+            .beginClass<CoreTransform>("CoreTransform")
+                .addConstructor<void (*) (void)>()
+            .endClass();
 
 }

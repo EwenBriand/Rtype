@@ -202,6 +202,8 @@ public:
      */
     void pause(std::vector<std::string> args = std::vector<std::string>());
 
+    void listVanilla(std::vector<std::string> args = std::vector<std::string>());
+
     void RegisterCustomCommand(const std::string& command, std::function<void(CLI&, std::vector<std::string>)> func, const std::string& help = "");
     std::string GetClassName() const;
     Entity GetContext() const;
@@ -252,6 +254,7 @@ private:
         { "ssend", "Send a message to the server if the engine is in client mode and is connected to a server" },
         { "csend", "Send a message to all clients if the engine is in server mode" },
         { "play", "Sets the engine to play mode" },
-        { "pause", "Deactivates the engin's play mode" }
+        { "pause", "Deactivates the engin's play mode" },
+        { "lv", "Lists all vanilla components"}
     };
 };

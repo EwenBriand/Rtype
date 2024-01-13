@@ -198,6 +198,7 @@ namespace rtype {
             auto rtype = std::dynamic_pointer_cast<eng::RType>(eng::Engine::GetEngine()->GetGame());
             if (rtype == nullptr)
                 return;
+
             int hpBoss = eng::Engine::GetEngine()->GetGlobal<int>("bossHp");
             if (hpBoss <= 0) {
                 std::cout << "boss is dead" << std::endl;

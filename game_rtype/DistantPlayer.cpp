@@ -165,9 +165,10 @@ void DistantPlayer::handlePlayerMoves(serv::Instruction& instruction)
     int id = 0;
     int x = 0;
     int y = 0;
-    std::memcpy(&id, instruction.data.data(), sizeof(int));
-    std::memcpy(&x, instruction.data.data() + sizeof(int), sizeof(int));
-    std::memcpy(&y, instruction.data.data() + 2 * sizeof(int), sizeof(int));
+    // std::memcpy(&id, instruction.data.data(), sizeof(int));
+    // std::memcpy(&x, instruction.data.data() + sizeof(int), sizeof(int));
+    // std::memcpy(&y, instruction.data.data() + 2 * sizeof(int), sizeof(int));
+    instruction.data.Deserialize(id, x, y);
     if (id != _playerId) {
         std::cerr << "\rplayer id: " << id << std::endl;
         throw serv::MalformedInstructionException("Player moves instruction malformed");
@@ -338,4 +339,24 @@ void DistantPlayer::handleForceShootsTcemort(serv::Instruction& instruction)
 void DistantPlayer::handleDisconnect(serv::Instruction&)
 {
     OnDisconnect();
+}
+
+void DistantPlayer::handleLevel2(serv::Instruction&)
+{
+    std::cout << "\rClient level2" << std::endl;
+
+    auto eng = eng::Engine::GetEngine();
+
+    eng->GetSceneManager().SwitchScene("level2");
+
+    _server.Broadcast(serv::Instruction(eng::RType::I_LEVEL2, 0, serv::bytes()));
+
+    eng::Engine::GetEngine()->GetServer().ResetClients();
+}
+
+void DistantPlayer::handleMessage(serv::Instruction& message)
+{
+    // get the server and broadcast the message to all players
+    auto& server = eng::Engine::GetEngine()->GetServer();
+    server.Broadcast(serv::Instruction(serv::I_MESSAGE, 0, message.data));
 }
