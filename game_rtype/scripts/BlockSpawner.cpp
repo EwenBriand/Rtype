@@ -36,17 +36,17 @@ void BlockSpawner::Update(int e)
         or not eng::Engine::GetEngine()->PlayMode())
         return;
 
-     try {
+    try {
         graph::vec2i size = SYS.GetGraphicalModule()->GetScreenSize();
         std::uniform_int_distribution<int> dist(0, size.x);
         _transform->x = dist(_rng);
 
         // if (1) {
-            // if there is less that 2 block on the screen then spawn one
+        // if there is less that 2 block on the screen then spawn one
         spawnBlock();
         _timer.Restart();
         // } else {
-            // _spawnDelay = 10.0f;
+        // _spawnDelay = 10.0f;
         //     std::random_device rd;
         //     std::mt19937 gen(rd());
         //     std::uniform_int_distribution<> distrib(0, 1);
@@ -55,7 +55,6 @@ void BlockSpawner::Update(int e)
     } catch (const std::exception& e) {
         CONSOLE::err << "\rCould not spawn Block: \n\r\t" << e.what() << std::endl;
     }
-
 }
 
 void BlockSpawner::spawnBlock()
@@ -74,7 +73,7 @@ void BlockSpawner::spawnBlock()
     // ship.SetID(controller->GetID());
     // ship.Possess(e, controller);
     // setupObserver(controller, e);
-    broadcastSpawn(transform.x, transform.y, _prefabName);
+    broadcastSpawn(transform.x, transform.y);
 }
 
 void BlockSpawner::OnAddComponent(int e)
@@ -101,7 +100,7 @@ void BlockSpawner::OnLoad()
 {
 }
 
-void BlockSpawner::broadcastSpawn(int x, int y, std::string prefabName)
+void BlockSpawner::broadcastSpawn(int x, int y)
 {
     auto* engine = eng::Engine::GetEngine();
 
