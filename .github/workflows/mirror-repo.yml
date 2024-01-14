@@ -1,6 +1,7 @@
 name: Repository Mirroring
 
 on:
+  on: workflow_dispatch
   push:
     branches:
       - master
